@@ -34,3 +34,4 @@ def test_select_swing_prefers_recent_large_clean_leg(synthetic_df):
     # Den sista, största legen (105 -> 130) bör väljas.
     assert swing.direction == "up"
     assert swing.end.price > 128
+    assert swing.status in {"confirmed", "provisional"}

@@ -27,11 +27,13 @@ def plot_prediction(
     x = range(len(df))
     ax.plot(x, df["close"].to_numpy(), color="black", lw=0.8, label="close")
 
-    # Predikterad leg + fib-nivåer.
+    # Predikterad leg + fib-nivåer. Provisorisk = streckad, bekräftad = heldragen.
+    leg_style = "--" if swing.status == "provisional" else "-"
     ax.plot(
         [swing.start.index, swing.end.index],
         [swing.start.price, swing.end.price],
-        color="tab:blue", lw=2, marker="o", label="predikterad leg",
+        color="tab:blue", lw=2, ls=leg_style, marker="o",
+        label=f"predikterad leg [{swing.status}]",
     )
     for lvl, price in fib_levels(swing, levels).items():
         ax.axhline(price, color="tab:blue", ls="--", lw=0.6, alpha=0.6)
@@ -48,7 +50,8 @@ def plot_prediction(
         ax.scatter([man_low_bar], [label.low.price], color="green", s=90, zorder=6,
                    label="facit low")
 
-    ax.set_title(title or "Predikterad swing/fib vs facit")
+    base_title = title or "Predikterad swing/fib vs facit"
+    ax.set_title(f"{base_title} [{swing.status}]")
     ax.legend(loc="best", fontsize=8)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=110, bbox_inches="tight")

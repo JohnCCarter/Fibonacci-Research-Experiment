@@ -28,6 +28,10 @@ Tänk dig att projektet har misslyckats. Vad gick fel? Fyll på listan löpande.
   trimma `confluence_degrees`/`confluence_tol_bars` tills en favoritsväng vinner
   är att överanpassa. → Håll graderna få och principmotiverade; ändra en sak i
   taget och spåra i leaderboard.
+- **Att handla på en provisorisk Fib.** En provisorisk swing kan fortfarande
+  flytta sin endpunkt (priset gör nya highs/lows) → Fib-nivåerna skiftar.
+  → Agera bara på `status == "confirmed"`; behandla provisoriska som "håller på
+  att formas".
 
 ## Reflektioner per experiment
 

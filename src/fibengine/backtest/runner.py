@@ -66,7 +66,7 @@ def run_backtest(settings: Settings | None = None) -> Path:
     records = walk_forward_selection(
         df, settings, settings.backtest.warmup_bars, settings.backtest.step
     )
-    metrics = stability_metrics(records)
+    metrics = stability_metrics(records, settings.backtest.extension_tol_bars)
     _plot_timeline(df, records, run_dir / "stability_timeline.png")
     (run_dir / "stability.json").write_text(json.dumps(metrics, indent=2))
 

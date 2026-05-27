@@ -5,6 +5,7 @@ from __future__ import annotations
 import pandas as pd
 
 from fibengine.config import PivotConfig, ScoringConfig
+from fibengine.confirm import classify_swing
 from fibengine.data.loader import atr
 from fibengine.features import compute_features, enumerate_swings
 from fibengine.models import Swing
@@ -39,4 +40,10 @@ def select_swing(
 ) -> Swing | None:
     """Välj den swing-leg analytikern sannolikt hade ritat Fib på."""
     ranked = rank_swings(df, pivot_cfg, scoring_cfg)
-    return ranked[0] if ranked else None
+    if not ranked:
+        return None
+    swing = ranked[0]
+    swing.status = classify_swing(
+        df, swing, pivot_cfg.fractal_n, scoring_cfg.confirm_min_retrace
+    )
+    return swing

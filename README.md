@@ -49,11 +49,17 @@ poäng — signifikans över skalor, inte 1.618-mystik. Äkta multi-timeframe
 
 `fibengine.backtest.runner` kör ett **kausalt walk-forward**: vid varje
 cursor-position väljs swing på enbart data ≤ t (ingen framtid läcker in), och
-stabiliteten mäts — `flip_rate`, `persistence_steps`, `direction_consistency`,
-`mean_endpoint_drift_bars`. Mäter om motorn väljer koherent över tid (inte PnL;
-det är Lager B). Notera: end-baren förlängs ofta en bar i taget under en trend,
-vilket räknas som "ändring" — så hög `flip_rate` med hög `direction_consistency`
-betyder oftast en *växande* sväng, inte regim-flipp.
+stabiliteten mäts. `flip_rate` räknar bara *riktiga hopp* — en sväng vars
+endpunkt växer en bar i taget (samma start/riktning) klassas som `extension_rate`,
+inte instabilitet. `raw_change_rate` behålls för transparens, och `confirmed_rate`
+visar hur ofta den valda swingen var bekräftad. Mäter koherens över tid, inte PnL
+(det är Lager B).
+
+**Bekräftad vs provisorisk swing:** varje vald swing får `status`. *Provisorisk* =
+extremen kan fortfarande växa (för få barer efter, eller ingen pullback ännu).
+*Bekräftad* = minst `pivots.fractal_n` barer efter extremen OCH priset har dragit
+tillbaka ≥ `scoring.confirm_min_retrace` av legen. Agera bara på bekräftade Fib;
+provisoriska ritas streckade i plotten.
 
 ## Struktur
 

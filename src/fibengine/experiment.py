@@ -68,8 +68,8 @@ def _run_one(settings: Settings, label: SwingLabel, run_dir: Path, log) -> dict 
     )
     _maybe_emit_sizing(settings, df, swing, run_dir, label_id, log)
     log.info(
-        "{} | agreement={} fib_err={}",
-        label_id, metrics["agreement"], metrics["mean_fib_err_frac"],
+        "{} | status={} agreement={} fib_err={}",
+        label_id, swing.status, metrics["agreement"], metrics["mean_fib_err_frac"],
     )
     return {"label": label_id, "metrics": metrics, "predicted_swing": swing.to_dict()}
 

@@ -33,6 +33,7 @@ class Swing:
     end: Pivot
     features: dict[str, float] = field(default_factory=dict)
     score: float = 0.0
+    status: str = "unknown"   # "confirmed", "provisional" eller "unknown"
 
     @property
     def direction(self) -> str:
@@ -55,4 +56,5 @@ class Swing:
             "bars": self.bars,
             "features": {k: round(v, 4) for k, v in self.features.items()},
             "score": round(self.score, 4),
+            "status": self.status,
         }

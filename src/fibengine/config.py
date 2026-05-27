@@ -36,6 +36,7 @@ class ScoringConfig(BaseModel):
     structure_window: int = 6          # antal färska pivots som väger in i HH/HL
     confluence_degrees: list[int] = Field(default_factory=lambda: [5, 12])  # större fraktal-grader
     confluence_tol_bars: int = 3       # hur nära en större-grads-pivot måste ligga
+    confirm_min_retrace: float = 0.1   # pullback (andel av leg) för att räknas som bekräftad
 
 
 class FibConfig(BaseModel):
@@ -59,6 +60,7 @@ class BacktestConfig(BaseModel):
     # Kausalt walk-forward: mät hur stabilt urvalet är över tid (Lager A).
     warmup_bars: int = 60  # antal barer innan första urvalet (uppvärmning)
     step: int = 1          # stega cursorn så här många barer per steg
+    extension_tol_bars: int = 5  # max Δend-bar för att räkna en ändring som förlängning
 
 
 class Settings(BaseModel):

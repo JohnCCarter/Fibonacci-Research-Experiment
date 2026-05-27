@@ -53,14 +53,17 @@ def test_stability_metrics_shape_and_bounds():
     records = walk_forward_selection(df, _settings(), warmup_bars=50, step=5)
     m = stability_metrics(records)
     assert m["steps"] == len(records)
-    assert 0.0 <= m["flip_rate"] <= 1.0
-    assert 0.0 <= m["direction_consistency"] <= 1.0
+    for key in ("flip_rate", "raw_change_rate", "extension_rate",
+                "direction_consistency", "confirmed_rate"):
+        assert 0.0 <= m[key] <= 1.0
     assert m["persistence_steps"] >= 1.0
 
 
-def test_dominant_trend_is_reasonably_stable():
+def test_honest_flip_rate_excludes_extensions():
     df = _trending_df()
     records = walk_forward_selection(df, _settings(), warmup_bars=50, step=1)
     m = stability_metrics(records)
-    # I en serie med tydlig struktur ska valet inte flippa varje steg.
-    assert m["flip_rate"] < 0.5
+    # Ärlig flip_rate ska inte överstiga den råa, och endpunkt-förlängning
+    # ska fångas som extension i en trendande serie.
+    assert m["flip_rate"] <= m["raw_change_rate"]
+    assert m["extension_rate"] > 0.0

@@ -30,6 +30,7 @@ scoring:
   structure_window: 6     # antal färska pivots som väger in i marknadsstrukturen
   confluence_degrees: [5, 12]  # större fraktal-grader att kolla confluence mot
   confluence_tol_bars: 3       # hur nära en större-grads-pivot måste ligga
+  confirm_min_retrace: 0.1     # pullback (andel av leg) för att swingen ska räknas bekräftad
 
 fib:
   levels: [0.236, 0.382, 0.5, 0.618, 0.786]
@@ -50,3 +51,4 @@ backtest:
   # Kausalt walk-forward: mät hur stabilt urvalet är över tid (Lager A).
   warmup_bars: 60   # barer innan första urvalet
   step: 1           # stega cursorn så här många barer per steg
+  extension_tol_bars: 5  # max Δend-bar för att räkna en ändring som förlängning (ej hopp)
