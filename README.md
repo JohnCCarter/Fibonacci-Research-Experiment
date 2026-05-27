@@ -31,12 +31,18 @@ uv run pytest                                 # kör tester
 ## Pipeline (Lager A)
 
 ```
-candles → pivot-kandidater (window/fractal) → features (inkl. HH/HL-struktur)
-        → viktad score → välj swing-leg → rita Fib → agreement vs exempel
+candles → pivot-kandidater (window/fractal) → features (HH/HL-struktur +
+        multi-skala-confluence) → viktad score → välj swing-leg → rita Fib
+        → agreement vs exempel
 ```
 
 Pivot-läge styrs av `pivots.mode` (`window` = lokala extrema, `fractal` = strikt
 Williams). Vikter tunas på principgrund i `config/settings.yaml` — inte mot facit.
+
+**Multi-skala-confluence** (`scale_confluence`): en sväng vars vändpunkter också
+är fraktal-vändpunkter på större grader (`scoring.confluence_degrees`) får högre
+poäng — signifikans över skalor, inte 1.618-mystik. Äkta multi-timeframe
+(resampling till 4h/1D) är ett planerat senare steg.
 
 ## Struktur
 

@@ -7,6 +7,7 @@ import pandas as pd
 
 from fibengine.config import ScoringConfig
 from fibengine.models import Pivot, Swing
+from fibengine.scale import endpoint_confluence
 from fibengine.structure import structure_alignment
 
 
@@ -53,6 +54,7 @@ def compute_features(
     atr_series: pd.Series,
     cfg: ScoringConfig,
     pivots: list[Pivot] | None = None,
+    multi_pivots: dict[int, list[Pivot]] | None = None,
 ) -> dict[str, float]:
     n = len(df)
     end_atr = atr_series.iloc[swing.end.index]
@@ -75,6 +77,11 @@ def compute_features(
         if pivots
         else 0.5
     )
+    confluence = (
+        endpoint_confluence(swing, multi_pivots, cfg.confluence_tol_bars)
+        if multi_pivots
+        else 0.5
+    )
 
     return {
         "magnitude": float(magnitude),
@@ -84,4 +91,5 @@ def compute_features(
         "round_number": float(round_number),
         "duration": float(duration),
         "structure_alignment": float(structure),
+        "scale_confluence": float(confluence),
     }

@@ -24,6 +24,10 @@ Tänk dig att projektet har misslyckats. Vad gick fel? Fyll på listan löpande.
 - **Lager A läcker in i Lager B (eller tvärtom).** Sizing/exekvering börjar
   påverka swing-urvalet. → Håll `sizing/` helt frikopplat; det läser urvalets
   output men matar aldrig tillbaka in i score eller metrics.
+- **Godtyckliga confluence-grader / överanpassning av skal-parametrar.** Att
+  trimma `confluence_degrees`/`confluence_tol_bars` tills en favoritsväng vinner
+  är att överanpassa. → Håll graderna få och principmotiverade; ändra en sak i
+  taget och spåra i leaderboard.
 
 ## Reflektioner per experiment
 

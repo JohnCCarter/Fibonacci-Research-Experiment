@@ -24,9 +24,12 @@ scoring:
     round_number: 0.2        # endpunkter nära runda tal
     duration: -0.3           # straff för icke-ideal längd (se duration_target)
     structure_alignment: 0.9 # hur väl legen sitter i HH/HL- (resp LH/LL-) struktur
+    scale_confluence: 0.7    # endpunkter signifikanta på flera fraktal-grader
   duration_target: 20     # idealt antal barer för en leg
   max_candidate_legs: 50  # tak på antal legs som utvärderas
   structure_window: 6     # antal färska pivots som väger in i marknadsstrukturen
+  confluence_degrees: [5, 12]  # större fraktal-grader att kolla confluence mot
+  confluence_tol_bars: 3       # hur nära en större-grads-pivot måste ligga
 
 fib:
   levels: [0.236, 0.382, 0.5, 0.618, 0.786]

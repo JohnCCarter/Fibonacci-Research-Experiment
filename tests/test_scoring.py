@@ -24,7 +24,7 @@ def test_rank_swings_assigns_features_and_scores(synthetic_df):
     assert legs[0].score >= legs[-1].score
     assert set(legs[0].features) == {
         "magnitude", "recency", "prominence", "cleanliness",
-        "round_number", "duration", "structure_alignment",
+        "round_number", "duration", "structure_alignment", "scale_confluence",
     }
 
 

@@ -34,6 +34,8 @@ class ScoringConfig(BaseModel):
     max_candidate_legs: int = 50
     magnitude_scale_atr: float = 10.0  # ATR-skala där magnitude-featuren mättas
     structure_window: int = 6          # antal färska pivots som väger in i HH/HL
+    confluence_degrees: list[int] = Field(default_factory=lambda: [5, 12])  # större fraktal-grader
+    confluence_tol_bars: int = 3       # hur nära en större-grads-pivot måste ligga
 
 
 class FibConfig(BaseModel):
