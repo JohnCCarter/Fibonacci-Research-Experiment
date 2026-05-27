@@ -45,3 +45,8 @@ sizing:
   enabled: false
   entry_levels: [0.382, 0.5, 0.618]  # skala in i dessa retracement-nivåer
   sizes: [1.0, 2.0, 3.0]             # störst storlek i gyllene zonen (0.618)
+
+backtest:
+  # Kausalt walk-forward: mät hur stabilt urvalet är över tid (Lager A).
+  warmup_bars: 60   # barer innan första urvalet
+  step: 1           # stega cursorn så här många barer per steg

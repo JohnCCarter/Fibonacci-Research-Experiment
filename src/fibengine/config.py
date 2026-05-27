@@ -55,6 +55,12 @@ class SizingConfig(BaseModel):
     sizes: list[float] = Field(default_factory=lambda: [1.0, 2.0, 3.0])
 
 
+class BacktestConfig(BaseModel):
+    # Kausalt walk-forward: mät hur stabilt urvalet är över tid (Lager A).
+    warmup_bars: int = 60  # antal barer innan första urvalet (uppvärmning)
+    step: int = 1          # stega cursorn så här många barer per steg
+
+
 class Settings(BaseModel):
     seed: int = 42
     data: DataConfig = Field(default_factory=DataConfig)
@@ -63,6 +69,7 @@ class Settings(BaseModel):
     fib: FibConfig = Field(default_factory=FibConfig)
     evaluation: EvaluationConfig = Field(default_factory=EvaluationConfig)
     sizing: SizingConfig = Field(default_factory=SizingConfig)
+    backtest: BacktestConfig = Field(default_factory=BacktestConfig)
 
     def config_hash(self) -> str:
         """Stabil hash av hela konfigurationen — används i audit-loggar."""
