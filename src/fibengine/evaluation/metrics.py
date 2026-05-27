@@ -1,4 +1,9 @@
-"""Mät hur nära en predikterad swing ligger det manuella facit."""
+"""Mät hur väl en predikterad swing *håller med* dina exempel.
+
+Exemplen är referens, inte domare: vi rapporterar en kontinuerlig `agreement`
+∈ [0, 1] för sanity — vi optimerar aldrig vikter mot den. Tolerans-värdena i
+EvaluationConfig är mjuka skalor i exponentiell avklingning, inte pass/fail.
+"""
 
 from __future__ import annotations
 
@@ -35,7 +40,7 @@ def evaluate(
     atr_value: float,
     cfg: EvaluationConfig,
 ) -> dict:
-    """Returnera fel-mått + hit-flaggor för en prediktion mot facit."""
+    """Returnera beskrivande fel-mått + en kontinuerlig agreement-signal."""
     pred_high, pred_low = _predicted_high_low(swing)
     pred_high_bar, pred_low_bar = _predicted_high_low_bars(swing)
 
@@ -57,11 +62,13 @@ def evaluate(
     }
     mean_fib_err = float(np.mean(list(fib_errs.values())))
 
-    price_hit = (
-        high_price_err <= cfg.price_tol_atr and low_price_err <= cfg.price_tol_atr
-    )
-    time_hit = high_time_err <= cfg.time_tol_bars and low_time_err <= cfg.time_tol_bars
-    fib_hit = mean_fib_err <= cfg.fib_level_tol
+    # Mjuk agreement: exponentiell avklingning per komponent, medelvärde i [0, 1].
+    mean_price_err = (high_price_err + low_price_err) / 2.0
+    mean_time_err = (high_time_err + low_time_err) / 2.0
+    price_agree = np.exp(-mean_price_err / cfg.price_tol_atr)
+    time_agree = np.exp(-mean_time_err / cfg.time_tol_bars)
+    fib_agree = np.exp(-mean_fib_err / cfg.fib_level_tol)
+    agreement = float(np.mean([price_agree, time_agree, fib_agree]))
 
     return {
         "high_price_err_atr": round(high_price_err, 4),
@@ -69,8 +76,8 @@ def evaluate(
         "high_time_err_bars": high_time_err,
         "low_time_err_bars": low_time_err,
         "mean_fib_err_frac": round(mean_fib_err, 4),
-        "price_hit": price_hit,
-        "time_hit": time_hit,
-        "fib_hit": fib_hit,
-        "overall_hit": bool(price_hit and time_hit and fib_hit),
+        "price_agree": round(float(price_agree), 4),
+        "time_agree": round(float(time_agree), 4),
+        "fib_agree": round(float(fib_agree), 4),
+        "agreement": round(agreement, 4),
     }

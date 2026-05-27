@@ -17,6 +17,13 @@ Tänk dig att projektet har misslyckats. Vad gick fel? Fyll på listan löpande.
   spårning. → leaderboard.jsonl + config-hash per run; ändra en sak i taget.
 - **Look-ahead bias.** Features råkar använda framtida barer.
   → Håll all feature-beräkning kausal (bara data ≤ aktuell bar).
+- **Att smyga tillbaka till att optimera mot exemplen.** Exemplen är referens,
+  inte domare. Frestelsen att "tuna upp agreement-%" gör att modellen kopierar
+  dina exakta linjer istället för principerna. → `agreement` är *en* sanity-
+  signal bland flera; vikter sätts på principgrund, aldrig auto-tunas mot facit.
+- **Lager A läcker in i Lager B (eller tvärtom).** Sizing/exekvering börjar
+  påverka swing-urvalet. → Håll `sizing/` helt frikopplat; det läser urvalets
+  output men matar aldrig tillbaka in i score eller metrics.
 
 ## Reflektioner per experiment
 

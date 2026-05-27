@@ -2,11 +2,21 @@
 
 En research-/prototyp-engine som försöker välja swing high/low på ett chart
 **som en teknisk analytiker** — inte en vanlig Fib-indikator och inte standard
-ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt, jämförs mot manuella
-ritningar (facit) och förbättras iterativt.
+ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativt.
 
 > Status: MVP / prototyp / premortem. Lättviktig disciplin (logging, audits,
 > reflektion) — ingen tung governance. Kan ev. portas in i Genesis-Core senare.
+
+## Filosofi
+
+- **Principer styr, exempel = referens.** Motorn poängsätter på analytiker-
+  principer (fraktal-vändpunkter, HH/HL-struktur, ren impuls, prominens). Dina
+  manuella Fib-ritningar är *exempel*, inte en domare — de visas som en mjuk
+  `agreement`-signal för sanity, men vi optimerar **aldrig** vikter mot dem.
+- **Mjuka, tunbara features — ingen hård determinism.** Marknadsstruktur m.m.
+  matar den viktade poängsättningen istället för hårda `if`-grindar.
+- **Lager A vs Lager B.** Lager A = swing-urvalet (repots syfte). Lager B =
+  trade/exekvering (t.ex. solros-sizing) — frikopplat, påverkar inte urvalet.
 
 ## Snabbstart
 
@@ -18,17 +28,21 @@ uv run python -m fibengine.experiment        # kör pipeline + logga resultat
 uv run pytest                                 # kör tester
 ```
 
-## Pipeline
+## Pipeline (Lager A)
 
 ```
-candles → pivot-kandidater → features → viktad score → välj swing-par
-        → rita Fib → jämför mot facit → iterera vikter
+candles → pivot-kandidater (window/fractal) → features (inkl. HH/HL-struktur)
+        → viktad score → välj swing-leg → rita Fib → agreement vs exempel
 ```
+
+Pivot-läge styrs av `pivots.mode` (`window` = lokala extrema, `fractal` = strikt
+Williams). Vikter tunas på principgrund i `config/settings.yaml` — inte mot facit.
 
 ## Struktur
 
-- `config/settings.yaml` — exchange, symbol, timeframe, heuristik-vikter, toleranser
-- `src/fibengine/` — kärnkod (data, pivots, features, scoring, fib, labeling, eval, viz)
+- `config/settings.yaml` — symbol, pivot-läge, heuristik-vikter, eval-skalor, sizing
+- `src/fibengine/` — kärnkod (data, pivots, structure, features, scoring, fib,
+  labeling, eval, viz) + `sizing/` (Lager B, isolerat)
 - `data/labels/` — manuellt facit (versioneras)
 - `data/raw/`, `data/screenshots/` — cache resp. referensbilder (gitignorade)
 - `experiments/` — per-körning audit-mappar + `leaderboard.jsonl`

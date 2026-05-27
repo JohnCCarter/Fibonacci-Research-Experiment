@@ -11,23 +11,34 @@ pivots:
   lookback: 5             # barer på varje sida för lokalt extrem
   atr_period: 14
   min_prominence_atr: 0.5 # minsta prominens (i ATR) för att räknas som pivot
+  mode: window            # "window" (lokala extrema) eller "fractal" (strikt Williams)
+  fractal_n: 2            # barer/sida i fraktal-läge (2 = 5-stapelsmönster)
 
 scoring:
   # Vikter för den förklarbara linjära poängsättningen av en swing-leg.
   weights:
-    magnitude: 1.0        # legens storlek (ATR-normaliserad)
-    recency: 0.8          # hur nära sista baren legen slutar
-    prominence: 0.6       # endpunkternas prominens
-    cleanliness: 0.5      # hur "rent" priset rörde sig längs legen
-    round_number: 0.2     # endpunkter nära runda tal
-    duration: -0.3        # straff för icke-ideal längd (se duration_target)
+    magnitude: 1.0           # legens storlek (ATR-normaliserad)
+    recency: 0.8             # hur nära sista baren legen slutar
+    prominence: 0.6          # endpunkternas prominens
+    cleanliness: 0.5         # hur "rent" priset rörde sig längs legen
+    round_number: 0.2        # endpunkter nära runda tal
+    duration: -0.3           # straff för icke-ideal längd (se duration_target)
+    structure_alignment: 0.9 # hur väl legen sitter i HH/HL- (resp LH/LL-) struktur
   duration_target: 20     # idealt antal barer för en leg
   max_candidate_legs: 50  # tak på antal legs som utvärderas
+  structure_window: 6     # antal färska pivots som väger in i marknadsstrukturen
 
 fib:
   levels: [0.236, 0.382, 0.5, 0.618, 0.786]
 
 evaluation:
-  price_tol_atr: 0.5      # prisfel-tolerans i ATR
-  time_tol_bars: 3        # tidsfel-tolerans i barer
-  fib_level_tol: 0.02     # tolerans för fib-nivå (andel av legens range)
+  # Mjuka skalor för agreement-signalen (referens, inte pass/fail).
+  price_tol_atr: 0.5      # prisfel-skala i ATR
+  time_tol_bars: 3        # tidsfel-skala i barer
+  fib_level_tol: 0.02     # fib-nivå-skala (andel av legens range)
+
+sizing:
+  # Lager B: positionsskalning (solros). Frikopplad från swing-urvalet.
+  enabled: false
+  entry_levels: [0.382, 0.5, 0.618]  # skala in i dessa retracement-nivåer
+  sizes: [1.0, 2.0, 3.0]             # störst storlek i gyllene zonen (0.618)

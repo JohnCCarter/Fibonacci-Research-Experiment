@@ -7,6 +7,7 @@ import pandas as pd
 
 from fibengine.config import ScoringConfig
 from fibengine.models import Pivot, Swing
+from fibengine.structure import structure_alignment
 
 
 def enumerate_swings(pivots: list[Pivot], max_legs: int) -> list[Swing]:
@@ -47,7 +48,11 @@ def _cleanliness(df: pd.DataFrame, swing: Swing) -> float:
 
 
 def compute_features(
-    df: pd.DataFrame, swing: Swing, atr_series: pd.Series, cfg: ScoringConfig
+    df: pd.DataFrame,
+    swing: Swing,
+    atr_series: pd.Series,
+    cfg: ScoringConfig,
+    pivots: list[Pivot] | None = None,
 ) -> dict[str, float]:
     n = len(df)
     end_atr = atr_series.iloc[swing.end.index]
@@ -65,6 +70,11 @@ def compute_features(
         + _round_number_proximity(swing.end.price)
     ) / 2.0
     duration = abs(swing.bars - cfg.duration_target) / max(cfg.duration_target, 1)
+    structure = (
+        structure_alignment(pivots, swing.end.index, cfg.structure_window, swing.direction)
+        if pivots
+        else 0.5
+    )
 
     return {
         "magnitude": float(magnitude),
@@ -73,4 +83,5 @@ def compute_features(
         "cleanliness": float(cleanliness),
         "round_number": float(round_number),
         "duration": float(duration),
+        "structure_alignment": float(structure),
     }

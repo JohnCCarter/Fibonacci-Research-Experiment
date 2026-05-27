@@ -17,7 +17,9 @@ from fibengine.data.loader import atr, load_candles
 from fibengine.evaluation.metrics import evaluate
 from fibengine.labeling.store import SwingLabel, list_labels
 from fibengine.logging_conf import setup_logging
+from fibengine.models import Swing
 from fibengine.scoring import select_swing
+from fibengine.sizing.solros import build_sizing_plan, simulate_plan
 from fibengine.viz.plot import plot_prediction
 
 RUNS_DIR = REPO_ROOT / "experiments" / "runs"
@@ -26,6 +28,17 @@ LEADERBOARD = REPO_ROOT / "experiments" / "leaderboard.jsonl"
 
 def _new_run_id() -> str:
     return datetime.now(UTC).strftime("run_%Y%m%dT%H%M%SZ")
+
+
+def _maybe_emit_sizing(settings: Settings, df, swing: Swing, run_dir: Path, name: str, log):
+    """Lager B: skriv en sizing-plan endast om aktiverad. Påverkar inte urvalet."""
+    if not settings.sizing.enabled:
+        return
+    plan = simulate_plan(df, swing, build_sizing_plan(swing, settings.sizing))
+    (run_dir / f"sizing_plan_{name}.json").write_text(
+        json.dumps([e.to_dict() for e in plan], indent=2)
+    )
+    log.info("Sizing-plan ({}) skriven: {} entries", name, len(plan))
 
 
 def _run_one(settings: Settings, label: SwingLabel, run_dir: Path, log) -> dict | None:
@@ -53,9 +66,10 @@ def _run_one(settings: Settings, label: SwingLabel, run_dir: Path, log) -> dict 
     plot_prediction(
         df, swing, settings.fib.levels, plot_path, label=label, title=label_id
     )
+    _maybe_emit_sizing(settings, df, swing, run_dir, label_id, log)
     log.info(
-        "{} | overall_hit={} fib_err={}",
-        label_id, metrics["overall_hit"], metrics["mean_fib_err_frac"],
+        "{} | agreement={} fib_err={}",
+        label_id, metrics["agreement"], metrics["mean_fib_err_frac"],
     )
     return {"label": label_id, "metrics": metrics, "predicted_swing": swing.to_dict()}
 
@@ -66,7 +80,7 @@ def _aggregate(results: list[dict]) -> dict:
     m = [r["metrics"] for r in results]
     return {
         "n": len(m),
-        "hit_rate": round(float(np.mean([x["overall_hit"] for x in m])), 4),
+        "mean_agreement": round(float(np.mean([x["agreement"] for x in m])), 4),
         "mean_fib_err_frac": round(float(np.mean([x["mean_fib_err_frac"] for x in m])), 4),
         "mean_high_price_err_atr": round(float(np.mean([x["high_price_err_atr"] for x in m])), 4),
         "mean_low_price_err_atr": round(float(np.mean([x["low_price_err_atr"] for x in m])), 4),
@@ -100,6 +114,7 @@ def run_experiment(settings: Settings | None = None) -> Path:
                 run_dir / "prediction.png",
                 title=f"{settings.data.symbol} {settings.data.timeframe}",
             )
+            _maybe_emit_sizing(settings, df, swing, run_dir, "demo", log)
             log.info("Predikterad leg: {}", swing.to_dict())
     else:
         for label in labels:

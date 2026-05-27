@@ -23,3 +23,16 @@ def test_finds_major_high_and_low(synthetic_df):
     assert highs and lows
     # Toppen runt bar 60 (pris ~130) ska finnas med.
     assert max(p.price for p in highs) > 128
+
+
+def test_fractal_mode_still_finds_major_swings(synthetic_df):
+    cfg = PivotConfig(
+        lookback=5, atr_period=14, min_prominence_atr=0.3, mode="fractal", fractal_n=2
+    )
+    pivots = detect_pivots(synthetic_df, cfg)
+
+    # Strikt Williams-läge ska fortfarande hitta de stora vändpunkterna och alternera.
+    assert len(pivots) >= 2
+    kinds = [p.kind for p in pivots]
+    for a, b in zip(kinds, kinds[1:], strict=False):
+        assert a != b

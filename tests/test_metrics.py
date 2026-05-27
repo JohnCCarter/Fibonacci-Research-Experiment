@@ -19,20 +19,26 @@ def test_perfect_match_is_overall_hit(synthetic_df):
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
     )
     m = evaluate(synthetic_df, swing, label, atr_value=2.0, cfg=EvaluationConfig())
-    assert m["overall_hit"] is True
+    assert m["agreement"] == 1.0
     assert m["mean_fib_err_frac"] == 0.0
 
 
-def test_price_miss_breaks_hit(synthetic_df):
+def test_price_miss_lowers_agreement(synthetic_df):
     swing = _swing(synthetic_df)
-    label = SwingLabel(
+    perfect = SwingLabel(
+        exchange="binance", symbol="BTC/USDT", timeframe="1h",
+        high=Point(synthetic_df.index[60].isoformat(), 130.0),
+        low=Point(synthetic_df.index[40].isoformat(), 105.0),
+    )
+    missed = SwingLabel(
         exchange="binance", symbol="BTC/USDT", timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 150.0),  # långt fel
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
     )
-    m = evaluate(synthetic_df, swing, label, atr_value=2.0, cfg=EvaluationConfig())
-    assert m["price_hit"] is False
-    assert m["overall_hit"] is False
+    m_perfect = evaluate(synthetic_df, swing, perfect, atr_value=2.0, cfg=EvaluationConfig())
+    m_missed = evaluate(synthetic_df, swing, missed, atr_value=2.0, cfg=EvaluationConfig())
+    assert m_missed["agreement"] < m_perfect["agreement"]
+    assert 0.0 <= m_missed["agreement"] <= 1.0
 
 
 def test_fib_levels_monotonic_for_up_leg():

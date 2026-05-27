@@ -24,7 +24,7 @@ def rank_swings(
     legs = enumerate_swings(pivots, scoring_cfg.max_candidate_legs)
     atr_series = atr(df, pivot_cfg.atr_period)
     for leg in legs:
-        leg.features = compute_features(df, leg, atr_series, scoring_cfg)
+        leg.features = compute_features(df, leg, atr_series, scoring_cfg, pivots)
         leg.score = score_swing(leg, scoring_cfg.weights)
     legs.sort(key=lambda s: s.score, reverse=True)
     return legs

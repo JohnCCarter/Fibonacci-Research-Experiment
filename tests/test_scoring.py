@@ -11,6 +11,7 @@ def _scoring_cfg() -> ScoringConfig:
             "cleanliness": 0.5,
             "round_number": 0.2,
             "duration": -0.3,
+            "structure_alignment": 0.9,
         },
         duration_target=20,
         max_candidate_legs=50,
@@ -22,7 +23,8 @@ def test_rank_swings_assigns_features_and_scores(synthetic_df):
     assert legs
     assert legs[0].score >= legs[-1].score
     assert set(legs[0].features) == {
-        "magnitude", "recency", "prominence", "cleanliness", "round_number", "duration",
+        "magnitude", "recency", "prominence", "cleanliness",
+        "round_number", "duration", "structure_alignment",
     }
 
 
