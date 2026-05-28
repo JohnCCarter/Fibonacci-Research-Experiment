@@ -7,6 +7,13 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 > Status: MVP / prototyp / premortem. Lättviktig disciplin (logging, audits,
 > reflektion) — ingen tung governance. Kan ev. portas in i Genesis-Core senare.
 
+> Organisation: se [`REPO_POLICY.md`](REPO_POLICY.md) för mappindex, namnkonventioner
+> och städningsregler.
+> Premortem/reflektion är obligatoriskt: se `premortem/` och `REPO_POLICY.md` §11.
+> Spårmodell: se `docs/TRACKS.md` (Research / Validate / Promotion).
+> Backtest-roadmap: [`docs/FIB_BACKTEST_PLAN.md`](docs/FIB_BACKTEST_PLAN.md).
+> Arkiv (legacy/dubletter): [`archive/`](archive/README.md).
+
 ## Filosofi
 
 - **Principer styr, exempel = referens.** Motorn poängsätter på analytiker-
@@ -24,9 +31,23 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 uv sync --extra dev                          # bygg miljö + lockfile
 uv run python -m fibengine.data.fetch        # hämta + cacha candles (CCXT)
 uv run python -m fibengine.labeling.tool     # klicka swing high/low -> facit
+uv run python -m fibengine.labeling.batch    # lättviktig label-checkpoint (manifest/hashar)
 uv run python -m fibengine.experiment        # kör pipeline + logga resultat
 uv run python -m fibengine.backtest.runner   # kausalt walk-forward: urvals-stabilitet
+uv run python -m fibengine.tuning.optuna_runner --trials 30  # optimering av scoring.weights
 uv run pytest                                 # kör tester
+uv run pre-commit install                     # git hooks (en gång)
+uv run pre-commit run --all-files             # lint + format + test före push
+```
+
+Kvalitetsgate: se [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) och CI i `.github/workflows/ci.yml`.
+
+Använd `--config` för varianter utan att ändra baseline:
+
+```bash
+uv run python -m fibengine.experiment --config config/variants/optuna_2026-05-28_trial31.yaml
+uv run python -m fibengine.backtest.runner --config config/variants/optuna_2026-05-28_trial31.yaml
+uv run python -m fibengine.tuning.optuna_runner --config config/settings.yaml --trials 30
 ```
 
 ## Pipeline (Lager A)
@@ -64,12 +85,19 @@ provisoriska ritas streckade i plotten.
 ## Struktur
 
 - `config/settings.yaml` — symbol, pivot-läge, heuristik-vikter, eval-skalor, sizing, backtest
-- `src/fibengine/` — kärnkod (data, pivots, structure, scale, features, scoring,
-  fib, labeling, eval, viz) + `sizing/` (Lager B) + `backtest/` (urvals-stabilitet)
-- `data/labels/` — manuellt facit (versioneras)
+- `src/fibengine/` — kategoriserad kärnkod: `core/` (domänlogik), `data/`,
+  `pivots/`, `labeling/`, `evaluation/`, `viz/`, `backtest/`, `sizing/` + `experiment.py`
+- `tests/` — speglar `src/fibengine/`-strukturen (inkl. `tests/core/`,
+  `tests/backtest/`, `tests/data/`, `tests/evaluation/`, `tests/labeling/`,
+  `tests/pivots/`, `tests/sizing/`, `tests/viz/`)
+- `data/labels/` — manuellt facit (`{exchange}/{symbol}/{timeframe}.json` + `INDEX.md`)
 - `data/raw/`, `data/screenshots/` — cache resp. referensbilder (gitignorade)
-- `experiments/` — per-körning audit-mappar + `leaderboard.jsonl`
-- `premortem/` — premortem + reflektioner
+- `experiments/results/` — append-only jsonl-ledgers (pivot_recall, backtests,
+  trade_backtests, backtest_matrix, trade_matrix, leaderboard)
+- `experiments/runs/` — per-körning audit-mappar
+- `experiments/label_review/` — versionerade label-checkpoints
+- `premortem/` — premortem + reflektioner (`reflections/`)
+- `docs/TRACKS.md` — beslutsgate mellan Research, Validate och Promotion
 
 ## Arbetsflöde för facit
 
