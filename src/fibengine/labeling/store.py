@@ -49,6 +49,26 @@ def save_label(label: SwingLabel, path: Path | None = None) -> Path:
     return path
 
 
+def delete_label(label: SwingLabel) -> bool:
+    path = label_path(label)
+    if not path.exists():
+        return False
+    path.unlink()
+    return True
+
+
+def find_label(exchange: str, symbol: str, timeframe: str) -> SwingLabel | None:
+    placeholder = SwingLabel(
+        exchange=exchange,
+        symbol=symbol,
+        timeframe=timeframe,
+        high=Point("", 0.0),
+        low=Point("", 0.0),
+    )
+    path = label_path(placeholder)
+    return load_label(path) if path.exists() else None
+
+
 def load_label(path: str | Path) -> SwingLabel:
     data = json.loads(Path(path).read_text())
     return SwingLabel(**data)
