@@ -8,23 +8,23 @@ data:
   limit: 500              # antal candles att hämta
 
 pivots:
-  lookback: 5             # barer på varje sida för lokalt extrem
+  lookback: 3             # barer på varje sida för lokalt extrem
   atr_period: 14
   min_prominence_atr: 0.5 # minsta prominens (i ATR) för att räknas som pivot
-  mode: window            # "window" (lokala extrema) eller "fractal" (strikt Williams)
-  fractal_n: 2            # barer/sida i fraktal-läge (2 = 5-stapelsmönster)
+  mode: fractal           # "window" (lokala extrema) eller "fractal" (strikt Williams)
+  fractal_n: 1            # barer/sida i fraktal-läge (1 = snabbare/lokalare vändpunkter)
 
 scoring:
   # Vikter för den förklarbara linjära poängsättningen av en swing-leg.
   weights:
-    magnitude: 1.0           # legens storlek (ATR-normaliserad)
-    recency: 0.8             # hur nära sista baren legen slutar
-    prominence: 0.6          # endpunkternas prominens
-    cleanliness: 0.5         # hur "rent" priset rörde sig längs legen
+    magnitude: 0.8           # legens storlek (ATR-normaliserad)
+    recency: 0.6             # hur nära sista baren legen slutar
+    prominence: 0.5          # endpunkternas prominens
+    cleanliness: 0.9         # hur "rent" priset rörde sig längs legen
     round_number: 0.2        # endpunkter nära runda tal
-    duration: -0.3           # straff för icke-ideal längd (se duration_target)
-    structure_alignment: 0.9 # hur väl legen sitter i HH/HL- (resp LH/LL-) struktur
-    scale_confluence: 0.7    # endpunkter signifikanta på flera fraktal-grader
+    duration: -0.4           # straff för icke-ideal längd (se duration_target)
+    structure_alignment: 1.4 # hur väl legen sitter i HH/HL- (resp LH/LL-) struktur
+    scale_confluence: 1.2    # endpunkter signifikanta på flera fraktal-grader
   duration_target: 20     # idealt antal barer för en leg
   max_candidate_legs: 50  # tak på antal legs som utvärderas
   structure_window: 6     # antal färska pivots som väger in i marknadsstrukturen
