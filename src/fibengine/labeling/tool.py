@@ -2,6 +2,7 @@
 
 Run:
     uv run python -m fibengine.labeling.tool
+    uv run python -m fibengine.labeling.tool --timeframe 1w
 
 Controls:
 - Click sets the active point. It snaps to the nearest bar high/low.
@@ -15,6 +16,8 @@ Controls:
 """
 
 from __future__ import annotations
+
+import argparse
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -39,8 +42,30 @@ def _nearest_timestamp_bar(df: pd.DataFrame, timestamp: str) -> int:
     return int(df.index.get_indexer([target], method="nearest")[0])
 
 
-def run_label_tool():
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Interactive Fibonacci label tool.")
+    parser.add_argument("--exchange", help="CCXT exchange id, e.g. binance")
+    parser.add_argument("--symbol", help="Market symbol, e.g. BTC/USDT")
+    parser.add_argument("--timeframe", help="Candle timeframe, e.g. 1h or 1w")
+    parser.add_argument("--limit", type=int, help="Number of candles to load/fetch")
+    return parser.parse_args()
+
+
+def run_label_tool(args: argparse.Namespace | None = None):
     settings = load_settings()
+    args = args or argparse.Namespace(exchange=None, symbol=None, timeframe=None, limit=None)
+    settings.data = settings.data.model_copy(
+        update={
+            key: value
+            for key, value in {
+                "exchange": args.exchange,
+                "symbol": args.symbol,
+                "timeframe": args.timeframe,
+                "limit": args.limit,
+            }.items()
+            if value is not None
+        }
+    )
     df = load_candles(settings.data)
 
     picks: dict[str, tuple[int, float]] = {}
@@ -161,4 +186,4 @@ def run_label_tool():
 
 
 if __name__ == "__main__":
-    run_label_tool()
+    run_label_tool(_parse_args())
