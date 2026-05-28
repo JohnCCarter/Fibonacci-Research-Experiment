@@ -30,6 +30,7 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 ```bash
 uv sync --extra dev                          # bygg miljö + lockfile
 uv run python -m fibengine.data.fetch        # hämta + cacha candles (CCXT)
+uv run python -m fibengine.labeling.worklist # vad återstår att labela mot 20–30-målet
 uv run python -m fibengine.labeling.tool     # klicka swing high/low -> facit
 uv run python -m fibengine.labeling.batch    # lättviktig label-checkpoint (manifest/hashar)
 uv run python -m fibengine.experiment        # kör pipeline + logga resultat
