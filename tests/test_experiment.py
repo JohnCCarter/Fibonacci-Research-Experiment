@@ -83,3 +83,4 @@ def test_run_experiment_excludes_out_of_window_label(tmp_path, monkeypatch):
     # Enda labeln är out-of-window → exkluderad ur aggregatet.
     assert metrics["aggregate"]["excluded_out_of_window"] == 1
     assert metrics["aggregate"]["n"] == 0
+    assert metrics["aggregate"]["no_in_window_samples"] is True

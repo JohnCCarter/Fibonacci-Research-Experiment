@@ -98,10 +98,11 @@ def _aggregate(results: list[dict]) -> dict:
     m = [x for x in all_m if not x.get("out_of_window")]
     excluded = len(all_m) - len(m)
     if not m:
-        return {"n": 0, "excluded_out_of_window": excluded}
+        return {"n": 0, "excluded_out_of_window": excluded, "no_in_window_samples": True}
     return {
         "n": len(m),
         "excluded_out_of_window": excluded,
+        "no_in_window_samples": False,
         "mean_agreement": round(float(np.mean([x["agreement"] for x in m])), 4),
         "mean_fib_err_frac": round(float(np.mean([x["mean_fib_err_frac"] for x in m])), 4),
         "mean_high_price_err_atr": round(float(np.mean([x["high_price_err_atr"] for x in m])), 4),

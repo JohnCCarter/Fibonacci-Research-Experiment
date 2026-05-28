@@ -32,6 +32,8 @@ def _bar_of_timestamp(df: pd.DataFrame, ts: str) -> tuple[int, bool]:
     från närmaste bar (in-window-labels ligger på exakta candle-tider → ~0).
     """
     target = pd.to_datetime(ts, utc=True)
+    if len(df.index) == 0:
+        return 0, False
     dist = np.abs((df.index - target).total_seconds())
     idx = int(np.argmin(dist))
     half_interval = _median_interval_seconds(df) / 2.0

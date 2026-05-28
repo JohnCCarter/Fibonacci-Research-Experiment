@@ -57,8 +57,15 @@ def evaluate_label_recall(
     low_pivot, low_dist = _nearest_pivot(pivots, low_bar, "low")
 
     out_of_window = not (high_in_window and low_in_window)
-    high_hit = high_dist is not None and high_dist <= tol
-    low_hit = low_dist is not None and low_dist <= tol
+    # En out-of-window-label snäpps till en kant-bar; räkna inte det som en
+    # träff (skulle annars skriva falska recall-hits till ledger).
+    if out_of_window:
+        high_hit = low_hit = False
+        high_dist = low_dist = None
+        high_pivot = low_pivot = None
+    else:
+        high_hit = high_dist is not None and high_dist <= tol
+        low_hit = low_dist is not None and low_dist <= tol
 
     return {
         "exchange": label.exchange,

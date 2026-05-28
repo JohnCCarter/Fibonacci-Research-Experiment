@@ -40,8 +40,8 @@ select = ["E", "F", "I", "UP", "B"]
 pythonpath = ["src"]
 testpaths = ["tests"]
 norecursedirs = [".git", ".venv", "archive", "experiments", "data"]
-# Coverage-gate: en källa som både CI och pre-commit ärver. Tröskeln (60%) ligger
-# under nuvarande ~65% för marginal; höj när de otestade ytorna täcks.
+# Coverage-gate: en källa som både CI och pre-commit ärver. Tröskeln (60%) är
+# medvetet satt under nuvarande täckning för marginal; höj när otestade ytor täcks.
 addopts = "--cov=fibengine --cov-report=term-missing --cov-fail-under=60"
 
 [tool.coverage.run]

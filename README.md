@@ -47,7 +47,7 @@ Använd `--config` för att köra en variant-settings utan att ändra baseline:
 uv run python -m fibengine.experiment --config config/variants/<variant>.yaml
 ```
 
-> Not: automatisk vikt-optimering (Optuna) togs medvetet bort — den optimerade mot
+> Obs: automatisk vikt-optimering (Optuna) togs medvetet bort — den optimerade mot
 > de manuella labelsen, vilket bryter mot filosofin (labels = referens, inte domare)
 > och överanpassade ett för litet labelset. Se `premortem/reflections/`. Vikter
 > sätts på principgrund; arkiverade Optuna-artefakter finns under `archive/`.
