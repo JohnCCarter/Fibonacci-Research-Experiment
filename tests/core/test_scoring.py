@@ -1,5 +1,5 @@
-from fibengine.config import PivotConfig, ScoringConfig
-from fibengine.scoring import rank_swings, select_swing
+from fibengine.core.config import PivotConfig, ScoringConfig
+from fibengine.core.scoring import rank_swings, select_swing
 
 
 def _scoring_cfg() -> ScoringConfig:
@@ -23,8 +23,14 @@ def test_rank_swings_assigns_features_and_scores(synthetic_df):
     assert legs
     assert legs[0].score >= legs[-1].score
     assert set(legs[0].features) == {
-        "magnitude", "recency", "prominence", "cleanliness",
-        "round_number", "duration", "structure_alignment", "scale_confluence",
+        "magnitude",
+        "recency",
+        "prominence",
+        "cleanliness",
+        "round_number",
+        "duration",
+        "structure_alignment",
+        "scale_confluence",
     }
 
 

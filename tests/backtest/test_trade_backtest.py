@@ -1,6 +1,6 @@
 from fibengine.backtest.matrix import MatrixCase
 from fibengine.backtest.trade import _simulate_trade, run_trade_matrix, summarize_trades
-from fibengine.config import Settings
+from fibengine.core.config import Settings
 
 
 def test_simulate_long_trade_hits_target_after_fill(synthetic_df):

@@ -1,8 +1,8 @@
 import pytest
 from pydantic import ValidationError
 
-from fibengine.config import SizingConfig
-from fibengine.models import Pivot, Swing
+from fibengine.core.config import SizingConfig
+from fibengine.core.models import Pivot, Swing
 from fibengine.sizing.solros import build_sizing_plan
 
 

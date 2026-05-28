@@ -1,12 +1,15 @@
 from argparse import Namespace
 
-from fibengine.config import DataConfig, Settings
+from fibengine.core.config import DataConfig, Settings
 from fibengine.labeling import tool
 from fibengine.labeling.tool import (
     LabelWorkspace,
     _apply_cli_overrides,
+    _csv_values,
     _cycle,
+    _default_timeframes,
     _fib_prices_from_picks,
+    _label_warnings,
 )
 
 
@@ -63,3 +66,25 @@ def test_workspace_cycles_market_without_mutating_other_fields(monkeypatch, synt
     assert workspace.data.timeframe == "1w"
     assert seen[-1].symbol == "ETH/USDT"
     assert seen[-1].timeframe == "1w"
+
+
+def test_default_timeframes_include_higher_timeframes():
+    assert _default_timeframes("1h") == ["15m", "30m", "1h", "4h", "1d", "1w", "1M"]
+    assert _default_timeframes("5m") == ["5m", "15m", "30m", "1h", "4h", "1d", "1w", "1M"]
+
+
+def test_csv_values_normalizes_higher_timeframe_aliases():
+    assert _csv_values("daily,weekly,monthly", []) == ["1d", "1w", "1M"]
+
+
+def test_label_warnings_reject_same_bar_and_edges(synthetic_df):
+    warnings = _label_warnings(synthetic_df, high_idx=0, low_idx=0, settings=Settings())
+
+    assert any("same candle" in warning for warning in warnings)
+    assert any("left edge" in warning for warning in warnings)
+
+
+def test_label_warnings_allows_distinct_interior_points(synthetic_df):
+    warnings = _label_warnings(synthetic_df, high_idx=5, low_idx=7, settings=Settings())
+
+    assert warnings == []

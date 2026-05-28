@@ -1,8 +1,8 @@
-from fibengine.config import Settings
+from fibengine.core.config import Settings
+from fibengine.core.models import Pivot
 from fibengine.evaluation import pivot_recall
 from fibengine.evaluation.pivot_recall import _nearest_pivot, evaluate_label_recall
 from fibengine.labeling.store import Point, SwingLabel
-from fibengine.models import Pivot
 
 
 def test_nearest_pivot_filters_by_kind(synthetic_df):

@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from fibengine.config import BacktestConfig, EvaluationConfig, PivotConfig, SizingConfig
+from fibengine.core.config import BacktestConfig, EvaluationConfig, PivotConfig, SizingConfig
 
 
 def test_rejects_invalid_window_and_tolerance_values():

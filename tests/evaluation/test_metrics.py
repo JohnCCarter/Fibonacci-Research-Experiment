@@ -1,8 +1,8 @@
-from fibengine.config import EvaluationConfig
+from fibengine.core.config import EvaluationConfig
+from fibengine.core.fib import fib_from_prices
+from fibengine.core.models import Pivot, Swing
 from fibengine.evaluation.metrics import evaluate
-from fibengine.fib import fib_from_prices
 from fibengine.labeling.store import Point, SwingLabel
-from fibengine.models import Pivot, Swing
 
 
 def _swing(df) -> Swing:
@@ -14,7 +14,9 @@ def _swing(df) -> Swing:
 def test_perfect_match_is_overall_hit(synthetic_df):
     swing = _swing(synthetic_df)
     label = SwingLabel(
-        exchange="binance", symbol="BTC/USDT", timeframe="1h",
+        exchange="binance",
+        symbol="BTC/USDT",
+        timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 130.0),
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
     )
@@ -26,12 +28,16 @@ def test_perfect_match_is_overall_hit(synthetic_df):
 def test_price_miss_lowers_agreement(synthetic_df):
     swing = _swing(synthetic_df)
     perfect = SwingLabel(
-        exchange="binance", symbol="BTC/USDT", timeframe="1h",
+        exchange="binance",
+        symbol="BTC/USDT",
+        timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 130.0),
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
     )
     missed = SwingLabel(
-        exchange="binance", symbol="BTC/USDT", timeframe="1h",
+        exchange="binance",
+        symbol="BTC/USDT",
+        timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 150.0),  # långt fel
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
     )
@@ -44,7 +50,9 @@ def test_price_miss_lowers_agreement(synthetic_df):
 def test_zero_range_label_keeps_metrics_finite(synthetic_df):
     swing = _swing(synthetic_df)
     label = SwingLabel(
-        exchange="binance", symbol="BTC/USDT", timeframe="1h",
+        exchange="binance",
+        symbol="BTC/USDT",
+        timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 130.0),
         low=Point(synthetic_df.index[40].isoformat(), 130.0),
     )

@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-from fibengine.config import PivotConfig
-from fibengine.models import Pivot, Swing
-from fibengine.scale import detect_pivots_multi, endpoint_confluence
+from fibengine.core.config import PivotConfig
+from fibengine.core.models import Pivot, Swing
+from fibengine.core.scale import detect_pivots_multi, endpoint_confluence
 
 
 def _df_with_one_big_swing() -> pd.DataFrame:
@@ -19,8 +19,13 @@ def _df_with_one_big_swing() -> pd.DataFrame:
     idx = pd.date_range("2024-01-01", periods=n, freq="1h", tz="UTC")
     wig = rng.uniform(0.3, 0.9, n)
     return pd.DataFrame(
-        {"open": closes, "high": closes + wig, "low": closes - wig,
-         "close": closes, "volume": np.ones(n)},
+        {
+            "open": closes,
+            "high": closes + wig,
+            "low": closes - wig,
+            "close": closes,
+            "volume": np.ones(n),
+        },
         index=idx,
     )
 

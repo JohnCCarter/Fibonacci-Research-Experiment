@@ -1,12 +1,12 @@
 import pandas as pd
 
-from fibengine.config import PivotConfig
-from fibengine.pivots.detect import detect_pivots
-from fibengine.structure import (
+from fibengine.core.config import PivotConfig
+from fibengine.core.structure import (
     downtrend_alignment,
     structure_alignment,
     uptrend_alignment,
 )
+from fibengine.pivots.detect import detect_pivots
 
 
 def _uptrend_df() -> pd.DataFrame:
@@ -21,8 +21,13 @@ def _uptrend_df() -> pd.DataFrame:
     n = len(closes)
     idx = pd.date_range("2024-01-01", periods=n, freq="1h", tz="UTC")
     return pd.DataFrame(
-        {"open": closes, "high": closes + 0.5, "low": closes - 0.5,
-         "close": closes, "volume": np.ones(n)},
+        {
+            "open": closes,
+            "high": closes + 0.5,
+            "low": closes - 0.5,
+            "close": closes,
+            "volume": np.ones(n),
+        },
         index=idx,
     )
 

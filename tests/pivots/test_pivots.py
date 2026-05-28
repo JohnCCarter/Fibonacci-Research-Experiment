@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from fibengine.config import PivotConfig
+from fibengine.core.config import PivotConfig
 from fibengine.pivots.detect import detect_pivots
 
 

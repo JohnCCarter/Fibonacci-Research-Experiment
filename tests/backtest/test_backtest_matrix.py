@@ -2,7 +2,7 @@ from pathlib import Path
 
 from fibengine.backtest import matrix
 from fibengine.backtest.matrix import MatrixCase, _case_settings, default_matrix, run_matrix
-from fibengine.config import Settings
+from fibengine.core.config import Settings
 
 
 def test_default_matrix_covers_symbols_and_timeframes():
