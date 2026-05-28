@@ -1,0 +1,15 @@
+{
+  "exchange": "binance",
+  "symbol": "ETH/USDT",
+  "timeframe": "1w",
+  "high": {
+    "timestamp": "2022-03-28T00:00:00+00:00",
+    "price": 3580.34
+  },
+  "low": {
+    "timestamp": "2022-06-13T00:00:00+00:00",
+    "price": 881.56
+  },
+  "note": "",
+  "created_at": "2026-05-28T12:15:44.796173+00:00"
+}
