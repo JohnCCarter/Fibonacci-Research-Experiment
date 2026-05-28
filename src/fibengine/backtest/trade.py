@@ -14,12 +14,14 @@ from datetime import UTC, datetime
 
 import pandas as pd
 
+from fibengine.backtest.matrix import MatrixCase, _case_settings, default_matrix
 from fibengine.backtest.stability import walk_forward_selection
 from fibengine.config import REPO_ROOT, Settings, load_settings
 from fibengine.data.loader import load_candles
 from fibengine.fib import fib_levels
 
 TRADE_RESULTS = REPO_ROOT / "experiments" / "trade_backtests.jsonl"
+TRADE_MATRIX_RESULTS = REPO_ROOT / "experiments" / "trade_matrix.jsonl"
 
 
 @dataclass
@@ -47,6 +49,9 @@ def _simulate_trade(
     highs = df["high"].to_numpy()
     lows = df["low"].to_numpy()
     fill_bar: int | None = None
+    risk = abs(entry - stop)
+    reward = abs(target - entry)
+    target_r = reward / risk if risk > 0 else 0.0
 
     for bar in range(t + 1, len(df)):
         if lows[bar] <= entry <= highs[bar]:
@@ -55,6 +60,8 @@ def _simulate_trade(
 
     if fill_bar is None:
         return Trade(t, direction, entry, stop, target, False, "unfilled", 0.0)
+    if risk <= 0 or reward <= 0:
+        return Trade(t, direction, entry, stop, target, True, "invalid", 0.0, fill_bar)
 
     for bar in range(fill_bar, len(df)):
         if direction == "up":
@@ -67,7 +74,7 @@ def _simulate_trade(
         if stopped and targeted:
             return Trade(t, direction, entry, stop, target, True, "ambiguous", 0.0, fill_bar, bar)
         if targeted:
-            return Trade(t, direction, entry, stop, target, True, "target", 1.0, fill_bar, bar)
+            return Trade(t, direction, entry, stop, target, True, "target", target_r, fill_bar, bar)
         if stopped:
             return Trade(t, direction, entry, stop, target, True, "stop", -1.0, fill_bar, bar)
 
@@ -103,7 +110,7 @@ def trades_from_records(df: pd.DataFrame, settings: Settings, records: list[dict
 
 def summarize_trades(trades: list[Trade]) -> dict:
     filled = [t for t in trades if t.filled]
-    closed = [t for t in filled if t.outcome in {"target", "stop", "ambiguous"}]
+    closed = [t for t in filled if t.outcome in {"target", "stop", "ambiguous", "invalid"}]
     wins = [t for t in closed if t.outcome == "target"]
     losses = [t for t in closed if t.outcome == "stop"]
     ambiguous = [t for t in closed if t.outcome == "ambiguous"]
@@ -144,6 +151,65 @@ def run_trade_backtest(settings: Settings | None = None) -> dict:
     with TRADE_RESULTS.open("a") as f:
         f.write(json.dumps(summary, sort_keys=True) + "\n")
     return summary
+
+
+def _trade_summary_for_settings(
+    settings: Settings,
+    run_id: str,
+    timestamp: str,
+) -> dict:
+    df = load_candles(settings.data)
+    records = walk_forward_selection(
+        df, settings, settings.backtest.warmup_bars, settings.backtest.step
+    )
+    trades = trades_from_records(df, settings, records)
+    return {
+        "run_id": run_id,
+        "timestamp": timestamp,
+        "config_hash": settings.config_hash(),
+        "exchange": settings.data.exchange,
+        "symbol": settings.data.symbol,
+        "timeframe": settings.data.timeframe,
+        "limit": settings.data.limit,
+        "candles": len(df),
+        "status": "ok",
+        **summarize_trades(trades),
+    }
+
+
+def run_trade_matrix(
+    settings: Settings | None = None,
+    cases: list[MatrixCase] | None = None,
+) -> list[dict]:
+    """Run the simple Layer B trade simulation over the standard market matrix."""
+    settings = settings or load_settings()
+    run_id = datetime.now(UTC).strftime("trade_matrix_%Y%m%dT%H%M%SZ")
+    rows: list[dict] = []
+
+    for case in cases or default_matrix():
+        case_settings = _case_settings(settings, case)
+        timestamp = datetime.now(UTC).isoformat()
+        try:
+            row = _trade_summary_for_settings(case_settings, run_id, timestamp)
+        except Exception as exc:  # noqa: BLE001 - keep batch failures observable.
+            row = {
+                "run_id": run_id,
+                "timestamp": timestamp,
+                "config_hash": case_settings.config_hash(),
+                "exchange": case_settings.data.exchange,
+                "symbol": case.symbol,
+                "timeframe": case.timeframe,
+                "limit": case_settings.data.limit,
+                "status": "error",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
+        TRADE_MATRIX_RESULTS.parent.mkdir(parents=True, exist_ok=True)
+        with TRADE_MATRIX_RESULTS.open("a") as f:
+            f.write(json.dumps(row, sort_keys=True) + "\n")
+        rows.append(row)
+
+    return rows
 
 
 if __name__ == "__main__":
