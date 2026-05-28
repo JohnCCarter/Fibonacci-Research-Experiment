@@ -6,7 +6,7 @@ Används som mjuk feature — en analytiker ritar Fib *med* strukturen
 
 from __future__ import annotations
 
-from fibengine.models import Pivot
+from fibengine.core.models import Pivot
 
 
 def _monotonic_fraction(values: list[float], increasing: bool) -> float:
@@ -40,9 +40,7 @@ def downtrend_alignment(pivots: list[Pivot], end_index: int, window: int) -> flo
     return (lh + ll) / 2.0
 
 
-def structure_alignment(
-    pivots: list[Pivot], end_index: int, window: int, direction: str
-) -> float:
+def structure_alignment(pivots: list[Pivot], end_index: int, window: int, direction: str) -> float:
     """Hur väl legens riktning sitter i den färska strukturen. ∈ [0, 1]."""
     if direction == "up":
         return uptrend_alignment(pivots, end_index, window)

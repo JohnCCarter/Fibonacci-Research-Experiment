@@ -12,14 +12,14 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 
-from fibengine.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.models import Pivot
 from fibengine.data.loader import load_candles
 from fibengine.evaluation.metrics import _bar_of_timestamp
 from fibengine.labeling.store import SwingLabel, list_labels
-from fibengine.models import Pivot
 from fibengine.pivots.detect import detect_pivots
 
-PIVOT_RECALL_RESULTS = REPO_ROOT / "experiments" / "pivot_recall.jsonl"
+PIVOT_RECALL_RESULTS = REPO_ROOT / "experiments" / "results" / "pivot_recall.jsonl"
 
 
 def _nearest_pivot(

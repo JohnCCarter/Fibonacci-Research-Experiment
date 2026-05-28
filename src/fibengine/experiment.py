@@ -5,6 +5,7 @@ Kör: uv run python -m fibengine.experiment
 
 from __future__ import annotations
 
+import argparse
 import json
 import random
 from datetime import UTC, datetime
@@ -12,22 +13,28 @@ from pathlib import Path
 
 import numpy as np
 
-from fibengine.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.logging_conf import setup_logging
+from fibengine.core.models import Swing
+from fibengine.core.scoring import select_swing
 from fibengine.data.loader import atr, load_candles
 from fibengine.evaluation.metrics import evaluate
 from fibengine.labeling.store import SwingLabel, list_labels
-from fibengine.logging_conf import setup_logging
-from fibengine.models import Swing
-from fibengine.scoring import select_swing
 from fibengine.sizing.solros import build_sizing_plan, simulate_plan
 from fibengine.viz.plot import plot_prediction
 
 RUNS_DIR = REPO_ROOT / "experiments" / "runs"
-LEADERBOARD = REPO_ROOT / "experiments" / "leaderboard.jsonl"
+LEADERBOARD = REPO_ROOT / "experiments" / "results" / "leaderboard.jsonl"
 
 
 def _new_run_id() -> str:
     return datetime.now(UTC).strftime("run_%Y%m%dT%H%M%SZ")
+
+
+def _run_dir(run_id: str) -> Path:
+    stamp = run_id.split("_", 1)[1]
+    run_date = f"{stamp[0:4]}-{stamp[4:6]}-{stamp[6:8]}"
+    return RUNS_DIR / "experiment" / run_date / run_id
 
 
 def _maybe_emit_sizing(settings: Settings, df, swing: Swing, run_dir: Path, name: str, log):
@@ -63,13 +70,14 @@ def _run_one(settings: Settings, label: SwingLabel, run_dir: Path, log) -> dict 
     metrics = evaluate(df, swing, label, atr_value, settings.evaluation)
     label_id = f"{label.exchange}_{label.symbol.replace('/', '-')}_{label.timeframe}"
     plot_path = run_dir / f"{label_id}.png"
-    plot_prediction(
-        df, swing, settings.fib.levels, plot_path, label=label, title=label_id
-    )
+    plot_prediction(df, swing, settings.fib.levels, plot_path, label=label, title=label_id)
     _maybe_emit_sizing(settings, df, swing, run_dir, label_id, log)
     log.info(
         "{} | status={} agreement={} fib_err={}",
-        label_id, swing.status, metrics["agreement"], metrics["mean_fib_err_frac"],
+        label_id,
+        swing.status,
+        metrics["agreement"],
+        metrics["mean_fib_err_frac"],
     )
     return {"label": label_id, "metrics": metrics, "predicted_swing": swing.to_dict()}
 
@@ -94,7 +102,7 @@ def run_experiment(settings: Settings | None = None) -> Path:
 
     run_id = _new_run_id()
     config_hash = settings.config_hash()
-    run_dir = RUNS_DIR / run_id
+    run_dir = _run_dir(run_id)
     run_dir.mkdir(parents=True, exist_ok=True)
     log = setup_logging(run_id, config_hash, log_file=run_dir / "run.log")
 
@@ -110,7 +118,9 @@ def run_experiment(settings: Settings | None = None) -> Path:
         swing = select_swing(df, settings.pivots, settings.scoring)
         if swing is not None:
             plot_prediction(
-                df, swing, settings.fib.levels,
+                df,
+                swing,
+                settings.fib.levels,
                 run_dir / "prediction.png",
                 title=f"{settings.data.symbol} {settings.data.timeframe}",
             )
@@ -141,5 +151,17 @@ def run_experiment(settings: Settings | None = None) -> Path:
     return run_dir
 
 
+def _parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Run fibengine experiment pipeline.")
+    p.add_argument(
+        "--config",
+        type=str,
+        default="",
+        help="Optional settings file path (default: config/settings.yaml).",
+    )
+    return p.parse_args()
+
+
 if __name__ == "__main__":
-    run_experiment()
+    args = _parse_args()
+    run_experiment(load_settings(args.config or None))

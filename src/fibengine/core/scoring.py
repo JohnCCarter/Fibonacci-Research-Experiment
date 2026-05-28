@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import pandas as pd
 
-from fibengine.config import PivotConfig, ScoringConfig
-from fibengine.confirm import classify_swing
+from fibengine.core.config import PivotConfig, ScoringConfig
+from fibengine.core.confirm import classify_swing
+from fibengine.core.features import compute_features, enumerate_swings
+from fibengine.core.models import Swing
+from fibengine.core.scale import detect_pivots_multi
 from fibengine.data.loader import atr
-from fibengine.features import compute_features, enumerate_swings
-from fibengine.models import Swing
 from fibengine.pivots.detect import detect_pivots
-from fibengine.scale import detect_pivots_multi
 
 
 def score_swing(swing: Swing, weights: dict[str, float]) -> float:
@@ -27,9 +27,7 @@ def rank_swings(
     atr_series = atr(df, pivot_cfg.atr_period)
     multi_pivots = detect_pivots_multi(df, pivot_cfg, scoring_cfg.confluence_degrees)
     for leg in legs:
-        leg.features = compute_features(
-            df, leg, atr_series, scoring_cfg, pivots, multi_pivots
-        )
+        leg.features = compute_features(df, leg, atr_series, scoring_cfg, pivots, multi_pivots)
         leg.score = score_swing(leg, scoring_cfg.weights)
     legs.sort(key=lambda s: s.score, reverse=True)
     return legs
@@ -43,7 +41,5 @@ def select_swing(
     if not ranked:
         return None
     swing = ranked[0]
-    swing.status = classify_swing(
-        df, swing, pivot_cfg.fractal_n, scoring_cfg.confirm_min_retrace
-    )
+    swing.status = classify_swing(df, swing, pivot_cfg.fractal_n, scoring_cfg.confirm_min_retrace)
     return swing

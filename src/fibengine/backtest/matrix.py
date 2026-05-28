@@ -15,11 +15,11 @@ from datetime import UTC, datetime
 import numpy as np
 
 from fibengine.backtest.stability import stability_metrics, walk_forward_selection
-from fibengine.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.logging_conf import setup_logging
 from fibengine.data.loader import load_candles
-from fibengine.logging_conf import setup_logging
 
-MATRIX_RESULTS = REPO_ROOT / "experiments" / "backtest_matrix.jsonl"
+MATRIX_RESULTS = REPO_ROOT / "experiments" / "results" / "backtest_matrix.jsonl"
 DEFAULT_SYMBOLS = ("BTC/USDT", "ETH/USDT", "SOL/USDT")
 DEFAULT_TIMEFRAMES = ("15m", "1h", "4h")
 
@@ -90,9 +90,7 @@ def run_matrix(
                 case_settings.backtest.warmup_bars,
                 case_settings.backtest.step,
             )
-            metrics = stability_metrics(
-                records, case_settings.backtest.extension_tol_bars
-            )
+            metrics = stability_metrics(records, case_settings.backtest.extension_tol_bars)
             row = {
                 **base_row,
                 "status": "ok",

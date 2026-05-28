@@ -11,12 +11,10 @@ from __future__ import annotations
 
 import pandas as pd
 
-from fibengine.models import Swing
+from fibengine.core.models import Swing
 
 
-def classify_swing(
-    df: pd.DataFrame, swing: Swing, fractal_n: int, min_retrace: float
-) -> str:
+def classify_swing(df: pd.DataFrame, swing: Swing, fractal_n: int, min_retrace: float) -> str:
     """Returnera "confirmed" eller "provisional" för den valda legen."""
     n = len(df)
     bars_after = (n - 1) - swing.end.index

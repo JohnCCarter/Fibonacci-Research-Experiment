@@ -7,13 +7,18 @@ from pathlib import Path
 import ccxt
 import pandas as pd
 
-from fibengine.config import REPO_ROOT, DataConfig, load_settings
+from fibengine.core.config import REPO_ROOT, DataConfig, load_settings
 
 RAW_DIR = REPO_ROOT / "data" / "raw"
 OHLCV_COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
 
 
 def cache_path(cfg: DataConfig) -> Path:
+    symbol = cfg.symbol.replace("/", "-")
+    return RAW_DIR / cfg.exchange.lower() / symbol / cfg.timeframe / f"limit_{cfg.limit}.csv"
+
+
+def legacy_cache_path(cfg: DataConfig) -> Path:
     symbol = cfg.symbol.replace("/", "-")
     return RAW_DIR / f"{cfg.exchange}_{symbol}_{cfg.timeframe}_{cfg.limit}.csv"
 

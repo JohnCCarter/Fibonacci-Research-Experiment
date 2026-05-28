@@ -9,7 +9,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field, model_validator
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CONFIG_PATH = REPO_ROOT / "config" / "settings.yaml"
 
 
@@ -24,7 +24,7 @@ class PivotConfig(BaseModel):
     lookback: int = Field(default=5, ge=1)
     atr_period: int = Field(default=14, ge=1)
     min_prominence_atr: float = Field(default=0.5, ge=0.0)
-    mode: str = "window"   # "window" (lokala extrema) eller "fractal" (strikt Williams)
+    mode: str = "window"  # "window" (lokala extrema) eller "fractal" (strikt Williams)
     fractal_n: int = Field(default=2, ge=1)  # barer på varje sida i fraktal-läge
 
 

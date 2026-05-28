@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fibengine.models import Swing
+from fibengine.core.models import Swing
 
 
 def fib_levels(swing: Swing, levels: list[float]) -> dict[float, float]:

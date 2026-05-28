@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import numpy as np
 
-from fibengine.config import Settings
+from fibengine.core.config import Settings
+from fibengine.core.scoring import select_swing
 from fibengine.data.loader import atr, load_candles
 from fibengine.evaluation.metrics import evaluate
 from fibengine.labeling.store import SwingLabel
-from fibengine.scoring import select_swing
 
 
 def compare_label(settings: Settings, label: SwingLabel) -> dict:

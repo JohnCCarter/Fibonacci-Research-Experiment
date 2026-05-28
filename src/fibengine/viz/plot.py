@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from fibengine.fib import fib_levels  # noqa: E402
+from fibengine.core.fib import fib_levels  # noqa: E402
+from fibengine.core.models import Swing  # noqa: E402
 from fibengine.labeling.store import SwingLabel  # noqa: E402
-from fibengine.models import Swing  # noqa: E402
 
 
 def _nearest_bar(df: pd.DataFrame, ts: str) -> int:
@@ -38,7 +38,10 @@ def plot_prediction(
     ax.plot(
         [swing.start.index, swing.end.index],
         [swing.start.price, swing.end.price],
-        color="tab:blue", lw=2, ls=leg_style, marker="o",
+        color="tab:blue",
+        lw=2,
+        ls=leg_style,
+        marker="o",
         label=f"predikterad leg [{swing.status}]",
     )
     for lvl, price in fib_levels(swing, levels).items():
@@ -49,10 +52,12 @@ def plot_prediction(
     if label is not None:
         man_high_bar = _nearest_bar(df, label.high.timestamp)
         man_low_bar = _nearest_bar(df, label.low.timestamp)
-        ax.scatter([man_high_bar], [label.high.price], color="red", s=90, zorder=6,
-                   label="facit high")
-        ax.scatter([man_low_bar], [label.low.price], color="green", s=90, zorder=6,
-                   label="facit low")
+        ax.scatter(
+            [man_high_bar], [label.high.price], color="red", s=90, zorder=6, label="facit high"
+        )
+        ax.scatter(
+            [man_low_bar], [label.low.price], color="green", s=90, zorder=6, label="facit low"
+        )
 
     base_title = title or "Predikterad swing/fib vs facit"
     ax.set_title(f"{base_title} [{swing.status}]")

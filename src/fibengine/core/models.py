@@ -9,11 +9,11 @@ import pandas as pd
 
 @dataclass(frozen=True)
 class Pivot:
-    index: int              # bar-position i serien
+    index: int  # bar-position i serien
     timestamp: pd.Timestamp
     price: float
-    kind: str               # "high" eller "low"
-    prominence: float       # ATR-skalad prominens
+    kind: str  # "high" eller "low"
+    prominence: float  # ATR-skalad prominens
 
     def to_dict(self) -> dict:
         return {
@@ -33,7 +33,7 @@ class Swing:
     end: Pivot
     features: dict[str, float] = field(default_factory=dict)
     score: float = 0.0
-    status: str = "unknown"   # "confirmed", "provisional" eller "unknown"
+    status: str = "unknown"  # "confirmed", "provisional" eller "unknown"
 
     @property
     def direction(self) -> str:

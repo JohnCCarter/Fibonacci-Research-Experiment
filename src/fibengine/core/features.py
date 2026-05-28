@@ -5,10 +5,10 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from fibengine.config import ScoringConfig
-from fibengine.models import Pivot, Swing
-from fibengine.scale import endpoint_confluence
-from fibengine.structure import structure_alignment
+from fibengine.core.config import ScoringConfig
+from fibengine.core.models import Pivot, Swing
+from fibengine.core.scale import endpoint_confluence
+from fibengine.core.structure import structure_alignment
 
 
 def enumerate_swings(pivots: list[Pivot], max_legs: int) -> list[Swing]:
@@ -68,8 +68,7 @@ def compute_features(
     prominence = float(np.tanh((swing.start.prominence + swing.end.prominence) / 4.0))
     cleanliness = _cleanliness(df, swing)
     round_number = (
-        _round_number_proximity(swing.start.price)
-        + _round_number_proximity(swing.end.price)
+        _round_number_proximity(swing.start.price) + _round_number_proximity(swing.end.price)
     ) / 2.0
     duration = abs(swing.bars - cfg.duration_target) / max(cfg.duration_target, 1)
     structure = (
@@ -78,9 +77,7 @@ def compute_features(
         else 0.5
     )
     confluence = (
-        endpoint_confluence(swing, multi_pivots, cfg.confluence_tol_bars)
-        if multi_pivots
-        else 0.5
+        endpoint_confluence(swing, multi_pivots, cfg.confluence_tol_bars) if multi_pivots else 0.5
     )
 
     return {

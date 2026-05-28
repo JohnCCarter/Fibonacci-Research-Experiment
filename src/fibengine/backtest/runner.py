@@ -5,6 +5,7 @@ Kör: uv run python -m fibengine.backtest.runner
 
 from __future__ import annotations
 
+import argparse
 import json
 import random
 from datetime import UTC, datetime
@@ -17,19 +18,23 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 from fibengine.backtest.stability import stability_metrics, walk_forward_selection  # noqa: E402
-from fibengine.config import REPO_ROOT, Settings, load_settings  # noqa: E402
+from fibengine.core.config import REPO_ROOT, Settings, load_settings  # noqa: E402
+from fibengine.core.logging_conf import setup_logging  # noqa: E402
 from fibengine.data.loader import load_candles  # noqa: E402
-from fibengine.logging_conf import setup_logging  # noqa: E402
 
 RUNS_DIR = REPO_ROOT / "experiments" / "runs"
-BACKTESTS = REPO_ROOT / "experiments" / "backtests.jsonl"
+BACKTESTS = REPO_ROOT / "experiments" / "results" / "backtests.jsonl"
+
+
+def _run_dir(run_id: str) -> Path:
+    stamp = run_id.split("_", 1)[1]
+    run_date = f"{stamp[0:4]}-{stamp[4:6]}-{stamp[6:8]}"
+    return RUNS_DIR / "stability" / run_date / run_id
 
 
 def _plot_timeline(df, records: list[dict], out_path: Path):
     """Visa hur den valda legens endpunkter rör sig medan cursorn stegar framåt."""
-    fig, (ax_p, ax_s) = plt.subplots(
-        2, 1, figsize=(14, 8), sharex=True, height_ratios=[2, 1]
-    )
+    fig, (ax_p, ax_s) = plt.subplots(2, 1, figsize=(14, 8), sharex=True, height_ratios=[2, 1])
     ax_p.plot(range(len(df)), df["close"].to_numpy(), color="black", lw=0.7)
     ax_p.set_title("Pris + vald legs endpunkter (kausalt walk-forward)")
 
@@ -55,7 +60,7 @@ def run_backtest(settings: Settings | None = None) -> Path:
 
     run_id = datetime.now(UTC).strftime("bt_%Y%m%dT%H%M%SZ")
     config_hash = settings.config_hash()
-    run_dir = RUNS_DIR / run_id
+    run_dir = _run_dir(run_id)
     run_dir.mkdir(parents=True, exist_ok=True)
     log = setup_logging(run_id, config_hash, log_file=run_dir / "run.log")
 
@@ -83,5 +88,17 @@ def run_backtest(settings: Settings | None = None) -> Path:
     return run_dir
 
 
+def _parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Run causal stability backtest.")
+    p.add_argument(
+        "--config",
+        type=str,
+        default="",
+        help="Optional settings file path (default: config/settings.yaml).",
+    )
+    return p.parse_args()
+
+
 if __name__ == "__main__":
-    run_backtest()
+    args = _parse_args()
+    run_backtest(load_settings(args.config or None))

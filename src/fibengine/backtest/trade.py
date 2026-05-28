@@ -16,12 +16,12 @@ import pandas as pd
 
 from fibengine.backtest.matrix import MatrixCase, _case_settings, default_matrix
 from fibengine.backtest.stability import walk_forward_selection
-from fibengine.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.fib import fib_levels
 from fibengine.data.loader import load_candles
-from fibengine.fib import fib_levels
 
-TRADE_RESULTS = REPO_ROOT / "experiments" / "trade_backtests.jsonl"
-TRADE_MATRIX_RESULTS = REPO_ROOT / "experiments" / "trade_matrix.jsonl"
+TRADE_RESULTS = REPO_ROOT / "experiments" / "results" / "trade_backtests.jsonl"
+TRADE_MATRIX_RESULTS = REPO_ROOT / "experiments" / "results" / "trade_matrix.jsonl"
 
 
 @dataclass
@@ -101,9 +101,7 @@ def trades_from_records(df: pd.DataFrame, settings: Settings, records: list[dict
         entry = levels[entry_level]
         stop = swing.start.price
         target = swing.end.price
-        trades.append(
-            _simulate_trade(df, record["t"], swing.direction, entry, stop, target)
-        )
+        trades.append(_simulate_trade(df, record["t"], swing.direction, entry, stop, target))
 
     return trades
 
@@ -123,9 +121,7 @@ def summarize_trades(trades: list[Trade]) -> dict:
         "ambiguous": len(ambiguous),
         "fill_rate": round(len(filled) / len(trades), 4) if trades else 0.0,
         "win_rate": round(len(wins) / len(closed), 4) if closed else 0.0,
-        "avg_r": round(sum(t.r_multiple for t in closed) / len(closed), 4)
-        if closed
-        else 0.0,
+        "avg_r": round(sum(t.r_multiple for t in closed) / len(closed), 4) if closed else 0.0,
     }
 
 

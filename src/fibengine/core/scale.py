@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import pandas as pd
 
-from fibengine.config import PivotConfig
-from fibengine.models import Pivot, Swing
+from fibengine.core.config import PivotConfig
+from fibengine.core.models import Pivot, Swing
 from fibengine.pivots.detect import detect_pivots
 
 
@@ -32,9 +32,7 @@ def _endpoints(swing: Swing) -> tuple[Pivot, Pivot]:
     return swing.end, swing.start
 
 
-def endpoint_confluence(
-    swing: Swing, multi_pivots: dict[int, list[Pivot]], tol_bars: int
-) -> float:
+def endpoint_confluence(swing: Swing, multi_pivots: dict[int, list[Pivot]], tol_bars: int) -> float:
     """Andel större grader där BÅDE legens high och low bekräftas. ∈ [0, 1].
 
     Neutral 0.5 när inga större grader/pivots finns att jämföra mot.
@@ -46,12 +44,8 @@ def endpoint_confluence(
     for pivots in multi_pivots.values():
         if not pivots:
             continue
-        hi_conf = any(
-            p.kind == "high" and abs(p.index - high_ep.index) <= tol_bars for p in pivots
-        )
-        lo_conf = any(
-            p.kind == "low" and abs(p.index - low_ep.index) <= tol_bars for p in pivots
-        )
+        hi_conf = any(p.kind == "high" and abs(p.index - high_ep.index) <= tol_bars for p in pivots)
+        lo_conf = any(p.kind == "low" and abs(p.index - low_ep.index) <= tol_bars for p in pivots)
         scores.append((hi_conf + lo_conf) / 2.0)
     if not scores:
         return 0.5

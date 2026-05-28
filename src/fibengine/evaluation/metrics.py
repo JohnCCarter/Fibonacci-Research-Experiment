@@ -10,10 +10,10 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from fibengine.config import EvaluationConfig
-from fibengine.fib import fib_from_prices
+from fibengine.core.config import EvaluationConfig
+from fibengine.core.fib import fib_from_prices
+from fibengine.core.models import Swing
 from fibengine.labeling.store import SwingLabel
-from fibengine.models import Swing
 
 
 def _bar_of_timestamp(df: pd.DataFrame, ts: str) -> int:
@@ -60,9 +60,7 @@ def evaluate(
     if man_range <= 1e-12:
         fib_errs = {lvl: 0.0 for lvl in key_levels}
     else:
-        fib_errs = {
-            lvl: abs(pred_fib[lvl] - man_fib[lvl]) / man_range for lvl in key_levels
-        }
+        fib_errs = {lvl: abs(pred_fib[lvl] - man_fib[lvl]) / man_range for lvl in key_levels}
     mean_fib_err = float(np.mean(list(fib_errs.values())))
 
     # Mjuk agreement: exponentiell avklingning per komponent, medelvärde i [0, 1].
