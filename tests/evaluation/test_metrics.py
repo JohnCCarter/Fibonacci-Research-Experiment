@@ -1,3 +1,5 @@
+import pandas as pd
+
 from fibengine.core.config import EvaluationConfig
 from fibengine.core.fib import fib_from_prices
 from fibengine.core.models import Pivot, Swing
@@ -59,6 +61,34 @@ def test_zero_range_label_keeps_metrics_finite(synthetic_df):
     m = evaluate(synthetic_df, swing, label, atr_value=2.0, cfg=EvaluationConfig())
     assert m["mean_fib_err_frac"] == 0.0
     assert 0.0 <= m["agreement"] <= 1.0
+
+
+def test_in_window_label_not_flagged(synthetic_df):
+    swing = _swing(synthetic_df)
+    label = SwingLabel(
+        exchange="binance",
+        symbol="BTC/USDT",
+        timeframe="1h",
+        high=Point(synthetic_df.index[60].isoformat(), 130.0),
+        low=Point(synthetic_df.index[40].isoformat(), 105.0),
+    )
+    m = evaluate(synthetic_df, swing, label, atr_value=2.0, cfg=EvaluationConfig())
+    assert m["out_of_window"] is False
+
+
+def test_out_of_window_label_is_flagged(synthetic_df):
+    # Label-tidsstämplar långt efter sista baren ska flaggas, inte tyst snäppas.
+    swing = _swing(synthetic_df)
+    future = (synthetic_df.index[-1] + pd.Timedelta(days=365)).isoformat()
+    label = SwingLabel(
+        exchange="binance",
+        symbol="BTC/USDT",
+        timeframe="1h",
+        high=Point(future, 130.0),
+        low=Point(future, 105.0),
+    )
+    m = evaluate(synthetic_df, swing, label, atr_value=2.0, cfg=EvaluationConfig())
+    assert m["out_of_window"] is True
 
 
 def test_fib_levels_monotonic_for_up_leg():

@@ -34,7 +34,6 @@ uv run python -m fibengine.labeling.tool     # klicka swing high/low -> facit
 uv run python -m fibengine.labeling.batch    # lättviktig label-checkpoint (manifest/hashar)
 uv run python -m fibengine.experiment        # kör pipeline + logga resultat
 uv run python -m fibengine.backtest.runner   # kausalt walk-forward: urvals-stabilitet
-uv run python -m fibengine.tuning.optuna_runner --trials 30  # optimering av scoring.weights
 uv run pytest                                 # kör tester
 uv run pre-commit install                     # git hooks (en gång)
 uv run pre-commit run --all-files             # lint + format + test före push
@@ -42,13 +41,16 @@ uv run pre-commit run --all-files             # lint + format + test före push
 
 Kvalitetsgate: se [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) och CI i `.github/workflows/ci.yml`.
 
-Använd `--config` för varianter utan att ändra baseline:
+Använd `--config` för att köra en variant-settings utan att ändra baseline:
 
 ```bash
-uv run python -m fibengine.experiment --config config/variants/optuna_2026-05-28_trial31.yaml
-uv run python -m fibengine.backtest.runner --config config/variants/optuna_2026-05-28_trial31.yaml
-uv run python -m fibengine.tuning.optuna_runner --config config/settings.yaml --trials 30
+uv run python -m fibengine.experiment --config config/variants/<variant>.yaml
 ```
+
+> Not: automatisk vikt-optimering (Optuna) togs medvetet bort — den optimerade mot
+> de manuella labelsen, vilket bryter mot filosofin (labels = referens, inte domare)
+> och överanpassade ett för litet labelset. Se `premortem/reflections/`. Vikter
+> sätts på principgrund; arkiverade Optuna-artefakter finns under `archive/`.
 
 ## Pipeline (Lager A)
 
