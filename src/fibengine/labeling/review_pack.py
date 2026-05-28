@@ -14,12 +14,12 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from fibengine.backtest.matrix import MatrixCase, _case_settings
-from fibengine.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.scoring import select_swing
 from fibengine.data.loader import load_candles
-from fibengine.scoring import select_swing
 from fibengine.viz.plot import plot_prediction
 
-REVIEW_PACKS_DIR = REPO_ROOT / "experiments" / "label_review"
+REVIEW_PACKS_DIR = REPO_ROOT / "experiments" / "label_review" / "packs"
 DEFAULT_REVIEW_CASES = (
     MatrixCase("ETH/USDT", "1h"),
     MatrixCase("BTC/USDT", "1h"),
