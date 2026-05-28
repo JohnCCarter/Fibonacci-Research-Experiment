@@ -51,13 +51,21 @@ def evaluate_label_recall(
     pivots = detect_pivots(df, settings.pivots)
     tol = tol_bars if tol_bars is not None else max(1, settings.pivots.lookback)
 
-    high_bar = _bar_of_timestamp(df, label.high.timestamp)
-    low_bar = _bar_of_timestamp(df, label.low.timestamp)
+    high_bar, high_in_window = _bar_of_timestamp(df, label.high.timestamp)
+    low_bar, low_in_window = _bar_of_timestamp(df, label.low.timestamp)
     high_pivot, high_dist = _nearest_pivot(pivots, high_bar, "high")
     low_pivot, low_dist = _nearest_pivot(pivots, low_bar, "low")
 
-    high_hit = high_dist is not None and high_dist <= tol
-    low_hit = low_dist is not None and low_dist <= tol
+    out_of_window = not (high_in_window and low_in_window)
+    # En out-of-window-label snäpps till en kant-bar; räkna inte det som en
+    # träff (skulle annars skriva falska recall-hits till ledger).
+    if out_of_window:
+        high_hit = low_hit = False
+        high_dist = low_dist = None
+        high_pivot = low_pivot = None
+    else:
+        high_hit = high_dist is not None and high_dist <= tol
+        low_hit = low_dist is not None and low_dist <= tol
 
     return {
         "exchange": label.exchange,
@@ -70,6 +78,7 @@ def evaluate_label_recall(
         "high_hit": high_hit,
         "low_hit": low_hit,
         "both_hit": high_hit and low_hit,
+        "out_of_window": out_of_window,
         "high_dist_bars": high_dist,
         "low_dist_bars": low_dist,
         "nearest_high": high_pivot.to_dict() if high_pivot else None,

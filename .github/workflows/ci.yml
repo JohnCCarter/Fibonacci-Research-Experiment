@@ -26,5 +26,5 @@ jobs:
       - name: Ruff format
         run: uv run ruff format --check src tests
 
-      - name: Pytest
+      - name: Pytest (with coverage gate)
         run: uv run pytest -q

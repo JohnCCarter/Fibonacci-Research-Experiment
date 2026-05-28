@@ -11,6 +11,5 @@ Huvudpaket för Fibonacci-motorn.
 - `evaluation/` jämförelse och mätning mot labels.
 - `backtest/` stabilitets- och trade-backtest.
 - `sizing/` sizing-logik (Lager B).
-- `tuning/` experimentell parameteroptimering (t.ex. Optuna).
 - `viz/` plotting/visualisering.
 - `experiment.py` standardrunner för experimentkörning.

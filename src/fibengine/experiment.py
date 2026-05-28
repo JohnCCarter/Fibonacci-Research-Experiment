@@ -72,12 +72,19 @@ def _run_one(settings: Settings, label: SwingLabel, run_dir: Path, log) -> dict 
     plot_path = run_dir / f"{label_id}.png"
     plot_prediction(df, swing, settings.fib.levels, plot_path, label=label, title=label_id)
     _maybe_emit_sizing(settings, df, swing, run_dir, label_id, log)
+    if metrics["out_of_window"]:
+        log.warning(
+            "{} | label utanför candle-fönstret — exkluderas ur aggregat "
+            "(ladda mer historik för denna timeframe)",
+            label_id,
+        )
     log.info(
-        "{} | status={} agreement={} fib_err={}",
+        "{} | status={} agreement={} fib_err={} out_of_window={}",
         label_id,
         swing.status,
         metrics["agreement"],
         metrics["mean_fib_err_frac"],
+        metrics["out_of_window"],
     )
     return {"label": label_id, "metrics": metrics, "predicted_swing": swing.to_dict()}
 
@@ -85,9 +92,17 @@ def _run_one(settings: Settings, label: SwingLabel, run_dir: Path, log) -> dict 
 def _aggregate(results: list[dict]) -> dict:
     if not results:
         return {}
-    m = [r["metrics"] for r in results]
+    all_m = [r["metrics"] for r in results]
+    # Out-of-window-labels jämförs mot fel bar → exkludera ur aggregaten,
+    # men rapportera hur många som hoppades över för transparens.
+    m = [x for x in all_m if not x.get("out_of_window")]
+    excluded = len(all_m) - len(m)
+    if not m:
+        return {"n": 0, "excluded_out_of_window": excluded, "no_in_window_samples": True}
     return {
         "n": len(m),
+        "excluded_out_of_window": excluded,
+        "no_in_window_samples": False,
         "mean_agreement": round(float(np.mean([x["agreement"] for x in m])), 4),
         "mean_fib_err_frac": round(float(np.mean([x["mean_fib_err_frac"] for x in m])), 4),
         "mean_high_price_err_atr": round(float(np.mean([x["high_price_err_atr"] for x in m])), 4),
