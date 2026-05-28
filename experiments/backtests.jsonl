@@ -1,0 +1,1 @@
+{"run_id": "bt_20260528T071748Z", "config_hash": "9c9bb609b0ae", "timestamp": "2026-05-28T07:17:54.675637+00:00", "steps": 440, "flip_rate": 0.0774, "raw_change_rate": 0.1321, "extension_rate": 0.0547, "persistence_steps": 7.4576, "direction_consistency": 0.9567, "mean_endpoint_drift_bars": 35.5, "confirmed_rate": 0.8682, "n_none": 0}
