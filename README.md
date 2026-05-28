@@ -78,6 +78,13 @@ inte instabilitet. `raw_change_rate` behålls för transparens, och `confirmed_r
 visar hur ofta den valda swingen var bekräftad. Mäter koherens över tid, inte PnL
 (det är Lager B).
 
+**Stabilitets-gate.** Backtest/matris kör en explicit pass/fail-gate
+(`stability_gate`) där `mean_endpoint_drift_bars` är en **förstklassig** kriterie vid
+sidan av `flip_rate`/`confirmed_rate`/`direction_consistency` — en "stabil" swing vars
+endpunkt ändå vandrar långt vid hopp är ekonomiskt instabil. Trösklarna sätts i
+`config/settings.yaml` (`backtest.gate_*`); resultatet skrivs som `gate_passed` +
+`gate_checks` i ledgern.
+
 **Bekräftad vs provisorisk swing:** varje vald swing får `status`. *Provisorisk* =
 extremen kan fortfarande växa (för få barer efter, eller ingen pullback ännu).
 *Bekräftad* = minst `pivots.fractal_n` barer efter extremen OCH priset har dragit
@@ -86,7 +93,9 @@ provisoriska ritas streckade i plotten.
 
 ## Struktur
 
-- `config/settings.yaml` — symbol, pivot-läge, heuristik-vikter, eval-skalor, sizing, backtest
+- `config/settings.yaml` — symbol, pivot-läge, heuristik-vikter, eval-skalor, sizing,
+  backtest + stabilitets-gate (`backtest.gate_*`). `data.timeframe_limits` laddar mer
+  historik för långa TF (1d/1w/1M) så äldre labels inte hamnar out-of-window
 - `src/fibengine/` — kategoriserad kärnkod: `core/` (domänlogik), `data/`,
   `pivots/`, `labeling/`, `evaluation/`, `viz/`, `backtest/`, `sizing/` + `experiment.py`
 - `tests/` — speglar `src/fibengine/`-strukturen (inkl. `tests/core/`,

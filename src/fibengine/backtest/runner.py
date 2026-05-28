@@ -17,7 +17,11 @@ matplotlib.use("Agg")  # headless-säkert
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
-from fibengine.backtest.stability import stability_metrics, walk_forward_selection  # noqa: E402
+from fibengine.backtest.stability import (  # noqa: E402
+    stability_gate,
+    stability_metrics,
+    walk_forward_selection,
+)
 from fibengine.core.config import REPO_ROOT, Settings, load_settings  # noqa: E402
 from fibengine.core.logging_conf import setup_logging  # noqa: E402
 from fibengine.data.loader import load_candles  # noqa: E402
@@ -72,19 +76,25 @@ def run_backtest(settings: Settings | None = None) -> Path:
         df, settings, settings.backtest.warmup_bars, settings.backtest.step
     )
     metrics = stability_metrics(records, settings.backtest.extension_tol_bars)
+    gate = stability_gate(metrics, settings.backtest)
     _plot_timeline(df, records, run_dir / "stability_timeline.png")
-    (run_dir / "stability.json").write_text(json.dumps(metrics, indent=2))
+    (run_dir / "stability.json").write_text(json.dumps({**metrics, "gate": gate}, indent=2))
 
     row = {
         "run_id": run_id,
         "config_hash": config_hash,
         "timestamp": datetime.now(UTC).isoformat(),
         **metrics,
+        "gate_passed": gate["passed"],
+        "gate_checks": gate["checks"],
     }
     with BACKTESTS.open("a") as f:
         f.write(json.dumps(row) + "\n")
 
-    log.info("Klart. Stabilitet: {}", metrics)
+    if not gate["passed"]:
+        failed = [k for k, ok in gate["checks"].items() if not ok]
+        log.warning("Stabilitets-gate FAILED på: {}", ", ".join(failed))
+    log.info("Klart. Stabilitet: {} | gate_passed={}", metrics, gate["passed"])
     return run_dir
 
 

@@ -18,6 +18,15 @@ class DataConfig(BaseModel):
     symbol: str = "BTC/USDT"
     timeframe: str = "1h"
     limit: int = Field(default=500, ge=1)
+    # Per-timeframe limit-override. Långa timeframes (1d/1w/1M) behöver fler
+    # candles för att täcka äldre labels — annars hamnar facit utanför fönstret
+    # (out-of-window) och tystas ur måtten. Saknad nyckel → faller tillbaka på
+    # `limit`. Obs: en enskild CCXT-hämtning kan vara börs-kapad (ofta ~1000).
+    timeframe_limits: dict[str, int] = Field(default_factory=dict)
+
+    def effective_limit(self) -> int:
+        """Antal candles att ladda för aktuell timeframe (override eller `limit`)."""
+        return self.timeframe_limits.get(self.timeframe, self.limit)
 
 
 class PivotConfig(BaseModel):
@@ -67,6 +76,14 @@ class BacktestConfig(BaseModel):
     warmup_bars: int = Field(default=60, ge=0)
     step: int = Field(default=1, ge=1)
     extension_tol_bars: int = Field(default=5, ge=0)
+    # Stabilitets-gate (Validate-spåret). Drift är en FÖRSTKLASSIG kriterie vid
+    # sidan av flip/confirmed — en swing vars endpunkt vandrar långt vid hopp är
+    # instabil även om flip_rate ser låg ut. Trösklarna är principsatta start-
+    # värden, tunbara i Research; ändra en sak i taget och spåra i leaderboard.
+    gate_max_flip_rate: float = Field(default=0.35, ge=0.0)
+    gate_min_confirmed_rate: float = Field(default=0.5, ge=0.0)
+    gate_min_direction_consistency: float = Field(default=0.8, ge=0.0)
+    gate_max_endpoint_drift_bars: float = Field(default=40.0, ge=0.0)
 
 
 class Settings(BaseModel):
