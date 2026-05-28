@@ -1,0 +1,62 @@
+{
+  "batch_id": "2026-05-28_post-labeling",
+  "created_at": "2026-05-28T12:30:07.735243+00:00",
+  "note": "after expanded BTC ETH SOL labels",
+  "config_hash": "d48915bf3670",
+  "label_count": 16,
+  "labels_source_dir": "C:\\Users\\fa06662\\Projects\\Fibonacci-Research-Experiment-main\\data\\labels",
+  "labels_manifest": "C:\\Users\\fa06662\\Projects\\Fibonacci-Research-Experiment-main\\experiments\\label_review\\2026-05-28_post-labeling\\labels_manifest.json",
+  "labels_snapshot_dir": null,
+  "labels_copied": false,
+  "latest_pivot_recall": {
+    "both_hit": true,
+    "config_hash": "d48915bf3670",
+    "exchange": "binance",
+    "high_bar": 201,
+    "high_dist_bars": 0,
+    "high_hit": true,
+    "low_bar": 195,
+    "low_dist_bars": 0,
+    "low_hit": true,
+    "n_pivots": 166,
+    "nearest_high": {
+      "index": 201,
+      "kind": "high",
+      "price": 72857.0,
+      "prominence": 2.2335,
+      "timestamp": "2026-04-08T12:00:00+00:00"
+    },
+    "nearest_low": {
+      "index": 195,
+      "kind": "low",
+      "price": 67732.01,
+      "prominence": 5.9532,
+      "timestamp": "2026-04-07T12:00:00+00:00"
+    },
+    "run_id": "pivot_recall_20260528T112843Z",
+    "symbol": "BTC/USDT",
+    "timeframe": "4h",
+    "timestamp": "2026-05-28T11:28:43.746458+00:00",
+    "tol_bars": 3
+  },
+  "latest_leaderboard_row": {
+    "run_id": "run_20260528T112844Z",
+    "config_hash": "d48915bf3670",
+    "timestamp": "2026-05-28T11:28:46.075478+00:00",
+    "weights": {
+      "magnitude": 0.8,
+      "recency": 0.6,
+      "prominence": 0.5,
+      "cleanliness": 0.9,
+      "round_number": 0.2,
+      "duration": -0.3,
+      "structure_alignment": 1.4,
+      "scale_confluence": 1.2
+    },
+    "n": 6,
+    "mean_agreement": 0.0064,
+    "mean_fib_err_frac": 0.7737,
+    "mean_high_price_err_atr": 4.8681,
+    "mean_low_price_err_atr": 4.8421
+  }
+}
