@@ -5,7 +5,12 @@ data:
   exchange: binance       # CCXT exchange-id
   symbol: BTC/USDT
   timeframe: 1h
-  limit: 500              # antal candles att hämta
+  limit: 500              # antal candles att hämta (default per timeframe)
+  timeframe_limits:       # override för långa TF så äldre labels inte hamnar out-of-window
+    4h: 1000              # obs: en CCXT-hämtning är ofta börs-kapad ~1000
+    1d: 1000
+    1w: 1000
+    1M: 500
 
 pivots:
   lookback: 3             # barer på varje sida för lokalt extrem
@@ -52,3 +57,8 @@ backtest:
   warmup_bars: 60   # barer innan första urvalet
   step: 1           # stega cursorn så här många barer per steg
   extension_tol_bars: 5  # max Δend-bar för att räkna en ändring som förlängning (ej hopp)
+  # Stabilitets-gate (Validate). Drift är förstklassig kriterie, inte bara flip.
+  gate_max_flip_rate: 0.35              # max andel riktiga hopp
+  gate_min_confirmed_rate: 0.5          # min andel bekräftade valda swingar
+  gate_min_direction_consistency: 0.8   # min riktningskoherens steg-till-steg
+  gate_max_endpoint_drift_bars: 40.0    # max snitt-drift (barer) vid hopp

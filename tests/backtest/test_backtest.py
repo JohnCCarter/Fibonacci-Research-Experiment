@@ -59,6 +59,26 @@ def test_walk_forward_is_causal():
             assert r["swing"].end.index <= r["t"]
 
 
+def test_future_bars_do_not_change_past_selection():
+    """Look-ahead-regression: att lägga till framtida barer får INTE ändra ett
+    redan fattat kausalt val. Om det gör det läcker framtid in i urvalet."""
+    df = _trending_df()
+    settings = _settings()
+    short = df.iloc[:120]
+    extended = df  # samma serie + fler framtida barer
+
+    short_recs = walk_forward_selection(short, settings, warmup_bars=50, step=5)
+    ext_recs = {r["t"]: r["swing"] for r in walk_forward_selection(extended, settings, 50, 5)}
+
+    assert short_recs
+    for r in short_recs:
+        t = r["t"]
+        a, b = r["swing"], ext_recs[t]
+        ids_a = None if a is None else (a.start.index, a.end.index)
+        ids_b = None if b is None else (b.start.index, b.end.index)
+        assert ids_a == ids_b, f"val vid t={t} ändrades när framtida barer lades till"
+
+
 def test_stability_metrics_shape_and_bounds():
     df = _trending_df()
     records = walk_forward_selection(df, _settings(), warmup_bars=50, step=5)
