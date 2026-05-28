@@ -218,9 +218,10 @@ __marimo__/
 .streamlit/secrets.toml
 
 # --- Fibonacci-engine projekt-specifikt ---
+tmp/
 # Cachad marknadsdata och referensbilder versioneras inte.
 data/raw/
 data/screenshots/
-# Experiment-artefakter (audit-mappar) versioneras inte; leaderboard versioneras.
+# Per-körning audit-mappar versioneras inte (artefakter, inte källa).
+# experiments/results/*.jsonl och experiments/label_review/ versioneras (default).
 experiments/runs/
-!experiments/leaderboard.jsonl

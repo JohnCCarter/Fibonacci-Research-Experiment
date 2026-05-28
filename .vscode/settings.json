@@ -1,0 +1,14 @@
+{
+  "workbench.editor.alwaysShowEditorActions": true,
+  "workbench.editor.centeredLayoutFixedWidth": true,
+  "python.languageServer": "None",
+  "cursorpyright.disableLanguageServices": true,
+  "cursorpyright.disableTaggedHints": true,
+  "cursorpyright.disableOrganizeImports": true,
+  "cursorpyright.analysis.typeCheckingMode": "off",
+  "cursorpyright.analysis.diagnosticMode": "openFilesOnly",
+  "scm.alwaysShowActions": true,
+  "scm.alwaysShowRepositories": true,
+  "git.showCursorWorktrees": true,
+  "terminal.sourceControlRepositoriesKind": "integrated"
+}
