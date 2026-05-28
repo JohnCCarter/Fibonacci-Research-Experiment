@@ -1,49 +1,65 @@
 from argparse import Namespace
 
-from fibengine.config import DataConfig
+from fibengine.config import DataConfig, Settings
 from fibengine.labeling import tool
+from fibengine.labeling.tool import (
+    LabelWorkspace,
+    _apply_cli_overrides,
+    _cycle,
+    _fib_prices_from_picks,
+)
 
 
-def test_run_label_tool_applies_cli_data_overrides(monkeypatch, synthetic_df):
-    seen = {}
+def test_apply_cli_data_overrides():
+    settings = _apply_cli_overrides(
+        Settings(),
+        Namespace(exchange=None, symbol="ETH/USDT", timeframe="1w", limit=300),
+    )
 
-    class DummySettings:
-        data = DataConfig()
+    assert settings.data.symbol == "ETH/USDT"
+    assert settings.data.timeframe == "1w"
+    assert settings.data.limit == 300
 
-    monkeypatch.setattr(tool, "load_settings", lambda: DummySettings())
-    monkeypatch.setattr(tool, "find_label", lambda *_args: None)
+
+def test_cycle_wraps_values():
+    assert _cycle(["15m", "1h", "1w"], "1w", 1) == "15m"
+    assert _cycle(["15m", "1h", "1w"], "15m", -1) == "1w"
+
+
+def test_fib_prices_from_picks_handles_up_and_down_legs():
+    up = _fib_prices_from_picks(
+        {"low": (1, 100.0), "high": (2, 120.0)},
+        [0.5],
+    )
+    down = _fib_prices_from_picks(
+        {"high": (1, 120.0), "low": (2, 100.0)},
+        [0.5],
+    )
+
+    assert up[0.5] == 110.0
+    assert down[0.5] == 110.0
+
+
+def test_workspace_cycles_market_without_mutating_other_fields(monkeypatch, synthetic_df):
+    seen: list[DataConfig] = []
 
     def fake_load_candles(cfg):
-        seen["cfg"] = cfg
+        seen.append(cfg)
         return synthetic_df
 
     monkeypatch.setattr(tool, "load_candles", fake_load_candles)
+    monkeypatch.setattr(tool, "find_label", lambda *_args: None)
+    settings = Settings()
+    workspace = LabelWorkspace(
+        settings=settings,
+        symbols=["BTC/USDT", "ETH/USDT"],
+        timeframes=["1h", "1w"],
+    )
 
-    class DummyCanvas:
-        def mpl_connect(self, *_args):
-            return None
+    workspace.cycle_symbol(1)
+    workspace.cycle_timeframe(1)
 
-        def draw_idle(self):
-            return None
-
-    class DummyFig:
-        canvas = DummyCanvas()
-
-    class DummyAxis:
-        collections = []
-        texts = []
-
-        def plot(self, *_args, **_kwargs):
-            return None
-
-        def set_title(self, *_args, **_kwargs):
-            return None
-
-    monkeypatch.setattr(tool.plt, "subplots", lambda **_kwargs: (DummyFig(), DummyAxis()))
-    monkeypatch.setattr(tool.plt, "show", lambda: None)
-
-    tool.run_label_tool(Namespace(exchange=None, symbol="ETH/USDT", timeframe="1w", limit=300))
-
-    assert seen["cfg"].symbol == "ETH/USDT"
-    assert seen["cfg"].timeframe == "1w"
-    assert seen["cfg"].limit == 300
+    assert workspace.data.symbol == "ETH/USDT"
+    assert workspace.data.timeframe == "1w"
+    assert seen[-1].symbol == "ETH/USDT"
+    assert seen[-1].timeframe == "1w"
