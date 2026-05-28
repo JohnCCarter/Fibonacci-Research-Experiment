@@ -73,5 +73,10 @@ provisoriska ritas streckade i plotten.
 
 ## Arbetsflöde för facit
 
+Viktigt: dina TradingView-ritningar är inte "den heliga sanningen" och ska inte
+kopieras blint. De är mänskliga referenspunkter för att se om motorn hittar
+rimliga kandidater och beter sig begripligt. Om motorn ibland väljer en annan
+leg än en ritning är det en signal att undersöka, inte automatiskt ett fel.
+
 1. Labela dina setups med `labeling/tool.py` → exakta tid+pris sparas som JSON.
 2. Arkivera TradingView-screenshots i `data/screenshots/` som visuell referens.

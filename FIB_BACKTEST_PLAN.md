@@ -39,6 +39,11 @@ Output:
 
 Goal: ensure the pivot candidate set can actually contain the swing points a human would draw.
 
+Note: manual drawings and TradingView screenshots are reference material, not
+the objective function. They help us diagnose whether the engine can see the
+same type of structure a human sees; they should not be used to force the
+engine to copy every individual drawing.
+
 Scope:
 - Add or collect manually labeled examples in `data/labels/`.
 - Measure whether detected pivots land near labeled high/low bars before tuning scoring weights.
