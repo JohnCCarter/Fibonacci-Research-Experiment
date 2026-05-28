@@ -1,0 +1,15 @@
+{
+  "exchange": "binance",
+  "symbol": "BTC/USDT",
+  "timeframe": "1h",
+  "high": {
+    "timestamp": "2026-05-17T21:00:00+00:00",
+    "price": 78485.36
+  },
+  "low": {
+    "timestamp": "2026-05-17T23:00:00+00:00",
+    "price": 76735.16
+  },
+  "note": "",
+  "created_at": "2026-05-28T11:06:36.694555+00:00"
+}

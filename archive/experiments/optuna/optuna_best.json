@@ -1,0 +1,25 @@
+{
+  "run_id": "optuna_20260528T135159Z",
+  "timestamp": "2026-05-28T13:52:20.990886+00:00",
+  "trials": 50,
+  "seed": 42,
+  "fib_penalty": 0.15,
+  "best_value": -0.11278076923076924,
+  "best_trial": 31,
+  "best_params": {
+    "cleanliness": 1.6995837184358755,
+    "duration": -0.058279704940653154,
+    "magnitude": 1.8301257394180273,
+    "prominence": -1.0214408397232715,
+    "recency": -0.08781898008756439,
+    "round_number": -1.122773892824126,
+    "scale_confluence": -1.74906464986506,
+    "structure_alignment": 2.378602351630608
+  },
+  "best_attrs": {
+    "n": 13,
+    "mean_agreement": 0.025415,
+    "mean_fib_err_frac": 0.921308,
+    "objective": -0.112781
+  }
+}

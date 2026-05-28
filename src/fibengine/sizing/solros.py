@@ -11,9 +11,9 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from fibengine.config import SizingConfig
-from fibengine.fib import fib_levels
-from fibengine.models import Swing
+from fibengine.core.config import SizingConfig
+from fibengine.core.fib import fib_levels
+from fibengine.core.models import Swing
 
 
 @dataclass

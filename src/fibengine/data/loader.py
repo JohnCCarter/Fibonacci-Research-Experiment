@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from fibengine.config import DataConfig
-from fibengine.data.fetch import cache_path, fetch_and_cache
+from fibengine.core.config import DataConfig
+from fibengine.data.fetch import cache_path, fetch_and_cache, legacy_cache_path
 
 
 def atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
@@ -24,6 +24,10 @@ def atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
 def load_candles(cfg: DataConfig, fetch_if_missing: bool = True) -> pd.DataFrame:
     """Ladda candles från cache; hämta från börsen om de saknas."""
     path = cache_path(cfg)
+    if not path.exists():
+        legacy = legacy_cache_path(cfg)
+        if legacy.exists():
+            path = legacy
     if not path.exists():
         if not fetch_if_missing:
             raise FileNotFoundError(f"Ingen cache: {path}. Kör fetch först.")

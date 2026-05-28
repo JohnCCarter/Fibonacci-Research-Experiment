@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pandas as pd
 
-from fibengine.config import PivotConfig
+from fibengine.core.config import PivotConfig
+from fibengine.core.models import Pivot
 from fibengine.data.loader import atr
-from fibengine.models import Pivot
 
 
 def _is_fractal_high(highs, i: int, n_side: int, n: int) -> bool:
@@ -69,9 +69,7 @@ def detect_pivots(df: pd.DataFrame, cfg: PivotConfig) -> list[Pivot]:
                 )
         if is_low and low_prominence is not None:
             if low_prominence >= cfg.min_prominence_atr:
-                pivots.append(
-                    Pivot(i, df.index[i], float(lows[i]), "low", float(low_prominence))
-                )
+                pivots.append(Pivot(i, df.index[i], float(lows[i]), "low", float(low_prominence)))
 
     return _dedupe_alternating(pivots)
 

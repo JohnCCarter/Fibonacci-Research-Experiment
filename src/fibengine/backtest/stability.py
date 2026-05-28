@@ -10,9 +10,9 @@ from __future__ import annotations
 
 import pandas as pd
 
-from fibengine.config import Settings
-from fibengine.models import Swing
-from fibengine.scoring import select_swing
+from fibengine.core.config import Settings
+from fibengine.core.models import Swing
+from fibengine.core.scoring import select_swing
 
 
 def walk_forward_selection(
@@ -54,15 +54,21 @@ def stability_metrics(records: list[dict], extension_tol_bars: int = 5) -> dict:
     dirs = [None if s is None else s.direction for s in legs]
     n = len(ids)
     if n < 2:
-        return {"steps": n, "flip_rate": 0.0, "raw_change_rate": 0.0,
-                "extension_rate": 0.0, "persistence_steps": float(n),
-                "direction_consistency": 1.0, "mean_endpoint_drift_bars": 0.0,
-                "confirmed_rate": _confirmed_rate(legs), "n_none": sum(1 for x in ids if x is None)}
+        return {
+            "steps": n,
+            "flip_rate": 0.0,
+            "raw_change_rate": 0.0,
+            "extension_rate": 0.0,
+            "persistence_steps": float(n),
+            "direction_consistency": 1.0,
+            "mean_endpoint_drift_bars": 0.0,
+            "confirmed_rate": _confirmed_rate(legs),
+            "n_none": sum(1 for x in ids if x is None),
+        }
 
     pairs = list(zip(ids, ids[1:], strict=False))
     transitions = [
-        _transition(a, b, extension_tol_bars)
-        for a, b in zip(legs, legs[1:], strict=False)
+        _transition(a, b, extension_tol_bars) for a, b in zip(legs, legs[1:], strict=False)
     ]
     n_pairs = len(pairs)
     raw_change_rate = sum(1 for a, b in pairs if a != b) / n_pairs
