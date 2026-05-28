@@ -32,6 +32,34 @@ Tänk dig att projektet har misslyckats. Vad gick fel? Fyll på listan löpande.
   flytta sin endpunkt (priset gör nya highs/lows) → Fib-nivåerna skiftar.
   → Agera bara på `status == "confirmed"`; behandla provisoriska som "håller på
   att formas".
+- **Generalisering hävdas från en tunn matris.** 3 symboler × 3 timeframes säger
+  lite om robusthet, och aggregatet döljer att enskilda rader är svaga (t.ex. BTC
+  15m) eller har hög endpoint-drift trots bra flip-rate (t.ex. SOL 1h, ~52 barer).
+  → rapportera alltid per symbol/timeframe, inte bara snitt; behandla
+  matriskörningar som *Research*, inte Validate; kräv fler marknader/labels innan
+  promotion.
+- **Endpoint-drift ignoreras till förmån för flip_rate.** En "stabil" swing vars
+  endpunkt ändå vandrar många barer är ekonomiskt instabil — låg flip_rate räcker
+  inte. → gör `drift` till en förstklassig gate-metric vid sidan av
+  flip/confirmed-rate.
+- **Tyst label-exkludering döljer ett krympande sampel.** Out-of-window-labels
+  exkluderas korrekt från recall/agreement, men om många faller bort beräknas
+  måtten på allt färre punkter och ser bättre ut än verkligheten. → logga och spåra
+  antalet exkluderade; åtgärda källan (label-tidsstämplar, längre fönster för
+  1M/1w/1d), inte bara symptomet.
+- **Confirm-trösklar för lösa eller för strikta.** `fractal_n=1` bekräftar redan
+  efter en bar och `confirm_min_retrace=0.1` är lågt → swingar kan stämplas
+  `confirmed` för tidigt. → övervaka att `confirmed_rate` håller sig i ett rimligt
+  band; sätt trösklarna på principgrund och spåra ändringar i leaderboard, en sak i
+  taget.
+- **Coverage-gate ger falsk trygghet.** 60%-gaten + huvudsakligen happy-path-tester
+  fångar inte adversariella fall (kausalitet testas men punktvis). → behåll
+  kausal-/invariant-tester och utöka dem; höj aldrig promotion-status enbart på
+  grön CI.
+- **Spårmodellen kringgås.** Research-resultat (matriser, backtests) behandlas som
+  Validate-evidens och promotas utan att gaten i `REPO_POLICY.md §13` är uppfylld.
+  → ingen "trusted engine behavior" utan reproducerbar validate-körning + grön
+  `pytest` + reflektion innan något når Promotion-ytan.
 
 ## Reflektioner per experiment
 
