@@ -56,10 +56,13 @@ def evaluate(
     key_levels = [0.382, 0.5, 0.618]
     pred_fib = fib_from_prices(pred_low, pred_high, key_levels)
     man_fib = fib_from_prices(label.low.price, label.high.price, key_levels)
-    man_range = abs(label.high.price - label.low.price) or float("nan")
-    fib_errs = {
-        lvl: abs(pred_fib[lvl] - man_fib[lvl]) / man_range for lvl in key_levels
-    }
+    man_range = abs(label.high.price - label.low.price)
+    if man_range <= 1e-12:
+        fib_errs = {lvl: 0.0 for lvl in key_levels}
+    else:
+        fib_errs = {
+            lvl: abs(pred_fib[lvl] - man_fib[lvl]) / man_range for lvl in key_levels
+        }
     mean_fib_err = float(np.mean(list(fib_errs.values())))
 
     # Mjuk agreement: exponentiell avklingning per komponent, medelvärde i [0, 1].

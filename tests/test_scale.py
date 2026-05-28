@@ -60,3 +60,12 @@ def test_empty_degrees_is_neutral():
         end=Pivot(60, df.index[60], 140.0, "high", 5.0),
     )
     assert endpoint_confluence(swing, {}, tol_bars=3) == 0.5
+
+
+def test_empty_pivot_lists_are_neutral():
+    df = _df_with_one_big_swing()
+    swing = Swing(
+        start=Pivot(0, df.index[0], 100.0, "low", 5.0),
+        end=Pivot(60, df.index[60], 140.0, "high", 5.0),
+    )
+    assert endpoint_confluence(swing, {12: []}, tol_bars=3) == 0.5

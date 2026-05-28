@@ -20,7 +20,7 @@ def classify_swing(
     """Returnera "confirmed" eller "provisional" för den valda legen."""
     n = len(df)
     bars_after = (n - 1) - swing.end.index
-    if bars_after < fractal_n:
+    if bars_after < fractal_n or bars_after <= 0:
         return "provisional"
 
     price_range = swing.price_range
@@ -29,6 +29,8 @@ def classify_swing(
 
     after_high = df["high"].to_numpy()[swing.end.index + 1 :]
     after_low = df["low"].to_numpy()[swing.end.index + 1 :]
+    if len(after_high) == 0 or len(after_low) == 0:
+        return "provisional"
     if swing.end.kind == "high":
         retrace = (swing.end.price - after_low.min()) / price_range
     else:

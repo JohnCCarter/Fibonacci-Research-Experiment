@@ -41,6 +41,18 @@ def test_price_miss_lowers_agreement(synthetic_df):
     assert 0.0 <= m_missed["agreement"] <= 1.0
 
 
+def test_zero_range_label_keeps_metrics_finite(synthetic_df):
+    swing = _swing(synthetic_df)
+    label = SwingLabel(
+        exchange="binance", symbol="BTC/USDT", timeframe="1h",
+        high=Point(synthetic_df.index[60].isoformat(), 130.0),
+        low=Point(synthetic_df.index[40].isoformat(), 130.0),
+    )
+    m = evaluate(synthetic_df, swing, label, atr_value=2.0, cfg=EvaluationConfig())
+    assert m["mean_fib_err_frac"] == 0.0
+    assert 0.0 <= m["agreement"] <= 1.0
+
+
 def test_fib_levels_monotonic_for_up_leg():
     levels = fib_from_prices(100.0, 120.0, [0.382, 0.5, 0.618])
     assert levels[0.382] > levels[0.5] > levels[0.618]

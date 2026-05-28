@@ -44,3 +44,10 @@ def test_provisional_when_no_pullback():
     df = _df(closes)
     swing = _up_swing(df, 0, 10)
     assert classify_swing(df, swing, fractal_n=2, min_retrace=0.1) == "provisional"
+
+
+def test_provisional_when_fractal_zero_and_no_future_bars():
+    closes = [100 + i * 2 for i in range(11)]
+    df = _df(closes)
+    swing = _up_swing(df, 0, 10)
+    assert classify_swing(df, swing, fractal_n=0, min_retrace=0.1) == "provisional"

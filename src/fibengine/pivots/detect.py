@@ -54,17 +54,23 @@ def detect_pivots(df: pd.DataFrame, cfg: PivotConfig) -> list[Pivot]:
             is_high = highs[i] == window_high
             is_low = lows[i] == window_low
 
-        if is_high:
-            prominence = (highs[i] - window_low) / local_atr
-            if prominence >= cfg.min_prominence_atr:
+        high_prominence = (highs[i] - window_low) / local_atr if is_high else None
+        low_prominence = (window_high - lows[i]) / local_atr if is_low else None
+        if is_high and is_low:
+            if high_prominence == low_prominence:
+                continue
+            is_high = high_prominence > low_prominence
+            is_low = not is_high
+
+        if is_high and high_prominence is not None:
+            if high_prominence >= cfg.min_prominence_atr:
                 pivots.append(
-                    Pivot(i, df.index[i], float(highs[i]), "high", float(prominence))
+                    Pivot(i, df.index[i], float(highs[i]), "high", float(high_prominence))
                 )
-        if is_low:
-            prominence = (window_high - lows[i]) / local_atr
-            if prominence >= cfg.min_prominence_atr:
+        if is_low and low_prominence is not None:
+            if low_prominence >= cfg.min_prominence_atr:
                 pivots.append(
-                    Pivot(i, df.index[i], float(lows[i]), "low", float(prominence))
+                    Pivot(i, df.index[i], float(lows[i]), "low", float(low_prominence))
                 )
 
     return _dedupe_alternating(pivots)

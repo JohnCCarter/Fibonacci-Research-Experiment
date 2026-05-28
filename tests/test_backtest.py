@@ -6,6 +6,7 @@ from fibengine.backtest.stability import (
     walk_forward_selection,
 )
 from fibengine.config import Settings
+from fibengine.models import Pivot, Swing
 
 
 def _trending_df() -> pd.DataFrame:
@@ -67,3 +68,18 @@ def test_honest_flip_rate_excludes_extensions():
     # ska fångas som extension i en trendande serie.
     assert m["flip_rate"] <= m["raw_change_rate"]
     assert m["extension_rate"] > 0.0
+
+
+def test_direction_consistency_ignores_none_pairs():
+    df = _trending_df()
+    swing_a = Swing(
+        start=Pivot(0, df.index[0], 100.0, "low", 1.0),
+        end=Pivot(10, df.index[10], 110.0, "high", 1.0),
+    )
+    swing_b = Swing(
+        start=Pivot(0, df.index[0], 100.0, "low", 1.0),
+        end=Pivot(12, df.index[12], 112.0, "high", 1.0),
+    )
+    records = [{"swing": swing_a}, {"swing": None}, {"swing": swing_b}, {"swing": swing_a}]
+    m = stability_metrics(records)
+    assert m["direction_consistency"] == 1.0

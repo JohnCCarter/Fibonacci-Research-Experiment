@@ -8,11 +8,17 @@ import matplotlib
 
 matplotlib.use("Agg")  # headless-säkert
 import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from fibengine.fib import fib_levels  # noqa: E402
 from fibengine.labeling.store import SwingLabel  # noqa: E402
 from fibengine.models import Swing  # noqa: E402
+
+
+def _nearest_bar(df: pd.DataFrame, ts: str) -> int:
+    target = pd.to_datetime(ts, utc=True)
+    return int(np.argmin(np.abs((df.index - target).total_seconds())))
 
 
 def plot_prediction(
@@ -41,10 +47,8 @@ def plot_prediction(
 
     # Manuellt facit.
     if label is not None:
-        hi_ts = pd.to_datetime(label.high.timestamp, utc=True)
-        lo_ts = pd.to_datetime(label.low.timestamp, utc=True)
-        man_high_bar = int((df.index == hi_ts).argmax())
-        man_low_bar = int((df.index == lo_ts).argmax())
+        man_high_bar = _nearest_bar(df, label.high.timestamp)
+        man_low_bar = _nearest_bar(df, label.low.timestamp)
         ax.scatter([man_high_bar], [label.high.price], color="red", s=90, zorder=6,
                    label="facit high")
         ax.scatter([man_low_bar], [label.low.price], color="green", s=90, zorder=6,

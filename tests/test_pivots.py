@@ -1,3 +1,6 @@
+import numpy as np
+import pandas as pd
+
 from fibengine.config import PivotConfig
 from fibengine.pivots.detect import detect_pivots
 
@@ -36,3 +39,20 @@ def test_fractal_mode_still_finds_major_swings(synthetic_df):
     kinds = [p.kind for p in pivots]
     for a, b in zip(kinds, kinds[1:], strict=False):
         assert a != b
+
+
+def test_window_mode_does_not_emit_two_pivots_for_same_bar():
+    idx = pd.date_range("2024-01-01", periods=20, freq="1h", tz="UTC")
+    close = np.full(20, 100.0)
+    high = np.full(20, 101.0)
+    low = np.full(20, 99.0)
+    high[10] = 120.0
+    low[10] = 80.0
+    df = pd.DataFrame(
+        {"open": close, "high": high, "low": low, "close": close, "volume": np.ones(20)},
+        index=idx,
+    )
+    pivots = detect_pivots(
+        df, PivotConfig(lookback=2, atr_period=2, min_prominence_atr=0.1, mode="window")
+    )
+    assert len([p for p in pivots if p.index == 10]) <= 1

@@ -6,9 +6,9 @@ from fibengine.models import Swing
 
 
 def fib_levels(swing: Swing, levels: list[float]) -> dict[float, float]:
-    """Mappa varje Fib-ratio till ett pris längs legen start -> end.
+    """Mappa varje Fib-ratio till ett retracement-pris från legens endpunkt.
 
-    0.0 ligger vid legens start, 1.0 vid dess end. För en upp-leg (low->high)
+    0.0 ligger vid legens end, 1.0 vid dess start. För en upp-leg (low->high)
     ger högre ratio lägre pris (retracement nedåt), och tvärtom för en ned-leg.
     """
     start, end = swing.start.price, swing.end.price

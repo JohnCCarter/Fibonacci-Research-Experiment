@@ -1,3 +1,6 @@
+import pytest
+from pydantic import ValidationError
+
 from fibengine.config import SizingConfig
 from fibengine.models import Pivot, Swing
 from fibengine.sizing.solros import build_sizing_plan
@@ -29,3 +32,8 @@ def test_entry_prices_monotonic_along_up_leg(synthetic_df):
     # Upp-leg (105 -> 130): högre retracement-ratio = lägre pris.
     prices = [e.price for e in plan]
     assert prices[0] > prices[1] > prices[2]
+
+
+def test_rejects_mismatched_level_and_size_counts():
+    with pytest.raises(ValidationError):
+        SizingConfig(entry_levels=[0.382, 0.5], sizes=[1.0])

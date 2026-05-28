@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG_PATH = REPO_ROOT / "config" / "settings.yaml"
@@ -17,26 +17,26 @@ class DataConfig(BaseModel):
     exchange: str = "binance"
     symbol: str = "BTC/USDT"
     timeframe: str = "1h"
-    limit: int = 500
+    limit: int = Field(default=500, ge=1)
 
 
 class PivotConfig(BaseModel):
-    lookback: int = 5
-    atr_period: int = 14
-    min_prominence_atr: float = 0.5
+    lookback: int = Field(default=5, ge=1)
+    atr_period: int = Field(default=14, ge=1)
+    min_prominence_atr: float = Field(default=0.5, ge=0.0)
     mode: str = "window"   # "window" (lokala extrema) eller "fractal" (strikt Williams)
-    fractal_n: int = 2     # barer på varje sida i fraktal-läge (2 = 5-stapelsmönster)
+    fractal_n: int = Field(default=2, ge=1)  # barer på varje sida i fraktal-läge
 
 
 class ScoringConfig(BaseModel):
     weights: dict[str, float] = Field(default_factory=dict)
-    duration_target: int = 20
-    max_candidate_legs: int = 50
-    magnitude_scale_atr: float = 10.0  # ATR-skala där magnitude-featuren mättas
-    structure_window: int = 6          # antal färska pivots som väger in i HH/HL
-    confluence_degrees: list[int] = Field(default_factory=lambda: [5, 12])  # större fraktal-grader
-    confluence_tol_bars: int = 3       # hur nära en större-grads-pivot måste ligga
-    confirm_min_retrace: float = 0.1   # pullback (andel av leg) för att räknas som bekräftad
+    duration_target: int = Field(default=20, ge=1)
+    max_candidate_legs: int = Field(default=50, ge=1)
+    magnitude_scale_atr: float = Field(default=10.0, gt=0.0)
+    structure_window: int = Field(default=6, ge=1)
+    confluence_degrees: list[int] = Field(default_factory=lambda: [5, 12])
+    confluence_tol_bars: int = Field(default=3, ge=0)
+    confirm_min_retrace: float = Field(default=0.1, ge=0.0)
 
 
 class FibConfig(BaseModel):
@@ -44,9 +44,9 @@ class FibConfig(BaseModel):
 
 
 class EvaluationConfig(BaseModel):
-    price_tol_atr: float = 0.5
-    time_tol_bars: int = 3
-    fib_level_tol: float = 0.02
+    price_tol_atr: float = Field(default=0.5, gt=0.0)
+    time_tol_bars: int = Field(default=3, ge=1)
+    fib_level_tol: float = Field(default=0.02, gt=0.0)
 
 
 class SizingConfig(BaseModel):
@@ -55,12 +55,18 @@ class SizingConfig(BaseModel):
     entry_levels: list[float] = Field(default_factory=lambda: [0.382, 0.5, 0.618])
     sizes: list[float] = Field(default_factory=lambda: [1.0, 2.0, 3.0])
 
+    @model_validator(mode="after")
+    def validate_lengths(self) -> SizingConfig:
+        if len(self.entry_levels) != len(self.sizes):
+            raise ValueError("entry_levels and sizes must have the same length")
+        return self
+
 
 class BacktestConfig(BaseModel):
     # Kausalt walk-forward: mät hur stabilt urvalet är över tid (Lager A).
-    warmup_bars: int = 60  # antal barer innan första urvalet (uppvärmning)
-    step: int = 1          # stega cursorn så här många barer per steg
-    extension_tol_bars: int = 5  # max Δend-bar för att räkna en ändring som förlängning
+    warmup_bars: int = Field(default=60, ge=0)
+    step: int = Field(default=1, ge=1)
+    extension_tol_bars: int = Field(default=5, ge=0)
 
 
 class Settings(BaseModel):

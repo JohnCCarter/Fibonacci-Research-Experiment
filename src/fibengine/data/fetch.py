@@ -15,7 +15,7 @@ OHLCV_COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
 
 def cache_path(cfg: DataConfig) -> Path:
     symbol = cfg.symbol.replace("/", "-")
-    return RAW_DIR / f"{cfg.exchange}_{symbol}_{cfg.timeframe}.csv"
+    return RAW_DIR / f"{cfg.exchange}_{symbol}_{cfg.timeframe}_{cfg.limit}.csv"
 
 
 def fetch_ohlcv(cfg: DataConfig) -> pd.DataFrame:

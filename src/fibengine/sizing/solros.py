@@ -39,7 +39,7 @@ def build_sizing_plan(swing: Swing, cfg: SizingConfig) -> list[Entry]:
     prices = fib_levels(swing, cfg.entry_levels)
     return [
         Entry(ratio=lvl, price=prices[lvl], size=size)
-        for lvl, size in zip(cfg.entry_levels, cfg.sizes, strict=False)
+        for lvl, size in zip(cfg.entry_levels, cfg.sizes, strict=True)
     ]
 
 

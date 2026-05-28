@@ -70,8 +70,12 @@ def stability_metrics(records: list[dict], extension_tol_bars: int = 5) -> dict:
     extension_rate = sum(1 for t in transitions if t == "extension") / n_pairs
 
     dir_pairs = list(zip(dirs, dirs[1:], strict=False))
-    same_dir = sum(1 for a, b in dir_pairs if a is not None and a == b)
-    direction_consistency = same_dir / len(dir_pairs)
+    valid_dir_pairs = [(a, b) for a, b in dir_pairs if a is not None and b is not None]
+    if valid_dir_pairs:
+        same_dir = sum(1 for a, b in valid_dir_pairs if a == b)
+        direction_consistency = same_dir / len(valid_dir_pairs)
+    else:
+        direction_consistency = 0.5
 
     # Genomsnittlig run-längd för samma leg-identitet.
     runs: list[int] = []

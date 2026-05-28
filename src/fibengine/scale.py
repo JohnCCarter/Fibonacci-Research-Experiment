@@ -44,6 +44,8 @@ def endpoint_confluence(
     high_ep, low_ep = _endpoints(swing)
     scores: list[float] = []
     for pivots in multi_pivots.values():
+        if not pivots:
+            continue
         hi_conf = any(
             p.kind == "high" and abs(p.index - high_ep.index) <= tol_bars for p in pivots
         )
@@ -51,4 +53,6 @@ def endpoint_confluence(
             p.kind == "low" and abs(p.index - low_ep.index) <= tol_bars for p in pivots
         )
         scores.append((hi_conf + lo_conf) / 2.0)
+    if not scores:
+        return 0.5
     return sum(scores) / len(scores)
