@@ -43,9 +43,7 @@ som Research tills Validate-kriterier uppfyllts.
 ### Spårkoppling till repo-ytor
 
 - **Research / Experiment**
-  - `config/variants/`
-  - `src/fibengine/tuning/`
-  - `experiments/runs/optuna/`
+  - `config/variants/` (principmotiverade profiler — inte label-auto-tuning)
   - `experiments/label_review/`
   - `premortem/reflections/`
 
@@ -81,7 +79,6 @@ Varje modul ska ha ett tydligt ansvar. Inga “utils.py” utan kategori.
 | `labeling/` | Label-verktyg + lagring + batch |
 | `backtest/` | Walk-forward stabilitet + trade-backtest |
 | `sizing/` | Solros sizing (Lager B) |
-| `tuning/` | Experimentell parameteroptimering (Optuna m.m.) |
 | `viz/` | Plot-funktioner |
 | `experiment.py` | Standardrunner som loggar till `experiments/runs/` |
 | `core/logging_conf.py` | Loguru-setup |
@@ -107,7 +104,7 @@ Detta är **obligatoriskt** för att repot ska räknas som organiserat:
    `data/screenshots/{source}/{symbol}/{timeframe}/{filename}.png`
 3. **`experiments/runs/` MÅSTE** använda:
    `experiments/runs/{kind}/{YYYY-MM-DD}/{run_id}/`
-   där `kind ∈ {experiment, stability, optuna, archive}`.
+   där `kind ∈ {experiment, stability}`.
 4. **Indexfiler MÅSTE finnas och hållas uppdaterade**:
    - `data/raw/INDEX.md`
    - `data/screenshots/INDEX.md`
@@ -118,8 +115,8 @@ Detta är **obligatoriskt** för att repot ska räknas som organiserat:
    - `data/raw/`, `data/screenshots/`, `experiments/runs/`,
      `experiments/label_review/`, `data/labels/`
 6. **`config/settings.yaml` är baseline (MÅSTE)**:
-   - ska inte överlagras av tuning-runs.
-   - nya kandidater sparas i `config/variants/*.yaml`.
+   - vikter sätts på **principer**, inte genom auto-optimering mot manuella ritningar.
+   - nya kandidater sparas i `config/variants/*.yaml` med premortem-motivering.
    - `config/variants/INDEX.md` ska uppdateras när en ny variant läggs till.
 
 ## 4. Tester
@@ -147,7 +144,6 @@ experiments/
   runs/            ← audit-mappar per körtyp/datum + INDEX
     experiment/YYYY-MM-DD/run_...
     stability/YYYY-MM-DD/bt_...
-    optuna/YYYY-MM-DD/optuna_...
   label_review/    ← versionerade label-checkpoints
 ```
 
@@ -160,8 +156,6 @@ experiments/
 - `backtest_matrix.jsonl` — sweep över symbol/timeframe för stabilitet
 - `trade_matrix.jsonl` — sweep över symbol/timeframe för trade-ekonomi
 - `leaderboard.jsonl` — sammanfattning av `python -m fibengine.experiment`-körningar
-- `optuna_trials.jsonl` — trial-utfall från `python -m fibengine.tuning.optuna_runner`
-- `optuna_best.json` — senaste bästa Optuna-resultat (överskrivs med senaste körning)
 
 **`experiments/label_review/batches/<batch_id>/`** — där `batch_id` följer §3:
 - `metadata.json`
@@ -281,7 +275,7 @@ struktur eller arbetsflöde: uppdatera först, sen flytta filerna. Aldrig tvärt
 
 Något får bara klassas som **trusted engine behavior** när alla punkter är uppfyllda:
 
-1. Ursprunglig kandidat finns i Research-spåret (t.ex. `config/variants/` eller tuning-run).
+1. Ursprunglig kandidat finns i Research-spåret (t.ex. principmotiverad `config/variants/`).
 2. Validate-evidens finns (relevanta körningar i `experiments/results/`/`experiments/runs/stability/`).
 3. `uv run pytest` är grönt.
 4. Kort reflektion i `premortem/reflections/` dokumenterar beslutet.

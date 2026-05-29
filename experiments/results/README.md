@@ -10,5 +10,3 @@ Append-only resultatfiler (`*.jsonl`) från körningar.
 - `backtest_matrix.jsonl` stabilitet över symbol/timeframe-matris.
 - `trade_matrix.jsonl` trade-matris över symbol/timeframe.
 - `leaderboard.jsonl` sammanfattning av experimentkörningar.
-- `optuna_trials.jsonl` trial-resultat från Optuna tuning.
-- `optuna_best.json` senaste bästa Optuna-resultat.

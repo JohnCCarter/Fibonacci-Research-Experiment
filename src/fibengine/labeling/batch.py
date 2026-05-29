@@ -1,4 +1,4 @@
-"""Create lightweight label-review checkpoints for reproducible tuning.
+"""Create lightweight label-review checkpoints for reproducible review batches.
 
 Run:
     uv run python -m fibengine.labeling.batch

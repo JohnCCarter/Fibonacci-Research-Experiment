@@ -34,7 +34,7 @@ uv run python -m fibengine.labeling.tool     # klicka swing high/low -> facit
 uv run python -m fibengine.labeling.batch    # lättviktig label-checkpoint (manifest/hashar)
 uv run python -m fibengine.experiment        # kör pipeline + logga resultat
 uv run python -m fibengine.backtest.runner   # kausalt walk-forward: urvals-stabilitet
-uv run python -m fibengine.tuning.optuna_runner --trials 30  # optimering av scoring.weights
+uv run python -m fibengine.backtest.matrix   # stabilitet över symbol/timeframe-matris
 uv run pytest                                 # kör tester
 uv run pre-commit install                     # git hooks (en gång)
 uv run pre-commit run --all-files             # lint + format + test före push
@@ -42,12 +42,11 @@ uv run pre-commit run --all-files             # lint + format + test före push
 
 Kvalitetsgate: se [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) och CI i `.github/workflows/ci.yml`.
 
-Använd `--config` för varianter utan att ändra baseline:
+Använd `--config` för en principmotiverad variant under `config/variants/` utan att ändra baseline:
 
 ```bash
-uv run python -m fibengine.experiment --config config/variants/optuna_2026-05-28_trial31.yaml
-uv run python -m fibengine.backtest.runner --config config/variants/optuna_2026-05-28_trial31.yaml
-uv run python -m fibengine.tuning.optuna_runner --config config/settings.yaml --trials 30
+uv run python -m fibengine.experiment --config config/variants/<profil>.yaml
+uv run python -m fibengine.backtest.runner --config config/variants/<profil>.yaml
 ```
 
 ## Pipeline (Lager A)

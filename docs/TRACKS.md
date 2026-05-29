@@ -16,14 +16,15 @@ Syftet är att separera discovery från verifiering och från trusted behavior.
 - fri experimentation
 - snabb iteration
 - AI/reflection/premortem (obligatoriskt enligt policy)
-- Optuna/tuning och andra utforskande metoder
+- manuella, principmotiverade profiler i `config/variants/` (inte auto-tuning mot labels)
+
+**Inte tillåtet:**
+- automatisk vikt-optimering mot `agreement` / manuella ritningar
 
 **Inte krav:** full correctness eller production-grade stabilitet.
 
 **Primära ytor:**
-- `config/variants/*.yaml`
-- `src/fibengine/tuning/`
-- `experiments/runs/optuna/`
+- `config/variants/*.yaml` (principprofiler, dokumenterade)
 - `experiments/label_review/`
 - `premortem/reflections/`
 
