@@ -13,6 +13,7 @@ import json
 from datetime import UTC, datetime
 
 from fibengine.core.config import REPO_ROOT, Settings, load_settings
+from fibengine.core.logging_conf import setup_logging
 from fibengine.core.models import Pivot
 from fibengine.data.loader import load_candles
 from fibengine.evaluation.metrics import _bar_of_timestamp
@@ -51,13 +52,21 @@ def evaluate_label_recall(
     pivots = detect_pivots(df, settings.pivots)
     tol = tol_bars if tol_bars is not None else max(1, settings.pivots.lookback)
 
-    high_bar = _bar_of_timestamp(df, label.high.timestamp)
-    low_bar = _bar_of_timestamp(df, label.low.timestamp)
+    high_bar, high_in_window = _bar_of_timestamp(df, label.high.timestamp)
+    low_bar, low_in_window = _bar_of_timestamp(df, label.low.timestamp)
     high_pivot, high_dist = _nearest_pivot(pivots, high_bar, "high")
     low_pivot, low_dist = _nearest_pivot(pivots, low_bar, "low")
 
-    high_hit = high_dist is not None and high_dist <= tol
-    low_hit = low_dist is not None and low_dist <= tol
+    out_of_window = not (high_in_window and low_in_window)
+    # En out-of-window-label snäpps till en kant-bar; räkna inte det som en
+    # träff (skulle annars skriva falska recall-hits till ledger).
+    if out_of_window:
+        high_hit = low_hit = False
+        high_dist = low_dist = None
+        high_pivot = low_pivot = None
+    else:
+        high_hit = high_dist is not None and high_dist <= tol
+        low_hit = low_dist is not None and low_dist <= tol
 
     return {
         "exchange": label.exchange,
@@ -70,6 +79,7 @@ def evaluate_label_recall(
         "high_hit": high_hit,
         "low_hit": low_hit,
         "both_hit": high_hit and low_hit,
+        "out_of_window": out_of_window,
         "high_dist_bars": high_dist,
         "low_dist_bars": low_dist,
         "nearest_high": high_pivot.to_dict() if high_pivot else None,
@@ -77,10 +87,37 @@ def evaluate_label_recall(
     }
 
 
+def summarize_recall(rows: list[dict]) -> dict:
+    """Aggregera recall och gör exkluderingen EXPLICIT (inte tyst).
+
+    Out-of-window-labels exkluderas korrekt från recall, men om många faller bort
+    beräknas måtten på allt färre punkter och ser bättre ut än verkligheten. Här
+    räknas och flaggas de så att ett krympande sampel syns.
+    """
+    n = len(rows)
+    in_window = [r for r in rows if not r["out_of_window"]]
+    n_in = len(in_window)
+    n_excluded = n - n_in
+    summary = {
+        "n_labels": n,
+        "n_in_window": n_in,
+        "n_excluded_out_of_window": n_excluded,
+        "excluded_frac": round(n_excluded / n, 4) if n else 0.0,
+    }
+    if in_window:
+        summary["both_hit_rate"] = round(sum(1 for r in in_window if r["both_hit"]) / n_in, 4)
+        summary["high_hit_rate"] = round(sum(1 for r in in_window if r["high_hit"]) / n_in, 4)
+        summary["low_hit_rate"] = round(sum(1 for r in in_window if r["low_hit"]) / n_in, 4)
+    else:
+        summary["both_hit_rate"] = summary["high_hit_rate"] = summary["low_hit_rate"] = None
+    return summary
+
+
 def run_pivot_recall(settings: Settings | None = None) -> list[dict]:
     settings = settings or load_settings()
     rows: list[dict] = []
     run_id = datetime.now(UTC).strftime("pivot_recall_%Y%m%dT%H%M%SZ")
+    log = setup_logging(run_id, settings.config_hash())
     labels = list_labels()
 
     for label in labels:
@@ -98,9 +135,24 @@ def run_pivot_recall(settings: Settings | None = None) -> list[dict]:
             for row in rows:
                 f.write(json.dumps(row, sort_keys=True) + "\n")
 
+    summary = summarize_recall(rows)
+    if summary["n_excluded_out_of_window"]:
+        log.warning(
+            "Pivot-recall: {}/{} labels exkluderade som out-of-window "
+            "(ladda mer historik för dessa timeframes; recall mäts på {} kvar)",
+            summary["n_excluded_out_of_window"],
+            summary["n_labels"],
+            summary["n_in_window"],
+        )
+    log.info("Pivot-recall sammanfattning: {}", summary)
     return rows
 
 
 if __name__ == "__main__":
     result_rows = run_pivot_recall()
-    print(json.dumps({"labels": len(result_rows), "rows": result_rows}, indent=2))
+    print(
+        json.dumps(
+            {"summary": summarize_recall(result_rows), "rows": result_rows},
+            indent=2,
+        )
+    )

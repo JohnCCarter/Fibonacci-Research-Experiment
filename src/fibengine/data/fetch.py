@@ -15,18 +15,19 @@ OHLCV_COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
 
 def cache_path(cfg: DataConfig) -> Path:
     symbol = cfg.symbol.replace("/", "-")
-    return RAW_DIR / cfg.exchange.lower() / symbol / cfg.timeframe / f"limit_{cfg.limit}.csv"
+    limit = cfg.effective_limit()
+    return RAW_DIR / cfg.exchange.lower() / symbol / cfg.timeframe / f"limit_{limit}.csv"
 
 
 def legacy_cache_path(cfg: DataConfig) -> Path:
     symbol = cfg.symbol.replace("/", "-")
-    return RAW_DIR / f"{cfg.exchange}_{symbol}_{cfg.timeframe}_{cfg.limit}.csv"
+    return RAW_DIR / f"{cfg.exchange}_{symbol}_{cfg.timeframe}_{cfg.effective_limit()}.csv"
 
 
 def fetch_ohlcv(cfg: DataConfig) -> pd.DataFrame:
     """Hämta candles från börsen och returnera en DataFrame indexerad på tid."""
     exchange = getattr(ccxt, cfg.exchange)({"enableRateLimit": True})
-    rows = exchange.fetch_ohlcv(cfg.symbol, timeframe=cfg.timeframe, limit=cfg.limit)
+    rows = exchange.fetch_ohlcv(cfg.symbol, timeframe=cfg.timeframe, limit=cfg.effective_limit())
     df = pd.DataFrame(rows, columns=OHLCV_COLUMNS)
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms", utc=True)
     return df.set_index("timestamp")

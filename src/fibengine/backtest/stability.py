@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from fibengine.core.config import Settings
+from fibengine.core.config import BacktestConfig, Settings
 from fibengine.core.models import Swing
 from fibengine.core.scoring import select_swing
 
@@ -120,3 +120,23 @@ def _confirmed_rate(legs: list[Swing | None]) -> float:
     if not present:
         return 0.0
     return round(sum(1 for s in present if s.status == "confirmed") / len(present), 4)
+
+
+def stability_gate(metrics: dict, cfg: BacktestConfig) -> dict:
+    """Pass/fail-gate för urvals-stabilitet (Validate-spåret).
+
+    `mean_endpoint_drift_bars` behandlas som en förstklassig kriterie — inte bara
+    flip/confirmed. En "stabil" swing (låg flip_rate) vars endpunkt ändå vandrar
+    många barer vid hopp är ekonomiskt instabil och ska inte passera gaten.
+    """
+    checks = {
+        "flip_rate": metrics["flip_rate"] <= cfg.gate_max_flip_rate,
+        "confirmed_rate": metrics["confirmed_rate"] >= cfg.gate_min_confirmed_rate,
+        "direction_consistency": (
+            metrics["direction_consistency"] >= cfg.gate_min_direction_consistency
+        ),
+        "endpoint_drift_bars": (
+            metrics["mean_endpoint_drift_bars"] <= cfg.gate_max_endpoint_drift_bars
+        ),
+    }
+    return {"passed": all(checks.values()), "checks": checks}

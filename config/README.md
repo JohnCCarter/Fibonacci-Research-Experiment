@@ -3,7 +3,7 @@
 Konfiguration för körningar.
 
 - `settings.yaml` styr data, pivots, scoring, evaluation, sizing och backtest.
-- `variants/` innehåller alternativa settings-filer (t.ex. Optuna-förslag).
+- `variants/` innehåller alternativa settings-filer (manuellt satta på principgrund).
 - `variants/INDEX.md` indexerar alla varianter.
 - Laddas via `fibengine.core.config`.
 

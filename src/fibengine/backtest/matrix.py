@@ -14,7 +14,11 @@ from datetime import UTC, datetime
 
 import numpy as np
 
-from fibengine.backtest.stability import stability_metrics, walk_forward_selection
+from fibengine.backtest.stability import (
+    stability_gate,
+    stability_metrics,
+    walk_forward_selection,
+)
 from fibengine.core.config import REPO_ROOT, Settings, load_settings
 from fibengine.core.logging_conf import setup_logging
 from fibengine.data.loader import load_candles
@@ -79,7 +83,7 @@ def run_matrix(
             "exchange": case_settings.data.exchange,
             "symbol": case.symbol,
             "timeframe": case.timeframe,
-            "limit": case_settings.data.limit,
+            "limit": case_settings.data.effective_limit(),
             "config_hash": config_hash,
         }
         try:
@@ -91,18 +95,23 @@ def run_matrix(
                 case_settings.backtest.step,
             )
             metrics = stability_metrics(records, case_settings.backtest.extension_tol_bars)
+            gate = stability_gate(metrics, case_settings.backtest)
             row = {
                 **base_row,
                 "status": "ok",
                 "candles": len(df),
                 **metrics,
+                "gate_passed": gate["passed"],
+                "gate_checks": gate["checks"],
             }
             log.info(
-                "Matrix {} {} klart: flip={} confirmed={}",
+                "Matrix {} {} klart: flip={} confirmed={} drift={} gate_passed={}",
                 case.symbol,
                 case.timeframe,
                 metrics["flip_rate"],
                 metrics["confirmed_rate"],
+                metrics["mean_endpoint_drift_bars"],
+                gate["passed"],
             )
         except Exception as exc:  # noqa: BLE001 - record failures per case.
             row = {

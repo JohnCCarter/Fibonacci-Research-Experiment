@@ -21,4 +21,8 @@ Exempel: `binance/BTC-USDT/1h.json`
 
 Labels skrivs via `uv run python -m fibengine.labeling.tool`.
 
+Kör `uv run python -m fibengine.labeling.worklist` för att se täckning mot
+20–30-setup-målet (PREMORTEM.md) och få färdiga `labeling.tool`-kommandon för de
+symbol/timeframe-kombinationer som ännu saknar facit.
+
 Legacy platt filnamn (`binance_BTC-USDT_1h.json` på rot) stöds fortfarande vid läsning men nya sparas i kategoriserad struktur.
