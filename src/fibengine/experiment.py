@@ -125,7 +125,12 @@ def run_experiment(settings: Settings | None = None) -> Path:
     (run_dir / "config.json").write_text(json.dumps(settings.model_dump(), indent=2))
     log.info("Startar experiment {} (cfg {})", run_id, config_hash)
 
-    labels = list_labels()
+    # Agreement mäts bara mot mänskligt facit; maskin-labels exkluderas (kandidater,
+    # inte domare) så vi inte råkar mäta motorn mot sin egen output.
+    labels = list_labels(source="human")
+    n_machine = len(list_labels(source="machine"))
+    if n_machine:
+        log.info("Hoppar över {} maskin-labels i agreement (ej ground truth)", n_machine)
     results: list[dict] = []
     if not labels:
         log.warning("Inga labels i data/labels/ — kör enbart prediktion på konfig-symbolen.")
