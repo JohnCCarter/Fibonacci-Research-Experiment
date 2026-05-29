@@ -31,6 +31,7 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 uv sync --extra dev                          # bygg miljö + lockfile
 uv run python -m fibengine.data.fetch        # hämta + cacha candles (CCXT)
 uv run python -m fibengine.labeling.worklist # vad återstår att labela mot 20–30-målet
+uv run python -m fibengine.labeling.autolabel # maskin-kandidater (source=machine) att granska
 uv run python -m fibengine.labeling.tool     # klicka swing high/low -> facit
 uv run python -m fibengine.labeling.batch    # lättviktig label-checkpoint (manifest/hashar)
 uv run python -m fibengine.experiment        # kör pipeline + logga resultat
@@ -120,3 +121,15 @@ leg än en ritning är det en signal att undersöka, inte automatiskt ett fel.
 
 1. Labela dina setups med `labeling/tool.py` → exakta tid+pris sparas som JSON.
 2. Arkivera TradingView-screenshots i `data/screenshots/` som visuell referens.
+
+### Maskin-labeling (kandidater, inte facit)
+
+`labeling/autolabel.py` kan generera **provisoriska** swing-kandidater
+(`source="machine"`) från motorns eget urval, så att du slipper börja från ett
+tomt chart. Tre hårda regler skyddar facit-integriteten:
+
+- Maskin-labels **exkluderas** från recall/agreement (`pivot_recall`, `experiment`)
+  och räknas **inte** mot 20–30-målet — annars mäter vi motorn mot sin egen output.
+- En befintlig **mänsklig** label skrivs aldrig över.
+- Öppna kandidaten i `labeling.tool`, granska/justera och tryck `s` → den sparas som
+  `source="human"` (befordran). Rubrikstämpla aldrig en ogranskad kandidat som facit.

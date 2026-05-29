@@ -51,7 +51,9 @@ def test_run_experiment_writes_audit_and_aggregate(tmp_path, monkeypatch):
         low=Point(df.index[40].isoformat(), 105.0),
     )
     monkeypatch.setattr(exp_mod, "load_candles", lambda cfg, **k: df)
-    monkeypatch.setattr(exp_mod, "list_labels", lambda: [in_window])
+    monkeypatch.setattr(
+        exp_mod, "list_labels", lambda source=None: [in_window] if source != "machine" else []
+    )
     monkeypatch.setattr(exp_mod, "RUNS_DIR", tmp_path / "runs")
     monkeypatch.setattr(exp_mod, "LEADERBOARD", tmp_path / "leaderboard.jsonl")
 
@@ -74,7 +76,9 @@ def test_run_experiment_excludes_out_of_window_label(tmp_path, monkeypatch):
         low=Point(future, 105.0),
     )
     monkeypatch.setattr(exp_mod, "load_candles", lambda cfg, **k: df)
-    monkeypatch.setattr(exp_mod, "list_labels", lambda: [out_label])
+    monkeypatch.setattr(
+        exp_mod, "list_labels", lambda source=None: [out_label] if source != "machine" else []
+    )
     monkeypatch.setattr(exp_mod, "RUNS_DIR", tmp_path / "runs")
     monkeypatch.setattr(exp_mod, "LEADERBOARD", tmp_path / "leaderboard.jsonl")
 

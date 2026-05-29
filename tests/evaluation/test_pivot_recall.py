@@ -92,3 +92,29 @@ def test_summarize_recall_handles_all_excluded():
     assert summary["n_in_window"] == 0
     assert summary["excluded_frac"] == 1.0
     assert summary["both_hit_rate"] is None
+
+
+def test_run_pivot_recall_excludes_machine_labels(monkeypatch, tmp_path, synthetic_df):
+    # Integritet: maskin-labels får inte bli ground truth (cirkulärt).
+    from fibengine.labeling import store
+    from fibengine.labeling.store import Point, SwingLabel, save_label
+
+    monkeypatch.setattr(store, "LABELS_DIR", tmp_path)
+    monkeypatch.setattr(pivot_recall, "PIVOT_RECALL_RESULTS", tmp_path / "pivot_recall.jsonl")
+    monkeypatch.setattr(pivot_recall, "load_candles", lambda _cfg: synthetic_df)
+    monkeypatch.setattr(pivot_recall, "detect_pivots", lambda _df, _cfg: [])
+
+    pts = {
+        "high": Point(synthetic_df.index[60].isoformat(), 130.0),
+        "low": Point(synthetic_df.index[40].isoformat(), 105.0),
+    }
+    save_label(SwingLabel(exchange="binance", symbol="BTC/USDT", timeframe="1h", **pts))
+    save_label(
+        SwingLabel(exchange="binance", symbol="ETH/USDT", timeframe="1h", source="machine", **pts)
+    )
+
+    rows = pivot_recall.run_pivot_recall(Settings())
+
+    # Bara den mänskliga labeln evaluerades.
+    assert len(rows) == 1
+    assert rows[0]["symbol"] == "BTC/USDT"

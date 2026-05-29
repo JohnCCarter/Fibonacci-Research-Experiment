@@ -23,9 +23,9 @@ DEFAULT_SYMBOLS = ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
 DEFAULT_TIMEFRAMES = ["15m", "30m", "1h", "4h", "1d", "1w", "1M"]
 
 
-def labeled_combos() -> set[tuple[str, str, str]]:
-    """(exchange, symbol, timeframe) för varje sparad label."""
-    return {(lbl.exchange.lower(), lbl.symbol, lbl.timeframe) for lbl in list_labels()}
+def labeled_combos(source: str | None = None) -> set[tuple[str, str, str]]:
+    """(exchange, symbol, timeframe) för varje sparad label (ev. filtrerad på source)."""
+    return {(lbl.exchange.lower(), lbl.symbol, lbl.timeframe) for lbl in list_labels(source)}
 
 
 def target_combos(
@@ -43,10 +43,14 @@ def coverage_report(
     """Sammanfatta hur långt facit-korpusen kommit mot målet + vad som saknas."""
     symbols = symbols or DEFAULT_SYMBOLS
     timeframes = timeframes or DEFAULT_TIMEFRAMES
-    have = labeled_combos()
+    # Bara mänskligt facit räknas mot målet. Maskin-labels är kandidater att granska.
+    human = labeled_combos(source="human")
+    machine = labeled_combos(source="machine")
     targets = target_combos(exchange, symbols, timeframes)
-    missing = [combo for combo in targets if combo not in have]
-    n_labeled = len(have)
+    # "Saknar facit" = ingen MÄNSKLIG label (även om en maskin-kandidat finns).
+    missing = [combo for combo in targets if combo not in human]
+    machine_to_review = [combo for combo in targets if combo in machine and combo not in human]
+    n_labeled = len(human)
     return {
         "n_labeled": n_labeled,
         "target": target,
@@ -54,6 +58,8 @@ def coverage_report(
         "target_reached": n_labeled >= target,
         "n_target_combos": len(targets),
         "n_covered_combos": len(targets) - len(missing),
+        "n_machine_to_review": len(machine_to_review),
+        "machine_to_review": machine_to_review,
         "missing_combos": missing,
     }
 
@@ -65,19 +71,32 @@ def format_report(report: dict) -> str:
         else f"{report['remaining_to_target']} kvar till mål"
     )
     lines = [
-        f"Labels: {report['n_labeled']} / {report['target']} ({progress})",
+        f"Human-facit: {report['n_labeled']} / {report['target']} ({progress})",
         f"Target-matris: {report['n_covered_combos']}/{report['n_target_combos']} "
-        "kombinationer täckta",
+        "kombinationer täckta (mänskliga)",
     ]
-    if report["missing_combos"]:
-        lines.append("\nNästa att labela (kör kommandot, klicka high/low, tryck 's'):")
-        for exchange, symbol, timeframe in report["missing_combos"]:
+    if report.get("machine_to_review"):
+        lines.append(
+            f"\nMaskin-kandidater att granska ({report['n_machine_to_review']}) — "
+            "öppna i labeling.tool, justera, tryck 's' för att befordra till human:"
+        )
+        for exchange, symbol, timeframe in report["machine_to_review"]:
             lines.append(
                 "  uv run python -m fibengine.labeling.tool "
                 f"--exchange {exchange} --symbol {symbol} --timeframe {timeframe}"
             )
-    else:
-        lines.append("\nAlla target-kombinationer täckta.")
+    # Helt olabelade = saknar både human-facit och maskin-kandidat.
+    machine_set = set(report.get("machine_to_review", []))
+    empty = [combo for combo in report["missing_combos"] if combo not in machine_set]
+    if empty:
+        lines.append("\nHelt olabelade — labela för hand (klicka high/low, tryck 's'):")
+        for exchange, symbol, timeframe in empty:
+            lines.append(
+                "  uv run python -m fibengine.labeling.tool "
+                f"--exchange {exchange} --symbol {symbol} --timeframe {timeframe}"
+            )
+    if not report["missing_combos"]:
+        lines.append("\nAlla target-kombinationer har human-facit.")
     return "\n".join(lines)
 
 

@@ -27,6 +27,9 @@ class SwingLabel:
     low: Point
     note: str = ""
     created_at: str = ""
+    # "human" = manuellt facit (golden set). "machine" = maskingenererad kandidat
+    # (provisorisk, EXKLUDERAS från recall/agreement — får aldrig bli domare).
+    source: str = "human"
 
     def __post_init__(self):
         if isinstance(self.high, dict):
@@ -100,5 +103,9 @@ def load_label(path: str | Path) -> SwingLabel:
     return SwingLabel(**data)
 
 
-def list_labels() -> list[SwingLabel]:
-    return [load_label(p) for p in iter_label_files()]
+def list_labels(source: str | None = None) -> list[SwingLabel]:
+    """Alla labels, eller bara de med given `source` ("human"/"machine")."""
+    labels = [load_label(p) for p in iter_label_files()]
+    if source is None:
+        return labels
+    return [lbl for lbl in labels if lbl.source == source]
