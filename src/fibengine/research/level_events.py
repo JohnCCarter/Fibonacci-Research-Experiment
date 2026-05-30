@@ -16,12 +16,15 @@ Run:
 
 from __future__ import annotations
 
+import argparse
 import json
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
 import pandas as pd
 
+from fibengine.backtest.stability import walk_forward_selection
 from fibengine.core.config import REPO_ROOT, LevelEventConfig, Settings, load_settings
 from fibengine.core.fib import fib_levels
 from fibengine.core.models import Swing
@@ -29,6 +32,7 @@ from fibengine.core.scoring import select_swing
 from fibengine.data.loader import atr, load_candles
 
 LEVEL_EVENTS_RESULTS = REPO_ROOT / "experiments" / "results" / "level_events.jsonl"
+LEVEL_EVENTS_WF_RESULTS = REPO_ROOT / "experiments" / "results" / "level_events_walkforward.jsonl"
 
 
 @dataclass
@@ -228,5 +232,117 @@ def run_level_events(settings: Settings | None = None) -> dict:
     return record
 
 
+def _unique_confirmed_legs(records: list[dict]) -> list[tuple[int, Swing]]:
+    """Plocka varje distinkt *bekräftad* leg som walk-forward låste, kausalt vald.
+
+    Legen väljs kausalt (ingen framtid i urvalet). Dess interaktioner observeras
+    sedan på barerna efter legens slut — post-hoc annotering, aldrig live-signal.
+    """
+    seen: set[tuple[int, int]] = set()
+    legs: list[tuple[int, Swing]] = []
+    for r in records:
+        swing = r["swing"]
+        if swing is None or swing.status != "confirmed":
+            continue
+        key = (swing.start.index, swing.end.index)
+        if key in seen:
+            continue
+        seen.add(key)
+        legs.append((r["t"], swing))
+    return legs
+
+
+def walk_forward_level_events(df: pd.DataFrame, settings: Settings) -> dict:
+    """Aggregera nivå-interaktioner över alla bekräftade legs i en walk-forward.
+
+    Detta svarar på issue #8:s forskningsfråga 4 ("hur många händelser per nivå")
+    genom att följa varje leg över dess liv istället för ett enskilt nu-val.
+    """
+    bt = settings.backtest
+    records = walk_forward_selection(df, settings, bt.warmup_bars, bt.step)
+    legs = _unique_confirmed_legs(records)
+
+    ratios = settings.level_events.levels or settings.fib.levels
+    agg: dict[str, Counter] = {f"{r:g}": Counter() for r in ratios}
+    leg_summaries: list[dict] = []
+    total_events = 0
+
+    for t, swing in legs:
+        streams = detect_level_events(
+            df, swing, settings.level_events, settings.fib.levels, settings.pivots.atr_period
+        )
+        leg_events = 0
+        for stream in streams:
+            agg[stream.level] += Counter(e.auto_candidate for e in stream.events)
+            leg_events += len(stream.events)
+        total_events += leg_events
+        leg_summaries.append(
+            {
+                "first_confirmed_t": t,
+                "start_bar": swing.start.index,
+                "end_bar": swing.end.index,
+                "end_time": df.index[swing.end.index].isoformat(),
+                "direction": swing.direction,
+                "n_events": leg_events,
+            }
+        )
+
+    per_level = [
+        {
+            "level": lvl,
+            "events": sum(counts.values()),
+            "by_candidate": {k.replace("_candidate", ""): v for k, v in sorted(counts.items())},
+        }
+        for lvl, counts in agg.items()
+    ]
+    n_legs = len(legs)
+    return {
+        "n_legs": n_legs,
+        "n_events": total_events,
+        "events_per_leg": round(total_events / n_legs, 4) if n_legs else 0.0,
+        "per_level": per_level,
+        "legs": leg_summaries,
+    }
+
+
+def run_walk_forward_level_events(settings: Settings | None = None) -> dict:
+    """Kör walk-forward-aggregeringen och skriv en additiv JSONL-rad."""
+    settings = settings or load_settings()
+    run_id = datetime.now(UTC).strftime("levelwf_%Y%m%dT%H%M%SZ")
+    df = load_candles(settings.data)
+    result = walk_forward_level_events(df, settings)
+
+    record = {
+        "run_id": run_id,
+        "timestamp": datetime.now(UTC).isoformat(),
+        "config_hash": settings.config_hash(),
+        "exchange": settings.data.exchange,
+        "symbol": settings.data.symbol,
+        "timeframe": settings.data.timeframe,
+        "warmup_bars": settings.backtest.warmup_bars,
+        "step": settings.backtest.step,
+        **result,
+    }
+    LEVEL_EVENTS_WF_RESULTS.parent.mkdir(parents=True, exist_ok=True)
+    with LEVEL_EVENTS_WF_RESULTS.open("a") as f:
+        f.write(json.dumps(record, sort_keys=True) + "\n")
+    return record
+
+
+def _parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Detect Fibonacci level interaction events (research).")
+    p.add_argument(
+        "--mode",
+        choices=["single", "walk-forward"],
+        default="single",
+        help="single: en nu-ögonblicksbild. walk-forward: aggregera över alla bekräftade legs.",
+    )
+    return p.parse_args()
+
+
 if __name__ == "__main__":
-    print(json.dumps(run_level_events(), indent=2))
+    args = _parse_args()
+    if args.mode == "walk-forward":
+        print(json.dumps(run_walk_forward_level_events(), indent=2))
+    else:
+        print(json.dumps(run_level_events(), indent=2))

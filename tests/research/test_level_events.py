@@ -1,9 +1,15 @@
 import numpy as np
 import pandas as pd
 
-from fibengine.core.config import LevelEventConfig
+from fibengine.backtest.stability import walk_forward_selection
+from fibengine.core.config import LevelEventConfig, load_settings
 from fibengine.core.models import Pivot, Swing
-from fibengine.research.level_events import LevelInteractionStream, detect_level_events
+from fibengine.research.level_events import (
+    LevelInteractionStream,
+    _unique_confirmed_legs,
+    detect_level_events,
+    walk_forward_level_events,
+)
 
 RISE = [100 + i * 2 for i in range(11)]  # bars 0..10: 100 -> 120 (low@0, high@10)
 
@@ -93,3 +99,61 @@ def test_to_dict_shape_matches_issue_schema():
         "closes_back",
         "max_penetration_atr",
     }
+
+
+def _trend_df() -> pd.DataFrame:
+    # Tydlig trend med pullback: 100->150 (upp), 150->125 (retrace), 125->170 (upp).
+    grid = np.arange(0, 120)
+    closes = np.interp(grid, [0, 40, 70, 119], [100, 150, 125, 170])
+    n = len(closes)
+    idx = pd.date_range("2024-01-01", periods=n, freq="1D", tz="UTC")
+    return pd.DataFrame(
+        {
+            "open": closes,
+            "high": closes + 0.5,
+            "low": closes - 0.5,
+            "close": closes,
+            "volume": np.ones(n),
+        },
+        index=idx,
+    )
+
+
+def _settings(warmup: int):
+    s = load_settings()
+    return s.model_copy(update={"backtest": s.backtest.model_copy(update={"warmup_bars": warmup})})
+
+
+def test_walk_forward_aggregation_matches_independent_recompute():
+    df = _trend_df()
+    s = _settings(warmup=10)
+    result = walk_forward_level_events(df, s)
+
+    # Oberoende omräkning via samma byggstenar.
+    records = walk_forward_selection(df, s, s.backtest.warmup_bars, s.backtest.step)
+    legs = _unique_confirmed_legs(records)
+    expected = sum(
+        len(st.events)
+        for _, sw in legs
+        for st in detect_level_events(df, sw, s.level_events, s.fib.levels, s.pivots.atr_period)
+    )
+
+    assert result["n_legs"] == len(legs) >= 1
+    assert result["n_events"] == expected
+    # Aggregaten måste vara internt konsistenta.
+    assert result["n_events"] == sum(p["events"] for p in result["per_level"])
+    assert result["n_events"] == sum(leg["n_events"] for leg in result["legs"])
+    assert len(result["per_level"]) == len(s.fib.levels)
+    # Dedupe: varje (start,end)-leg räknas bara en gång.
+    ids = [(leg["start_bar"], leg["end_bar"]) for leg in result["legs"]]
+    assert len(ids) == len(set(ids))
+
+
+def test_walk_forward_empty_when_no_confirmed_legs():
+    # Warmup större än serien → inga steg → inga legs, inga events.
+    df = _trend_df().iloc[:8]
+    result = walk_forward_level_events(df, _settings(warmup=50))
+    assert result["n_legs"] == 0
+    assert result["n_events"] == 0
+    assert result["events_per_leg"] == 0.0
+    assert all(p["events"] == 0 for p in result["per_level"])
