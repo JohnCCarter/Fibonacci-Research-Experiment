@@ -54,6 +54,7 @@ uv run python -m fibengine.backtest.runner --config config/variants/<profil>.yam
 > Obs: automatisk vikt-optimering (Optuna) togs medvetet bort — den optimerade mot
 > de manuella labelsen, vilket bryter mot filosofin (labels = referens, inte domare).
 > Se `premortem/reflections/2026-05-28-remove-optuna.md`. Vikter sätts på principgrund.
+> Arkiverade Optuna-artefakter finns kvar under `archive/` som historik.
 
 ## Pipeline (Lager A)
 
