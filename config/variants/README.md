@@ -1,18 +1,7 @@
 # config/variants
 
-Alternativa settings-profiler för experiment (manuellt satta på principgrund).
+Alternativa settings-profiler för **Research** — principmotiverade, dokumenterade i `INDEX.md`.
 
-## Princip
-
-- `config/settings.yaml` är baseline.
-- Nya kandidater sparas här som separata filer.
-- Filnamn ska vara beskrivande och gärna datumsatta.
-- Vikter sätts på principgrund — inte genom optimering mot labels.
-
-## Namnexempel
-
-- `manual_2026-05-29_round2.yaml`
-
-## Index
-
-- `INDEX.md` listar alla varianter, ursprung och syfte.
+- Baseline (Promotion): `config/settings.yaml`
+- Ändra vikter här med premortem-motivering; optimera **inte** mot `agreement` mot labels.
+- Validate med stabilitet (`backtest.matrix`) och pivot recall — labels endast som referens-check.

@@ -14,6 +14,6 @@ Se även `REPO_POLICY.md` §5 och §10 för vad som ska sparas/städas.
 
 ## Koppling till 3 spår
 
-- **Research / Experiment:** `runs/optuna/`, `label_review/`, tuning-ledgers i `results/`.
+- **Research / Experiment:** `label_review/`, principmotiverade `config/variants/`.
 - **Validate:** `runs/stability/`, `pivot_recall/backtests/backtest_matrix` i `results/`.
 - **Promotion:** inga direkta ändringar här; promotion sker först efter validate-gate enligt `docs/TRACKS.md`.

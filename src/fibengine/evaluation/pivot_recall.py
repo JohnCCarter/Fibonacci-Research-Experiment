@@ -118,7 +118,12 @@ def run_pivot_recall(settings: Settings | None = None) -> list[dict]:
     rows: list[dict] = []
     run_id = datetime.now(UTC).strftime("pivot_recall_%Y%m%dT%H%M%SZ")
     log = setup_logging(run_id, settings.config_hash())
-    labels = list_labels()
+    # Endast mänskligt facit får vara ground truth. Maskin-labels är kandidater
+    # och EXKLUDERAS — annars mäter vi motorn mot sig själv (cirkulärt).
+    labels = list_labels(source="human")
+    n_machine = len(list_labels(source="machine"))
+    if n_machine:
+        log.info("Hoppar över {} maskin-labels (ej ground truth för recall)", n_machine)
 
     for label in labels:
         row = {

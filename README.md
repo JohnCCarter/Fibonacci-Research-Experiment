@@ -31,10 +31,12 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 uv sync --extra dev                          # bygg miljö + lockfile
 uv run python -m fibengine.data.fetch        # hämta + cacha candles (CCXT)
 uv run python -m fibengine.labeling.worklist # vad återstår att labela mot 20–30-målet
+uv run python -m fibengine.labeling.autolabel # maskin-kandidater (source=machine) att granska
 uv run python -m fibengine.labeling.tool     # klicka swing high/low -> facit
 uv run python -m fibengine.labeling.batch    # lättviktig label-checkpoint (manifest/hashar)
 uv run python -m fibengine.experiment        # kör pipeline + logga resultat
 uv run python -m fibengine.backtest.runner   # kausalt walk-forward: urvals-stabilitet
+uv run python -m fibengine.backtest.matrix   # stabilitet över symbol/timeframe-matris
 uv run pytest                                 # kör tester
 uv run pre-commit install                     # git hooks (en gång)
 uv run pre-commit run --all-files             # lint + format + test före push
@@ -42,16 +44,17 @@ uv run pre-commit run --all-files             # lint + format + test före push
 
 Kvalitetsgate: se [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) och CI i `.github/workflows/ci.yml`.
 
-Använd `--config` för att köra en variant-settings utan att ändra baseline:
+Använd `--config` för en principmotiverad variant under `config/variants/` utan att ändra baseline:
 
 ```bash
-uv run python -m fibengine.experiment --config config/variants/<variant>.yaml
+uv run python -m fibengine.experiment --config config/variants/<profil>.yaml
+uv run python -m fibengine.backtest.runner --config config/variants/<profil>.yaml
 ```
 
 > Obs: automatisk vikt-optimering (Optuna) togs medvetet bort — den optimerade mot
-> de manuella labelsen, vilket bryter mot filosofin (labels = referens, inte domare)
-> och överanpassade ett för litet labelset. Se `premortem/reflections/`. Vikter
-> sätts på principgrund; arkiverade Optuna-artefakter finns under `archive/`.
+> de manuella labelsen, vilket bryter mot filosofin (labels = referens, inte domare).
+> Se `premortem/reflections/2026-05-28-remove-optuna.md`. Vikter sätts på principgrund.
+> Arkiverade Optuna-artefakter finns kvar under `archive/` som historik.
 
 ## Pipeline (Lager A)
 
@@ -120,3 +123,15 @@ leg än en ritning är det en signal att undersöka, inte automatiskt ett fel.
 
 1. Labela dina setups med `labeling/tool.py` → exakta tid+pris sparas som JSON.
 2. Arkivera TradingView-screenshots i `data/screenshots/` som visuell referens.
+
+### Maskin-labeling (kandidater, inte facit)
+
+`labeling/autolabel.py` kan generera **provisoriska** swing-kandidater
+(`source="machine"`) från motorns eget urval, så att du slipper börja från ett
+tomt chart. Tre hårda regler skyddar facit-integriteten:
+
+- Maskin-labels **exkluderas** från recall/agreement (`pivot_recall`, `experiment`)
+  och räknas **inte** mot 20–30-målet — annars mäter vi motorn mot sin egen output.
+- En befintlig **mänsklig** label skrivs aldrig över.
+- Öppna kandidaten i `labeling.tool`, granska/justera och tryck `s` → den sparas som
+  `source="human"` (befordran). Rubrikstämpla aldrig en ogranskad kandidat som facit.

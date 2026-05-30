@@ -16,16 +16,15 @@ Syftet är att separera discovery från verifiering och från trusted behavior.
 - fri experimentation
 - snabb iteration
 - AI/reflection/premortem (obligatoriskt enligt policy)
-- utforskande metoder
+- manuella, principmotiverade profiler i `config/variants/` (inte auto-tuning mot labels)
 
-> Notera: automatisk vikt-optimering *mot labels* (t.ex. Optuna) är **inte** tillåten
-> — labels är referens, inte domare. Vikter sätts på principgrund. Se
-> `premortem/reflections/` för varför detta drogs tillbaka.
+**Inte tillåtet:**
+- automatisk vikt-optimering mot `agreement` / manuella ritningar
 
 **Inte krav:** full correctness eller production-grade stabilitet.
 
 **Primära ytor:**
-- `config/variants/*.yaml`
+- `config/variants/*.yaml` (principprofiler, dokumenterade)
 - `experiments/label_review/`
 - `premortem/reflections/`
 

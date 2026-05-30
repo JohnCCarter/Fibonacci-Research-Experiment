@@ -24,8 +24,7 @@ Premortem: record surprises in `premortem/reflections/` (short, not essays).
 | 3 Manual label recall | Validate | **in progress** | `experiments/results/pivot_recall.jsonl` |
 | 4 Layer B trade simulation | Validate | **smoke done** | `experiments/results/trade_*.jsonl` |
 | 5 Iteration discipline | All | **active** | Policy + reflections |
-| 6 ~~Optuna / variants~~ | — | **withdrawn** | Archived under `archive/` (optimerade mot labels) |
-| 7 Promotion gate | Promotion | **next** | Merge into `config/settings.yaml` |
+| 6 Promotion gate | Promotion | **next** | Merge into `config/settings.yaml` |
 
 ---
 
@@ -48,7 +47,7 @@ uv run python -m fibengine.backtest.matrix
 
 **Success:** symbol, timeframe, limit, config hash, run id, metrics; failures as rows; comparable without opening every run folder.
 
-**Later:** re-run matrix with expanded labels/timeframes (`30m`, `1d`, `1w`, `1M`) when label coverage is ready — still Validate, not Research tuning.
+**Later:** re-run matrix with expanded labels/timeframes (`30m`, `1d`, `1w`, `1M`) when label coverage is ready.
 
 ---
 
@@ -116,22 +115,7 @@ uv run python -m fibengine.backtest.trade_matrix
 
 ---
 
-## Phase 6 — ~~Optuna / config variants~~ (WITHDRAWN)
-
-**Status:** **withdrawn.** Automatisk vikt-optimering togs bort. Objektivet
-maximerade `agreement`/`fib_err` mot de manuella labelsen — vilket bryter mot
-filosofin (labels = referens, inte domare) och överanpassade ett för litet
-labelset (best agreement ≈ 0.025, principvidriga negativa vikter). Se
-`premortem/reflections/2026-05-28-optuna-rollback.md`. Artefakter arkiverade
-under `archive/experiments/optuna/` och `archive/config_variants/`.
-
-**Ersättning:** vikter sätts manuellt på principgrund och sparas som
-`config/variants/<beskrivning>.yaml`, validerade enligt Phase 7 mot stabilitet/
-recall — inte mot en label-agreement-objektivfunktion.
-
----
-
-## Phase 7 — Promotion gate (Validate → Promotion)
+## Phase 6 — Promotion gate (Validate → Promotion)
 
 **Status:** next after variant beats baseline on Validate checks.
 
@@ -145,9 +129,7 @@ recall — inte mot en label-agreement-objektivfunktion.
 4. Short reflection: what changed, why promoted, what was rejected.
 5. Update `config/settings.yaml` only after the above; archive variant rationale in `config/variants/INDEX.md`.
 
-**Do not promote** from a label-agreement objective alone — Validate against
-stability/recall first, then Promotion. (Automatic optimization against labels
-is disallowed; see Phase 6.)
+**Do not promote** from label agreement alone — Validate (stabilitet + recall) first, then Promotion. Viktändringar motiveras av principer (premortem), inte auto-tuning mot ritningar.
 
 ---
 
