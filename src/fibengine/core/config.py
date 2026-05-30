@@ -52,18 +52,6 @@ class FibConfig(BaseModel):
     levels: list[float] = Field(default_factory=lambda: [0.236, 0.382, 0.5, 0.618, 0.786])
 
 
-class LevelEventConfig(BaseModel):
-    # Research-only (Lager A-overlay): auto-detektera interaktioner mellan pris och
-    # fib-nivåer som en händelseström per nivå. Påverkar inte swing-urval, fib-priser,
-    # evaluation eller promotion — kandidater, aldrig facit.
-    levels: list[float] = Field(default_factory=list)  # tom → ärver fib.levels
-    touch_tolerance_atr: float = Field(default=0.10, gt=0.0)  # bandhalvbredd = detta × ATR[bar]
-    forward_window: int = Field(default=5, ge=1)  # barer efter en touch som klassificeringen ser
-    acceptance_closes: int = Field(default=2, ge=1)  # stängningar bortom nivån → "accepterad"
-    immediate_rejection_bars: int = Field(default=2, ge=1)  # fönster för snabb retur (rejection)
-    debounce_bars: int = Field(default=3, ge=0)  # barer priset måste lämna bandet före ny händelse
-
-
 class EvaluationConfig(BaseModel):
     price_tol_atr: float = Field(default=0.5, gt=0.0)
     time_tol_bars: int = Field(default=3, ge=1)
@@ -104,7 +92,6 @@ class Settings(BaseModel):
     pivots: PivotConfig = Field(default_factory=PivotConfig)
     scoring: ScoringConfig = Field(default_factory=ScoringConfig)
     fib: FibConfig = Field(default_factory=FibConfig)
-    level_events: LevelEventConfig = Field(default_factory=LevelEventConfig)
     evaluation: EvaluationConfig = Field(default_factory=EvaluationConfig)
     sizing: SizingConfig = Field(default_factory=SizingConfig)
     backtest: BacktestConfig = Field(default_factory=BacktestConfig)

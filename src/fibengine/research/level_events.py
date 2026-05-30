@@ -23,9 +23,10 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
 import pandas as pd
+from pydantic import BaseModel, Field
 
 from fibengine.backtest.stability import walk_forward_selection
-from fibengine.core.config import REPO_ROOT, LevelEventConfig, Settings, load_settings
+from fibengine.core.config import REPO_ROOT, Settings, load_settings
 from fibengine.core.fib import fib_levels
 from fibengine.core.models import Swing
 from fibengine.core.scoring import select_swing
@@ -33,6 +34,20 @@ from fibengine.data.loader import atr, load_candles
 
 LEVEL_EVENTS_RESULTS = REPO_ROOT / "experiments" / "results" / "level_events.jsonl"
 LEVEL_EVENTS_WF_RESULTS = REPO_ROOT / "experiments" / "results" / "level_events_walkforward.jsonl"
+
+
+class LevelEventConfig(BaseModel):
+    """Research-only config. Medvetet INTE en del av canonical ``Settings`` —
+    det skulle lägga forskningsfunktionen på Promotion-ytan och ändra
+    ``Settings.config_hash()`` för alla körningar. Konstrueras med defaults eller
+    skickas in vid anrop; rör inte swing-urval/fib-priser/evaluation/promotion."""
+
+    levels: list[float] = Field(default_factory=list)  # tom → ärver fib.levels
+    touch_tolerance_atr: float = Field(default=0.10, gt=0.0)  # bandhalvbredd = detta × ATR[bar]
+    forward_window: int = Field(default=5, ge=1)  # barer efter en touch som klassificeringen ser
+    acceptance_closes: int = Field(default=2, ge=1)  # stängningar bortom nivån → "accepterad"
+    immediate_rejection_bars: int = Field(default=2, ge=1)  # fönster för snabb retur (rejection)
+    debounce_bars: int = Field(default=3, ge=0)  # barer priset måste lämna bandet före ny händelse
 
 
 @dataclass
@@ -105,7 +120,7 @@ def _classify(
     side_last = side(last)
     quick_back = any(
         side(k) == approach
-        for k in range(b + 1, min(b + 1 + cfg.immediate_rejection_bars, len(closes)))
+        for k in range(b + 1, min(b + 1 + cfg.immediate_rejection_bars, last + 1))
     )
     moved_away = abs(closes[last] - price) > abs(closes[b] - price)
 
@@ -157,7 +172,9 @@ def detect_level_events(
     band = (cfg.touch_tolerance_atr * atr(df, atr_period)).to_numpy()
     timestamps = df.index
 
-    start_bar = swing.end.index
+    # Skanna ENBART barer efter legens slut. Endpoint-baren är själva fib-ankaret
+    # (dess intrabar-touch kan ligga före pivoten), så den exkluderas.
+    start_bar = swing.end.index + 1
     streams: list[LevelInteractionStream] = []
 
     for ratio in ratios:
@@ -175,7 +192,7 @@ def detect_level_events(
                 continue
             gap_count = 0
 
-            prev = bar - 1 if bar > start_bar else bar
+            prev = bar - 1  # föregående bar finns alltid (start_bar = end.index + 1)
             from_above = closes[prev] > price
             approach_side = "above" if from_above else "below"
             break_side = -1 if from_above else 1
@@ -203,16 +220,19 @@ def detect_level_events(
     return streams
 
 
-def run_level_events(settings: Settings | None = None) -> dict:
+def run_level_events(
+    settings: Settings | None = None, level_cfg: LevelEventConfig | None = None
+) -> dict:
     """Kör detektorn på konfig-symbolen och skriv en additiv JSONL-rad."""
     settings = settings or load_settings()
+    level_cfg = level_cfg or LevelEventConfig()
     run_id = datetime.now(UTC).strftime("levelev_%Y%m%dT%H%M%SZ")
     df = load_candles(settings.data)
     swing = select_swing(df, settings.pivots, settings.scoring)
     streams: list[LevelInteractionStream] = []
     if swing is not None:
         streams = detect_level_events(
-            df, swing, settings.level_events, settings.fib.levels, settings.pivots.atr_period
+            df, swing, level_cfg, settings.fib.levels, settings.pivots.atr_period
         )
 
     record = {
@@ -238,13 +258,14 @@ def _unique_confirmed_legs(records: list[dict]) -> list[tuple[int, Swing]]:
     Legen väljs kausalt (ingen framtid i urvalet). Dess interaktioner observeras
     sedan på barerna efter legens slut — post-hoc annotering, aldrig live-signal.
     """
-    seen: set[tuple[int, int]] = set()
+    seen: set[tuple[int, int, str]] = set()
     legs: list[tuple[int, Swing]] = []
     for r in records:
         swing = r["swing"]
         if swing is None or swing.status != "confirmed":
             continue
-        key = (swing.start.index, swing.end.index)
+        # Nyckel inkl. riktning — samma konvention som backtest/trade.py.
+        key = (swing.start.index, swing.end.index, swing.direction)
         if key in seen:
             continue
         seen.add(key)
@@ -253,7 +274,10 @@ def _unique_confirmed_legs(records: list[dict]) -> list[tuple[int, Swing]]:
 
 
 def walk_forward_level_events(
-    df: pd.DataFrame, settings: Settings, non_overlapping: bool = False
+    df: pd.DataFrame,
+    settings: Settings,
+    non_overlapping: bool = False,
+    level_cfg: LevelEventConfig | None = None,
 ) -> dict:
     """Aggregera nivå-interaktioner över alla bekräftade legs i en walk-forward.
 
@@ -269,9 +293,10 @@ def walk_forward_level_events(
         ``t``, nästa legs ``t``). Inga events dubbelräknas.
     """
     bt = settings.backtest
+    level_cfg = level_cfg or LevelEventConfig()
     records = walk_forward_selection(df, settings, bt.warmup_bars, bt.step)
     legs = _unique_confirmed_legs(records)
-    return _aggregate_leg_events(df, legs, settings, non_overlapping)
+    return _aggregate_leg_events(df, legs, settings, non_overlapping, level_cfg)
 
 
 def _aggregate_leg_events(
@@ -279,11 +304,13 @@ def _aggregate_leg_events(
     legs: list[tuple[int, Swing]],
     settings: Settings,
     non_overlapping: bool,
+    level_cfg: LevelEventConfig | None = None,
 ) -> dict:
     """Aggregera events över en lista av (bekräftelse-cursor, leg), med valbar
     icke-överlappande attribution. Utbruten för att kunna testas deterministiskt."""
     n = len(df)
-    ratios = settings.level_events.levels or settings.fib.levels
+    level_cfg = level_cfg or LevelEventConfig()
+    ratios = level_cfg.levels or settings.fib.levels
     agg: dict[str, Counter] = {f"{r:g}": Counter() for r in ratios}
     leg_summaries: list[dict] = []
     total_events = 0
@@ -292,9 +319,7 @@ def _aggregate_leg_events(
         # Attributionsfönster [lo, hi) för denna leg.
         lo = t if non_overlapping else swing.end.index
         hi = legs[i + 1][0] if (non_overlapping and i + 1 < len(legs)) else n
-        streams = detect_level_events(
-            df, swing, settings.level_events, settings.fib.levels, settings.pivots.atr_period
-        )
+        streams = detect_level_events(df, swing, level_cfg, ratios, settings.pivots.atr_period)
         leg_events = 0
         for stream in streams:
             kept = [e for e in stream.events if lo <= e.bar_index < hi]
@@ -332,13 +357,17 @@ def _aggregate_leg_events(
 
 
 def run_walk_forward_level_events(
-    settings: Settings | None = None, non_overlapping: bool = False
+    settings: Settings | None = None,
+    non_overlapping: bool = False,
+    level_cfg: LevelEventConfig | None = None,
 ) -> dict:
     """Kör walk-forward-aggregeringen och skriv en additiv JSONL-rad."""
     settings = settings or load_settings()
     run_id = datetime.now(UTC).strftime("levelwf_%Y%m%dT%H%M%SZ")
     df = load_candles(settings.data)
-    result = walk_forward_level_events(df, settings, non_overlapping=non_overlapping)
+    result = walk_forward_level_events(
+        df, settings, non_overlapping=non_overlapping, level_cfg=level_cfg
+    )
 
     record = {
         "run_id": run_id,

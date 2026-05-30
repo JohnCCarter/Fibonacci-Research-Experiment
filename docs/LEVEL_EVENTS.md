@@ -52,7 +52,7 @@ uv run python -m fibengine.research.level_events --mode walk-forward --dedupe
 
 **`single`** selects one swing on the full series and detects events after its leg.
 Appends a record to `experiments/results/level_events.jsonl` (`run_id`, config/symbol
-metadata, the selected `swing`, the per-level `levels` streams, and `n_events`).
+metadata, the selected `swing`, the per-level event streams, and `n_events`).
 
 Note: a single live "as-of-now" run usually picks a leg ending at the present, leaving no
 forward window — so it often reports **0 events**. The interactions the issue cares about
@@ -91,22 +91,27 @@ shallow levels dominate (0.236/0.382 ≈ 28% each) and deep levels are rare
 (0.786 ≈ 10%), across 142 distinct interactions. Prefer `--dedupe` when answering
 "how many events per level".
 
-## Running offline (no network)
+## Data / running
 
-A small cached dataset is committed so the pipeline can run without an exchange:
-`data/raw/kraken/BTC-USD/1d/limit_1000.csv` (Kraken BTC/USD daily). Point the config at
-it and `load_candles()` reads the cache instead of fetching:
+Candles are fetched on demand and cached locally by `load_candles()` (under `data/raw/`,
+which is **not** versioned — see the repo data policy). The first run for a symbol/timeframe
+needs network; subsequent runs read the local cache. Point the config at any symbol:
 
 ```python
 from fibengine.core.config import load_settings
-from fibengine.research.level_events import run_level_events
+from fibengine.research.level_events import run_walk_forward_level_events
 
 s = load_settings()
 s = s.model_copy(update={"data": s.data.model_copy(update={
     "exchange": "kraken", "symbol": "BTC/USD", "timeframe": "1d"})})
-run_level_events(s)
+run_walk_forward_level_events(s, non_overlapping=True)
 ```
+
+Config is supplied via `LevelEventConfig` (defaults are used unless you pass your own);
+it is intentionally **not** part of canonical `Settings`, so `Settings.config_hash()` and
+the Promotion surface stay untouched.
 
 Note: the repo default exchange is Binance, which is geo-restricted from some hosted
 sandboxes (HTTP 451); Kraken/Coinbase/Bitstamp/Bitfinex are reachable alternatives there.
-On a normal machine the Binance default works as usual.
+On a normal machine the Binance default works as usual. Tests rely only on synthetic data,
+so they need no network.

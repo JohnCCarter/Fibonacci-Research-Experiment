@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 
 from fibengine.backtest.stability import walk_forward_selection
-from fibengine.core.config import LevelEventConfig, load_settings
+from fibengine.core.config import load_settings
 from fibengine.core.models import Pivot, Swing
 from fibengine.research.level_events import (
+    LevelEventConfig,
     LevelInteractionStream,
     _aggregate_leg_events,
     _unique_confirmed_legs,
@@ -133,10 +134,11 @@ def test_walk_forward_aggregation_matches_independent_recompute():
     # Oberoende omräkning via samma byggstenar.
     records = walk_forward_selection(df, s, s.backtest.warmup_bars, s.backtest.step)
     legs = _unique_confirmed_legs(records)
+    cfg = LevelEventConfig()
     expected = sum(
         len(st.events)
         for _, sw in legs
-        for st in detect_level_events(df, sw, s.level_events, s.fib.levels, s.pivots.atr_period)
+        for st in detect_level_events(df, sw, cfg, s.fib.levels, s.pivots.atr_period)
     )
 
     assert result["n_legs"] == len(legs) >= 1
