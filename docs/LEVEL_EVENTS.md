@@ -51,3 +51,23 @@ uv run python -m fibengine.research.level_events
 Appends one JSONL record per run to `experiments/results/level_events.jsonl`
 (`run_id`, config/symbol metadata, the selected `swing`, the per-level `levels` streams,
 and `n_events`).
+
+## Running offline (no network)
+
+A small cached dataset is committed so the pipeline can run without an exchange:
+`data/raw/kraken/BTC-USD/1d/limit_1000.csv` (Kraken BTC/USD daily). Point the config at
+it and `load_candles()` reads the cache instead of fetching:
+
+```python
+from fibengine.core.config import load_settings
+from fibengine.research.level_events import run_level_events
+
+s = load_settings()
+s = s.model_copy(update={"data": s.data.model_copy(update={
+    "exchange": "kraken", "symbol": "BTC/USD", "timeframe": "1d"})})
+run_level_events(s)
+```
+
+Note: the repo default exchange is Binance, which is geo-restricted from some hosted
+sandboxes (HTTP 451); Kraken/Coinbase/Bitstamp/Bitfinex are reachable alternatives there.
+On a normal machine the Binance default works as usual.
