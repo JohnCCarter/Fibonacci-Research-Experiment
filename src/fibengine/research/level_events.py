@@ -252,29 +252,54 @@ def _unique_confirmed_legs(records: list[dict]) -> list[tuple[int, Swing]]:
     return legs
 
 
-def walk_forward_level_events(df: pd.DataFrame, settings: Settings) -> dict:
+def walk_forward_level_events(
+    df: pd.DataFrame, settings: Settings, non_overlapping: bool = False
+) -> dict:
     """Aggregera nivå-interaktioner över alla bekräftade legs i en walk-forward.
 
     Detta svarar på issue #8:s forskningsfråga 4 ("hur många händelser per nivå")
     genom att följa varje leg över dess liv istället för ett enskilt nu-val.
+
+    Attribution:
+      * ``non_overlapping=False`` (default): varje leg räknar alla sina events från
+        legens slut framåt. Enkelt, men överlappande legs dubbelräknar samma
+        prisrörelse → absoluta totaler beror på ``step``.
+      * ``non_overlapping=True``: varje bar tillskrivs exakt EN leg — den som var
+        den live bekräftade selektionen då. En legs fönster är [bekräftelse-cursor
+        ``t``, nästa legs ``t``). Inga events dubbelräknas.
     """
     bt = settings.backtest
     records = walk_forward_selection(df, settings, bt.warmup_bars, bt.step)
     legs = _unique_confirmed_legs(records)
+    return _aggregate_leg_events(df, legs, settings, non_overlapping)
 
+
+def _aggregate_leg_events(
+    df: pd.DataFrame,
+    legs: list[tuple[int, Swing]],
+    settings: Settings,
+    non_overlapping: bool,
+) -> dict:
+    """Aggregera events över en lista av (bekräftelse-cursor, leg), med valbar
+    icke-överlappande attribution. Utbruten för att kunna testas deterministiskt."""
+    n = len(df)
     ratios = settings.level_events.levels or settings.fib.levels
     agg: dict[str, Counter] = {f"{r:g}": Counter() for r in ratios}
     leg_summaries: list[dict] = []
     total_events = 0
 
-    for t, swing in legs:
+    for i, (t, swing) in enumerate(legs):
+        # Attributionsfönster [lo, hi) för denna leg.
+        lo = t if non_overlapping else swing.end.index
+        hi = legs[i + 1][0] if (non_overlapping and i + 1 < len(legs)) else n
         streams = detect_level_events(
             df, swing, settings.level_events, settings.fib.levels, settings.pivots.atr_period
         )
         leg_events = 0
         for stream in streams:
-            agg[stream.level] += Counter(e.auto_candidate for e in stream.events)
-            leg_events += len(stream.events)
+            kept = [e for e in stream.events if lo <= e.bar_index < hi]
+            agg[stream.level] += Counter(e.auto_candidate for e in kept)
+            leg_events += len(kept)
         total_events += leg_events
         leg_summaries.append(
             {
@@ -297,6 +322,7 @@ def walk_forward_level_events(df: pd.DataFrame, settings: Settings) -> dict:
     ]
     n_legs = len(legs)
     return {
+        "attribution": "non_overlapping" if non_overlapping else "forward",
         "n_legs": n_legs,
         "n_events": total_events,
         "events_per_leg": round(total_events / n_legs, 4) if n_legs else 0.0,
@@ -305,12 +331,14 @@ def walk_forward_level_events(df: pd.DataFrame, settings: Settings) -> dict:
     }
 
 
-def run_walk_forward_level_events(settings: Settings | None = None) -> dict:
+def run_walk_forward_level_events(
+    settings: Settings | None = None, non_overlapping: bool = False
+) -> dict:
     """Kör walk-forward-aggregeringen och skriv en additiv JSONL-rad."""
     settings = settings or load_settings()
     run_id = datetime.now(UTC).strftime("levelwf_%Y%m%dT%H%M%SZ")
     df = load_candles(settings.data)
-    result = walk_forward_level_events(df, settings)
+    result = walk_forward_level_events(df, settings, non_overlapping=non_overlapping)
 
     record = {
         "run_id": run_id,
@@ -337,12 +365,17 @@ def _parse_args() -> argparse.Namespace:
         default="single",
         help="single: en nu-ögonblicksbild. walk-forward: aggregera över alla bekräftade legs.",
     )
+    p.add_argument(
+        "--dedupe",
+        action="store_true",
+        help="Walk-forward: icke-överlappande attribution (varje bar räknas under en leg).",
+    )
     return p.parse_args()
 
 
 if __name__ == "__main__":
     args = _parse_args()
     if args.mode == "walk-forward":
-        print(json.dumps(run_walk_forward_level_events(), indent=2))
+        print(json.dumps(run_walk_forward_level_events(non_overlapping=args.dedupe), indent=2))
     else:
         print(json.dumps(run_level_events(), indent=2))

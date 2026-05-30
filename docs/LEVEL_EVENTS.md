@@ -47,6 +47,7 @@ Each event records `touch_type` (`wick_below` / `wick_above` / `close_above` /
 ```sh
 uv run python -m fibengine.research.level_events                 # single snapshot
 uv run python -m fibengine.research.level_events --mode walk-forward
+uv run python -m fibengine.research.level_events --mode walk-forward --dedupe
 ```
 
 **`single`** selects one swing on the full series and detects events after its leg.
@@ -77,11 +78,18 @@ across every distinct **confirmed** leg via `walk_forward_level_events()`. It re
 ```
 
 **Caveat — overlapping legs inflate absolute totals.** With `step=1` nearly every bar
-yields a (slightly drifted) confirmed leg, and each leg's events are counted over the full
-forward history, so the same price action is counted under many overlapping legs. Treat
-`events_per_leg` and the per-level *distribution shape* as the robust signals; the absolute
-`n_events` is sensitive to `step`. Use a larger `backtest.step` for a coarser, less
-overlapping census.
+yields a (slightly drifted) confirmed leg, and in the default (`forward`) attribution each
+leg's events are counted over the full forward history, so the same price action is counted
+under many overlapping legs. The absolute `n_events` is then sensitive to `step`.
+
+**Use `--dedupe` (non-overlapping attribution) for the trustworthy census.** Each bar is
+attributed to exactly one leg — the one that was the live confirmed selection at that bar
+(window `[confirmation cursor t, next leg's t)`) — so no event is double-counted. This
+matters: on Kraken BTC/USD daily the `forward` mode shows a misleadingly *flat* per-level
+distribution (~19-22% each, 4835 events), while `--dedupe` reveals the real gradient —
+shallow levels dominate (0.236/0.382 ≈ 28% each) and deep levels are rare
+(0.786 ≈ 10%), across 142 distinct interactions. Prefer `--dedupe` when answering
+"how many events per level".
 
 ## Running offline (no network)
 

@@ -6,6 +6,7 @@ from fibengine.core.config import LevelEventConfig, load_settings
 from fibengine.core.models import Pivot, Swing
 from fibengine.research.level_events import (
     LevelInteractionStream,
+    _aggregate_leg_events,
     _unique_confirmed_legs,
     detect_level_events,
     walk_forward_level_events,
@@ -157,3 +158,49 @@ def test_walk_forward_empty_when_no_confirmed_legs():
     assert result["n_events"] == 0
     assert result["events_per_leg"] == 0.0
     assert all(p["events"] == 0 for p in result["per_level"])
+
+
+def _two_overlapping_legs():
+    # Prisbana med kända highs/lows: upp, ned, upp, lång ned.
+    closes = np.interp(np.arange(0, 71), [0, 20, 35, 50, 70], [100, 130, 110, 135, 105])
+    n = len(closes)
+    idx = pd.date_range("2024-01-01", periods=n, freq="1D", tz="UTC")
+    df = pd.DataFrame(
+        {
+            "open": closes,
+            "high": closes + 0.5,
+            "low": closes - 0.5,
+            "close": closes,
+            "volume": np.ones(n),
+        },
+        index=idx,
+    )
+
+    def up(si: int, ei: int) -> Swing:
+        return Swing(
+            start=Pivot(si, df.index[si], float(df["low"].iloc[si]), "low", 3.0),
+            end=Pivot(ei, df.index[ei], float(df["high"].iloc[ei]), "high", 3.0),
+        )
+
+    # Två överlappande up-legs som bekräftas vid t=37 resp t=60.
+    return df, [(37, up(0, 20)), (60, up(35, 50))]
+
+
+def test_non_overlapping_attribution_dedupes_and_stays_consistent():
+    df, legs = _two_overlapping_legs()
+    s = load_settings()
+    forward = _aggregate_leg_events(df, legs, s, non_overlapping=False)
+    deduped = _aggregate_leg_events(df, legs, s, non_overlapping=True)
+
+    assert forward["attribution"] == "forward"
+    assert deduped["attribution"] == "non_overlapping"
+    assert deduped["n_legs"] == forward["n_legs"] == 2
+    assert deduped["n_events"] >= 1
+    # Icke-överlappande dubbelräknar inte → strikt färre events på överlappande legs.
+    assert deduped["n_events"] < forward["n_events"]
+    # Varje legs fönster är en delmängd av dess framåt-fönster.
+    for d_leg, f_leg in zip(deduped["legs"], forward["legs"], strict=True):
+        assert d_leg["n_events"] <= f_leg["n_events"]
+    # Intern konsistens bevaras.
+    assert deduped["n_events"] == sum(p["events"] for p in deduped["per_level"])
+    assert deduped["n_events"] == sum(leg["n_events"] for leg in deduped["legs"])
