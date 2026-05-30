@@ -40,6 +40,16 @@ scoring:
 fib:
   levels: [0.236, 0.382, 0.5, 0.618, 0.786]
 
+level_events:
+  # Research-only: auto-detektera pris↔fib-nivå-interaktioner som händelseström per nivå.
+  # Kandidater, aldrig facit. Rör inte swing-urval/fib-priser/evaluation/promotion.
+  levels: []                  # tom → ärver fib.levels
+  touch_tolerance_atr: 0.10   # bandhalvbredd kring nivån = detta × ATR[bar]
+  forward_window: 5           # barer efter en touch som klassificeringen tittar framåt på
+  acceptance_closes: 2        # antal stängningar bortom nivån för att räknas som "accepterad"
+  immediate_rejection_bars: 2 # fönster för snabb retur till approach-sidan (rejection)
+  debounce_bars: 3            # barer priset måste lämna bandet innan en ny händelse räknas
+
 evaluation:
   # Mjuka skalor för agreement-signalen (referens, inte pass/fail).
   price_tol_atr: 0.5      # prisfel-skala i ATR

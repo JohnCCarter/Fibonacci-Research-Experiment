@@ -1,0 +1,232 @@
+"""Auto-detect Fibonacci level interaction events (research-only — issue #8).
+
+For a selected swing this scans the bars *after* the leg's end and emits an
+**event stream per Fibonacci level**: each touch is classified as a
+continuation / rejection / reaction / failure *candidate* with a timestamp and
+supporting evidence. Candidates are never facts — they are meant for human
+review, and this module does not feed back into swing selection, fib prices,
+evaluation, recall or promotion.
+
+NOTE on look-ahead: classification inspects a forward window of bars after the
+touch, so it is strictly post-hoc annotation — never a live trading signal.
+
+Run:
+    uv run python -m fibengine.research.level_events
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+
+import pandas as pd
+
+from fibengine.core.config import REPO_ROOT, LevelEventConfig, Settings, load_settings
+from fibengine.core.fib import fib_levels
+from fibengine.core.models import Swing
+from fibengine.core.scoring import select_swing
+from fibengine.data.loader import atr, load_candles
+
+LEVEL_EVENTS_RESULTS = REPO_ROOT / "experiments" / "results" / "level_events.jsonl"
+
+
+@dataclass
+class LevelEvent:
+    event_bar: str  # ISO-8601 timestamp för baren där händelsen börjar
+    bar_index: int
+    touch_type: str  # wick_below | wick_above | close_above | close_below
+    approach_side: str  # "above" | "below" — vilken sida priset kom ifrån
+    auto_candidate: str  # *_candidate (aldrig facit)
+    note: str
+    evidence: dict[str, float] = field(default_factory=dict)
+
+    def to_dict(self) -> dict:
+        return {
+            "event_bar": self.event_bar,
+            "bar_index": self.bar_index,
+            "touch_type": self.touch_type,
+            "approach_side": self.approach_side,
+            "auto_candidate": self.auto_candidate,
+            "note": self.note,
+            "evidence": self.evidence,
+        }
+
+
+@dataclass
+class LevelInteractionStream:
+    level: str  # fib-ratio som sträng, t.ex. "0.382"
+    price: float
+    events: list[LevelEvent] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        return {
+            "level": self.level,
+            "price": round(self.price, 4),
+            "events": [e.to_dict() for e in self.events],
+        }
+
+
+_NOTES = {
+    "continuation_candidate": "Broke through level and continued",
+    "rejection_candidate": "Touched level and rejected back to the approach side",
+    "failure_candidate": "Accepted beyond level then reversed back across it",
+    "reaction_candidate": "Reacted at level without a clear breakout or rejection",
+}
+
+
+def _classify(
+    closes,
+    b: int,
+    last: int,
+    price: float,
+    band,
+    break_side: int,
+    cfg: LevelEventConfig,
+) -> tuple[str, dict[str, float]]:
+    """Klassificera händelsen vid bar ``b`` med hjälp av framåtfönstret b..last."""
+    approach = -break_side
+
+    def side(k: int) -> int:
+        if closes[k] > price + band[k]:
+            return 1
+        if closes[k] < price - band[k]:
+            return -1
+        return 0
+
+    beyond = sum(1 for k in range(b, last + 1) if side(k) == break_side)
+    back = sum(1 for k in range(b, last + 1) if side(k) == approach)
+    accepted = beyond >= cfg.acceptance_closes
+    side_b = side(b)
+    side_last = side(last)
+    quick_back = any(
+        side(k) == approach
+        for k in range(b + 1, min(b + 1 + cfg.immediate_rejection_bars, len(closes)))
+    )
+    moved_away = abs(closes[last] - price) > abs(closes[b] - price)
+
+    if accepted:
+        if side_last == approach:
+            candidate = "failure_candidate"
+        elif side_last == break_side:
+            candidate = "continuation_candidate"
+        else:
+            candidate = "reaction_candidate"
+    elif side_b == break_side:
+        if side_last == break_side:
+            candidate = "continuation_candidate"
+        elif side_last == approach:
+            candidate = "failure_candidate"
+        else:
+            candidate = "reaction_candidate"
+    elif quick_back and side_last == approach and moved_away:
+        candidate = "rejection_candidate"
+    else:
+        candidate = "reaction_candidate"
+
+    atr_b = band[b] / cfg.touch_tolerance_atr if cfg.touch_tolerance_atr else 0.0
+    max_pen = max((break_side * (closes[k] - price) for k in range(b, last + 1)), default=0.0)
+    max_pen = max(max_pen, 0.0)
+    evidence = {
+        "forward_bars": last - b,
+        "closes_beyond": beyond,
+        "closes_back": back,
+        "max_penetration_atr": round(max_pen / atr_b, 4) if atr_b > 0 else 0.0,
+    }
+    return candidate, evidence
+
+
+def detect_level_events(
+    df: pd.DataFrame,
+    swing: Swing,
+    cfg: LevelEventConfig,
+    fib_ratios: list[float],
+    atr_period: int = 14,
+) -> list[LevelInteractionStream]:
+    """Detektera interaktioner mellan pris och fib-nivåer som en ström per nivå."""
+    ratios = cfg.levels or fib_ratios
+    prices = fib_levels(swing, ratios)
+    n = len(df)
+    highs = df["high"].to_numpy()
+    lows = df["low"].to_numpy()
+    closes = df["close"].to_numpy()
+    band = (cfg.touch_tolerance_atr * atr(df, atr_period)).to_numpy()
+    timestamps = df.index
+
+    start_bar = swing.end.index
+    streams: list[LevelInteractionStream] = []
+
+    for ratio in ratios:
+        price = prices[ratio]
+        stream = LevelInteractionStream(level=f"{ratio:g}", price=float(price))
+        gap_count = cfg.debounce_bars  # börja "eligible" för första touchen
+
+        for bar in range(start_bar, n):
+            touched = lows[bar] - band[bar] <= price <= highs[bar] + band[bar]
+            if not touched:
+                gap_count += 1
+                continue
+            if gap_count < cfg.debounce_bars:
+                gap_count = 0
+                continue
+            gap_count = 0
+
+            prev = bar - 1 if bar > start_bar else bar
+            from_above = closes[prev] > price
+            approach_side = "above" if from_above else "below"
+            break_side = -1 if from_above else 1
+
+            if closes[bar] >= price:
+                touch_type = "wick_below" if lows[bar] < price - band[bar] else "close_above"
+            else:
+                touch_type = "wick_above" if highs[bar] > price + band[bar] else "close_below"
+
+            last = min(bar + cfg.forward_window, n - 1)
+            candidate, evidence = _classify(closes, bar, last, price, band, break_side, cfg)
+            stream.events.append(
+                LevelEvent(
+                    event_bar=timestamps[bar].isoformat(),
+                    bar_index=int(bar),
+                    touch_type=touch_type,
+                    approach_side=approach_side,
+                    auto_candidate=candidate,
+                    note=_NOTES[candidate],
+                    evidence=evidence,
+                )
+            )
+        streams.append(stream)
+
+    return streams
+
+
+def run_level_events(settings: Settings | None = None) -> dict:
+    """Kör detektorn på konfig-symbolen och skriv en additiv JSONL-rad."""
+    settings = settings or load_settings()
+    run_id = datetime.now(UTC).strftime("levelev_%Y%m%dT%H%M%SZ")
+    df = load_candles(settings.data)
+    swing = select_swing(df, settings.pivots, settings.scoring)
+    streams: list[LevelInteractionStream] = []
+    if swing is not None:
+        streams = detect_level_events(
+            df, swing, settings.level_events, settings.fib.levels, settings.pivots.atr_period
+        )
+
+    record = {
+        "run_id": run_id,
+        "timestamp": datetime.now(UTC).isoformat(),
+        "config_hash": settings.config_hash(),
+        "exchange": settings.data.exchange,
+        "symbol": settings.data.symbol,
+        "timeframe": settings.data.timeframe,
+        "swing": swing.to_dict() if swing is not None else None,
+        "levels": [s.to_dict() for s in streams],
+        "n_events": sum(len(s.events) for s in streams),
+    }
+    LEVEL_EVENTS_RESULTS.parent.mkdir(parents=True, exist_ok=True)
+    with LEVEL_EVENTS_RESULTS.open("a") as f:
+        f.write(json.dumps(record, sort_keys=True) + "\n")
+    return record
+
+
+if __name__ == "__main__":
+    print(json.dumps(run_level_events(), indent=2))
