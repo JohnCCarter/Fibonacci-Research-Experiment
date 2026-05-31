@@ -225,3 +225,5 @@ data/screenshots/
 # Per-körning audit-mappar versioneras inte (artefakter, inte källa).
 # experiments/results/*.jsonl och experiments/label_review/ versioneras (default).
 experiments/runs/
+# Genererade human-review-paket (charts/sheets) är artefakter, inte källa.
+experiments/review/
