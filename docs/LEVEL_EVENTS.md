@@ -6,6 +6,9 @@ Where a swing previously carried a single behavior label per Fibonacci level, th
 overlay records **an event stream per level**: every time price interacts with a level
 it emits a *candidate* event with a timestamp and supporting evidence, for human review.
 
+> To human-validate these candidates on a phone, see
+> [LEVEL_EVENT_HUMAN_REVIEW.md](LEVEL_EVENT_HUMAN_REVIEW.md).
+
 ## What it does
 
 For a selected swing, `detect_level_events()` scans the bars **after the leg's end**
