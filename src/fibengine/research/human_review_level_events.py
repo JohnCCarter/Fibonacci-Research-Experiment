@@ -128,14 +128,25 @@ class HumanReviewConfig(BaseModel):
 
 
 def make_review_id(
-    symbol: str, timeframe: str, level: str, swing_end_bar: int, event_bar: int, candidate: str
+    symbol: str,
+    timeframe: str,
+    level: str,
+    swing_start_bar: int,
+    swing_end_bar: int,
+    event_bar: int,
+    candidate: str,
 ) -> str:
-    """Deterministiskt, filsystemssäkert id. Unikt per (leg, nivå, bar)."""
+    """Deterministiskt, filsystemssäkert id. Unikt per (leg, nivå, bar).
+
+    Legen identifieras av BÅDE start- och end-bar: walk-forward kan låsa två skilda
+    bekräftade legs som delar samma end-pivot men har olika start (``_unique_confirmed_legs``
+    nycklar på start+end+riktning). Utan start-baren skulle de kollidera → överskriven
+    chart-PNG och dubbletter av ``review_id`` i CSV/JSONL."""
     sym = symbol.replace("/", "-").replace(":", "-")
     tf = timeframe.replace("/", "-")
     lvl = level.replace(".", "p").replace("/", "-")
     short = _CANDIDATE_SHORT.get(candidate, candidate.replace("_candidate", ""))
-    return f"{sym}_{tf}_L{lvl}_e{swing_end_bar}_b{event_bar}_{short}"
+    return f"{sym}_{tf}_L{lvl}_s{swing_start_bar}_e{swing_end_bar}_b{event_bar}_{short}"
 
 
 def _row_for_event(
@@ -143,7 +154,13 @@ def _row_for_event(
 ) -> dict:
     """Bygg en review-rad genom att slå ihop event + swing- + symbol-kontext."""
     review_id = make_review_id(
-        meta["symbol"], meta["timeframe"], level, swing.end.index, ev.bar_index, ev.auto_candidate
+        meta["symbol"],
+        meta["timeframe"],
+        level,
+        swing.start.index,
+        swing.end.index,
+        ev.bar_index,
+        ev.auto_candidate,
     )
     return {
         "review_id": review_id,
@@ -237,6 +254,8 @@ def sample_candidates(rows: list[dict], cfg: HumanReviewConfig) -> list[dict]:
         if (not cfg.candidate_types or r["auto_candidate"] in cfg.candidate_types)
         and (not cfg.levels or r["fib_level"] in cfg.levels)
     ]
+    if not pool:
+        return []
     # Gruppindela; sortera först för determinism före shuffla.
     by_type: dict[str, dict[str, list[dict]]] = defaultdict(lambda: defaultdict(list))
     for r in sorted(pool, key=lambda x: x["review_id"]):

@@ -99,9 +99,16 @@ def test_review_row_schema_has_required_fields_and_placeholders():
 
 
 def test_chart_path_tied_to_review_id_and_filesystem_safe():
-    rid = make_review_id("BTC/USDT", "1h", "0.5", 40, 73, "continuation_candidate")
+    rid = make_review_id("BTC/USDT", "1h", "0.5", 12, 40, 73, "continuation_candidate")
     assert "/" not in rid and "." not in rid
-    assert rid == "BTC-USDT_1h_L0p5_e40_b73_cont"
+    assert rid == "BTC-USDT_1h_L0p5_s12_e40_b73_cont"
+
+
+def test_review_id_distinguishes_legs_sharing_end_pivot():
+    # Walk-forward kan låsa två legs med samma end men olika start; id:n får ej kollidera.
+    a = make_review_id("BTC/USDT", "1h", "0.5", 12, 40, 73, "continuation_candidate")
+    b = make_review_id("BTC/USDT", "1h", "0.5", 20, 40, 73, "continuation_candidate")
+    assert a != b
 
 
 def test_deterministic_sampling_with_seed():
