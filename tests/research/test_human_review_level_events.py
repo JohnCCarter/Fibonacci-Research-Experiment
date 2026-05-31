@@ -138,6 +138,40 @@ def test_sampling_filters_by_candidate_type_and_level():
     assert all(r["auto_candidate"] == present_type for r in sampled)
 
 
+def test_sampling_balances_across_candidate_types():
+    from collections import Counter
+
+    # Syntetisk pool med skev fördelning: 20 cont, 10 rej, 4 react, 2 fail.
+    rows = []
+    plan = {
+        "continuation_candidate": 20,
+        "rejection_candidate": 10,
+        "reaction_candidate": 4,
+        "failure_candidate": 2,
+    }
+    for ctype, count in plan.items():
+        for i in range(count):
+            rows.append(
+                {
+                    "review_id": f"{ctype}_{i:03d}",
+                    "auto_candidate": ctype,
+                    "fib_level": ["0.382", "0.5", "0.618"][i % 3],
+                }
+            )
+    cfg = HumanReviewConfig(max_events=16, seed=11)
+    sampled = sample_candidates(rows, cfg)
+    counts = Counter(r["auto_candidate"] for r in sampled)
+    assert len(sampled) == 16
+    # Round-robin tömmer de små typerna helt och delar resten jämnt mellan de stora:
+    # fail har bara 2, react bara 4; de 10 kvarvarande platserna delas 5/5 cont/rej.
+    assert counts["failure_candidate"] == 2
+    assert counts["reaction_candidate"] == 4
+    assert counts["continuation_candidate"] == 5
+    assert counts["rejection_candidate"] == 5
+    # Den dominerande typen (20 tillgängliga) tar INTE en otyglad andel.
+    assert counts["continuation_candidate"] < 20
+
+
 def test_render_chart_writes_nonempty_png(tmp_path):
     df = _trend_df()
     rows = _candidates(df, _settings())

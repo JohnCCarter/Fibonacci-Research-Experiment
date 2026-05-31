@@ -122,9 +122,9 @@ class HumanReviewConfig(BaseModel):
     candidate_types: list[str] = Field(default_factory=list)  # tom → alla typer
     levels: list[str] = Field(default_factory=list)  # tom → alla nivåer (fib-ratio-strängar)
     seed: int | None = Field(default=None)
-    context_before: int = Field(default=30, ge=1)  # barer före event i charten
-    context_after: int = Field(default=15, ge=1)  # barer efter event i charten
-    candlestick: bool = Field(default=False)  # False → close-line (lättare på mobil)
+    context_before: int = Field(default=25, ge=1)  # barer före event i charten
+    context_after: int = Field(default=25, ge=1)  # barer efter event i charten
+    candlestick: bool = Field(default=True)  # True → candlesticks; False → close-line-fallback
 
 
 def make_review_id(
@@ -279,19 +279,60 @@ def sample_candidates(rows: list[dict], cfg: HumanReviewConfig) -> list[dict]:
 
 
 def _draw_candles(ax, sub: pd.DataFrame, lo: int) -> None:
-    """Lättviktiga candlesticks med matplotlib-primitiv (inga extra beroenden)."""
+    """Lättviktiga candlesticks med matplotlib-primitiv (inga extra beroenden).
+
+    High-low ritas som tunn wick, open-close som tjockare body. Dojis (open==close)
+    får en tunn horisontell markering så baren inte försvinner."""
     for offset, (_, bar) in enumerate(sub.iterrows()):
         x = lo + offset
-        up = bar["close"] >= bar["open"]
-        color = "tab:green" if up else "tab:red"
-        ax.vlines(x, bar["low"], bar["high"], color=color, lw=0.6)
-        ax.vlines(
-            x, min(bar["open"], bar["close"]), max(bar["open"], bar["close"]), color=color, lw=3
+        o, h, low, c = bar["open"], bar["high"], bar["low"], bar["close"]
+        up = c >= o
+        color = "#26a69a" if up else "#ef5350"  # grön / röd
+        ax.vlines(x, low, h, color=color, lw=0.8, zorder=2)  # wick (high-low)
+        body_lo, body_hi = min(o, c), max(o, c)
+        if body_hi - body_lo < 1e-9:
+            ax.hlines(c, x - 0.3, x + 0.3, color=color, lw=1.4, zorder=3)  # doji
+        else:
+            ax.vlines(x, body_lo, body_hi, color=color, lw=3.2, zorder=3)  # body (open-close)
+
+
+def _mark_swing_point(ax, df, bar_idx, lo, hi, *, marker, color, label) -> None:
+    """Markera en swing-punkt. Ligger den i fönstret ritas en markör vid dess pris;
+    annars ritas en kant-annotering med pil som pekar mot punkten utanför vyn."""
+    if lo <= bar_idx <= hi:
+        ax.scatter(
+            [bar_idx],
+            [df["close"].iloc[bar_idx]],
+            color=color,
+            marker=marker,
+            s=130,
+            edgecolors="black",
+            linewidths=0.6,
+            zorder=7,
+            label=label,
         )
+        return
+    # Utanför vyn: annotera vid närmaste kant.
+    edge_x = lo if bar_idx < lo else hi
+    arrow = "◀" if bar_idx < lo else "▶"
+    ax.annotate(
+        f"{arrow} {label} (bar {bar_idx})",
+        xy=(edge_x, df["close"].iloc[edge_x]),
+        xytext=(0.02 if bar_idx < lo else 0.98, 0.02),
+        textcoords="axes fraction",
+        ha="left" if bar_idx < lo else "right",
+        va="bottom",
+        fontsize=7,
+        color=color,
+        fontweight="bold",
+    )
 
 
 def render_chart(df: pd.DataFrame, row: dict, out_path: Path, cfg: HumanReviewConfig) -> Path:
-    """Rendera en mobilvänlig PNG för ett event (close-line eller candlesticks)."""
+    """Rendera en mobilvänlig PNG för ett event (candlesticks default, close-line-fallback).
+
+    Visar ±N barer runt event-baren, fib-nivån, en tydligt markerad event-bar samt
+    swing start/end (markör i vyn, annars kant-annotering)."""
     eb = row["event_bar"]
     lo = max(0, eb - cfg.context_before)
     hi = min(len(df) - 1, eb + cfg.context_after)
@@ -304,37 +345,46 @@ def render_chart(df: pd.DataFrame, row: dict, out_path: Path, cfg: HumanReviewCo
     else:
         ax.plot(x, sub["close"].to_numpy(), color="black", lw=1.0, label="close")
 
-    # Fib-nivån + event-markör.
-    ax.axhline(row["fib_price"], color="tab:blue", ls="--", lw=1.0, label=f"fib {row['fib_level']}")
-    ax.axvline(eb, color="tab:orange", lw=1.0, alpha=0.7)
-    ax.scatter([eb], [df["close"].iloc[eb]], color="tab:orange", s=70, zorder=6, label="event bar")
+    # Fib-nivån, med ratio-etikett vid höger kant.
+    fib_price = row["fib_price"]
+    ax.axhline(
+        fib_price,
+        color="tab:blue",
+        ls="--",
+        lw=1.2,
+        zorder=4,
+        label=f"fib {row['fib_level']} @ {fib_price:g}",
+    )
+    ax.text(hi, fib_price, f" {row['fib_level']}", color="tab:blue", va="center", fontsize=8)
 
-    # Swing-markörer om de ligger i fönstret.
-    sb, se = row["swing_start_bar"], row["swing_end_bar"]
-    if lo <= sb <= hi:
-        ax.scatter(
-            [sb],
-            [df["close"].iloc[sb]],
-            color="tab:purple",
-            marker="^",
-            s=80,
-            zorder=6,
-            label="swing start",
-        )
-    if lo <= se <= hi:
-        ax.scatter(
-            [se],
-            [df["close"].iloc[se]],
-            color="tab:purple",
-            marker="v",
-            s=80,
-            zorder=6,
-            label="swing end",
-        )
+    # Event-baren tydligt markerad: highlight-band, wick i accentfärg + stor stjärna.
+    ax.axvspan(eb - 0.5, eb + 0.5, color="tab:orange", alpha=0.18, zorder=1)
+    ax.axvline(eb, color="tab:orange", lw=1.2, alpha=0.9, zorder=4)
+    ax.vlines(eb, df["low"].iloc[eb], df["high"].iloc[eb], color="tab:orange", lw=1.4, zorder=5)
+    ax.scatter(
+        [eb],
+        [df["close"].iloc[eb]],
+        color="tab:orange",
+        marker="*",
+        s=240,
+        edgecolors="black",
+        linewidths=0.7,
+        zorder=8,
+        label=f"event bar ({row['touch_type']})",
+    )
 
+    # Swing start/end (markör i vyn, annars kant-annotering).
+    _mark_swing_point(
+        ax, df, row["swing_start_bar"], lo, hi, marker="^", color="tab:purple", label="swing start"
+    )
+    _mark_swing_point(
+        ax, df, row["swing_end_bar"], lo, hi, marker="v", color="tab:purple", label="swing end"
+    )
+
+    span = f"±{max(cfg.context_before, cfg.context_after)} bars"
     ax.set_title(
         f"{row['symbol']} {row['timeframe']} | fib {row['fib_level']} | "
-        f"{row['auto_candidate']}\n{row['event_time']}",
+        f"{row['auto_candidate']} | {span}\n{row['event_time']}",
         fontsize=9,
     )
     ax.set_xlabel("bar index")
@@ -505,14 +555,26 @@ def _parse_args() -> argparse.Namespace:
         help="Filter to these fib levels, e.g. 0.5 (repeatable).",
     )
     p.add_argument("--seed", type=int, default=None, help="Random seed for reproducible sampling.")
-    p.add_argument("--candlestick", action="store_true", help="Candlesticks instead of close-line.")
-    p.add_argument("--context-before", type=int, default=30)
-    p.add_argument("--context-after", type=int, default=15)
+    p.add_argument(
+        "--line",
+        action="store_true",
+        help="Use a close-line instead of candlesticks (lighter). Candlesticks are default.",
+    )
+    p.add_argument(
+        "--context",
+        type=int,
+        default=None,
+        help="Show ±N bars around the event (sets both --context-before and --context-after).",
+    )
+    p.add_argument("--context-before", type=int, default=25)
+    p.add_argument("--context-after", type=int, default=25)
     return p.parse_args()
 
 
 if __name__ == "__main__":
     args = _parse_args()
+    before = args.context if args.context is not None else args.context_before
+    after = args.context if args.context is not None else args.context_after
     cfg = HumanReviewConfig(
         max_events=args.max_events,
         max_per_candidate=args.max_per_candidate,
@@ -520,9 +582,9 @@ if __name__ == "__main__":
         candidate_types=args.candidate_types,
         levels=args.levels,
         seed=args.seed,
-        context_before=args.context_before,
-        context_after=args.context_after,
-        candlestick=args.candlestick,
+        context_before=before,
+        context_after=after,
+        candlestick=not args.line,
     )
     result = run_human_review(cfg=cfg, mode=args.mode, dedupe=args.dedupe)
     print(json.dumps(result, indent=2))
