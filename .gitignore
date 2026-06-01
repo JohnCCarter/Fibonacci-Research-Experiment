@@ -218,6 +218,8 @@ __marimo__/
 .streamlit/secrets.toml
 
 # --- Fibonacci-engine projekt-specifikt ---
+# Ephemeral markdown for `gh issue create` / `gh pr edit --body-file` (not project docs)
+.gh-*.md
 tmp/
 # Cachad marknadsdata och referensbilder versioneras inte.
 data/raw/

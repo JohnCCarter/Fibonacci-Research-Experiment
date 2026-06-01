@@ -49,8 +49,6 @@ class LegLabel:
             self.high = Point(**self.high)
         if isinstance(self.low, dict):
             self.low = Point(**self.low)
-        if not self.id:
-            self.id = "leg_1"
 
 
 @dataclass

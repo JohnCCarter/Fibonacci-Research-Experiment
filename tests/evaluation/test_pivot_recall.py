@@ -86,6 +86,25 @@ def test_summarize_recall_makes_exclusion_explicit():
     assert summary["low_hit_rate"] == 0.5
 
 
+def test_summarize_recall_splits_mtf_skipped_from_out_of_window():
+    rows = [
+        {"out_of_window": True, "both_hit": False, "high_hit": False, "low_hit": False},
+        {
+            "out_of_window": False,
+            "skipped_mtf": True,
+            "both_hit": False,
+            "high_hit": False,
+            "low_hit": False,
+        },
+        {"out_of_window": False, "both_hit": True, "high_hit": True, "low_hit": True},
+    ]
+    summary = summarize_recall(rows)
+    assert summary["n_excluded_out_of_window"] == 1
+    assert summary["n_excluded_mtf_unresolved"] == 1
+    assert summary["n_in_window"] == 1
+    assert summary["excluded_frac"] == round(2 / 3, 4)
+
+
 def test_summarize_recall_handles_all_excluded():
     rows = [{"out_of_window": True, "both_hit": False, "high_hit": False, "low_hit": False}]
     summary = summarize_recall(rows)

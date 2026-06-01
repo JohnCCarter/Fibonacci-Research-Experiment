@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 from fibengine.core.config import EvaluationConfig, Settings, load_settings
-from fibengine.core.fib import fib_from_prices
+from fibengine.core.fib import fib_from_prices, fib_levels
 from fibengine.core.models import Swing
 from fibengine.data.loader import load_candles
 from fibengine.evaluation.bars import bar_of_timestamp
@@ -25,10 +25,10 @@ def _predicted_high_low(swing: Swing) -> tuple[float, float]:
     return swing.end.price, swing.start.price
 
 
-def _predicted_high_low_bars(swing: Swing) -> tuple[int, int]:
+def _predicted_high_low_timestamps(swing: Swing) -> tuple[str, str]:
     if swing.start.kind == "high":
-        return swing.start.index, swing.end.index
-    return swing.end.index, swing.start.index
+        return swing.start.timestamp.isoformat(), swing.end.timestamp.isoformat()
+    return swing.end.timestamp.isoformat(), swing.start.timestamp.isoformat()
 
 
 def evaluate(
@@ -62,7 +62,7 @@ def evaluate(
         }
 
     pred_high, pred_low = _predicted_high_low(swing)
-    pred_high_bar, pred_low_bar = _predicted_high_low_bars(swing)
+    pred_high_ts, pred_low_ts = _predicted_high_low_timestamps(swing)
 
     time_df = df
     if endpoints.time_df_timeframe != label.timeframe:
@@ -78,6 +78,8 @@ def evaluate(
 
     man_high_bar, high_in_window = bar_of_timestamp(time_df, endpoints.high_timestamp)
     man_low_bar, low_in_window = bar_of_timestamp(time_df, endpoints.low_timestamp)
+    pred_high_bar, _ = bar_of_timestamp(time_df, pred_high_ts)
+    pred_low_bar, _ = bar_of_timestamp(time_df, pred_low_ts)
     out_of_window = not (high_in_window and low_in_window)
 
     high_price_err = abs(pred_high - endpoints.high_price) / atr_value
@@ -85,9 +87,9 @@ def evaluate(
     high_time_err = abs(pred_high_bar - man_high_bar)
     low_time_err = abs(pred_low_bar - man_low_bar)
 
-    # Fib-nivå-överensstämmelse på nyckelnivåerna.
+    # Fib-nivå-överensstämmelse på nyckelnivåerna (temporal leg, not sorted low/high).
     key_levels = [0.382, 0.5, 0.618]
-    pred_fib = fib_from_prices(pred_low, pred_high, key_levels)
+    pred_fib = fib_levels(swing, key_levels)
     man_fib = fib_from_prices(endpoints.fib_start_price, endpoints.fib_end_price, key_levels)
     man_range = abs(endpoints.high_price - endpoints.low_price)
     if man_range <= 1e-12:

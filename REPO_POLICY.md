@@ -25,7 +25,7 @@ Allt nytt arbete ska följa indexet nedan. Fungerar något annorlunda i praktike
 | `tmp/` | Tillfälliga skript/artefakter | Valfritt (se §9) |
 
 Toppnivån ska bara innehålla: `README.md`, `REPO_POLICY.md`, `pyproject.toml`,
-`uv.lock`, `.gitignore`, och dessa mappar. **Inga stub-filer** som bara pekar
+`uv.lock`, `.gitignore`, `.pre-commit-config.yaml` (lokal hook-kedja), och dessa mappar. **Inga stub-filer** som bara pekar
 bort flyttat innehåll — uppdatera länkar till canonical path (t.ex. `docs/FIB_BACKTEST_PLAN.md`).
 Tillfälliga filer läggs i `tmp/`.
 

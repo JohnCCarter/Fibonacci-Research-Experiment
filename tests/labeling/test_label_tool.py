@@ -130,4 +130,4 @@ def test_save_auto_appends_second_leg(monkeypatch, synthetic_df, tmp_path):
 
     assert len(saved) == 2
     assert len(saved[1].all_legs()) == 2
-    assert "legs" in tmp_path.joinpath("bitfinex/BTC-USD/1h.json").read_text()
+    assert "legs" in store.label_path(saved[1]).read_text()

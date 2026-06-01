@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "kind": "fib_level_behavior_facit",
-  "parent_label_path": "C:/Users/fa06662/Projects/Fibonacci-Research-Experiment-main/data/labels/binance/BTC-USDT/1d.json",
+  "parent_label_path": "data/labels/binance/BTC-USDT/1d.json",
   "exchange": "binance",
   "symbol": "BTC/USDT",
   "timeframe": "1d",

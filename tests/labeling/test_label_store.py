@@ -112,3 +112,29 @@ def test_multi_leg_save_and_load(monkeypatch, tmp_path):
     loaded = load_label(path)
     assert len(loaded.all_legs()) == 2
     assert loaded.all_legs()[1].id == "retrace_up"
+
+
+def test_multi_leg_without_ids_get_sequential_ids(monkeypatch, tmp_path):
+    monkeypatch.setattr(store, "LABELS_DIR", tmp_path)
+    path = tmp_path / "binance/BTC-USDT/1d.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        """
+{
+  "exchange": "binance",
+  "symbol": "BTC/USDT",
+  "timeframe": "1d",
+  "high": {"timestamp": "2026-01-01T00:00:00+00:00", "price": 110.0},
+  "low": {"timestamp": "2026-01-02T00:00:00+00:00", "price": 100.0},
+  "legs": [
+    {"high": {"timestamp": "2026-01-01T00:00:00+00:00", "price": 110.0},
+     "low": {"timestamp": "2026-01-02T00:00:00+00:00", "price": 100.0}},
+    {"high": {"timestamp": "2026-03-01T00:00:00+00:00", "price": 120.0},
+     "low": {"timestamp": "2026-03-02T00:00:00+00:00", "price": 105.0}}
+  ]
+}
+""".strip(),
+        encoding="utf-8",
+    )
+    loaded = load_label(path)
+    assert [leg.id for leg in loaded.all_legs()] == ["leg_1", "leg_2"]

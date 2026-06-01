@@ -96,18 +96,18 @@ def _aggregate(results: list[dict]) -> dict:
     # Out-of-window-labels jämförs mot fel bar → exkludera ur aggregaten,
     # men rapportera hur många som hoppades över för transparens.
     m = [x for x in all_m if not x.get("out_of_window") and not x.get("skipped_mtf")]
-    excluded = len(all_m) - len(m)
     n_mtf_skipped = sum(1 for x in all_m if x.get("skipped_mtf"))
+    n_excluded_oow = sum(1 for x in all_m if x.get("out_of_window") and not x.get("skipped_mtf"))
     if not m:
         return {
             "n": 0,
-            "excluded_out_of_window": excluded,
+            "excluded_out_of_window": n_excluded_oow,
             "excluded_mtf_unresolved": n_mtf_skipped,
             "no_in_window_samples": True,
         }
     return {
         "n": len(m),
-        "excluded_out_of_window": excluded,
+        "excluded_out_of_window": n_excluded_oow,
         "excluded_mtf_unresolved": n_mtf_skipped,
         "no_in_window_samples": False,
         "mean_agreement": round(float(np.mean([x["agreement"] for x in m])), 4),
