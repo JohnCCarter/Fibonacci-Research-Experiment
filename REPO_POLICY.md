@@ -118,6 +118,7 @@ Kör lokalt: `uv run python scripts/check_repo_bounds.py`
 | `src/fibengine/labeling/behavior_facit.py` | ~530 | Dela I/O vs validate — grandfather tills split |
 | `scripts/behavior_facit.py` | ~220 | Tunn CLI-wrapper — grandfather tills split |
 | `scripts/compare_mtf_disambiguation.py` | ~245 | Dela argparse vs report — grandfather tills split |
+| `src/fibengine/research/human_review_level_events.py` | ~610 | Dela pack writer vs runner — grandfather (main PR #11) |
 
 Lägg **inte** till funktioner i grandfathered filer; fixa genom split.
 

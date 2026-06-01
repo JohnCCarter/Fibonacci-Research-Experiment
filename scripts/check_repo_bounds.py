@@ -26,6 +26,7 @@ GRANDFATHERED: dict[str, str] = {
     "src/fibengine/labeling/behavior_facit.py": "Schema v3 + I/O; plan: split load/save",
     "scripts/behavior_facit.py": "CLI för behavior facit; plan: tunn wrapper",
     "scripts/compare_mtf_disambiguation.py": "Research compare CLI; plan: dela argparse vs report",
+    "src/fibengine/research/human_review_level_events.py": "PR #11 review pack; plan: split",
 }
 
 

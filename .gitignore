@@ -228,3 +228,5 @@ data/screenshots/
 experiments/results/mtf_*.json
 experiments/results/*_compare_*T*.json
 experiments/runs/
+# Genererade human-review-paket (charts/sheets) är artefakter, inte källa.
+experiments/review/
