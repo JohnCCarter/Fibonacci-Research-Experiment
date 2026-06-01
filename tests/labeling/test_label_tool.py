@@ -113,6 +113,7 @@ def test_save_auto_appends_second_leg(monkeypatch, synthetic_df, tmp_path):
     monkeypatch.setattr(store, "LABELS_DIR", tmp_path)
     monkeypatch.setattr(tool, "save_label", capture)
     monkeypatch.setattr(tool, "find_label", lambda *_a: None)
+    monkeypatch.setattr(tool, "load_candles", lambda _cfg: synthetic_df)
 
     workspace = LabelWorkspace(
         settings=Settings(),
