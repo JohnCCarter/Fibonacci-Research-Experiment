@@ -17,6 +17,7 @@ Kurerad översikt. Nya reflektioner: `YYYY-MM-DD-<kort-beskrivning>.md` (se [REA
 | 2026-05-29 | [btc-1w-machine-approved](2026-05-29-btc-1w-machine-approved.md) | decision | labeling, BTC | Facit 1w godkänd (motor-swing) |
 | 2026-05-29 | [mtf-daily-fib-research](2026-05-29-mtf-daily-fib-research.md) | decision | MTF, 1w, 1d, fib | Weekly VAD / daily HUR; multi-leg; 30× BTC 1d |
 | 2026-05-29 | [fib-multi-behavior-per-level](2026-05-29-fib-multi-behavior-per-level.md) | **finding** | behavior, events, #12 | Samma nivå → flera events; v3; realign → Hypothesis A spot-check |
+| 2026-06-01 | [hypothesis-a-spot-check-pilot](2026-06-01-hypothesis-a-spot-check-pilot.md) | run | #12, level_events, review | BTC 1d review_20260601T152524Z (40 events); labels pending |
 
 **Djupare guider:**
 

@@ -29,7 +29,11 @@ load fast and read well on a small screen.
 ## CLI usage
 
 ```bash
-# Default: balanced sample of up to 40 events across candidate types & fib levels.
+# BTC 1d spot-check (Hypothesis A default sample):
+uv run python -m fibengine.research.human_review_level_events \
+  --symbol BTC/USD --timeframe 1d --max-events 40 --seed 7 --line
+
+# Default config TF (often 1h): balanced sample across candidate types & levels.
 uv run python -m fibengine.research.human_review_level_events --max-events 40 --seed 7
 
 # Single currently-selected swing instead of all walk-forward legs:

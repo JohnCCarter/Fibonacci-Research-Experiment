@@ -575,6 +575,21 @@ def _parse_args() -> argparse.Namespace:
     )
     p.add_argument("--seed", type=int, default=None, help="Random seed for reproducible sampling.")
     p.add_argument(
+        "--exchange",
+        default=None,
+        help="Override settings.data.exchange (default: config/settings.yaml).",
+    )
+    p.add_argument(
+        "--symbol",
+        default=None,
+        help="Override settings.data.symbol, e.g. BTC/USD.",
+    )
+    p.add_argument(
+        "--timeframe",
+        default=None,
+        help="Override settings.data.timeframe, e.g. 1d.",
+    )
+    p.add_argument(
         "--line",
         action="store_true",
         help="Use a close-line instead of candlesticks (lighter). Candlesticks are default.",
@@ -594,6 +609,13 @@ if __name__ == "__main__":
     args = _parse_args()
     before = args.context if args.context is not None else args.context_before
     after = args.context if args.context is not None else args.context_after
+    settings = load_settings()
+    if args.exchange:
+        settings.data.exchange = args.exchange
+    if args.symbol:
+        settings.data.symbol = args.symbol
+    if args.timeframe:
+        settings.data.timeframe = args.timeframe
     cfg = HumanReviewConfig(
         max_events=args.max_events,
         max_per_candidate=args.max_per_candidate,
@@ -605,5 +627,5 @@ if __name__ == "__main__":
         context_after=after,
         candlestick=not args.line,
     )
-    result = run_human_review(cfg=cfg, mode=args.mode, dedupe=args.dedupe)
+    result = run_human_review(settings=settings, cfg=cfg, mode=args.mode, dedupe=args.dedupe)
     print(json.dumps(result, indent=2))
