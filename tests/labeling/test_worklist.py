@@ -3,7 +3,7 @@ from fibengine.labeling.store import Point, SwingLabel
 
 
 def _label(
-    symbol: str, timeframe: str, exchange: str = "binance", source: str = "human"
+    symbol: str, timeframe: str, exchange: str = "bitfinex", source: str = "human"
 ) -> SwingLabel:
     return SwingLabel(
         exchange=exchange,
@@ -38,9 +38,9 @@ def test_coverage_report_lists_missing_combos(monkeypatch):
     assert report["n_target_combos"] == 6
     assert report["n_covered_combos"] == 2
     # Missing = allt utom de två labelade 1h-kombinationerna.
-    assert ("binance", "SOL/USDT", "1h") in report["missing_combos"]
-    assert ("binance", "BTC/USDT", "4h") in report["missing_combos"]
-    assert ("binance", "BTC/USDT", "1h") not in report["missing_combos"]
+    assert ("bitfinex", "SOL/USDT", "1h") in report["missing_combos"]
+    assert ("bitfinex", "BTC/USDT", "4h") in report["missing_combos"]
+    assert ("bitfinex", "BTC/USDT", "1h") not in report["missing_combos"]
     assert len(report["missing_combos"]) == 4
 
 
@@ -59,8 +59,8 @@ def test_machine_labels_do_not_count_toward_target(monkeypatch):
     # Bara den mänskliga räknas mot målet.
     assert report["n_labeled"] == 1
     # ETH 1h saknar human-facit men har en maskin-kandidat att granska.
-    assert ("binance", "ETH/USDT", "1h") in report["missing_combos"]
-    assert ("binance", "ETH/USDT", "1h") in report["machine_to_review"]
+    assert ("bitfinex", "ETH/USDT", "1h") in report["missing_combos"]
+    assert ("bitfinex", "ETH/USDT", "1h") in report["machine_to_review"]
     assert report["n_machine_to_review"] == 1
 
     text = worklist.format_report(report)

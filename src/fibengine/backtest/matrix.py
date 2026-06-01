@@ -25,7 +25,7 @@ from fibengine.core.logging_conf import setup_logging
 from fibengine.data.loader import load_candles
 
 MATRIX_RESULTS = REPO_ROOT / "experiments" / "results" / "backtest_matrix.jsonl"
-DEFAULT_SYMBOLS = ("BTC/USDT", "ETH/USDT", "SOL/USDT")
+DEFAULT_SYMBOLS = ("BTC/USD", "ETH/USD", "SOL/USD")
 DEFAULT_TIMEFRAMES = ("15m", "1h", "4h")
 
 
@@ -147,7 +147,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--symbols",
-        help="Comma-separated symbols, e.g. BTC/USD,ETH/USD (default: BTC/USDT,ETH/USDT,SOL/USDT).",
+        help="Comma-separated symbols, e.g. BTC/USD,ETH/USD (default: BTC/USD,ETH/USD,SOL/USD).",
     )
     parser.add_argument(
         "--timeframes",

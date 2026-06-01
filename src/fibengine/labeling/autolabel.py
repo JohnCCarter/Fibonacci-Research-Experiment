@@ -74,7 +74,7 @@ def autolabel_one(
 
 def run_autolabel(
     settings: Settings | None = None,
-    exchange: str = "binance",
+    exchange: str = "bitfinex",
     symbols: list[str] | None = None,
     timeframes: list[str] | None = None,
     overwrite: bool = False,
@@ -114,7 +114,9 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Generera provisoriska maskin-labels (kandidater) för granskning."
     )
-    parser.add_argument("--exchange", default="binance", help="CCXT exchange id (default: binance)")
+    parser.add_argument(
+        "--exchange", default="bitfinex", help="CCXT exchange id (default: bitfinex)"
+    )
     parser.add_argument("--symbols", help="Comma-separated symbols, e.g. SOL/USDT")
     parser.add_argument("--timeframes", help="Comma-separated timeframes, e.g. 4h,1d")
     parser.add_argument(

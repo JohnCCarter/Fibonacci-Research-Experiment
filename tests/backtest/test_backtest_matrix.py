@@ -13,18 +13,18 @@ from fibengine.core.config import REPO_ROOT, Settings, load_settings
 
 def test_default_matrix_covers_symbols_and_timeframes():
     cases = default_matrix()
-    assert MatrixCase("BTC/USDT", "15m") in cases
-    assert MatrixCase("ETH/USDT", "1h") in cases
-    assert MatrixCase("SOL/USDT", "4h") in cases
+    assert MatrixCase("BTC/USD", "15m") in cases
+    assert MatrixCase("ETH/USD", "1h") in cases
+    assert MatrixCase("SOL/USD", "4h") in cases
     assert len(cases) == 9
 
 
 def test_case_settings_does_not_mutate_base_settings():
     base = Settings()
-    updated = _case_settings(base, MatrixCase("ETH/USDT", "4h"))
-    assert base.data.symbol == "BTC/USDT"
+    updated = _case_settings(base, MatrixCase("ETH/USD", "4h"))
+    assert base.data.symbol == "BTC/USD"
     assert base.data.timeframe == "1h"
-    assert updated.data.symbol == "ETH/USDT"
+    assert updated.data.symbol == "ETH/USD"
     assert updated.data.timeframe == "4h"
 
 
@@ -52,7 +52,7 @@ def test_matrix_records_case_errors(monkeypatch, tmp_path: Path):
 
     monkeypatch.setattr(matrix, "load_candles", boom)
 
-    rows = run_matrix(Settings(), cases=[MatrixCase("BTC/USDT", "1h")])
+    rows = run_matrix(Settings(), cases=[MatrixCase("BTC/USD", "1h")])
 
     assert rows[0]["status"] == "error"
     assert rows[0]["error_type"] == "RuntimeError"

@@ -14,8 +14,8 @@ DEFAULT_CONFIG_PATH = REPO_ROOT / "config" / "settings.yaml"
 
 
 class DataConfig(BaseModel):
-    exchange: str = "binance"
-    symbol: str = "BTC/USDT"
+    exchange: str = "bitfinex"
+    symbol: str = "BTC/USD"
     timeframe: str = "1h"
     limit: int = Field(default=500, ge=1)
     # Per-timeframe limit-override. Långa timeframes (1d/1w/1M) behöver fler

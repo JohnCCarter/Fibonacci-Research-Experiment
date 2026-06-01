@@ -12,7 +12,8 @@ labels/
       {timeframe}.json
 ```
 
-Exempel: `binance/BTC-USDT/1h.json`
+Exempel (ny default): `bitfinex/BTC-USDT/1h.json`  
+Legacy research-facit: `binance/` (Binance-perioden, behålls oförändrat).
 
 ## Index
 

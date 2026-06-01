@@ -2,8 +2,8 @@
 seed: 42
 
 data:
-  exchange: binance       # CCXT exchange-id
-  symbol: BTC/USDT
+  exchange: bitfinex      # CCXT exchange-id (Binance geo-blocked on some CI/cloud hosts)
+  symbol: BTC/USD         # Bitfinex spot (USD, not USDT)
   timeframe: 1h
   limit: 500              # antal candles att hämta (default per timeframe)
   timeframe_limits:       # override för långa TF så äldre labels inte hamnar out-of-window

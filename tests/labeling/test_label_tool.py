@@ -55,16 +55,16 @@ def test_workspace_cycles_market_without_mutating_other_fields(monkeypatch, synt
     settings = Settings()
     workspace = LabelWorkspace(
         settings=settings,
-        symbols=["BTC/USDT", "ETH/USDT"],
+        symbols=["BTC/USD", "ETH/USD"],
         timeframes=["1h", "1w"],
     )
 
     workspace.cycle_symbol(1)
     workspace.cycle_timeframe(1)
 
-    assert workspace.data.symbol == "ETH/USDT"
+    assert workspace.data.symbol == "ETH/USD"
     assert workspace.data.timeframe == "1w"
-    assert seen[-1].symbol == "ETH/USDT"
+    assert seen[-1].symbol == "ETH/USD"
     assert seen[-1].timeframe == "1w"
 
 
@@ -130,4 +130,4 @@ def test_save_auto_appends_second_leg(monkeypatch, synthetic_df, tmp_path):
 
     assert len(saved) == 2
     assert len(saved[1].all_legs()) == 2
-    assert "legs" in tmp_path.joinpath("binance/BTC-USDT/1h.json").read_text()
+    assert "legs" in tmp_path.joinpath("bitfinex/BTC-USD/1h.json").read_text()

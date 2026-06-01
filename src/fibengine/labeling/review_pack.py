@@ -21,9 +21,9 @@ from fibengine.viz.plot import plot_prediction
 
 REVIEW_PACKS_DIR = REPO_ROOT / "experiments" / "label_review" / "packs"
 DEFAULT_REVIEW_CASES = (
-    MatrixCase("ETH/USDT", "1h"),
-    MatrixCase("BTC/USDT", "1h"),
-    MatrixCase("SOL/USDT", "15m"),
+    MatrixCase("ETH/USD", "1h"),
+    MatrixCase("BTC/USD", "1h"),
+    MatrixCase("SOL/USD", "15m"),
 )
 
 

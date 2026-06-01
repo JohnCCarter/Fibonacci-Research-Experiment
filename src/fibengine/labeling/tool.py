@@ -2,7 +2,7 @@
 
 Run:
     uv run python -m fibengine.labeling.tool
-    uv run python -m fibengine.labeling.tool --symbols BTC/USDT,ETH/USDT --timeframes 1h,1w
+    uv run python -m fibengine.labeling.tool --symbols BTC/USD,ETH/USD --timeframes 1h,1w
 
 Controls:
 - Click sets the active point. It snaps to the nearest bar high/low.
@@ -62,7 +62,7 @@ DEFAULT_FIB_LEVELS = [0.236, 0.382, 0.5, 0.618, 0.786]
 LEG_FIB_COLORS = ["#6ea8ff", "#ffb86b", "#bd93f9", "#8be9fd", "#ff79c6"]
 LEG_MARKER_ALPHA_INACTIVE = 0.45
 DEFAULT_LABEL_TIMEFRAMES = ["15m", "30m", "1h", "4h", "daily", "weekly", "monthly"]
-DEFAULT_CYCLE_SYMBOLS = ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
+DEFAULT_CYCLE_SYMBOLS = ["BTC/USD", "ETH/USD", "SOL/USD"]
 KEY_PREV_SYMBOL = frozenset({"left", "[", ","})
 KEY_NEXT_SYMBOL = frozenset({"right", "]", "."})
 KEY_PREV_TIMEFRAME = frozenset({"down", ";"})
@@ -196,13 +196,13 @@ def _fib_prices_from_picks(
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Interactive Fibonacci label workspace.")
-    parser.add_argument("--exchange", help="CCXT exchange id, e.g. binance")
-    parser.add_argument("--symbol", help="Initial market symbol, e.g. BTC/USDT")
+    parser.add_argument("--exchange", help="CCXT exchange id, e.g. bitfinex")
+    parser.add_argument("--symbol", help="Initial market symbol, e.g. BTC/USD")
     parser.add_argument("--timeframe", help="Initial candle timeframe, e.g. 1h or 1w")
     parser.add_argument("--limit", type=int, help="Number of candles to load/fetch")
     parser.add_argument(
         "--symbols",
-        help="Comma-separated symbols to cycle, e.g. BTC/USDT,ETH/USDT,SOL/USDT",
+        help="Comma-separated symbols to cycle, e.g. BTC/USD,ETH/USD,SOL/USD",
     )
     parser.add_argument(
         "--timeframes",
