@@ -5,6 +5,7 @@ Detta dokument är källan för vad som är byggt, vad som saknas, och hur det h
 
 Relaterat:
 
+- **[HTF_LTF_RESEARCH_ALIGNMENT.md](HTF_LTF_RESEARCH_ALIGNMENT.md)** — **jobba oss ner:** 1w → 1d → 4h → 1h ([GitHub #14](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/14))
 - **[RESEARCH_HANDOFF.md](RESEARCH_HANDOFF.md)** — aktiv scope + [GitHub #12](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/12) (Hypothesis A: maskin → spot-check)
 - [LABELING_TOOL.md](LABELING_TOOL.md) — verktyg, tangenter, begränsningar
 - [MACHINE_LABELING.md](MACHINE_LABELING.md) — motor-swing vs chartfönster
@@ -95,6 +96,8 @@ Separera steg 1–2 (swing + nivåer) från steg 3–4 (beteende + beslut). Dail
 - Fib på daily ritas på **varje legs** egna ankare, inte automatiskt weekly-grid.
 
 **Formulering vi använder:** motorn hittar fib-nivåer; den har **ännu inte facit** för *mänskligt beteende vid* nivåerna (reject / accept / failure / in–ut).
+
+**Top-down (hela kedjan):** vi jobbar oss **ner** med fiben — weekly grid först, daily legs/events, sedan (plan) 4h och 1h. Se [HTF_LTF_RESEARCH_ALIGNMENT.md](HTF_LTF_RESEARCH_ALIGNMENT.md).
 
 ---
 

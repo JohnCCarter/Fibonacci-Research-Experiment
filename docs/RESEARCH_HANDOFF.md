@@ -61,6 +61,24 @@ HTF/leg fib grid  →  machine proposes level interactions (candidates + evidenc
 
 ---
 
+## Top-down fib (VAD → HUR, neråt)
+
+**Policy:** [HTF_LTF_RESEARCH_ALIGNMENT.md](HTF_LTF_RESEARCH_ALIGNMENT.md) · tracking: [GitHub #14](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/14)
+
+```text
+1w  VAD  — swing + fib-grid (facit-range)
+ ↓
+1d  HUR  — multi-leg + events[] at levels (facit today)
+ ↓
+4h  (plan) — finer structure inside a chosen 1d leg
+ ↓
+1h  (plan) — timing; never start here
+```
+
+**Built:** 1w + 1d (+ 1w→1d MTF). **Not built:** 4h/1h chain in code.
+
+---
+
 ## Key research finding (still valid)
 
 **Same fib level → multiple behaviors over time on Daily** (especially grid from a Weekly/longer leg).
@@ -106,10 +124,11 @@ Short note (premortem or issue comment):
 ## Docs (read order)
 
 1. **This file** + [GitHub #12](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/12)
-2. [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) — weekly VAD / daily HUR, multi-leg
-3. [BEHAVIOR_FACIT.md](BEHAVIOR_FACIT.md) — schema v3, validate, `auto_candidate` rules
-4. [LABELING_TOOL.md](LABELING_TOOL.md) — legs only; `--labels-dir tmp`; fib on active leg only
-5. [data/labels/tmp/README.md](../data/labels/tmp/README.md) — sandbox reset
+2. [HTF_LTF_RESEARCH_ALIGNMENT.md](HTF_LTF_RESEARCH_ALIGNMENT.md) — top-down 1w → 1d → 4h → 1h ([#14](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/14))
+3. [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) — weekly VAD / daily HUR, multi-leg
+4. [BEHAVIOR_FACIT.md](BEHAVIOR_FACIT.md) — schema v3, validate, `auto_candidate` rules
+5. [LABELING_TOOL.md](LABELING_TOOL.md) — legs only; `--labels-dir tmp`; fib on active leg only
+6. [data/labels/tmp/README.md](../data/labels/tmp/README.md) — sandbox reset
 
 **Index:** [premortem/reflections/INDEX.md](../premortem/reflections/INDEX.md)
 
