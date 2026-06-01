@@ -8,3 +8,5 @@ Djupare styrning och ramverk utöver snabbstart.
   - Promotion
 - `FIB_BACKTEST_PLAN.md` — backtest-roadmap (faser, status, kommandon, promotion gate)
 - `CONTRIBUTING.md` — lint, test, pre-commit, CI före commit/push
+- `MACHINE_LABELING.md` — maskin-kandidater: motor-swing vs chartfönster (båda giltiga)
+- `LABELING_TOOL.md` — labeling GUI: begränsningar, redraw, säkra UI-ändringar
