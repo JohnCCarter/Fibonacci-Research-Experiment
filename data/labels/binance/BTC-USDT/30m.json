@@ -1,0 +1,16 @@
+{
+  "exchange": "binance",
+  "symbol": "BTC/USDT",
+  "timeframe": "30m",
+  "high": {
+    "timestamp": "2026-05-28T10:00:00+00:00",
+    "price": 73616.0
+  },
+  "low": {
+    "timestamp": "2026-05-24T02:00:00+00:00",
+    "price": 76704.32
+  },
+  "note": "maskin-labeling: provisorisk kandidat \u2014 granska och justera i labeling.tool",
+  "created_at": "2026-05-29T06:38:55.689261+00:00",
+  "source": "machine"
+}
