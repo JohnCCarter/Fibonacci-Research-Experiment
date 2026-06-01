@@ -147,6 +147,11 @@ uv run python scripts/behavior_facit.py print --research-subdir tmp --symbol BTC
 
 # Descriptive scan (not facit)
 uv run python scripts/mtf_leg_daily_fib.py --symbol BTC/USDT --timeframe 1w
+
+# Hypothesis A spot-check (interactive chart, then summarize)
+uv run python -m fibengine.research.human_review_level_events --symbol BTC/USD --timeframe 1d --max-events 40 --seed 7 --line
+uv run python -m fibengine.research.level_event_review_tool --run-dir experiments/review/fib_level_events/<run_id>
+uv run python scripts/summarize_human_review.py experiments/review/fib_level_events/<run_id>
 ```
 
 **Rules:**

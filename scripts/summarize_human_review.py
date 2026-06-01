@@ -9,13 +9,25 @@ from collections import Counter
 from pathlib import Path
 
 
-def summarize(run_dir: Path) -> dict:
+def _load_rows(run_dir: Path) -> list[dict]:
     jsonl = run_dir / "review_sample.jsonl"
-    if not jsonl.exists():
-        raise FileNotFoundError(jsonl)
-    rows = [
-        json.loads(line) for line in jsonl.read_text(encoding="utf-8").splitlines() if line.strip()
-    ]
+    csv_path = run_dir / "review_sample.csv"
+    if jsonl.exists():
+        return [
+            json.loads(line)
+            for line in jsonl.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    if csv_path.exists():
+        import csv
+
+        with csv_path.open(encoding="utf-8", newline="") as f:
+            return list(csv.DictReader(f))
+    raise FileNotFoundError(f"Need {jsonl} or {csv_path}")
+
+
+def summarize(run_dir: Path) -> dict:
+    rows = _load_rows(run_dir)
     labels = Counter(r.get("human_label") or "(empty)" for r in rows)
     confidence = Counter(r.get("human_confidence") or "(empty)" for r in rows)
     by_candidate: dict[str, Counter] = {}

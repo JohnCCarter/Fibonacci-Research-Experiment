@@ -13,7 +13,28 @@ that confirmation cheap. It samples a bounded set of candidates, renders one
 chart per event, and writes a review sheet with blank columns the reviewer fills
 in. No TradingView, no manual chart hunting.
 
-## Mobile-friendly workflow
+## Interactive review (recommended on desktop)
+
+Same candlestick chart feel as the labeling tool — pan/zoom, hover OHLC:
+
+```bash
+uv run python -m fibengine.research.level_event_review_tool \
+  --run-dir experiments/review/fib_level_events/review_20260601T152524Z
+```
+
+| Key | Action |
+|-----|--------|
+| `1`–`5` | `agree`, `wrong_type`, `missed_context`, `noise`, `unclear` |
+| `h` / `m` / `l` | confidence high / medium / low |
+| `n` or `→` | next event |
+| `p` or `←` | previous event |
+| `s` | save `review_sample.csv` + `.jsonl` |
+| `z` | zoom back to current event |
+| `q` | save and quit |
+
+Use the matplotlib toolbar to pan/zoom like `fibengine.labeling.tool`.
+
+## Mobile-friendly workflow (PNG + CSV)
 
 Each run produces a self-contained folder of PNG charts plus a markdown index
 and a review sheet (CSV + JSONL). The reviewer:
