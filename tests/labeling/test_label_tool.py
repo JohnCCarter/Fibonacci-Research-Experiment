@@ -1,6 +1,6 @@
 from argparse import Namespace
 
-from fibengine.core.config import DataConfig, Settings
+from fibengine.core.config import DataConfig, LabelingConfig, Settings
 from fibengine.labeling import tool
 from fibengine.labeling.tool import (
     LabelWorkspace,
@@ -55,16 +55,16 @@ def test_workspace_cycles_market_without_mutating_other_fields(monkeypatch, synt
     settings = Settings()
     workspace = LabelWorkspace(
         settings=settings,
-        symbols=["BTC/USDT", "ETH/USDT"],
+        symbols=["BTC/USD", "ETH/USD"],
         timeframes=["1h", "1w"],
     )
 
     workspace.cycle_symbol(1)
     workspace.cycle_timeframe(1)
 
-    assert workspace.data.symbol == "ETH/USDT"
+    assert workspace.data.symbol == "ETH/USD"
     assert workspace.data.timeframe == "1w"
-    assert seen[-1].symbol == "ETH/USDT"
+    assert seen[-1].symbol == "ETH/USD"
     assert seen[-1].timeframe == "1w"
 
 
@@ -84,7 +84,50 @@ def test_label_warnings_reject_same_bar_and_edges(synthetic_df):
     assert any("left edge" in warning for warning in warnings)
 
 
+def test_label_warnings_defers_same_bar_on_1w_when_mtf_research_enabled(synthetic_df):
+    settings = Settings(
+        labeling=LabelingConfig(enable_same_candle_mtf_resolution=True),
+    )
+    settings.data = settings.data.model_copy(update={"timeframe": "1w"})
+    warnings = _label_warnings(synthetic_df, high_idx=0, low_idx=0, settings=settings)
+
+    assert not any("same candle" in warning for warning in warnings)
+
+
 def test_label_warnings_allows_distinct_interior_points(synthetic_df):
     warnings = _label_warnings(synthetic_df, high_idx=5, low_idx=7, settings=Settings())
 
     assert warnings == []
+
+
+def test_save_auto_appends_second_leg(monkeypatch, synthetic_df, tmp_path):
+    from fibengine.labeling import store
+
+    saved: list = []
+
+    def capture(label):
+        path = store.save_label(label)
+        saved.append(label)
+        return path
+
+    monkeypatch.setattr(store, "LABELS_DIR", tmp_path)
+    monkeypatch.setattr(tool, "save_label", capture)
+    monkeypatch.setattr(tool, "find_label", lambda *_a: None)
+    monkeypatch.setattr(tool, "load_candles", lambda _cfg: synthetic_df)
+
+    workspace = LabelWorkspace(
+        settings=Settings(),
+        symbols=["BTC/USDT"],
+        timeframes=["1d"],
+    )
+    workspace.df = synthetic_df
+    workspace.picks = {"high": (5, 120.0), "low": (7, 100.0)}
+    workspace.save_current_label()
+    assert len(workspace.legs) == 1
+
+    workspace.picks = {"high": (8, 115.0), "low": (9, 105.0)}
+    workspace.save_current_label()
+
+    assert len(saved) == 2
+    assert len(saved[1].all_legs()) == 2
+    assert "legs" in store.label_path(saved[1]).read_text()

@@ -35,12 +35,7 @@ Syftet är att separera discovery från verifiering och från trusted behavior.
 **Krav:**
 - reproducerbara testkörningar
 - replay/backtest
-- stabilitetskontroller — explicit `stability_gate` (`backtest.gate_*`) måste passera.
-  Endpoint-drift (`mean_endpoint_drift_bars`) är en förstklassig kriterie, inte bara
-  flip/confirmed: en "stabil" swing vars endpunkt vandrar långt vid hopp underkänns.
-- pivot-recall mot labels med **explicit** out-of-window-redovisning
-  (`n_excluded_out_of_window`) — recall får inte se bättre ut tack vare ett tyst
-  krympande sampel
+- stabilitetskontroller
 - tydlig jämförelse mot baseline
 
 **Primära ytor:**

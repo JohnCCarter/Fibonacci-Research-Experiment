@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import ccxt
@@ -41,8 +42,20 @@ def fetch_and_cache(cfg: DataConfig) -> Path:
     return path
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Fetch OHLCV via CCXT and cache under data/raw/.")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="",
+        help="Settings file (default: config/settings.yaml).",
+    )
+    return parser.parse_args()
+
+
 def main():
-    settings = load_settings()
+    args = _parse_args()
+    settings = load_settings(args.config or None)
     path = fetch_and_cache(settings.data)
     df = pd.read_csv(path)
     print(f"Cachade {len(df)} candles -> {path}")

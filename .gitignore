@@ -218,12 +218,17 @@ __marimo__/
 .streamlit/secrets.toml
 
 # --- Fibonacci-engine projekt-specifikt ---
+# Ephemeral markdown for `gh issue create` / `gh pr edit --body-file` (not project docs)
+.gh-*.md
 tmp/
 # Cachad marknadsdata och referensbilder versioneras inte.
 data/raw/
 data/screenshots/
 # Per-körning audit-mappar versioneras inte (artefakter, inte källa).
 # experiments/results/*.jsonl och experiments/label_review/ versioneras (default).
+# Timestamped per-run snapshots (not append-only ledgers):
+experiments/results/mtf_*.json
+experiments/results/*_compare_*T*.json
 experiments/runs/
 # Genererade human-review-paket (charts/sheets) är artefakter, inte källa.
 experiments/review/

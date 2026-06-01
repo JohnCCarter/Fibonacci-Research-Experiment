@@ -5,6 +5,7 @@ Staged roadmap for Layer A (swing selection) and Layer B (trade simulation) on r
 | Doc | Role |
 |---|---|
 | [TRACKS.md](TRACKS.md) | Research / Validate / Promotion |
+| [GENESIS_BITFINEX_VALIDATE.md](GENESIS_BITFINEX_VALIDATE.md) | Bitfinex validate before Genesis-Core import |
 | [../REPO_POLICY.md](../REPO_POLICY.md) | Structure, premortem, promotion gate |
 | [../premortem/PREMORTEM.md](../premortem/PREMORTEM.md) | Risks this plan mitigates |
 
@@ -25,6 +26,7 @@ Premortem: record surprises in `premortem/reflections/` (short, not essays).
 | 4 Layer B trade simulation | Validate | **smoke done** | `experiments/results/trade_*.jsonl` |
 | 5 Iteration discipline | All | **active** | Policy + reflections |
 | 6 Promotion gate | Promotion | **next** | Merge into `config/settings.yaml` |
+| 7 Bitfinex / Genesis validate | Validate | **ready to run** | `backtest_matrix.jsonl` rows `exchange=bitfinex` |
 
 ---
 
@@ -130,6 +132,29 @@ uv run python -m fibengine.backtest.trade_matrix
 5. Update `config/settings.yaml` only after the above; archive variant rationale in `config/variants/INDEX.md`.
 
 **Do not promote** from label agreement alone — Validate (stabilitet + recall) first, then Promotion. Viktändringar motiveras av principer (premortem), inte auto-tuning mot ritningar.
+
+---
+
+## Phase 7 — Bitfinex / Genesis-Core validate
+
+**Status:** ready to run (profil + docs; kräver nät för CCXT-hämtning).
+
+**Goal:** Bevisa att Lager A håller på **Bitfinex**-candles (samma gates som baseline), innan Fib porteras till Genesis-Core paper/subaccount.
+
+**Config:** `config/settings.bitfinex.yaml` (rör inte `settings.yaml`).
+
+**Guide:** [GENESIS_BITFINEX_VALIDATE.md](GENESIS_BITFINEX_VALIDATE.md).
+
+**Run (matrix):**
+
+```bash
+uv run python -m fibengine.backtest.matrix \
+  --config config/settings.bitfinex.yaml \
+  --symbols BTC/USD,ETH/USD,SOL/USD \
+  --timeframes 15m,1h,4h
+```
+
+**Success:** JSONL-rader med `"exchange": "bitfinex"`; gate/jämförelse mot Binance Phase 1 dokumenterad i `premortem/reflections/`.
 
 ---
 

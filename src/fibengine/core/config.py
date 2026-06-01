@@ -14,8 +14,8 @@ DEFAULT_CONFIG_PATH = REPO_ROOT / "config" / "settings.yaml"
 
 
 class DataConfig(BaseModel):
-    exchange: str = "binance"
-    symbol: str = "BTC/USDT"
+    exchange: str = "bitfinex"
+    symbol: str = "BTC/USD"
     timeframe: str = "1h"
     limit: int = Field(default=500, ge=1)
     # Per-timeframe limit-override. Långa timeframes (1d/1w/1M) behöver fler
@@ -71,6 +71,13 @@ class SizingConfig(BaseModel):
         return self
 
 
+class LabelingConfig(BaseModel):
+    # Research: allow 1W H+L on same bar when 1D pivots differ (labeling.tool save).
+    enable_same_candle_mtf_resolution: bool = False
+    # Research: motor reads verified LTF metadata for order/fib (not default canonical).
+    mtf_disambiguation: bool = False
+
+
 class BacktestConfig(BaseModel):
     # Kausalt walk-forward: mät hur stabilt urvalet är över tid (Lager A).
     warmup_bars: int = Field(default=60, ge=0)
@@ -95,6 +102,7 @@ class Settings(BaseModel):
     evaluation: EvaluationConfig = Field(default_factory=EvaluationConfig)
     sizing: SizingConfig = Field(default_factory=SizingConfig)
     backtest: BacktestConfig = Field(default_factory=BacktestConfig)
+    labeling: LabelingConfig = Field(default_factory=LabelingConfig)
 
     def config_hash(self) -> str:
         """Stabil hash av hela konfigurationen — används i audit-loggar."""

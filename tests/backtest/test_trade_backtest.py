@@ -53,7 +53,7 @@ def test_trade_matrix_records_case_errors(monkeypatch, tmp_path):
         lambda _cfg: (_ for _ in ()).throw(RuntimeError("no data")),
     )
 
-    rows = run_trade_matrix(Settings(), cases=[MatrixCase("BTC/USDT", "1h")])
+    rows = run_trade_matrix(Settings(), cases=[MatrixCase("BTC/USD", "1h")])
 
     assert rows[0]["status"] == "error"
     assert rows[0]["error_type"] == "RuntimeError"

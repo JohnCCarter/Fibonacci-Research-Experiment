@@ -9,8 +9,13 @@ Konfiguration för körningar.
 
 Baseline:
 
-- `settings.yaml` är baseline och ska hållas stabil.
+- `settings.yaml` är baseline (`exchange: bitfinex`, USD-par) och ska hållas stabil.
 - Experiment ska i första hand köras med `--config config/variants/<fil>.yaml`.
+
+Bitfinex / Genesis validate:
+
+- `settings.bitfinex.yaml` — samma som baseline (explicit profil för Genesis-dok).
+- Körordning och symbol-mappning: [`docs/GENESIS_BITFINEX_VALIDATE.md`](../docs/GENESIS_BITFINEX_VALIDATE.md).
 
 Spårkoppling:
 

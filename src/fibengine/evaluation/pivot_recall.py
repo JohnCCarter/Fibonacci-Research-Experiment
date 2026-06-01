@@ -16,7 +16,8 @@ from fibengine.core.config import REPO_ROOT, Settings, load_settings
 from fibengine.core.logging_conf import setup_logging
 from fibengine.core.models import Pivot
 from fibengine.data.loader import load_candles
-from fibengine.evaluation.metrics import _bar_of_timestamp
+from fibengine.evaluation.bars import bar_of_timestamp
+from fibengine.labeling.mtf_disambiguation import disambiguate_label_endpoints
 from fibengine.labeling.store import SwingLabel, list_labels
 from fibengine.pivots.detect import detect_pivots
 
@@ -49,11 +50,39 @@ def evaluate_label_recall(
         }
     )
     df = load_candles(data_cfg)
-    pivots = detect_pivots(df, settings.pivots)
+    endpoints = disambiguate_label_endpoints(label, df, settings)
+    pivot_df = df
+    if endpoints.time_df_timeframe != label.timeframe:
+        pivot_df = load_candles(
+            data_cfg.model_copy(update={"timeframe": endpoints.time_df_timeframe})
+        )
+    pivots = detect_pivots(pivot_df, settings.pivots)
     tol = tol_bars if tol_bars is not None else max(1, settings.pivots.lookback)
 
-    high_bar, high_in_window = _bar_of_timestamp(df, label.high.timestamp)
-    low_bar, low_in_window = _bar_of_timestamp(df, label.low.timestamp)
+    if endpoints.skip_evaluation:
+        return {
+            "exchange": label.exchange,
+            "symbol": label.symbol,
+            "timeframe": label.timeframe,
+            "tol_bars": tol,
+            "n_pivots": len(pivots),
+            "high_bar": None,
+            "low_bar": None,
+            "high_hit": False,
+            "low_hit": False,
+            "both_hit": False,
+            "out_of_window": False,
+            "high_dist_bars": None,
+            "low_dist_bars": None,
+            "nearest_high": None,
+            "nearest_low": None,
+            "mtf_status": endpoints.mtf_status,
+            "skipped_mtf": True,
+            "mtf_skip_reason": endpoints.skip_reason,
+        }
+
+    high_bar, high_in_window = bar_of_timestamp(pivot_df, endpoints.high_timestamp)
+    low_bar, low_in_window = bar_of_timestamp(pivot_df, endpoints.low_timestamp)
     high_pivot, high_dist = _nearest_pivot(pivots, high_bar, "high")
     low_pivot, low_dist = _nearest_pivot(pivots, low_bar, "low")
 
@@ -84,6 +113,8 @@ def evaluate_label_recall(
         "low_dist_bars": low_dist,
         "nearest_high": high_pivot.to_dict() if high_pivot else None,
         "nearest_low": low_pivot.to_dict() if low_pivot else None,
+        "mtf_status": endpoints.mtf_status,
+        "skipped_mtf": False,
     }
 
 
@@ -95,13 +126,16 @@ def summarize_recall(rows: list[dict]) -> dict:
     räknas och flaggas de så att ett krympande sampel syns.
     """
     n = len(rows)
-    in_window = [r for r in rows if not r["out_of_window"]]
+    in_window = [r for r in rows if not r["out_of_window"] and not r.get("skipped_mtf")]
     n_in = len(in_window)
-    n_excluded = n - n_in
+    n_excluded_oow = sum(1 for r in rows if r["out_of_window"] and not r.get("skipped_mtf"))
+    n_excluded_mtf = sum(1 for r in rows if r.get("skipped_mtf"))
+    n_excluded = n_excluded_oow + n_excluded_mtf
     summary = {
         "n_labels": n,
         "n_in_window": n_in,
-        "n_excluded_out_of_window": n_excluded,
+        "n_excluded_out_of_window": n_excluded_oow,
+        "n_excluded_mtf_unresolved": n_excluded_mtf,
         "excluded_frac": round(n_excluded / n, 4) if n else 0.0,
     }
     if in_window:

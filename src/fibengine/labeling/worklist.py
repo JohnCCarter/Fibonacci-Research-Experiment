@@ -7,7 +7,7 @@ mellan nuvarande labels och målet explicita och skriver ut färdiga
 
 Kör:
     uv run python -m fibengine.labeling.worklist
-    uv run python -m fibengine.labeling.worklist --symbols BTC/USDT,ETH/USDT \
+    uv run python -m fibengine.labeling.worklist --symbols BTC/USD,ETH/USD \
         --timeframes 1h,4h,1d
 """
 
@@ -19,7 +19,7 @@ from fibengine.labeling.store import list_labels
 
 # Mål per PREMORTEM.md: "Samla minst 20–30 labelade setups innan vikter låses".
 LABEL_TARGET = 25
-DEFAULT_SYMBOLS = ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
+DEFAULT_SYMBOLS = ["BTC/USD", "ETH/USD", "SOL/USD"]
 DEFAULT_TIMEFRAMES = ["15m", "30m", "1h", "4h", "1d", "1w", "1M"]
 
 
@@ -35,7 +35,7 @@ def target_combos(
 
 
 def coverage_report(
-    exchange: str = "binance",
+    exchange: str = "bitfinex",
     symbols: list[str] | None = None,
     timeframes: list[str] | None = None,
     target: int = LABEL_TARGET,
@@ -102,8 +102,10 @@ def format_report(report: dict) -> str:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Label coverage / worklist mot 20–30-setup-målet.")
-    parser.add_argument("--exchange", default="binance", help="CCXT exchange id (default: binance)")
-    parser.add_argument("--symbols", help="Comma-separated symbols, e.g. BTC/USDT,ETH/USDT")
+    parser.add_argument(
+        "--exchange", default="bitfinex", help="CCXT exchange id (default: bitfinex)"
+    )
+    parser.add_argument("--symbols", help="Comma-separated symbols, e.g. BTC/USD,ETH/USD")
     parser.add_argument("--timeframes", help="Comma-separated timeframes, e.g. 15m,1h,4h,1d")
     parser.add_argument(
         "--target", type=int, default=LABEL_TARGET, help=f"Label-mål (default: {LABEL_TARGET})"

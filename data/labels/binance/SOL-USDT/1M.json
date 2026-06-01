@@ -1,0 +1,16 @@
+{
+  "exchange": "binance",
+  "symbol": "SOL/USDT",
+  "timeframe": "1M",
+  "high": {
+    "timestamp": "2025-01-01T00:00:00+00:00",
+    "price": 295.83
+  },
+  "low": {
+    "timestamp": "2022-12-01T00:00:00+00:00",
+    "price": 8.0
+  },
+  "note": "maskin-labeling: provisorisk kandidat \u2014 granska och justera i labeling.tool",
+  "created_at": "2026-05-29T06:39:06.523261+00:00",
+  "source": "machine"
+}

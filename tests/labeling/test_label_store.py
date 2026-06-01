@@ -1,11 +1,13 @@
 from fibengine.labeling import store
 from fibengine.labeling.store import (
+    LegLabel,
     Point,
     SwingLabel,
     delete_label,
     find_label,
     label_path,
     list_labels,
+    load_label,
     save_label,
 )
 
@@ -80,3 +82,59 @@ def test_list_labels_filters_by_source(monkeypatch, tmp_path):
     assert len(list_labels(source="human")) == 1
     assert len(list_labels(source="machine")) == 1
     assert list_labels(source="human")[0].symbol == "BTC/USDT"
+
+
+def test_multi_leg_save_and_load(monkeypatch, tmp_path):
+    monkeypatch.setattr(store, "LABELS_DIR", tmp_path)
+    legs = [
+        LegLabel(
+            id="impulse_down",
+            high=Point("2026-01-15T00:00:00+00:00", 97_000.0),
+            low=Point("2026-01-25T00:00:00+00:00", 86_000.0),
+        ),
+        LegLabel(
+            id="retrace_up",
+            high=Point("2026-04-20T00:00:00+00:00", 81_000.0),
+            low=Point("2026-02-06T00:00:00+00:00", 60_000.0),
+        ),
+    ]
+    label = SwingLabel(
+        exchange="binance",
+        symbol="BTC/USDT",
+        timeframe="1d",
+        high=legs[0].high,
+        low=legs[0].low,
+        legs=legs,
+    )
+    path = save_label(label)
+    raw = path.read_text()
+    assert '"legs"' in raw
+    loaded = load_label(path)
+    assert len(loaded.all_legs()) == 2
+    assert loaded.all_legs()[1].id == "retrace_up"
+
+
+def test_multi_leg_without_ids_get_sequential_ids(monkeypatch, tmp_path):
+    monkeypatch.setattr(store, "LABELS_DIR", tmp_path)
+    path = tmp_path / "binance/BTC-USDT/1d.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        """
+{
+  "exchange": "binance",
+  "symbol": "BTC/USDT",
+  "timeframe": "1d",
+  "high": {"timestamp": "2026-01-01T00:00:00+00:00", "price": 110.0},
+  "low": {"timestamp": "2026-01-02T00:00:00+00:00", "price": 100.0},
+  "legs": [
+    {"high": {"timestamp": "2026-01-01T00:00:00+00:00", "price": 110.0},
+     "low": {"timestamp": "2026-01-02T00:00:00+00:00", "price": 100.0}},
+    {"high": {"timestamp": "2026-03-01T00:00:00+00:00", "price": 120.0},
+     "low": {"timestamp": "2026-03-02T00:00:00+00:00", "price": 105.0}}
+  ]
+}
+""".strip(),
+        encoding="utf-8",
+    )
+    loaded = load_label(path)
+    assert [leg.id for leg in loaded.all_legs()] == ["leg_1", "leg_2"]

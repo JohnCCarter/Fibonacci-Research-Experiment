@@ -419,12 +419,12 @@ def write_review_sheets(rows: list[dict], out_dir: Path) -> tuple[Path, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     csv_path = out_dir / "review_sample.csv"
     jsonl_path = out_dir / "review_sample.jsonl"
-    with csv_path.open("w", newline="") as f:
+    with csv_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=REVIEW_COLUMNS)
         writer.writeheader()
         for r in rows:
             writer.writerow({k: r.get(k, "") for k in REVIEW_COLUMNS})
-    with jsonl_path.open("w") as f:
+    with jsonl_path.open("w", encoding="utf-8") as f:
         for r in rows:
             f.write(json.dumps({k: r.get(k) for k in REVIEW_COLUMNS}, sort_keys=True) + "\n")
     return csv_path, jsonl_path
@@ -515,7 +515,7 @@ def write_index(rows: list[dict], summary: dict, out_dir: Path) -> Path:
         )
         lines.append("- **human_label:** ____  **human_confidence:** ____  **human_note:** ____")
         lines.append("")
-    index_path.write_text("\n".join(lines))
+    index_path.write_text("\n".join(lines), encoding="utf-8")
     return index_path
 
 
