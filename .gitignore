@@ -224,4 +224,7 @@ data/raw/
 data/screenshots/
 # Per-körning audit-mappar versioneras inte (artefakter, inte källa).
 # experiments/results/*.jsonl och experiments/label_review/ versioneras (default).
+# Timestamped per-run snapshots (not append-only ledgers):
+experiments/results/mtf_*.json
+experiments/results/*_compare_*T*.json
 experiments/runs/

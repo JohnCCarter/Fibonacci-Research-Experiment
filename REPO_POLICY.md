@@ -83,6 +83,50 @@ Varje modul ska ha ett tydligt ansvar. Inga “utils.py” utan kategori.
 | `experiment.py` | Standardrunner som loggar till `experiments/runs/` |
 | `core/logging_conf.py` | Loguru-setup |
 
+## 2B. Modulstorlek, ansvar och anti-blob (MÅSTE)
+
+Undvik **monolitiska moduler** (en fil som gör för många saker) och **blobs**
+(stora klumpiga filer utan tydlig struktur). En fil ska ha **en huvudorsak att ändras**.
+
+### Principer
+
+- **Ett ansvar per modul** — följ tabellen i §2; dela om en fil både CLI, domänlogik
+  och GUI i samma modul utan tydlig gräns.
+- **Inga generiska `utils.py`** — namnge efter domän (`store.py`, `stability.py`, …).
+- **Tunna entrypoints** — `experiment.py`, `runner.py`, `autolabel.py` ska orkestrera;
+  tung logik i paket undermappar.
+- **Data ≠ dokumentation** — rå metrics i `experiments/results/*.jsonl`; guider i `docs/`;
+  korta beslut i `premortem/reflections/`.
+
+### Storleksgränser (verkställs i pre-commit)
+
+| Mönster | Max rader | Max storlek | Kommentar |
+|---------|-----------|-------------|-----------|
+| `premortem/reflections/*.md` | 80 | 8 KiB | utom `INDEX.md`, `README.md` |
+| `src/fibengine/**/*.py` | 400 | 25 KiB | ny kod ska ligga under gränsen |
+| `tests/**/*.py` | 250 | 15 KiB | |
+| `docs/**/*.md` | 200 | 20 KiB | längre innehåll → flera docs-filer |
+| `scripts/*.py` | 120 | 8 KiB | |
+
+Kör lokalt: `uv run python scripts/check_repo_bounds.py`
+
+### Känd skuld (får inte växa)
+
+| Fil | Rader (ca) | Plan |
+|-----|------------|------|
+| `src/fibengine/labeling/tool.py` | ~595 | Dela workspace / plot / CLI — grandfather tills split |
+| `src/fibengine/labeling/behavior_facit.py` | ~530 | Dela I/O vs validate — grandfather tills split |
+| `scripts/behavior_facit.py` | ~220 | Tunn CLI-wrapper — grandfather tills split |
+| `scripts/compare_mtf_disambiguation.py` | ~245 | Dela argparse vs report — grandfather tills split |
+
+Lägg **inte** till funktioner i grandfathered filer; fixa genom split.
+
+### När ska du dela?
+
+- Modul över gränsen **och** inte på grandfather-listan.
+- Flera orelaterade klasser eller `if __name__` + stor GUI i samma fil.
+- Du kan inte beskriva filens ansvar i en mening.
+
 ## 3. Namnkonventioner
 
 - **Filer i kod:** `snake_case.py`.
@@ -254,17 +298,29 @@ Premortem-tänk och reflektion är en **obligatorisk del** av arbetsflödet.
    ny backtest-matris) ska minst en reflektion skrivas i
    `premortem/reflections/`.
 3. Filnamn i `premortem/reflections/` **MÅSTE** följa:
-   `YYYY-MM-DD-<kort-beskrivning>.md`
-4. Reflektionen **MÅSTE** innehålla:
+   `YYYY-MM-DD-<kort-beskrivning>.md` (eller `premortem/reflections/YYYY/` när årsindelning
+   är aktiv — se `premortem/reflections/README.md`).
+4. **INDEX:** Nya reflektioner ska listas i `premortem/reflections/INDEX.md` (en rad:
+   datum, fil, typ, ämnen, status).
+5. Reflektionen **MÅSTE** innehålla:
    - Hypotes
    - Scope (symbol/timeframe/data)
    - Observationer (nyckelmetrics)
    - Beslut
    - Nästa steg
+6. **Storlek (MÅSTE):** varje fil i `premortem/reflections/*.md` (utom `INDEX.md`/`README.md`)
+   är **≤ 80 rader** och **≤ 8 KiB**. Detaljer → `docs/` eller `experiments/results/`.
+   Pre-commit hook `repo-bounds` verkställer detta (samma regler som §2B för kod/docs).
 
 ### Miniminivå per vecka
 
 - Minst **en** ny reflektion per aktiv vecka där experiment körs.
+
+### Skalning
+
+När `reflections/` växer: följ `premortem/reflections/README.md` (flat + INDEX → års-mappar
+→ arkiv för `historical`). Djupare guider (t.ex. maskin-labeling) i `docs/`, inte som
+långa reflektioner.
 
 ## 12. Skriva på policyn
 
