@@ -6,6 +6,7 @@ Run:
 
 from __future__ import annotations
 
+import argparse
 import json
 import random
 from collections.abc import Iterable
@@ -128,5 +129,50 @@ def run_matrix(
     return rows
 
 
+def _split_csv(value: str | None) -> tuple[str, ...] | None:
+    if not value:
+        return None
+    return tuple(item.strip() for item in value.split(",") if item.strip())
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Run stability matrix over symbol/timeframe cases."
+    )
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="",
+        help="Settings file (default: config/settings.yaml).",
+    )
+    parser.add_argument(
+        "--symbols",
+        help="Comma-separated symbols, e.g. BTC/USD,ETH/USD (default: BTC/USDT,ETH/USDT,SOL/USDT).",
+    )
+    parser.add_argument(
+        "--timeframes",
+        help="Comma-separated timeframes, e.g. 15m,1h,4h (default: 15m,1h,4h).",
+    )
+    return parser.parse_args()
+
+
+def _cases_from_args(args: argparse.Namespace) -> list[MatrixCase] | None:
+    symbols = _split_csv(args.symbols)
+    timeframes = _split_csv(args.timeframes)
+    if symbols is None and timeframes is None:
+        return None
+    symbols = symbols or DEFAULT_SYMBOLS
+    timeframes = timeframes or DEFAULT_TIMEFRAMES
+    return [
+        MatrixCase(symbol=symbol, timeframe=timeframe)
+        for symbol in symbols
+        for timeframe in timeframes
+    ]
+
+
 if __name__ == "__main__":
-    run_matrix()
+    cli = _parse_args()
+    run_matrix(
+        load_settings(cli.config or None),
+        cases=_cases_from_args(cli),
+    )

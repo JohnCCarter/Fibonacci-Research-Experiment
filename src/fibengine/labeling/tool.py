@@ -13,16 +13,21 @@ Controls:
 - r: clear current picks
 - f: toggle fib levels
 - g: toggle high-low range shading
-- s: save or overwrite label for the active symbol/timeframe
+- s: save label (all legs) for the active symbol/timeframe
+- p or a: push current high/low as a new leg (keeps prior legs; clears picks)
+- j / k: previous / next leg when multiple legs exist
+- s: saves all legs; if picks differ from active leg, auto-adds a new leg
 - d: delete saved label for the active symbol/timeframe
-- left/right: previous/next symbol
-- down/up: previous/next timeframe
+- left/right or [ ] or , . : previous/next symbol
+- down/up or ; ' : previous/next timeframe
 - n: jump to next unlabeled symbol/timeframe
 - z: reset chart view
 - q: quit
 
 Tips:
-- Use Matplotlib toolbar for pan/zoom/home to avoid interaction conflicts.
+- Matplotlib toolbar: pan/zoom; view persists across redraw until z (reset) or market change.
+
+Hover: crosshair price (mouse Y) + bar OHLC readout. See docs/LABELING_TOOL.md
 """
 
 from __future__ import annotations
@@ -37,16 +42,31 @@ from matplotlib.patches import Rectangle
 from fibengine.core.config import DataConfig, Settings, load_settings
 from fibengine.core.fib import fib_from_prices
 from fibengine.data.loader import load_candles
+from fibengine.labeling.hover import HoverReadout
+from fibengine.labeling.same_candle_mtf_resolution import (
+    attempt_same_candle_mtf_resolution,
+    mtf_resolution_enabled,
+    resolution_timeframe_for,
+)
 from fibengine.labeling.store import (
+    LegLabel,
     Point,
     SwingLabel,
     delete_label,
     find_label,
     save_label,
+    set_labels_dir,
 )
 
 DEFAULT_FIB_LEVELS = [0.236, 0.382, 0.5, 0.618, 0.786]
+LEG_FIB_COLORS = ["#6ea8ff", "#ffb86b", "#bd93f9", "#8be9fd", "#ff79c6"]
+LEG_MARKER_ALPHA_INACTIVE = 0.45
 DEFAULT_LABEL_TIMEFRAMES = ["15m", "30m", "1h", "4h", "daily", "weekly", "monthly"]
+DEFAULT_CYCLE_SYMBOLS = ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
+KEY_PREV_SYMBOL = frozenset({"left", "[", ","})
+KEY_NEXT_SYMBOL = frozenset({"right", "]", "."})
+KEY_PREV_TIMEFRAME = frozenset({"down", ";"})
+KEY_NEXT_TIMEFRAME = frozenset({"up", "'"})
 TIMEFRAME_ALIASES = {
     "daily": "1d",
     "day": "1d",
@@ -66,7 +86,22 @@ CONFLICTING_MATPLOTLIB_KEYMAPS = [
     "keymap.save",
     "keymap.xscale",
     "keymap.yscale",
+    "keymap.pan",
 ]
+
+
+def _normalize_key(key: str | None) -> str:
+    if not key:
+        return ""
+    aliases = {
+        "leftarrow": "left",
+        "rightarrow": "right",
+        "arrowleft": "left",
+        "arrowright": "right",
+        "uparrow": "up",
+        "downarrow": "down",
+    }
+    return aliases.get(key.lower().strip(), key.lower().strip())
 
 
 def _disable_matplotlib_keymap_conflicts() -> None:
@@ -116,7 +151,14 @@ def _label_warnings(
 ) -> list[str]:
     warnings = []
     if high_idx == low_idx:
-        warnings.append("High and low are on the same candle. Pick a leg with distinct endpoints.")
+        defer_same_bar = (
+            mtf_resolution_enabled(settings)
+            and resolution_timeframe_for(settings.data.timeframe) is not None
+        )
+        if not defer_same_bar:
+            warnings.append(
+                "High and low are on the same candle. Pick a leg with distinct endpoints."
+            )
 
     margin = _edge_margin(settings)
     last_idx = len(df) - 1
@@ -166,6 +208,11 @@ def _parse_args() -> argparse.Namespace:
         "--timeframes",
         help="Comma-separated timeframes to cycle, e.g. 15m,1h,4h,1w",
     )
+    parser.add_argument(
+        "--labels-dir",
+        default="",
+        help="Label JSON root (default data/labels). Use data/labels/tmp for a clean sandbox.",
+    )
     return parser.parse_args()
 
 
@@ -177,6 +224,8 @@ class LabelWorkspace:
     active_kind: str = "high"
     picks: dict[str, tuple[int, float]] = field(default_factory=dict)
     history: list[str] = field(default_factory=list)
+    legs: list[LegLabel] = field(default_factory=list)
+    active_leg_index: int = 0
     show_fib: bool = True
     show_range: bool = False
 
@@ -198,22 +247,124 @@ class LabelWorkspace:
         self.df = load_candles(self.settings.data)
         self.picks.clear()
         self.history.clear()
+        self.legs.clear()
+        self.active_leg_index = 0
         self.active_kind = "high"
         self.load_existing_label()
+
+    def _picks_from_leg(self, leg: LegLabel) -> dict[str, tuple[int, float]]:
+        return {
+            "high": (_nearest_timestamp_bar(self.df, leg.high.timestamp), leg.high.price),
+            "low": (_nearest_timestamp_bar(self.df, leg.low.timestamp), leg.low.price),
+        }
+
+    def _load_picks_from_active_leg(self) -> None:
+        self.picks.clear()
+        self.history.clear()
+        if not self.legs:
+            return
+        self.picks.update(self._picks_from_leg(self.legs[self.active_leg_index]))
 
     def load_existing_label(self) -> None:
         existing = find_label(self.data.exchange, self.data.symbol, self.data.timeframe)
         if existing is None:
             return
-        self.picks["high"] = (
-            _nearest_timestamp_bar(self.df, existing.high.timestamp),
-            existing.high.price,
+        self.legs = list(existing.all_legs())
+        self.active_leg_index = 0
+        self._load_picks_from_active_leg()
+        n = len(self.legs)
+        if n > 1:
+            print(f"Loaded {n} legs. Active: {self.legs[0].id}. j/k leg, a add, s save all.")
+        else:
+            print("Loaded existing label. Edit high/low and press 's' to save.")
+        leg0 = self.legs[0]
+        if leg0.same_candle_mtf_resolution:
+            mtf = leg0.same_candle_mtf_resolution
+            print(
+                "  MTF-resolved (research): "
+                f"high daily {mtf.get('high_daily_timestamp')}, "
+                f"low daily {mtf.get('low_daily_timestamp')}"
+            )
+
+    def _picks_complete(self) -> bool:
+        return "high" in self.picks and "low" in self.picks
+
+    def _picks_match_active_leg(self) -> bool:
+        if not self.legs or not self._picks_complete():
+            return False
+        ref = self._picks_from_leg(self.legs[self.active_leg_index])
+        return self.picks["high"][0] == ref["high"][0] and self.picks["low"][0] == ref["low"][0]
+
+    def _leg_from_picks(self, leg_id: str = "") -> LegLabel | None:
+        if not self._picks_complete():
+            return None
+        hi_idx, hi_price = self.picks["high"]
+        lo_idx, lo_price = self.picks["low"]
+        return LegLabel(
+            id=leg_id or f"leg_{len(self.legs) + 1}",
+            high=Point(self.df.index[hi_idx].isoformat(), hi_price),
+            low=Point(self.df.index[lo_idx].isoformat(), lo_price),
         )
-        self.picks["low"] = (
-            _nearest_timestamp_bar(self.df, existing.low.timestamp),
-            existing.low.price,
+
+    def flush_picks_to_active_leg(self) -> bool:
+        leg = self._leg_from_picks(self.legs[self.active_leg_index].id if self.legs else "leg_1")
+        if leg is None:
+            return False
+        if self.legs and self.active_leg_index < len(self.legs):
+            leg.id = self.legs[self.active_leg_index].id
+            leg.note = self.legs[self.active_leg_index].note
+            leg.role = self.legs[self.active_leg_index].role
+            leg.same_candle_mtf_resolution = self.legs[
+                self.active_leg_index
+            ].same_candle_mtf_resolution
+            self.legs[self.active_leg_index] = leg
+        elif self.legs:
+            self.legs.append(leg)
+            self.active_leg_index = len(self.legs) - 1
+        else:
+            self.legs.append(leg)
+            self.active_leg_index = 0
+        return True
+
+    def _push_picks_as_new_leg(self) -> bool:
+        if not self._picks_complete():
+            return False
+        hi_idx, lo_idx = self.picks["high"][0], self.picks["low"][0]
+        warnings = _label_warnings(self.df, hi_idx, lo_idx, self.settings)
+        if warnings:
+            print("Leg not added:")
+            for warning in warnings:
+                print(f"- {warning}")
+            return False
+        leg = self._leg_from_picks(f"leg_{len(self.legs) + 1}")
+        assert leg is not None
+        self.legs.append(leg)
+        self.active_leg_index = len(self.legs) - 1
+        self.picks.clear()
+        self.history.clear()
+        self.active_kind = "high"
+        print(
+            f"Stored {leg.id} ({len(self.legs)} leg(s) in session). "
+            "Set high/low for next fib, then 'p' or 's'."
         )
-        print("Loaded existing label. Edit high/low and press 's' to overwrite.")
+        return True
+
+    def append_leg(self) -> None:
+        if not self._picks_complete():
+            print("Set both high and low before push-leg (p or a).")
+            return
+        self._push_picks_as_new_leg()
+
+    def cycle_leg(self, delta: int) -> None:
+        if not self.legs:
+            print("No legs yet. Set high/low and press 'p' to push first leg.")
+            return
+        if self._picks_complete():
+            self.flush_picks_to_active_leg()
+        self.active_leg_index = (self.active_leg_index + delta) % len(self.legs)
+        self._load_picks_from_active_leg()
+        leg = self.legs[self.active_leg_index]
+        print(f"Active leg {self.active_leg_index + 1}/{len(self.legs)}: {leg.id}")
 
     def cycle_symbol(self, delta: int) -> None:
         self.set_market(symbol=_cycle(self.symbols, self.data.symbol, delta))
@@ -244,8 +395,10 @@ class LabelWorkspace:
     def reset(self) -> None:
         self.picks.clear()
         self.history.clear()
+        self.legs.clear()
+        self.active_leg_index = 0
         self.active_kind = "high"
-        print("Reset current picks.")
+        print("Reset current picks and all legs in session.")
 
     def delete_current_label(self) -> None:
         label = SwingLabel(
@@ -259,26 +412,60 @@ class LabelWorkspace:
         print("Deleted saved label." if deleted else "No saved label to delete.")
 
     def save_current_label(self) -> None:
-        if "high" not in self.picks or "low" not in self.picks:
+        if self._picks_complete():
+            hi_idx, lo_idx = self.picks["high"][0], self.picks["low"][0]
+            warnings = _label_warnings(self.df, hi_idx, lo_idx, self.settings)
+            if warnings:
+                print("Label not saved:")
+                for warning in warnings:
+                    print(f"- {warning}")
+                return
+            if hi_idx == lo_idx:
+                mtf_meta, mtf_err = attempt_same_candle_mtf_resolution(
+                    self.settings, self.df, hi_idx
+                )
+                if mtf_err:
+                    print("Label not saved:")
+                    print(f"- {mtf_err}")
+                    return
+                self.flush_picks_to_active_leg()
+                if self.legs:
+                    self.legs[self.active_leg_index].same_candle_mtf_resolution = mtf_meta
+                print(
+                    "same_candle_mtf_resolution (research): "
+                    f"high daily {mtf_meta['high_daily_timestamp']}, "
+                    f"low daily {mtf_meta['low_daily_timestamp']} "
+                    f"({mtf_meta['order']})"
+                )
+            elif self.legs and not self._picks_match_active_leg():
+                if not self._push_picks_as_new_leg():
+                    return
+            else:
+                self.flush_picks_to_active_leg()
+        elif not self.legs:
             print("Choose both high and low before saving.")
             return
-        hi_idx, hi_price = self.picks["high"]
-        lo_idx, lo_price = self.picks["low"]
-        warnings = _label_warnings(self.df, hi_idx, lo_idx, self.settings)
-        if warnings:
-            print("Label not saved:")
-            for warning in warnings:
-                print(f"- {warning}")
+
+        legs_to_save = [leg for leg in self.legs if leg.high.price and leg.low.price]
+        if not legs_to_save:
+            print("No legs to save.")
             return
+
+        primary = legs_to_save[0]
         label = SwingLabel(
             exchange=self.data.exchange,
             symbol=self.data.symbol,
             timeframe=self.data.timeframe,
-            high=Point(self.df.index[hi_idx].isoformat(), hi_price),
-            low=Point(self.df.index[lo_idx].isoformat(), lo_price),
+            high=primary.high,
+            low=primary.low,
+            legs=legs_to_save if len(legs_to_save) > 1 else None,
+            same_candle_mtf_resolution=primary.same_candle_mtf_resolution,
         )
         path = save_label(label)
-        print(f"Saved/overwrote label -> {path}")
+        if len(legs_to_save) > 1:
+            print(f"Saved {len(legs_to_save)} legs -> {path}")
+        else:
+            print(f"Saved label -> {path}")
 
 
 def _apply_cli_overrides(settings: Settings, args: argparse.Namespace) -> Settings:
@@ -299,6 +486,9 @@ def _apply_cli_overrides(settings: Settings, args: argparse.Namespace) -> Settin
 
 def run_label_tool(args: argparse.Namespace | None = None):
     _disable_matplotlib_keymap_conflicts()
+    if args and getattr(args, "labels_dir", ""):
+        set_labels_dir(args.labels_dir)
+        print(f"Labels dir: {args.labels_dir}")
     settings = _apply_cli_overrides(
         load_settings(),
         args
@@ -312,7 +502,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
         ),
     )
     args = args or argparse.Namespace(symbols=None, timeframes=None)
-    symbols = _csv_values(args.symbols, [settings.data.symbol])
+    symbols = _csv_values(args.symbols, DEFAULT_CYCLE_SYMBOLS)
     timeframes = _csv_values(args.timeframes, _default_timeframes(settings.data.timeframe))
     if settings.data.symbol not in symbols:
         symbols.insert(0, settings.data.symbol)
@@ -324,16 +514,28 @@ def run_label_tool(args: argparse.Namespace | None = None):
     workspace = LabelWorkspace(settings, symbols, timeframes)
     workspace.load_existing_label()
 
+    print(
+        f"Symbol cycle ({len(symbols)}): {', '.join(symbols)}  "
+        f"| timeframe cycle: {', '.join(timeframes)}"
+    )
+    print("Market: [ ] or , . = symbol   ; ' or arrows = timeframe (click chart first)")
+    print(
+        "Multi-leg fib: set H+L, then 'p' (or 'a') to push another leg without losing the first. "
+        "'s' saves all legs (auto-pushes if endpoints differ from active leg)."
+    )
+
     fig, ax = plt.subplots(figsize=(15, 8))
     fig.patch.set_facecolor("#0f1117")
     ax.set_facecolor("#0f1117")
     drag_kind: str | None = None
     view_limits: tuple[tuple[float, float], tuple[float, float]] | None = None
+    chart_drawn = False
     click_moved = False
     is_dirty = False
     leg_drag_start_x: float | None = None
     leg_drag_base: dict[str, int] | None = None
     leg_drag_active = False
+    hover = HoverReadout()
 
     def queue_index() -> int:
         try:
@@ -347,10 +549,12 @@ def run_label_tool(args: argparse.Namespace | None = None):
         )
 
     def goto_market(symbol: str, timeframe: str) -> None:
-        nonlocal view_limits
+        nonlocal view_limits, chart_drawn
         workspace.set_market(symbol=symbol, timeframe=timeframe)
         view_limits = None
+        chart_drawn = False
         mark_dirty(False)
+        print(f"Market: {symbol} {timeframe}")
 
     def goto_next_unlabeled() -> None:
         start = queue_index()
@@ -376,12 +580,19 @@ def run_label_tool(args: argparse.Namespace | None = None):
             f"range={'on' if workspace.show_range else 'off'} "
             f"| {queue_labeled_count()}/{len(queue)} labeled "
             f"| {queue_index() + 1}/{len(queue)} "
+            f"| legs={len(workspace.legs)} "
             f"| {'unsaved' if is_dirty else 'saved'} "
-            "| h/l fib g range n next z reset arrows market/tf s save d delete q quit",
+            "| h/l p push-leg j/k leg fib g s save d delete q quit",
             color="#d6d9e0",
         )
 
-    def redraw():
+    def redraw(*, reset_view: bool = False) -> None:
+        nonlocal view_limits, chart_drawn
+        if reset_view:
+            view_limits = None
+        elif chart_drawn:
+            view_limits = (ax.get_xlim(), ax.get_ylim())
+
         ax.clear()
         ax.set_facecolor("#0f1117")
         df = workspace.df
@@ -435,18 +646,69 @@ def run_label_tool(args: argparse.Namespace | None = None):
                 zorder=1,
             )
 
-        for kind, (idx, price) in workspace.picks.items():
-            color = "#ff6b6b" if kind == "high" else "#6be675"
-            marker = "^" if kind == "high" else "v"
-            ax.scatter([idx], [price], color=color, marker=marker, s=100, zorder=5)
-            ax.text(idx, price, f" {kind}", color=color, fontsize=9)
+        def _draw_leg_picks(
+            picks: dict[str, tuple[int, float]],
+            *,
+            leg_index: int,
+            active: bool,
+            label_suffix: str = "",
+        ) -> None:
+            alpha = 1.0 if active else LEG_MARKER_ALPHA_INACTIVE
+            fib_color = LEG_FIB_COLORS[leg_index % len(LEG_FIB_COLORS)]
+            for kind, (idx, price) in picks.items():
+                color = "#ff6b6b" if kind == "high" else "#6be675"
+                marker = "^" if kind == "high" else "v"
+                ax.scatter(
+                    [idx],
+                    [price],
+                    color=color,
+                    marker=marker,
+                    s=100 if active else 70,
+                    alpha=alpha,
+                    zorder=5 if active else 4,
+                )
+                tag = f" {kind}{label_suffix}"
+                ax.text(idx, price, tag, color=color, fontsize=9, alpha=alpha)
 
-        if workspace.show_fib:
-            for level, price in _fib_prices_from_picks(
-                workspace.picks, workspace.settings.fib.levels or DEFAULT_FIB_LEVELS
-            ).items():
-                ax.axhline(price, color="#6ea8ff", ls="--", lw=0.8, alpha=0.7)
-                ax.text(len(df) - 1, price, f" {level}", color="#86b8ff", fontsize=8)
+            draw_fib = workspace.show_fib and picks and (active or len(workspace.legs) <= 1)
+            if draw_fib:
+                for level, price in _fib_prices_from_picks(
+                    picks, workspace.settings.fib.levels or DEFAULT_FIB_LEVELS
+                ).items():
+                    ax.axhline(
+                        price,
+                        color=fib_color,
+                        ls="--",
+                        lw=0.9 if active else 0.6,
+                        alpha=0.75 if active else 0.35,
+                    )
+                    if active:
+                        ax.text(
+                            len(df) - 1,
+                            price,
+                            f" {level}",
+                            color=fib_color,
+                            fontsize=8,
+                        )
+
+        for i, leg in enumerate(workspace.legs):
+            if i == workspace.active_leg_index and workspace._picks_complete():
+                continue
+            leg_picks = workspace._picks_from_leg(leg)
+            _draw_leg_picks(
+                leg_picks,
+                leg_index=i,
+                active=i == workspace.active_leg_index,
+                label_suffix=f" L{i + 1}",
+            )
+
+        if workspace.picks:
+            _draw_leg_picks(
+                workspace.picks,
+                leg_index=workspace.active_leg_index,
+                active=True,
+                label_suffix=" *",
+            )
 
         step = max(1, len(df) // 10)
         ticks = list(range(0, len(df), step))
@@ -467,6 +729,8 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
         update_title()
         fig.tight_layout()
+        hover.reattach(ax, fig)
+        chart_drawn = True
         fig.canvas.draw_idle()
 
     def on_press(event):
@@ -499,10 +763,8 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
     def on_motion(event):
         nonlocal click_moved
-        if event.inaxes != ax or event.xdata is None or event.ydata is None:
-            return
-
         if leg_drag_active and leg_drag_start_x is not None and leg_drag_base is not None:
+            hover.hide()
             delta = int(round(event.xdata - leg_drag_start_x))
             n = len(workspace.df) - 1
             for kind in ("high", "low"):
@@ -513,13 +775,18 @@ def run_label_tool(args: argparse.Namespace | None = None):
             redraw()
             return
 
-        if drag_kind is None:
+        if drag_kind is not None:
+            if event.inaxes != ax or event.xdata is None:
+                return
+            hover.hide()
+            idx = _nearest_bar(workspace.df, event.xdata)
+            workspace.move_pick(drag_kind, idx)
+            mark_dirty(True)
+            click_moved = True
+            redraw()
             return
-        idx = _nearest_bar(workspace.df, event.xdata)
-        workspace.move_pick(drag_kind, idx)
-        mark_dirty(True)
-        click_moved = True
-        redraw()
+
+        hover.update(event, workspace.df)
 
     def on_release(event):
         nonlocal drag_kind, click_moved, leg_drag_start_x, leg_drag_base, leg_drag_active
@@ -540,44 +807,54 @@ def run_label_tool(args: argparse.Namespace | None = None):
         click_moved = False
 
     def on_key(event):
-        nonlocal view_limits
-        if event.key == "r":
+        key = _normalize_key(event.key)
+        if key == "r":
             workspace.reset()
             mark_dirty(True)
-        elif event.key == "h":
+        elif key == "h":
             workspace.active_kind = "high"
             print("Next click sets HIGH.")
-        elif event.key == "l":
+        elif key == "l":
             workspace.active_kind = "low"
             print("Next click sets LOW.")
-        elif event.key in {"u", "backspace"}:
+        elif key in {"u", "backspace"}:
             workspace.undo()
             mark_dirty(True)
-        elif event.key == "d":
+        elif key == "d":
             workspace.delete_current_label()
             mark_dirty(False)
-        elif event.key == "s":
+        elif key == "s":
             workspace.save_current_label()
             mark_dirty(False)
-        elif event.key == "f":
+        elif key in {"a", "p"}:
+            workspace.append_leg()
+            mark_dirty(True)
+        elif key == "j":
+            workspace.cycle_leg(-1)
+            mark_dirty(False)
+        elif key == "k":
+            workspace.cycle_leg(1)
+            mark_dirty(False)
+        elif key == "f":
             workspace.show_fib = not workspace.show_fib
             print(f"Fib levels {'ON' if workspace.show_fib else 'OFF'}.")
-        elif event.key == "g":
+        elif key == "g":
             workspace.show_range = not workspace.show_range
             print(f"High-low range {'ON' if workspace.show_range else 'OFF'}.")
-        elif event.key == "right":
+        elif key in KEY_NEXT_SYMBOL:
             goto_market(_cycle(symbols, workspace.data.symbol, 1), workspace.data.timeframe)
-        elif event.key == "left":
+        elif key in KEY_PREV_SYMBOL:
             goto_market(_cycle(symbols, workspace.data.symbol, -1), workspace.data.timeframe)
-        elif event.key == "up":
+        elif key in KEY_NEXT_TIMEFRAME:
             goto_market(workspace.data.symbol, _cycle(timeframes, workspace.data.timeframe, 1))
-        elif event.key == "down":
+        elif key in KEY_PREV_TIMEFRAME:
             goto_market(workspace.data.symbol, _cycle(timeframes, workspace.data.timeframe, -1))
-        elif event.key == "n":
+        elif key == "n":
             goto_next_unlabeled()
-        elif event.key == "z":
-            view_limits = None
-        elif event.key == "q":
+        elif key == "z":
+            redraw(reset_view=True)
+            return
+        elif key == "q":
             plt.close(fig)
             return
         redraw()

@@ -11,6 +11,11 @@ repos:
 
   - repo: local
     hooks:
+      - id: repo-bounds
+        name: repo bounds (anti-blob / module size)
+        entry: uv run python scripts/check_repo_bounds.py
+        language: system
+        pass_filenames: true
       - id: pytest
         name: pytest
         entry: uv run pytest -q

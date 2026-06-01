@@ -52,6 +52,12 @@ sizing:
   entry_levels: [0.382, 0.5, 0.618]  # skala in i dessa retracement-nivåer
   sizes: [1.0, 2.0, 3.0]             # störst storlek i gyllene zonen (0.618)
 
+labeling:
+  # Research: 1W label med H+L på samma vecka → resolve via 1D (labeling.tool save).
+  enable_same_candle_mtf_resolution: true
+  # Research: motor MTF Disambiguation Layer (OFF = baseline; ON = läs LTF-ordning).
+  mtf_disambiguation: false
+
 backtest:
   # Kausalt walk-forward: mät hur stabilt urvalet är över tid (Lager A).
   warmup_bars: 60   # barer innan första urvalet

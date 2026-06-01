@@ -67,7 +67,7 @@ def _run_one(settings: Settings, label: SwingLabel, run_dir: Path, log) -> dict 
     if not np.isfinite(atr_value) or atr_value <= 0:
         atr_value = float(np.nanmedian(atr_series.to_numpy()))
 
-    metrics = evaluate(df, swing, label, atr_value, settings.evaluation)
+    metrics = evaluate(df, swing, label, atr_value, settings.evaluation, settings)
     label_id = f"{label.exchange}_{label.symbol.replace('/', '-')}_{label.timeframe}"
     plot_path = run_dir / f"{label_id}.png"
     plot_prediction(df, swing, settings.fib.levels, plot_path, label=label, title=label_id)
@@ -95,13 +95,20 @@ def _aggregate(results: list[dict]) -> dict:
     all_m = [r["metrics"] for r in results]
     # Out-of-window-labels jämförs mot fel bar → exkludera ur aggregaten,
     # men rapportera hur många som hoppades över för transparens.
-    m = [x for x in all_m if not x.get("out_of_window")]
+    m = [x for x in all_m if not x.get("out_of_window") and not x.get("skipped_mtf")]
     excluded = len(all_m) - len(m)
+    n_mtf_skipped = sum(1 for x in all_m if x.get("skipped_mtf"))
     if not m:
-        return {"n": 0, "excluded_out_of_window": excluded, "no_in_window_samples": True}
+        return {
+            "n": 0,
+            "excluded_out_of_window": excluded,
+            "excluded_mtf_unresolved": n_mtf_skipped,
+            "no_in_window_samples": True,
+        }
     return {
         "n": len(m),
         "excluded_out_of_window": excluded,
+        "excluded_mtf_unresolved": n_mtf_skipped,
         "no_in_window_samples": False,
         "mean_agreement": round(float(np.mean([x["agreement"] for x in m])), 4),
         "mean_fib_err_frac": round(float(np.mean([x["mean_fib_err_frac"] for x in m])), 4),

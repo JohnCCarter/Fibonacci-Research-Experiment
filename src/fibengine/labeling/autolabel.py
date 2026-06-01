@@ -1,5 +1,10 @@
 """Maskin-labeling: generera provisoriska swing-kandidater för granskning.
 
+Två giltiga frågor (båda kan vara rätt — blanda inte ihop dem):
+- **A Motor-swing:** `autolabel` = bästa leg på tillgänglig historik (standard CLI).
+- **B Chartfönster:** endpoints inom ett synligt datumintervall (ej standard än;
+  se docs/MACHINE_LABELING.md).
+
 VIKTIGT — integritet:
 - Maskin-labels (`source="machine"`) är KANDIDATER, inte facit. De skrivs så att de
   kan öppnas i `labeling.tool`, granskas och justeras av en människa. Sparar du dem
