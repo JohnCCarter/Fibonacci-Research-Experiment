@@ -15,6 +15,7 @@ import argparse
 import json
 from pathlib import Path
 
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.patches import Rectangle
@@ -27,6 +28,24 @@ from fibengine.research.human_review_level_events import (
     _mark_swing_point,
     write_review_sheets,
 )
+
+# human_review_level_events forces the headless "Agg" backend for PNG export.
+# Importing it here leaks that backend, so an interactive window can't open
+# ("FigureCanvasAgg is non-interactive"). Switch back to a GUI backend.
+_INTERACTIVE_BACKENDS = ("TkAgg", "QtAgg", "Qt5Agg", "MacOSX")
+
+
+def _ensure_interactive_backend() -> str | None:
+    if matplotlib.get_backend().lower() != "agg":
+        return matplotlib.get_backend()
+    for backend in _INTERACTIVE_BACKENDS:
+        try:
+            plt.switch_backend(backend)
+            return backend
+        except Exception:
+            continue
+    return None
+
 
 LABEL_KEYS = {
     "1": "agree",
@@ -129,6 +148,14 @@ def run_review_tool(run_dir: Path, cfg: HumanReviewConfig | None = None) -> None
     rows = _load_rows(run_dir.resolve())
     if not rows:
         raise ValueError("No events in review_sample.jsonl")
+
+    backend = _ensure_interactive_backend()
+    if backend is None:
+        raise RuntimeError(
+            "No interactive matplotlib backend available (tried "
+            f"{', '.join(_INTERACTIVE_BACKENDS)}). On Windows install tkinter-enabled "
+            "Python, or review via REVIEW_INDEX.md + review_sample.csv instead."
+        )
 
     df_cache: dict[tuple[str, str, str], pd.DataFrame] = {}
     idx = 0
