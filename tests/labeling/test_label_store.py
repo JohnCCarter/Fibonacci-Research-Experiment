@@ -50,7 +50,7 @@ def test_label_path_uses_categorized_layout(monkeypatch, tmp_path):
         low=Point("2026-01-01T01:00:00+00:00", 90.0),
     )
     path = label_path(label)
-    assert path == tmp_path / "Bitfinex" / "BTC-USD" / "1h.json"
+    assert path == tmp_path / "bitfinex" / "BTC-USD" / "1h.json"
     save_label(label)
     assert path.exists()
 
