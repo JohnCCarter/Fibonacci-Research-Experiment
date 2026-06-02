@@ -1,4 +1,4 @@
-# Fibonacci Backtest Plan
+﻿# Fibonacci Backtest Plan
 
 Staged roadmap for Layer A (swing selection) and Layer B (trade simulation) on real market data.
 
@@ -6,13 +6,13 @@ Staged roadmap for Layer A (swing selection) and Layer B (trade simulation) on r
 |---|---|
 | [TRACKS.md](TRACKS.md) | Research / Validate / Promotion |
 | [GENESIS_BITFINEX_VALIDATE.md](GENESIS_BITFINEX_VALIDATE.md) | Bitfinex validate before Genesis-Core import |
-| [../REPO_POLICY.md](../REPO_POLICY.md) | Structure, premortem, promotion gate |
+| [../repository-layout-policy.md](../repository-layout-policy.md) | Structure, premortem, promotion gate |
 | [../premortem/PREMORTEM.md](../premortem/PREMORTEM.md) | Risks this plan mitigates |
 
 Premortem: record surprises in `premortem/reflections/` (short, not essays).
 
-**Baseline config:** `config/settings.yaml` — do not overwrite from Research runs.  
-**Candidates:** `config/variants/*.yaml` — see [../config/variants/INDEX.md](../config/variants/INDEX.md).
+**Baseline config:** `config/settings.yaml` â€” do not overwrite from Research runs.  
+**Candidates:** `config/variants/*.yaml` â€” see [../config/variants/INDEX.md](../config/variants/INDEX.md).
 
 ---
 
@@ -30,13 +30,13 @@ Premortem: record surprises in `premortem/reflections/` (short, not essays).
 
 ---
 
-## Phase 1 — Real-data stability matrix
+## Phase 1 â€” Real-data stability matrix
 
-**Status:** done (`matrix_20260528T072357Z` — see `premortem/reflections/2026-05-28-real-data-matrix.md`).
+**Status:** done (`matrix_20260528T072357Z` â€” see `premortem/reflections/2026-05-28-real-data-matrix.md`).
 
 **Goal:** Layer A stays stable across liquid markets and timeframes with one scoring config.
 
-**Scope (first matrix):** Binance spot `BTC/USDT`, `ETH/USDT`, `SOL/USDT` × `15m`, `1h`, `4h`, 500 candles.
+**Scope (first matrix):** Bitfinex spot `BTC/USD`, `ETH/USD`, `SOL/USD` Ã— `15m`, `1h`, `4h`, 500 candles.
 
 **Run:**
 
@@ -44,7 +44,7 @@ Premortem: record surprises in `premortem/reflections/` (short, not essays).
 uv run python -m fibengine.backtest.matrix
 ```
 
-**Output:** one JSONL row per case → `experiments/results/backtest_matrix.jsonl`.  
+**Output:** one JSONL row per case â†’ `experiments/results/backtest_matrix.jsonl`.  
 **Runs:** `experiments/runs/stability/{YYYY-MM-DD}/bt_*/`.
 
 **Success:** symbol, timeframe, limit, config hash, run id, metrics; failures as rows; comparable without opening every run folder.
@@ -53,7 +53,7 @@ uv run python -m fibengine.backtest.matrix
 
 ---
 
-## Phase 2 — Stability triage
+## Phase 2 â€” Stability triage
 
 **Status:** ongoing (insights in real-data matrix reflection; no separate triage ledger yet).
 
@@ -65,7 +65,7 @@ uv run python -m fibengine.backtest.matrix
 
 ---
 
-## Phase 3 — Manual label recall
+## Phase 3 â€” Manual label recall
 
 **Status:** in progress (labels under `data/labels/{exchange}/{symbol}/{timeframe}.json`; tooling active).
 
@@ -85,7 +85,7 @@ uv run python -m fibengine.evaluation.pivot_recall
 
 ---
 
-## Phase 4 — Layer B trade simulation
+## Phase 4 â€” Layer B trade simulation
 
 **Status:** smoke done (`trade_matrix_20260528T075650Z` in same reflection as Phase 1).
 
@@ -104,9 +104,9 @@ uv run python -m fibengine.backtest.trade_matrix
 
 ---
 
-## Phase 5 — Iteration discipline
+## Phase 5 â€” Iteration discipline
 
-**Status:** active (codified in `REPO_POLICY.md` and [TRACKS.md](TRACKS.md)).
+**Status:** active (codified in `repository-layout-policy.md` and [TRACKS.md](TRACKS.md)).
 
 **Rules:**
 
@@ -117,7 +117,7 @@ uv run python -m fibengine.backtest.trade_matrix
 
 ---
 
-## Phase 6 — Promotion gate (Validate → Promotion)
+## Phase 6 â€” Promotion gate (Validate â†’ Promotion)
 
 **Status:** next after variant beats baseline on Validate checks.
 
@@ -125,23 +125,23 @@ uv run python -m fibengine.backtest.trade_matrix
 
 **Checklist (all required):**
 
-1. Variant run with `fibengine.experiment --config config/variants/<candidate>.yaml` vs baseline — comparable metrics on same label set.
-2. Stability matrix or single-market stability with variant — no regression vs baseline on weak rows from Phase 2.
+1. Variant run with `fibengine.experiment --config config/variants/<candidate>.yaml` vs baseline â€” comparable metrics on same label set.
+2. Stability matrix or single-market stability with variant â€” no regression vs baseline on weak rows from Phase 2.
 3. `pivot_recall` not worse on held-out labeled pairs (or documented trade-off).
 4. Short reflection: what changed, why promoted, what was rejected.
 5. Update `config/settings.yaml` only after the above; archive variant rationale in `config/variants/INDEX.md`.
 
-**Do not promote** from label agreement alone — Validate (stabilitet + recall) first, then Promotion. Viktändringar motiveras av principer (premortem), inte auto-tuning mot ritningar.
+**Do not promote** from label agreement alone â€” Validate (stabilitet + recall) first, then Promotion. ViktÃ¤ndringar motiveras av principer (premortem), inte auto-tuning mot ritningar.
 
 ---
 
-## Phase 7 — Bitfinex / Genesis-Core validate
+## Phase 7 â€” Bitfinex / Genesis-Core validate
 
-**Status:** ready to run (profil + docs; kräver nät för CCXT-hämtning).
+**Status:** ready to run (profil + docs; krÃ¤ver nÃ¤t fÃ¶r CCXT-hÃ¤mtning).
 
-**Goal:** Bevisa att Lager A håller på **Bitfinex**-candles (samma gates som baseline), innan Fib porteras till Genesis-Core paper/subaccount.
+**Goal:** Bevisa att Lager A hÃ¥ller pÃ¥ **Bitfinex**-candles (samma gates som baseline), innan Fib porteras till Genesis-Core paper/subaccount.
 
-**Config:** `config/settings.bitfinex.yaml` (rör inte `settings.yaml`).
+**Config:** `config/settings.bitfinex.yaml` (rÃ¶r inte `settings.yaml`).
 
 **Guide:** [GENESIS_BITFINEX_VALIDATE.md](GENESIS_BITFINEX_VALIDATE.md).
 
@@ -154,7 +154,7 @@ uv run python -m fibengine.backtest.matrix \
   --timeframes 15m,1h,4h
 ```
 
-**Success:** JSONL-rader med `"exchange": "bitfinex"`; gate/jämförelse mot Binance Phase 1 dokumenterad i `premortem/reflections/`.
+**Success:** JSONL-rader med `"exchange": "bitfinex"`; gate/jÃ¤mfÃ¶relse mot Bitfinex Phase 1 dokumenterad i `premortem/reflections/`.
 
 ---
 
@@ -170,3 +170,4 @@ uv run python -m fibengine.backtest.matrix \
 | Label UI | `fibengine.labeling.tool` |
 
 All ledgers: `experiments/results/*.jsonl`. Run artifacts: `experiments/runs/{experiment|stability}/{date}/{run_id}/`.
+

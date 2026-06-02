@@ -1,57 +1,57 @@
-# Labeling tool (`fibengine.labeling.tool`)
+﻿# Labeling tool (`fibengine.labeling.tool`)
 
-Interaktiv matplotlib-workspace för manuellt facit. Maskin-kandidater granskas här innan `source=human`.
+Interaktiv matplotlib-workspace fÃ¶r manuellt facit. Maskin-kandidater granskas hÃ¤r innan `source=human`.
 
-Kör: `uv run python -m fibengine.labeling.tool`
+KÃ¶r: `uv run python -m fibengine.labeling.tool`
 
 ---
 
-## Vad verktyget är (och inte är)
+## Vad verktyget Ã¤r (och inte Ã¤r)
 
-| Är | Är inte |
+| Ã„r | Ã„r inte |
 |----|---------|
-| Golden-set-editor (human facit) | Auto-optimering eller “sanning” från motorn |
-| Snap till **candle high/low** per klick | Fri handritning på godtyckligt pris |
-| Lokal desktop-GUI | TradingView-klon eller headless CI för musinteraktion |
-| En fil (`labeling/tool.py`, ~595 rader) | Modulärt uppdelad ännu (känd skuld, `REPO_POLICY.md` §2B) |
+| Golden-set-editor (human facit) | Auto-optimering eller â€œsanningâ€ frÃ¥n motorn |
+| Snap till **candle high/low** per klick | Fri handritning pÃ¥ godtyckligt pris |
+| Lokal desktop-GUI | TradingView-klon eller headless CI fÃ¶r musinteraktion |
+| En fil (`labeling/tool.py`, ~595 rader) | ModulÃ¤rt uppdelad Ã¤nnu (kÃ¤nd skuld, `repository-layout-policy.md` Â§2B) |
 
 ---
 
-## Tekniska begränsningar (läs innan du ändrar UI)
+## Tekniska begrÃ¤nsningar (lÃ¤s innan du Ã¤ndrar UI)
 
 ### 1. Matplotlib + full `redraw()`
 
-- Chart ritas om med `ax.clear()` vid nästan varje ändring (drag, klick, tangent).
-- **Konsekvens:** nya UI-element (crosshair, hover-text) försvinner vid `redraw()` om de inte skapas om eller hålls utanför `clear()`.
-- **Risk vid ändring:** hover som ritar i `on_motion` utan plan → flicker, eller försvinner vid drag.
+- Chart ritas om med `ax.clear()` vid nÃ¤stan varje Ã¤ndring (drag, klick, tangent).
+- **Konsekvens:** nya UI-element (crosshair, hover-text) fÃ¶rsvinner vid `redraw()` om de inte skapas om eller hÃ¥lls utanfÃ¶r `clear()`.
+- **Risk vid Ã¤ndring:** hover som ritar i `on_motion` utan plan â†’ flicker, eller fÃ¶rsvinner vid drag.
 
-**Säkert mönster:** en `ax.text` / `ax.axhline` med `set_visible(False)` uppdateras i `on_motion`; **ingen** `redraw()` på ren hover — bara `fig.canvas.draw_idle()`. Full `redraw()` endast vid pick/drag/marknadbyte.
+**SÃ¤kert mÃ¶nster:** en `ax.text` / `ax.axhline` med `set_visible(False)` uppdateras i `on_motion`; **ingen** `redraw()` pÃ¥ ren hover â€” bara `fig.canvas.draw_idle()`. Full `redraw()` endast vid pick/drag/marknadbyte.
 
 ### 2. Klick = snap, inte musens Y
 
 ```text
-set_pick / move_pick → pris = df["high"|"low"] på vald bar, inte event.ydata
+set_pick / move_pick â†’ pris = df["high"|"low"] pÃ¥ vald bar, inte event.ydata
 ```
 
-- Du kan **inte** sätta ett pris mellan high/low på samma candle via klick.
-- Hover/crosshair-pris (om vi lägger till det) är **visning only** — ändrar inte facit förrän du klickar/draggar (fortfarande snap).
+- Du kan **inte** sÃ¤tta ett pris mellan high/low pÃ¥ samma candle via klick.
+- Hover/crosshair-pris (om vi lÃ¤gger till det) Ã¤r **visning only** â€” Ã¤ndrar inte facit fÃ¶rrÃ¤n du klickar/draggar (fortfarande snap).
 
 ### 3. Spar-validering (`_label_warnings`)
 
 Spara (`s`) blockeras om:
 
-- high och low på **samma bar** — **undantag (research):** se §3A;
-- endpoint inom **kantmarginal** (`lookback` / `fractal_n`) från vänster/höger kant — för lite historik i fönstret.
+- high och low pÃ¥ **samma bar** â€” **undantag (research):** se Â§3A;
+- endpoint inom **kantmarginal** (`lookback` / `fractal_n`) frÃ¥n vÃ¤nster/hÃ¶ger kant â€” fÃ¶r lite historik i fÃ¶nstret.
 
-Varningar är **råd**, inte facit-regler från motorn — men sparar dig från uppenbart dåliga labels.
+Varningar Ã¤r **rÃ¥d**, inte facit-regler frÃ¥n motorn â€” men sparar dig frÃ¥n uppenbart dÃ¥liga labels.
 
-### 3A. `same_candle_mtf_resolution` (research, 1W → 1D)
+### 3A. `same_candle_mtf_resolution` (research, 1W â†’ 1D)
 
-När H och L ligger på **samma weekly candle** men du menar olika **dagliga** pivots (TV-MTF-resonemang):
+NÃ¤r H och L ligger pÃ¥ **samma weekly candle** men du menar olika **dagliga** pivots (TV-MTF-resonemang):
 
-1. Verktyget hämtar alla **1D**-bars i den veckan (Binance-cache, samma symbol/börs).
-2. **Högsta daily high** och **lägsta daily low** — om de sitter på **olika** dagar → spar tillåts.
-3. JSON får extra block `same_candle_mtf_resolution` (weekly H/L oförändrat + metadata).
+1. Verktyget hÃ¤mtar alla **1D**-bars i den veckan (Bitfinex-cache, samma symbol/bÃ¶rs).
+2. **HÃ¶gsta daily high** och **lÃ¤gsta daily low** â€” om de sitter pÃ¥ **olika** dagar â†’ spar tillÃ¥ts.
+3. JSON fÃ¥r extra block `same_candle_mtf_resolution` (weekly H/L ofÃ¶rÃ¤ndrat + metadata).
 
 Aktiveras i `config/settings.yaml`:
 
@@ -60,7 +60,7 @@ labeling:
   enable_same_candle_mtf_resolution: true
 ```
 
-**Används inte** av `pivot_recall`, `experiment` eller motorn — endast dokumentation i golden set tills vidare.
+**AnvÃ¤nds inte** av `pivot_recall`, `experiment` eller motorn â€” endast dokumentation i golden set tills vidare.
 
 Exempel-metadata:
 
@@ -87,113 +87,113 @@ labeling:
   # mtf_disambiguation: true  # research ON
 ```
 
-**Princip:** HTF-priser = facit-range. LTF-metadata = **ordning** (och fib-riktning) — skriver **inte** över HTF-priser.
+**Princip:** HTF-priser = facit-range. LTF-metadata = **ordning** (och fib-riktning) â€” skriver **inte** Ã¶ver HTF-priser.
 
-När `mtf_disambiguation: true` (1w → 1d idag):
+NÃ¤r `mtf_disambiguation: true` (1w â†’ 1d idag):
 
 | Fall | Beteende |
 |------|----------|
-| **Samma weekly candle** | Sparad metadata om den finns; annars härled max-high / min-low-dag i veckan |
-| **Olika veckor (fraktal)** | Varje endpoint → **egen veckas** daily extreme-dag; HTF-pris oförändrat; tid/fib-ordning på 1D |
+| **Samma weekly candle** | Sparad metadata om den finns; annars hÃ¤rled max-high / min-low-dag i veckan |
+| **Olika veckor (fraktal)** | Varje endpoint â†’ **egen veckas** daily extreme-dag; HTF-pris ofÃ¶rÃ¤ndrat; tid/fib-ordning pÃ¥ 1D |
 
-OFF: same-candle utan metadata → skip. Olika veckor → jämförelse på weekly (som tidigare).
+OFF: same-candle utan metadata â†’ skip. Olika veckor â†’ jÃ¤mfÃ¶relse pÃ¥ weekly (som tidigare).
 
-Annars: `mtf_status: unresolved` → mjukt skip (inga falska anchors).
+Annars: `mtf_status: unresolved` â†’ mjukt skip (inga falska anchors).
 
-Jämför OFF vs ON:
+JÃ¤mfÃ¶r OFF vs ON:
 
 ```bash
-uv run python scripts/compare_mtf_disambiguation.py --symbol BTC/USDT --timeframe 1w
+uv run python scripts/compare_mtf_disambiguation.py --symbol BTC/USD --timeframe 1w
 ```
 
-### 3C. Full MTF-leg (research) — daily Fib in/ut inom weekly-facit
+### 3C. Full MTF-leg (research) â€” daily Fib in/ut inom weekly-facit
 
 **Halva pipelinen (3B):** HTF-priser + LTF-ordning/tid.  
-**Hela pipelinen (3C):** samma ankare, sedan **1D-scan** mot Fib-nivåer ritade på **weekly-range** (inga nya HTF-priser).
+**Hela pipelinen (3C):** samma ankare, sedan **1D-scan** mot Fib-nivÃ¥er ritade pÃ¥ **weekly-range** (inga nya HTF-priser).
 
-| Fas | Daily-fönster | Vad vi letar efter |
+| Fas | Daily-fÃ¶nster | Vad vi letar efter |
 |-----|---------------|-------------------|
-| **impulse** | LTF high-dag → LTF low-dag | Nivåberöringar på vägen ner (ned-leg) |
-| **retrace** | Efter LTF low → sista daily i cache | Touch / rejection vid 0,382 / 0,5 / 0,618 (upplevd in/ut-zon) |
+| **impulse** | LTF high-dag â†’ LTF low-dag | NivÃ¥berÃ¶ringar pÃ¥ vÃ¤gen ner (ned-leg) |
+| **retrace** | Efter LTF low â†’ sista daily i cache | Touch / rejection vid 0,382 / 0,5 / 0,618 (upplevd in/ut-zon) |
 
-Kör (tvingar `mtf_disambiguation` ON internt; ändrar inte `settings.yaml`):
+KÃ¶r (tvingar `mtf_disambiguation` ON internt; Ã¤ndrar inte `settings.yaml`):
 
 ```bash
-uv run python scripts/mtf_leg_daily_fib.py --symbol BTC/USDT --timeframe 1w
+uv run python scripts/mtf_leg_daily_fib.py --symbol BTC/USD --timeframe 1w
 uv run python scripts/mtf_leg_daily_fib.py --all-1w
 ```
 
-JSON: `experiments/results/mtf_leg_daily_fib_*.json`. Detta är **beskrivande research**, inte motor-score mot TV.
+JSON: `experiments/results/mtf_leg_daily_fib_*.json`. Detta Ã¤r **beskrivande research**, inte motor-score mot TV.
 
-### 4. Befintlig label vs candle-fönster
+### 4. Befintlig label vs candle-fÃ¶nster
 
-- Laddad label: timestamp → **närmaste bar** i nu laddad `df`.
-- Om `data.limit` / cache är för kort hamnar facit **out-of-window** (syns i `pivot_recall`, inte i verktyget).
-- Långa TF: använd `timeframe_limits` i `config/settings.yaml` (samma som validate-spåret).
+- Laddad label: timestamp â†’ **nÃ¤rmaste bar** i nu laddad `df`.
+- Om `data.limit` / cache Ã¤r fÃ¶r kort hamnar facit **out-of-window** (syns i `pivot_recall`, inte i verktyget).
+- LÃ¥nga TF: anvÃ¤nd `timeframe_limits` i `config/settings.yaml` (samma som validate-spÃ¥ret).
 
 ### 5. Zoom och pan
 
-- **Zoom/pan:** matplotlib-verktygsraden (förstoringsglas / hand) — ingen mushjul-doc, standard backend-beteende.
-- **Vy bevaras** över `redraw()` (drag, `f`/`g`, spara, hover påverkar inte): gränser sparas i `view_limits` före `ax.clear()` och återställs efter omritning.
-- **`z`:** återställ hela charten (autoscale på all data).
-- **Ny symbol/TF:** vy nollställs (ny `df`).
+- **Zoom/pan:** matplotlib-verktygsraden (fÃ¶rstoringsglas / hand) â€” ingen mushjul-doc, standard backend-beteende.
+- **Vy bevaras** Ã¶ver `redraw()` (drag, `f`/`g`, spara, hover pÃ¥verkar inte): grÃ¤nser sparas i `view_limits` fÃ¶re `ax.clear()` och Ã¥terstÃ¤lls efter omritning.
+- **`z`:** Ã¥terstÃ¤ll hela charten (autoscale pÃ¥ all data).
+- **Ny symbol/TF:** vy nollstÃ¤lls (ny `df`).
 - Toolbar **home** = matplotlibs egen reset; **`z`** = verktygets reset efter omritning.
 
-Toolbar kan fortfarande **konkurrera** med klick/drag — använd pan/zoom-läge medvetet, inte samtidigt som du drar markers.
+Toolbar kan fortfarande **konkurrera** med klick/drag â€” anvÃ¤nd pan/zoom-lÃ¤ge medvetet, inte samtidigt som du drar markers.
 
-### 5B. Flera fib-legs på samma TF (research, t.ex. 1d)
+### 5B. Flera fib-legs pÃ¥ samma TF (research, t.ex. 1d)
 
-**Bakgrund:** Tidigare skrev varje `s` **över** samma fil — bara en fib i JSON trots flera i UI. Orsak och fix: [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) §0A.
+**Bakgrund:** Tidigare skrev varje `s` **Ã¶ver** samma fil â€” bara en fib i JSON trots flera i UI. Orsak och fix: [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) Â§0A.
 
-En fil kan innehålla **flera** high/low-par (nedgång + uppgång) utan overwrite:
+En fil kan innehÃ¥lla **flera** high/low-par (nedgÃ¥ng + uppgÃ¥ng) utan overwrite:
 
 | Tangent | Funktion |
 |---------|----------|
-| **`p`** eller **`a`** | Push: spara nuvarande high/low som **ny leg** i sessionen, töm picks |
-| **`j` / `k`** | Föregående / nästa leg (redigera, fib ritas svagare på inaktiva) |
-| **`s`** | Spara **alla** legs till JSON. Om picks skiljer sig från aktiv leg → **ny leg läggs till automatiskt** (ingen overwrite av förra) |
+| **`p`** eller **`a`** | Push: spara nuvarande high/low som **ny leg** i sessionen, tÃ¶m picks |
+| **`j` / `k`** | FÃ¶regÃ¥ende / nÃ¤sta leg (redigera, fib ritas svagare pÃ¥ inaktiva) |
+| **`s`** | Spara **alla** legs till JSON. Om picks skiljer sig frÃ¥n aktiv leg â†’ **ny leg lÃ¤ggs till automatiskt** (ingen overwrite av fÃ¶rra) |
 
-**Vanligt misstag:** bara `s` två gånger utan `p` gav tidigare overwrite — nu lägger andra `s` till ny leg om endpoints skiljer sig. Bekräfta i terminal: `Saved 2 legs -> ...` och `"legs": [` i JSON.
+**Vanligt misstag:** bara `s` tvÃ¥ gÃ¥nger utan `p` gav tidigare overwrite â€” nu lÃ¤gger andra `s` till ny leg om endpoints skiljer sig. BekrÃ¤fta i terminal: `Saved 2 legs -> ...` och `"legs": [` i JSON.
 
-Fil med 2+ legs får `"legs": [...]` i JSON. En leg = gammalt format (bara `high`/`low`).
+Fil med 2+ legs fÃ¥r `"legs": [...]` i JSON. En leg = gammalt format (bara `high`/`low`).
 
-Motor/recall använder fortfarande top-level `high`/`low` (första leg) tills daily-beteende-facit byggs.
+Motor/recall anvÃ¤nder fortfarande top-level `high`/`low` (fÃ¶rsta leg) tills daily-beteende-facit byggs.
 
 ### 6. Byta symbol / timeframe
 
-- **Symbol:** `←` `→` eller **`[` `]`** eller **`,` `.`** (cyklar BTC, ETH, SOL om du inte angav `--symbols`).
-- **Timeframe:** `↑` `↓` eller **`;`** / **`'`**.
-- Starta med flera symboler: `--symbols BTC/USDT,ETH/USDT,SOL/USDT --timeframe 1w`.
-- **Klicka i chart-fönstret** innan tangent — annars hamnar den i terminal/Cursor.
-- Avaktivera toolbar **pan** (hand-ikon) om pilar bara flyttar bilden; använd `[` `]` istället.
-- Vid byte skrivs `Market: ETH/USDT 1w` i terminalen.
+- **Symbol:** `â†` `â†’` eller **`[` `]`** eller **`,` `.`** (cyklar BTC, ETH, SOL om du inte angav `--symbols`).
+- **Timeframe:** `â†‘` `â†“` eller **`;`** / **`'`**.
+- Starta med flera symboler: `--symbols BTC/USD,ETH/USD,SOL/USD --timeframe 1w`.
+- **Klicka i chart-fÃ¶nstret** innan tangent â€” annars hamnar den i terminal/Cursor.
+- Avaktivera toolbar **pan** (hand-ikon) om pilar bara flyttar bilden; anvÃ¤nd `[` `]` istÃ¤llet.
+- Vid byte skrivs `Market: ETH/USD 1w` i terminalen.
 
 ### 7. Interaktionskonflikter
 
-- **Drag** marker (≤18 px) vs **klick** ny punkt — samma musknapp.
+- **Drag** marker (â‰¤18 px) vs **klick** ny punkt â€” samma musknapp.
 - **Shift+drag** flyttar hela leg **horisontellt** (bar-index), inte vertikalt.
-- Många tangenter avstängda i matplotlib (`_disable_matplotlib_keymap_conflicts`) så `h/l/s/…` fungerar.
+- MÃ¥nga tangenter avstÃ¤ngda i matplotlib (`_disable_matplotlib_keymap_conflicts`) sÃ¥ `h/l/s/â€¦` fungerar.
 
 ### 8. Testning
 
-- `tests/labeling/test_label_tool.py` testar **hjälpfunktioner och workspace**, inte GUI-events.
-- `labeling/tool.py` är **exkluderad från coverage** (`pyproject.toml`) — medvetet.
-- **Regression:** manuell röktest efter UI-ändring; automatisk test av hover kräver mock av canvas (ej värt komplexiteten än).
+- `tests/labeling/test_label_tool.py` testar **hjÃ¤lpfunktioner och workspace**, inte GUI-events.
+- `labeling/tool.py` Ã¤r **exkluderad frÃ¥n coverage** (`pyproject.toml`) â€” medvetet.
+- **Regression:** manuell rÃ¶ktest efter UI-Ã¤ndring; automatisk test av hover krÃ¤ver mock av canvas (ej vÃ¤rt komplexiteten Ã¤n).
 
 ### 9. Prestanda
 
-- Många candles + `redraw()` vid drag kan kännas segt.
-- Hover ska vara **lätt** (uppdatera 1–2 textobjekt), inte rita om candles varje musrörelse.
+- MÃ¥nga candles + `redraw()` vid drag kan kÃ¤nnas segt.
+- Hover ska vara **lÃ¤tt** (uppdatera 1â€“2 textobjekt), inte rita om candles varje musrÃ¶relse.
 
 ---
 
-## Säkra vs riskfyllda ändringar
+## SÃ¤kra vs riskfyllda Ã¤ndringar
 
-| Relativt säker | Riskfyllt utan refaktor |
+| Relativt sÃ¤ker | Riskfyllt utan refaktor |
 |---------------|------------------------|
 | Hover/crosshair-pris (read-only) | Ny sparlogik eller annan snap-regel |
-| Statusrad med OHLC för bar under mus | Ändra `set_pick` till fri Y |
-| Tunn `fig.text` utanför axes | Stor omstruktur av `redraw()` |
+| Statusrad med OHLC fÃ¶r bar under mus | Ã„ndra `set_pick` till fri Y |
+| Tunn `fig.text` utanfÃ¶r axes | Stor omstruktur av `redraw()` |
 | Dokumentation, tangenter | Fler saker i samma `on_motion` som anropar `redraw()` |
 
 **Innan merge:** manuellt testa klick, drag, shift+drag, spara, byta symbol/TF, pan/zoom toolbar.
@@ -202,24 +202,25 @@ Motor/recall använder fortfarande top-level `high`/`low` (första leg) tills da
 
 ## Hover (implementerat)
 
-Modul: `fibengine.labeling.hover` — kopplas in från `tool.py`.
+Modul: `fibengine.labeling.hover` â€” kopplas in frÃ¥n `tool.py`.
 
-| Läge | Visning |
+| LÃ¤ge | Visning |
 |------|---------|
-| **A** | Horisontell crosshair + pris vid musens Y (höger kant, `event.ydata`) |
-| **B** | Vertikal linje vid närmaste bar + OHLC-rad överst till vänster |
+| **A** | Horisontell crosshair + pris vid musens Y (hÃ¶ger kant, `event.ydata`) |
+| **B** | Vertikal linje vid nÃ¤rmaste bar + OHLC-rad Ã¶verst till vÃ¤nster |
 
-- Uppdateras med `draw_idle()` — **ingen** full `redraw()` på hover.
-- Döljs vid drag (high/low eller shift+leg).
-- Facit oförändrat: klick/drag snappar fortfarande candle high/low.
+- Uppdateras med `draw_idle()` â€” **ingen** full `redraw()` pÃ¥ hover.
+- DÃ¶ljs vid drag (high/low eller shift+leg).
+- Facit ofÃ¶rÃ¤ndrat: klick/drag snappar fortfarande candle high/low.
 
-**Röktest:** klick, drag, shift+drag, spara, byta symbol/TF, pan/zoom toolbar.
+**RÃ¶ktest:** klick, drag, shift+drag, spara, byta symbol/TF, pan/zoom toolbar.
 
 ---
 
 ## Relaterat
 
-- [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) — hela MTF/daily-fib-arbetet (VAD/HUR, steg 1–4, BTC-facit)
-- [MACHINE_LABELING.md](MACHINE_LABELING.md) — fråga A (motor-swing) vs B (chartfönster)
-- [data/labels/README.md](../data/labels/README.md) — `source` human/machine
-- `REPO_POLICY.md` §2B — `tool.py` grandfather tills split
+- [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) â€” hela MTF/daily-fib-arbetet (VAD/HUR, steg 1â€“4, BTC-facit)
+- [MACHINE_LABELING.md](MACHINE_LABELING.md) â€” frÃ¥ga A (motor-swing) vs B (chartfÃ¶nster)
+- [data/labels/README.md](../data/labels/README.md) â€” `source` human/machine
+- `repository-layout-policy.md` Â§2B â€” `tool.py` grandfather tills split
+

@@ -14,4 +14,4 @@ Huvudpaket för Fibonacci-motorn.
 - `viz/` plotting/visualisering.
 - `experiment.py` standardrunner för experimentkörning.
 
-**Skuld:** `labeling/tool.py` är medvetet stor (GUI) — ska delas; lägg inte till mer där utan split (`REPO_POLICY.md` §2B).
+**Skuld:** `labeling/tool.py` är medvetet stor (GUI) — ska delas; lägg inte till mer där utan split (`repository-layout-policy.md` §2B).

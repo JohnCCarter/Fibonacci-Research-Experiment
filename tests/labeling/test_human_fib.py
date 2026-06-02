@@ -56,6 +56,15 @@ def test_levels_match_spec_example():
     assert tuple(lvl.ratio for lvl in compute_levels(a, b)) == DEFAULT_FIB_RATIOS
 
 
+def test_levels_are_rounded_no_float_noise():
+    a = FibAnchor("2015-11-04T00:00:00Z", 504.0)
+    b = FibAnchor("2015-11-11T00:00:00Z", 300.28)
+    levels = {lvl.ratio: lvl.price for lvl in compute_levels(a, b)}
+    # 0.618 would be 426.17895999999996 without rounding.
+    assert levels[0.618] == 426.17896
+    assert all(round(price, 8) == price for price in levels.values())
+
+
 def test_direction_inference():
     high = FibAnchor("2026-01-01T00:00:00Z", 100.0)
     low = FibAnchor("2026-02-01T00:00:00Z", 60.0)

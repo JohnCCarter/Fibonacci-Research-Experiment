@@ -110,8 +110,38 @@ reload, ingen auto-fib).
 
 ---
 
+## Behavior-candidates (nästa lager)
+
+`fibengine.labeling.human_fib_events` matar din människoritade fib (facit-ankarna)
+in i den befintliga `detect_level_events` och emitterar `*_candidate`-events per
+nivå — *vägen* priset tar **efter** en touch, över ett framåt-fönster. Inga nya
+formler, ingen auto-fib. **Candidates är aldrig facit** (se
+[LEVEL_EVENTS.md](LEVEL_EVENTS.md)).
+
+| Atom (per candle, `human_fib`) | Candidate (väg, detta lager) |
+|--------------------------------|------------------------------|
+| `touch` på nivån, retur till approach-sidan | `rejection_candidate` |
+| `cross` + stannar på andra sidan (accept) | `continuation_candidate` |
+| `cross` + accept bortom, sen `cross` tillbaka | `failure_candidate` |
+| `touch`/`cross` utan tydlig breakout/rejektion | `reaction_candidate` |
+
+Konventionen matchar exakt: `swing.start = anchor_a` (ratio 1.0),
+`swing.end = anchor_b` (ratio 0.0) → `fib_levels(swing)` == dina nivåer, och
+fönstret skannas efter `anchor_b` (legens slut).
+
+```bash
+uv run python -m fibengine.labeling.human_fib_events \
+  --fib data/labels/human_fib/bitfinex/BTC-USD/1d/<fib_id>.json
+```
+
+Sparar `<fib_id>_events.json` bredvid annoteringen och skriver ut antal per
+candidate och nivå. Tester: `tests/labeling/test_human_fib_events.py`.
+
+---
+
 ## Relaterat
 
 - [LABELING_TOOL.md](LABELING_TOOL.md) — GUI, tangenter, begränsningar
+- [LEVEL_EVENTS.md](LEVEL_EVENTS.md) — `*_candidate`-taxonomi + guardrails (återanvänds av detta lager)
 - [BEHAVIOR_FACIT.md](BEHAVIOR_FACIT.md) — beteende-facit (nästa lager, inte detta)
 - [data/labels/README.md](../data/labels/README.md) — `source` human/machine

@@ -25,8 +25,8 @@ def _write_parent(tmp_path, monkeypatch):
         ),
     ]
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1d",
         high=legs[0].high,
         low=legs[0].low,
@@ -91,8 +91,8 @@ def test_legacy_v2_loads_as_events(tmp_path):
     raw = {
         "schema_version": 2,
         "parent_label_path": "x",
-        "exchange": "binance",
-        "symbol": "BTC/USDT",
+        "exchange": "Bitfinex",
+        "symbol": "BTC/USD",
         "timeframe": "1d",
         "legs": [
             {

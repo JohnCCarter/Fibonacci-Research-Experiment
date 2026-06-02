@@ -16,8 +16,8 @@ def _swing(df) -> Swing:
 def test_perfect_match_is_overall_hit(synthetic_df):
     swing = _swing(synthetic_df)
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 130.0),
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
@@ -30,17 +30,17 @@ def test_perfect_match_is_overall_hit(synthetic_df):
 def test_price_miss_lowers_agreement(synthetic_df):
     swing = _swing(synthetic_df)
     perfect = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 130.0),
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
     )
     missed = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
-        high=Point(synthetic_df.index[60].isoformat(), 150.0),  # långt fel
+        high=Point(synthetic_df.index[60].isoformat(), 150.0),  # lÃ¥ngt fel
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
     )
     m_perfect = evaluate(synthetic_df, swing, perfect, atr_value=2.0, cfg=EvaluationConfig())
@@ -52,8 +52,8 @@ def test_price_miss_lowers_agreement(synthetic_df):
 def test_zero_range_label_keeps_metrics_finite(synthetic_df):
     swing = _swing(synthetic_df)
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 130.0),
         low=Point(synthetic_df.index[40].isoformat(), 130.0),
@@ -66,8 +66,8 @@ def test_zero_range_label_keeps_metrics_finite(synthetic_df):
 def test_in_window_label_not_flagged(synthetic_df):
     swing = _swing(synthetic_df)
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 130.0),
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
@@ -77,12 +77,12 @@ def test_in_window_label_not_flagged(synthetic_df):
 
 
 def test_out_of_window_label_is_flagged(synthetic_df):
-    # Label-tidsstämplar långt efter sista baren ska flaggas, inte tyst snäppas.
+    # Label-tidsstÃ¤mplar lÃ¥ngt efter sista baren ska flaggas, inte tyst snÃ¤ppas.
     swing = _swing(synthetic_df)
     future = (synthetic_df.index[-1] + pd.Timedelta(days=365)).isoformat()
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(future, 130.0),
         low=Point(future, 105.0),
@@ -102,8 +102,8 @@ def test_down_leg_temporal_fib_matches_facit(synthetic_df):
     low = Pivot(60, synthetic_df.index[60], 105.0, "low", 2.0)
     swing = Swing(start=high, end=low)
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(synthetic_df.index[40].isoformat(), 130.0),
         low=Point(synthetic_df.index[60].isoformat(), 105.0),
@@ -132,8 +132,8 @@ def test_mtf_time_errors_use_same_timeframe(monkeypatch, synthetic_df):
     low = Pivot(60, synthetic_df.index[60], 105.0, "low", 2.0)
     swing = Swing(start=high, end=low)
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1w",
         high=Point(synthetic_df.index[40].isoformat(), 130.0),
         low=Point(synthetic_df.index[60].isoformat(), 105.0),

@@ -48,8 +48,8 @@ def test_retrace_detects_618_touch(monkeypatch):
         ),
     )
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1w",
         high=Point("2026-03-23T00:00:00+00:00", 120.0),
         low=Point("2026-03-30T00:00:00+00:00", 90.0),

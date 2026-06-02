@@ -1,4 +1,4 @@
-"""Tester för label-batch: säker id, sha256-manifest, sista jsonl-rad, end-to-end."""
+"""Tester fÃ¶r label-batch: sÃ¤ker id, sha256-manifest, sista jsonl-rad, end-to-end."""
 
 import hashlib
 import json
@@ -16,7 +16,7 @@ from fibengine.labeling.batch import (
 def test_safe_batch_id_sanitizes():
     assert _safe_batch_id("round 4!!") == "round-4"
     assert _safe_batch_id("a//b").startswith("a-b") or _safe_batch_id("a//b") == "a-b"
-    # Tomt/skräp faller tillbaka till en default (icke-tom).
+    # Tomt/skrÃ¤p faller tillbaka till en default (icke-tom).
     assert _safe_batch_id("///") != ""
 
 
@@ -35,23 +35,23 @@ def test_last_jsonl_row_returns_last(tmp_path):
 
 def test_label_manifest_has_hash_and_relpath(tmp_path, monkeypatch):
     labels_dir = tmp_path / "labels"
-    (labels_dir / "binance" / "BTC-USDT").mkdir(parents=True)
-    f = labels_dir / "binance" / "BTC-USDT" / "1h.json"
+    (labels_dir / "Bitfinex" / "BTC-USD").mkdir(parents=True)
+    f = labels_dir / "Bitfinex" / "BTC-USD" / "1h.json"
     f.write_text('{"x": 1}')
     monkeypatch.setattr(batch_mod, "LABELS_DIR", labels_dir)
     monkeypatch.setattr(batch_mod, "REPO_ROOT", tmp_path)
 
     manifest = _label_manifest([f])
-    assert manifest[0]["file"] == "binance/BTC-USDT/1h.json"
+    assert manifest[0]["file"] == "Bitfinex/BTC-USD/1h.json"
     assert manifest[0]["sha256"] == hashlib.sha256(b'{"x": 1}').hexdigest()
     assert manifest[0]["size_bytes"] == len(b'{"x": 1}')
 
 
 def test_create_label_batch_writes_manifest_and_metadata(tmp_path, monkeypatch):
     labels_dir = tmp_path / "labels"
-    (labels_dir / "binance" / "BTC-USDT").mkdir(parents=True)
-    f = labels_dir / "binance" / "BTC-USDT" / "1h.json"
-    f.write_text('{"exchange": "binance"}')
+    (labels_dir / "Bitfinex" / "BTC-USD").mkdir(parents=True)
+    f = labels_dir / "Bitfinex" / "BTC-USD" / "1h.json"
+    f.write_text('{"exchange": "Bitfinex"}')
 
     batches_dir = tmp_path / "batches"
     monkeypatch.setattr(batch_mod, "LABELS_DIR", labels_dir)

@@ -57,7 +57,7 @@ Tänk dig att projektet har misslyckats. Vad gick fel? Fyll på listan löpande.
   kausal-/invariant-tester och utöka dem; höj aldrig promotion-status enbart på
   grön CI.
 - **Spårmodellen kringgås.** Research-resultat (matriser, backtests) behandlas som
-  Validate-evidens och promotas utan att gaten i `REPO_POLICY.md §13` är uppfylld.
+  Validate-evidens och promotas utan att gaten i `repository-layout-policy.md §13` är uppfylld.
   → ingen "trusted engine behavior" utan reproducerbar validate-körning + grön
   `pytest` + reflektion innan något når Promotion-ytan.
 

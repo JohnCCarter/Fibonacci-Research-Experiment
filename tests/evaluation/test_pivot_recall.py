@@ -21,8 +21,8 @@ def test_nearest_pivot_filters_by_kind(synthetic_df):
 
 def test_evaluate_label_recall_hits_near_synthetic_pivots(monkeypatch, synthetic_df):
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(synthetic_df.index[60].isoformat(), 130.0),
         low=Point(synthetic_df.index[40].isoformat(), 105.0),
@@ -47,8 +47,8 @@ def test_out_of_window_label_does_not_count_as_recall_hit(monkeypatch, synthetic
 
     future = (synthetic_df.index[-1] + pd.Timedelta(days=365)).isoformat()
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(future, 130.0),
         low=Point(future, 105.0),
@@ -80,7 +80,7 @@ def test_summarize_recall_makes_exclusion_explicit():
     assert summary["n_labels"] == 3
     assert summary["n_in_window"] == 2
     assert summary["n_excluded_out_of_window"] == 1
-    # Recall mäts BARA på in-window-samplet, inte på de 3 totalt.
+    # Recall mÃ¤ts BARA pÃ¥ in-window-samplet, inte pÃ¥ de 3 totalt.
     assert summary["both_hit_rate"] == 0.5
     assert summary["high_hit_rate"] == 1.0
     assert summary["low_hit_rate"] == 0.5
@@ -114,7 +114,7 @@ def test_summarize_recall_handles_all_excluded():
 
 
 def test_run_pivot_recall_excludes_machine_labels(monkeypatch, tmp_path, synthetic_df):
-    # Integritet: maskin-labels får inte bli ground truth (cirkulärt).
+    # Integritet: maskin-labels fÃ¥r inte bli ground truth (cirkulÃ¤rt).
     from fibengine.labeling import store
     from fibengine.labeling.store import Point, SwingLabel, save_label
 
@@ -127,13 +127,13 @@ def test_run_pivot_recall_excludes_machine_labels(monkeypatch, tmp_path, synthet
         "high": Point(synthetic_df.index[60].isoformat(), 130.0),
         "low": Point(synthetic_df.index[40].isoformat(), 105.0),
     }
-    save_label(SwingLabel(exchange="binance", symbol="BTC/USDT", timeframe="1h", **pts))
+    save_label(SwingLabel(exchange="Bitfinex", symbol="BTC/USD", timeframe="1h", **pts))
     save_label(
-        SwingLabel(exchange="binance", symbol="ETH/USDT", timeframe="1h", source="machine", **pts)
+        SwingLabel(exchange="Bitfinex", symbol="ETH/USD", timeframe="1h", source="machine", **pts)
     )
 
     rows = pivot_recall.run_pivot_recall(Settings())
 
-    # Bara den mänskliga labeln evaluerades.
+    # Bara den mÃ¤nskliga labeln evaluerades.
     assert len(rows) == 1
-    assert rows[0]["symbol"] == "BTC/USDT"
+    assert rows[0]["symbol"] == "BTC/USD"

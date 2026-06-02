@@ -16,10 +16,10 @@ from fibengine.labeling.tool import (
 def test_apply_cli_data_overrides():
     settings = _apply_cli_overrides(
         Settings(),
-        Namespace(exchange=None, symbol="ETH/USDT", timeframe="1w", limit=300),
+        Namespace(exchange=None, symbol="ETH/USD", timeframe="1w", limit=300),
     )
 
-    assert settings.data.symbol == "ETH/USDT"
+    assert settings.data.symbol == "ETH/USD"
     assert settings.data.timeframe == "1w"
     assert settings.data.limit == 300
 
@@ -117,7 +117,7 @@ def test_save_auto_appends_second_leg(monkeypatch, synthetic_df, tmp_path):
 
     workspace = LabelWorkspace(
         settings=Settings(),
-        symbols=["BTC/USDT"],
+        symbols=["BTC/USD"],
         timeframes=["1d"],
     )
     workspace.df = synthetic_df

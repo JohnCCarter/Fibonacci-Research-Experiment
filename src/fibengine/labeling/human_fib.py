@@ -39,6 +39,10 @@ from fibengine.labeling.store import get_labels_dir
 # Standard fib ratios for manual annotation. Includes 1.000 (the start anchor).
 DEFAULT_FIB_RATIOS: tuple[float, ...] = (0.236, 0.382, 0.5, 0.618, 0.786, 1.0)
 
+# Round derived level prices to clean up float noise (e.g. 426.17895999999996).
+# 8 decimals keeps satoshi-level precision for any asset.
+PRICE_DECIMALS = 8
+
 HUMAN_FIB_DIRNAME = "human_fib"
 
 # Candle-vs-level relation labels (geometry only; NOT behaviour like rejection).
@@ -125,14 +129,15 @@ def compute_levels(
     anchor_a: FibAnchor,
     anchor_b: FibAnchor,
     ratios: tuple[float, ...] = DEFAULT_FIB_RATIOS,
+    decimals: int = PRICE_DECIMALS,
 ) -> list[FibLevel]:
     """Derive fib level prices from two human anchors.
 
     ``anchor_b`` is ratio 0.0, ``anchor_a`` is ratio 1.0:
-    ``price(r) = b.price + r * (a.price - b.price)``.
+    ``price(r) = b.price + r * (a.price - b.price)``, rounded to ``decimals``.
     """
     span = anchor_a.price - anchor_b.price
-    return [FibLevel(ratio=r, price=anchor_b.price + r * span) for r in ratios]
+    return [FibLevel(ratio=r, price=round(anchor_b.price + r * span, decimals)) for r in ratios]
 
 
 def make_annotation(
@@ -145,6 +150,7 @@ def make_annotation(
     fib_id: str = "",
     direction: str | None = None,
     ratios: tuple[float, ...] = DEFAULT_FIB_RATIOS,
+    decimals: int = PRICE_DECIMALS,
     created_at: str = "",
 ) -> HumanFibAnnotation:
     """Build an annotation from explicit human anchors (never auto-detected)."""
@@ -154,7 +160,7 @@ def make_annotation(
         anchor_a=anchor_a,
         anchor_b=anchor_b,
         direction=direction or infer_direction(anchor_a, anchor_b),
-        levels=compute_levels(anchor_a, anchor_b, ratios),
+        levels=compute_levels(anchor_a, anchor_b, ratios, decimals),
         exchange=exchange,
         fib_id=fib_id,
         created_at=created_at,

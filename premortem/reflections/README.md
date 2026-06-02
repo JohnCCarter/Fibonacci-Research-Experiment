@@ -1,6 +1,6 @@
 # premortem/reflections
 
-Löpande reflektioner från körningar och beslut. Obligatoriskt enligt `REPO_POLICY.md` §11.
+Löpande reflektioner från körningar och beslut. Obligatoriskt enligt `repository-layout-policy.md` §11.
 
 **Översikt:** [INDEX.md](INDEX.md) — uppdatera när du lägger till en ny fil.
 
@@ -46,7 +46,7 @@ Valfritt YAML-frontmatter överst (rekommenderat när mappen växer):
 type: run | decision | learning | premortem
 topics: [labeling, validate, backtest]
 related: [docs/MACHINE_LABELING.md]
-supersedes: 2026-05-28-optuna-start   # om denna ersätter äldre slutsats
+supersedes: 2026-05-28-earlier-decision   # om denna ersätter äldre slutsats
 status: active | historical
 ---
 ```
@@ -58,7 +58,7 @@ status: active | historical
 | Händelse | Exempel |
 |----------|---------|
 | Validate-körning med beslut | Ny matris, pivot_recall-runda |
-| Policy/arbetsätt ändras | Ta bort Optuna, inför maskin-labeling |
+| Policy/arbetsätt ändras | Ändra researchflöde, inför maskin-labeling |
 | Facit eller promotion | Godkänd BTC 1w, merge till `settings.yaml` |
 | Överraskning / missförstånd | Chartfönster vs motor-swing → `docs/MACHINE_LABELING.md` |
 
@@ -68,7 +68,7 @@ status: active | historical
 
 ## Storlek (MÅSTE — håll reflektioner korta)
 
-Reflektioner är **anteckningar**, inte rapporter. Gräns (kontrolleras av `repo-bounds` i pre-commit, se `REPO_POLICY.md` §2B):
+Reflektioner är **anteckningar**, inte rapporter. Gräns (kontrolleras av `repo-bounds` i pre-commit, se `repository-layout-policy.md` §2B):
 
 | Gräns | Värde |
 |-------|--------|
@@ -122,4 +122,4 @@ Reflektioner är **anteckningar**, inte rapporter. Gräns (kontrolleras av `repo
 | Övergripande risker | [../PREMORTEM.md](../PREMORTEM.md) |
 | Backtest-faser | [docs/FIB_BACKTEST_PLAN.md](../../docs/FIB_BACKTEST_PLAN.md) |
 | Maskin-labeling A/B | [docs/MACHINE_LABELING.md](../../docs/MACHINE_LABELING.md) |
-| Repo-regler | [REPO_POLICY.md](../../REPO_POLICY.md) §11 |
+| Repo-regler | [repository-layout-policy.md](../../repository-layout-policy.md) §11 |

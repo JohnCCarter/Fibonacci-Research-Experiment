@@ -27,57 +27,57 @@ def _patch_labels(monkeypatch, labels: list[SwingLabel]) -> None:
 
 
 def test_coverage_report_lists_missing_combos(monkeypatch):
-    _patch_labels(monkeypatch, [_label("BTC/USDT", "1h"), _label("ETH/USDT", "1h")])
+    _patch_labels(monkeypatch, [_label("BTC/USD", "1h"), _label("ETH/USD", "1h")])
 
     report = worklist.coverage_report(
-        symbols=["BTC/USDT", "ETH/USDT", "SOL/USDT"],
+        symbols=["BTC/USD", "ETH/USD", "SOL/USD"],
         timeframes=["1h", "4h"],
     )
 
     assert report["n_labeled"] == 2
     assert report["n_target_combos"] == 6
     assert report["n_covered_combos"] == 2
-    # Missing = allt utom de två labelade 1h-kombinationerna.
-    assert ("bitfinex", "SOL/USDT", "1h") in report["missing_combos"]
-    assert ("bitfinex", "BTC/USDT", "4h") in report["missing_combos"]
-    assert ("bitfinex", "BTC/USDT", "1h") not in report["missing_combos"]
+    # Missing = allt utom de tvÃ¥ labelade 1h-kombinationerna.
+    assert ("bitfinex", "SOL/USD", "1h") in report["missing_combos"]
+    assert ("bitfinex", "BTC/USD", "4h") in report["missing_combos"]
+    assert ("bitfinex", "BTC/USD", "1h") not in report["missing_combos"]
     assert len(report["missing_combos"]) == 4
 
 
 def test_machine_labels_do_not_count_toward_target(monkeypatch):
-    # En human + en maskin-kandidat på samma timeframe, olika symboler.
+    # En human + en maskin-kandidat pÃ¥ samma timeframe, olika symboler.
     _patch_labels(
         monkeypatch,
-        [_label("BTC/USDT", "1h"), _label("ETH/USDT", "1h", source="machine")],
+        [_label("BTC/USD", "1h"), _label("ETH/USD", "1h", source="machine")],
     )
 
     report = worklist.coverage_report(
-        symbols=["BTC/USDT", "ETH/USDT", "SOL/USDT"],
+        symbols=["BTC/USD", "ETH/USD", "SOL/USD"],
         timeframes=["1h"],
     )
 
-    # Bara den mänskliga räknas mot målet.
+    # Bara den mÃ¤nskliga rÃ¤knas mot mÃ¥let.
     assert report["n_labeled"] == 1
     # ETH 1h saknar human-facit men har en maskin-kandidat att granska.
-    assert ("bitfinex", "ETH/USDT", "1h") in report["missing_combos"]
-    assert ("bitfinex", "ETH/USDT", "1h") in report["machine_to_review"]
+    assert ("bitfinex", "ETH/USD", "1h") in report["missing_combos"]
+    assert ("bitfinex", "ETH/USD", "1h") in report["machine_to_review"]
     assert report["n_machine_to_review"] == 1
 
     text = worklist.format_report(report)
     assert "Maskin-kandidater att granska" in text
     # ETH listas under granskning, inte under "helt olabelade".
-    assert "ETH/USDT --timeframe 1h" in text
+    assert "ETH/USD --timeframe 1h" in text
 
 
 def test_target_progress(monkeypatch):
-    _patch_labels(monkeypatch, [_label("BTC/USDT", "1h")])
+    _patch_labels(monkeypatch, [_label("BTC/USD", "1h")])
     report = worklist.coverage_report(target=25)
     assert report["target_reached"] is False
     assert report["remaining_to_target"] == 24
 
 
 def test_target_reached(monkeypatch):
-    _patch_labels(monkeypatch, [_label("BTC/USDT", str(i)) for i in range(25)])
+    _patch_labels(monkeypatch, [_label("BTC/USD", str(i)) for i in range(25)])
     report = worklist.coverage_report(target=25)
     assert report["target_reached"] is True
     assert report["remaining_to_target"] == 0
@@ -85,7 +85,7 @@ def test_target_reached(monkeypatch):
 
 def test_format_report_emits_runnable_commands(monkeypatch):
     _patch_labels(monkeypatch, [])
-    report = worklist.coverage_report(symbols=["BTC/USDT"], timeframes=["30m"])
+    report = worklist.coverage_report(symbols=["BTC/USD"], timeframes=["30m"])
     text = worklist.format_report(report)
     assert "fibengine.labeling.tool" in text
-    assert "--symbol BTC/USDT --timeframe 30m" in text
+    assert "--symbol BTC/USD --timeframe 30m" in text

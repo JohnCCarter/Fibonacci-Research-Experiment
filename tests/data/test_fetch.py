@@ -8,7 +8,7 @@ def test_cache_path_includes_limit():
     assert cache_path(base) != cache_path(longer)
     assert cache_path(base).name == "limit_100.csv"
     assert "bitfinex" in cache_path(base).as_posix()
-    assert "BTC-USDT/1h" in cache_path(base).as_posix()
+    assert "BTC-USD/1h" in cache_path(base).as_posix()
 
 
 def test_timeframe_limit_override_affects_effective_limit_and_cache_path():
@@ -19,8 +19,8 @@ def test_timeframe_limit_override_affects_effective_limit_and_cache_path():
         limit=500,
         timeframe_limits={"1d": 1000},
     )
-    # Override gäller bara den angivna timeframen.
+    # Override gÃ¤ller bara den angivna timeframen.
     assert cfg.effective_limit() == 1000
     assert cfg.model_copy(update={"timeframe": "1h"}).effective_limit() == 500
-    # Cache-filnamnet ska spegla den faktiskt laddade mängden.
+    # Cache-filnamnet ska spegla den faktiskt laddade mÃ¤ngden.
     assert cache_path(cfg).name == "limit_1000.csv"

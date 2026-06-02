@@ -1,7 +1,7 @@
-"""Research: full MTF leg — HTF facit + daily Fib touches (in/out structure).
+"""Research: full MTF leg â€” HTF facit + daily Fib touches (in/out structure).
 
 Run (forces mtf_disambiguation ON for analysis):
-    uv run python scripts/mtf_leg_daily_fib.py --symbol BTC/USDT --timeframe 1w
+    uv run python scripts/mtf_leg_daily_fib.py --symbol BTC/USD --timeframe 1w
     uv run python scripts/mtf_leg_daily_fib.py --all-1w
 """
 

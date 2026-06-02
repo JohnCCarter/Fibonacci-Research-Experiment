@@ -1,4 +1,4 @@
-"""Tester för human-review-paketet (research-only, syntetisk data, ingen nätverk)."""
+"""Tester fÃ¶r human-review-paketet (research-only, syntetisk data, ingen nÃ¤tverk)."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ def _df(closes: list[float]) -> pd.DataFrame:
 
 
 def _trend_df() -> pd.DataFrame:
-    # Tydlig trend med pullbacks så detektorn ger flera nivå-events.
+    # Tydlig trend med pullbacks sÃ¥ detektorn ger flera nivÃ¥-events.
     grid = np.arange(0, 160)
     closes = np.interp(grid, [0, 40, 70, 110, 159], [100, 150, 120, 165, 130])
     return _df(list(closes))
@@ -47,14 +47,14 @@ def _up_swing(df: pd.DataFrame, start: int = 0, end: int = 40) -> Swing:
 
 def _settings() -> Settings:
     s = Settings()
-    s.data.symbol = "BTC/USDT"
+    s.data.symbol = "BTC/USD"
     s.data.timeframe = "1h"
-    s.data.exchange = "binance"
+    s.data.exchange = "Bitfinex"
     return s
 
 
 def _candidates(df: pd.DataFrame, settings: Settings) -> list[dict]:
-    """Bygg rader direkt från en känd swing (utan walk-forward/select_swing)."""
+    """Bygg rader direkt frÃ¥n en kÃ¤nd swing (utan walk-forward/select_swing)."""
     level_cfg = LevelEventConfig()
     ratios = settings.fib.levels
     meta = {
@@ -74,14 +74,14 @@ def _candidates(df: pd.DataFrame, settings: Settings) -> list[dict]:
 def test_review_row_schema_has_required_fields_and_placeholders():
     df = _trend_df()
     rows = _candidates(df, _settings())
-    assert rows, "förväntade minst en kandidat"
+    assert rows, "fÃ¶rvÃ¤ntade minst en kandidat"
     for r in rows:
         assert set(r.keys()) == set(REVIEW_COLUMNS)
-        # Tomma platshållare som människan fyller i.
+        # Tomma platshÃ¥llare som mÃ¤nniskan fyller i.
         assert r["human_label"] == ""
         assert r["human_confidence"] == ""
         assert r["human_note"] == ""
-        # Obligatoriska detektorfält + swing-kontext finns.
+        # Obligatoriska detektorfÃ¤lt + swing-kontext finns.
         for key in (
             "fib_level",
             "fib_price",
@@ -99,15 +99,15 @@ def test_review_row_schema_has_required_fields_and_placeholders():
 
 
 def test_chart_path_tied_to_review_id_and_filesystem_safe():
-    rid = make_review_id("BTC/USDT", "1h", "0.5", 12, 40, 73, "continuation_candidate")
+    rid = make_review_id("BTC/USD", "1h", "0.5", 12, 40, 73, "continuation_candidate")
     assert "/" not in rid and "." not in rid
-    assert rid == "BTC-USDT_1h_L0p5_s12_e40_b73_cont"
+    assert rid == "BTC-USD_1h_L0p5_s12_e40_b73_cont"
 
 
 def test_review_id_distinguishes_legs_sharing_end_pivot():
-    # Walk-forward kan låsa två legs med samma end men olika start; id:n får ej kollidera.
-    a = make_review_id("BTC/USDT", "1h", "0.5", 12, 40, 73, "continuation_candidate")
-    b = make_review_id("BTC/USDT", "1h", "0.5", 20, 40, 73, "continuation_candidate")
+    # Walk-forward kan lÃ¥sa tvÃ¥ legs med samma end men olika start; id:n fÃ¥r ej kollidera.
+    a = make_review_id("BTC/USD", "1h", "0.5", 12, 40, 73, "continuation_candidate")
+    b = make_review_id("BTC/USD", "1h", "0.5", 20, 40, 73, "continuation_candidate")
     assert a != b
 
 
@@ -148,7 +148,7 @@ def test_sampling_filters_by_candidate_type_and_level():
 def test_sampling_balances_across_candidate_types():
     from collections import Counter
 
-    # Syntetisk pool med skev fördelning: 20 cont, 10 rej, 4 react, 2 fail.
+    # Syntetisk pool med skev fÃ¶rdelning: 20 cont, 10 rej, 4 react, 2 fail.
     rows = []
     plan = {
         "continuation_candidate": 20,
@@ -169,13 +169,13 @@ def test_sampling_balances_across_candidate_types():
     sampled = sample_candidates(rows, cfg)
     counts = Counter(r["auto_candidate"] for r in sampled)
     assert len(sampled) == 16
-    # Round-robin tömmer de små typerna helt och delar resten jämnt mellan de stora:
+    # Round-robin tÃ¶mmer de smÃ¥ typerna helt och delar resten jÃ¤mnt mellan de stora:
     # fail har bara 2, react bara 4; de 10 kvarvarande platserna delas 5/5 cont/rej.
     assert counts["failure_candidate"] == 2
     assert counts["reaction_candidate"] == 4
     assert counts["continuation_candidate"] == 5
     assert counts["rejection_candidate"] == 5
-    # Den dominerande typen (20 tillgängliga) tar INTE en otyglad andel.
+    # Den dominerande typen (20 tillgÃ¤ngliga) tar INTE en otyglad andel.
     assert counts["continuation_candidate"] < 20
 
 
@@ -216,7 +216,7 @@ def test_end_to_end_package_files_created(monkeypatch, tmp_path):
     assert (run_dir / "review_sample.jsonl").exists()
     assert (run_dir / "REVIEW_INDEX.md").exists()
     pngs = list((run_dir / "charts").glob("*.png"))
-    assert pngs, "förväntade minst en chart-PNG"
+    assert pngs, "fÃ¶rvÃ¤ntade minst en chart-PNG"
     assert len(pngs) == result["total_sampled"]
     assert result["total_sampled"] <= 6
 

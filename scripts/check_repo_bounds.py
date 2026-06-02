@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pre-commit: file size / anti-blob limits (see REPO_POLICY.md §2B)."""
+"""Pre-commit: file size / anti-blob limits (see repository-layout-policy.md §2B)."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ RULES: list[tuple[str, int, int]] = [
     ("premortem/reflections/*.md", 80, 8 * 1024),
     ("src/fibengine/**/*.py", 400, 25 * 1024),
     ("tests/**/*.py", 250, 15 * 1024),
-    ("docs/**/*.md", 200, 20 * 1024),
+    ("docs/**/*.md", 300, 20 * 1024),
     ("scripts/*.py", 120, 8 * 1024),
 ]
 

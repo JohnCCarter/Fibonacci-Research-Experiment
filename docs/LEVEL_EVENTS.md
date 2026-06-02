@@ -1,6 +1,6 @@
-# Fibonacci Level Interaction Events (research-only)
+﻿# Fibonacci Level Interaction Events (research-only)
 
-Status: **RESEARCH** — implements issue #8.
+Status: **RESEARCH** â€” implements issue #8.
 
 Where a swing previously carried a single behavior label per Fibonacci level, this
 overlay records **an event stream per level**: every time price interacts with a level
@@ -27,19 +27,19 @@ Each event records `touch_type` (`wick_below` / `wick_above` / `close_above` /
 
 ## Guardrails
 
-- **Candidates, never facts.** The `*_candidate` naming is deliberate — events are inputs
+- **Candidates, never facts.** The `*_candidate` naming is deliberate â€” events are inputs
   to human review, never auto-accepted.
 - **Look-ahead is intentional.** Classification inspects a forward window of bars after a
   touch, so this is strictly **post-hoc annotation, never a live trading signal**.
 - **Additive only.** It does not change swing selection, fib anchors/prices, evaluation,
   recall or promotion. Output goes to a new file; no existing artifacts are mutated.
 
-## Configuration (`config/settings.yaml` → `level_events`)
+## Configuration (`config/settings.yaml` â†’ `level_events`)
 
 | key                        | default | meaning                                                       |
 |----------------------------|---------|---------------------------------------------------------------|
 | `levels`                   | `[]`    | fib ratios to scan; empty inherits `fib.levels`               |
-| `touch_tolerance_atr`      | `0.10`  | band half-width around a level = this × ATR at the bar         |
+| `touch_tolerance_atr`      | `0.10`  | band half-width around a level = this Ã— ATR at the bar         |
 | `forward_window`           | `5`     | bars after a touch used for classification                    |
 | `acceptance_closes`        | `2`     | closes beyond the level required to count as "accepted"       |
 | `immediate_rejection_bars` | `2`     | window for a quick close back to the approach side            |
@@ -58,7 +58,7 @@ Appends a record to `experiments/results/level_events.jsonl` (`run_id`, config/s
 metadata, the selected `swing`, the per-level event streams, and `n_events`).
 
 Note: a single live "as-of-now" run usually picks a leg ending at the present, leaving no
-forward window — so it often reports **0 events**. The interactions the issue cares about
+forward window â€” so it often reports **0 events**. The interactions the issue cares about
 require a leg that has had time to "live". That is what walk-forward mode provides.
 
 ## Walk-forward mode (answers research Q4)
@@ -80,24 +80,24 @@ across every distinct **confirmed** leg via `walk_forward_level_events()`. It re
 }
 ```
 
-**Caveat — overlapping legs inflate absolute totals.** With `step=1` nearly every bar
+**Caveat â€” overlapping legs inflate absolute totals.** With `step=1` nearly every bar
 yields a (slightly drifted) confirmed leg, and in the default (`forward`) attribution each
 leg's events are counted over the full forward history, so the same price action is counted
 under many overlapping legs. The absolute `n_events` is then sensitive to `step`.
 
 **Use `--dedupe` (non-overlapping attribution) for the trustworthy census.** Each bar is
-attributed to exactly one leg — the one that was the live confirmed selection at that bar
-(window `[confirmation cursor t, next leg's t)`) — so no event is double-counted. This
+attributed to exactly one leg â€” the one that was the live confirmed selection at that bar
+(window `[confirmation cursor t, next leg's t)`) â€” so no event is double-counted. This
 matters: on Kraken BTC/USD daily the `forward` mode shows a misleadingly *flat* per-level
-distribution (~19-22% each, 4835 events), while `--dedupe` reveals the real gradient —
-shallow levels dominate (0.236/0.382 ≈ 28% each) and deep levels are rare
-(0.786 ≈ 10%), across 142 distinct interactions. Prefer `--dedupe` when answering
+distribution (~19-22% each, 4835 events), while `--dedupe` reveals the real gradient â€”
+shallow levels dominate (0.236/0.382 â‰ˆ 28% each) and deep levels are rare
+(0.786 â‰ˆ 10%), across 142 distinct interactions. Prefer `--dedupe` when answering
 "how many events per level".
 
 ## Data / running
 
 Candles are fetched on demand and cached locally by `load_candles()` (under `data/raw/`,
-which is **not** versioned — see the repo data policy). The first run for a symbol/timeframe
+which is **not** versioned â€” see the repo data policy). The first run for a symbol/timeframe
 needs network; subsequent runs read the local cache. Point the config at any symbol:
 
 ```python
@@ -114,7 +114,8 @@ Config is supplied via `LevelEventConfig` (defaults are used unless you pass you
 it is intentionally **not** part of canonical `Settings`, so `Settings.config_hash()` and
 the Promotion surface stay untouched.
 
-Note: the repo default exchange is Binance, which is geo-restricted from some hosted
+Note: the repo default exchange is Bitfinex, which is geo-restricted from some hosted
 sandboxes (HTTP 451); Kraken/Coinbase/Bitstamp/Bitfinex are reachable alternatives there.
-On a normal machine the Binance default works as usual. Tests rely only on synthetic data,
+On a normal machine the Bitfinex default works as usual. Tests rely only on synthetic data,
 so they need no network.
+

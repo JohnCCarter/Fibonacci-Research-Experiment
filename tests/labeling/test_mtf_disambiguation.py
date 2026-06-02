@@ -42,8 +42,8 @@ def _label_same_week(*, with_mtf: bool) -> SwingLabel:
             "order": "high_then_low",
         }
     return SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1w",
         high=Point(ts, 120.0),
         low=Point(ts, 80.0),
@@ -134,8 +134,8 @@ def test_resolved_uses_htf_prices_and_ltf_order(monkeypatch):
 
 def _label_distinct_weeks() -> SwingLabel:
     return SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1w",
         high=Point("2026-03-23T00:00:00+00:00", 120.0),
         low=Point("2026-03-30T00:00:00+00:00", 90.0),
@@ -144,8 +144,8 @@ def _label_distinct_weeks() -> SwingLabel:
 
 def test_non_mtf_timeframe_on_behaves_like_off():
     label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="4h",
         high=Point("2026-03-23T00:00:00+00:00", 120.0),
         low=Point("2026-03-30T00:00:00+00:00", 90.0),
