@@ -1,0 +1,686 @@
+﻿{
+  "aggregate": {
+    "n": 15,
+    "mean_agreement": 0.0071,
+    "mean_fib_err_frac": 1.3641,
+    "mean_high_price_err_atr": 5.8844,
+    "mean_low_price_err_atr": 7.0975
+  },
+  "results": [
+    {
+      "label": "Bitfinex_BTC-USD_15m",
+      "metrics": {
+        "high_price_err_atr": 3.6674,
+        "low_price_err_atr": 9.4844,
+        "high_time_err_bars": 123,
+        "low_time_err_bars": 68,
+        "mean_fib_err_frac": 0.4953,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 300,
+          "timestamp": "2026-05-26T05:30:00+00:00",
+          "price": 76989.23,
+          "kind": "high",
+          "prominence": 2.2475
+        },
+        "end": {
+          "index": 496,
+          "timestamp": "2026-05-28T06:30:00+00:00",
+          "price": 72761.11,
+          "kind": "low",
+          "prominence": 2.5557
+        },
+        "direction": "down",
+        "price_range": 4228.12,
+        "bars": 196,
+        "features": {
+          "magnitude": 0.9564,
+          "recency": 0.994,
+          "prominence": 0.8339,
+          "cleanliness": 0.1962,
+          "round_number": 0.7503,
+          "duration": 8.8,
+          "structure_alignment": 0.75,
+          "scale_confluence": 0.0
+        },
+        "score": -2.1248,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_BTC-USD_1d",
+      "metrics": {
+        "high_price_err_atr": 16.6584,
+        "low_price_err_atr": 9.2127,
+        "high_time_err_bars": 205,
+        "low_time_err_bars": 17,
+        "mean_fib_err_frac": 2.0931,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 311,
+          "timestamp": "2025-11-21T00:00:00+00:00",
+          "price": 80600.0,
+          "kind": "low",
+          "prominence": 2.8951
+        },
+        "end": {
+          "index": 497,
+          "timestamp": "2026-05-26T00:00:00+00:00",
+          "price": 78080.0,
+          "kind": "high",
+          "prominence": 2.6874
+        },
+        "direction": "down",
+        "price_range": 2520.0,
+        "bars": 186,
+        "features": {
+          "magnitude": 0.1259,
+          "recency": 0.996,
+          "prominence": 0.8844,
+          "cleanliness": 0.0377,
+          "round_number": 0.52,
+          "duration": 8.3,
+          "structure_alignment": 1.0,
+          "scale_confluence": 0.5
+        },
+        "score": -1.7015,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_BTC-USD_1h",
+      "metrics": {
+        "high_price_err_atr": 1.4459,
+        "low_price_err_atr": 8.4522,
+        "high_time_err_bars": 15,
+        "low_time_err_bars": 245,
+        "mean_fib_err_frac": 1.3403,
+        "price_agree": 0.0001,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 264,
+          "timestamp": "2026-05-18T12:00:00+00:00",
+          "price": 77800.0,
+          "kind": "high",
+          "prominence": 4.7878
+        },
+        "end": {
+          "index": 496,
+          "timestamp": "2026-05-28T04:00:00+00:00",
+          "price": 72728.85,
+          "kind": "low",
+          "prominence": 3.9281
+        },
+        "direction": "down",
+        "price_range": 5071.15,
+        "bars": 232,
+        "features": {
+          "magnitude": 0.7894,
+          "recency": 0.994,
+          "prominence": 0.9747,
+          "cleanliness": 0.1061,
+          "round_number": 0.5289,
+          "duration": 10.6,
+          "structure_alignment": 1.0,
+          "scale_confluence": 0.25
+        },
+        "score": -2.7435,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_BTC-USD_1M",
+      "metrics": {
+        "high_price_err_atr": 1.9586,
+        "low_price_err_atr": 2.3201,
+        "high_time_err_bars": 57,
+        "low_time_err_bars": 47,
+        "mean_fib_err_frac": 0.6564,
+        "price_agree": 0.0139,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0046
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 84,
+          "timestamp": "2024-08-01T00:00:00+00:00",
+          "price": 49000.0,
+          "kind": "low",
+          "prominence": 4.6704
+        },
+        "end": {
+          "index": 101,
+          "timestamp": "2026-01-01T00:00:00+00:00",
+          "price": 97924.49,
+          "kind": "high",
+          "prominence": 2.2461
+        },
+        "direction": "up",
+        "price_range": 48924.49,
+        "bars": 17,
+        "features": {
+          "magnitude": 0.2819,
+          "recency": 0.9619,
+          "prominence": 0.939,
+          "cleanliness": 0.131,
+          "round_number": 0.9245,
+          "duration": 0.15,
+          "structure_alignment": 0.75,
+          "scale_confluence": 0.5
+        },
+        "score": 3.135,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_BTC-USD_1w",
+      "metrics": {
+        "high_price_err_atr": 1.2002,
+        "low_price_err_atr": 1.6857,
+        "high_time_err_bars": 112,
+        "low_time_err_bars": 37,
+        "mean_fib_err_frac": 0.0661,
+        "price_agree": 0.0558,
+        "time_agree": 0.0,
+        "fib_agree": 0.0367,
+        "agreement": 0.0308
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 299,
+          "timestamp": "2023-05-08T00:00:00+00:00",
+          "price": 25811.46,
+          "kind": "low",
+          "prominence": 1.7435
+        },
+        "end": {
+          "index": 455,
+          "timestamp": "2026-05-04T00:00:00+00:00",
+          "price": 82850.0,
+          "kind": "high",
+          "prominence": 1.6248
+        },
+        "direction": "up",
+        "price_range": 57038.54,
+        "bars": 156,
+        "features": {
+          "magnitude": 0.6378,
+          "recency": 0.9934,
+          "prominence": 0.6869,
+          "cleanliness": 0.1117,
+          "round_number": 0.6615,
+          "duration": 6.8,
+          "structure_alignment": 0.5,
+          "scale_confluence": 0.0
+        },
+        "score": -1.6974,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_BTC-USD_4h",
+      "metrics": {
+        "high_price_err_atr": 4.2781,
+        "low_price_err_atr": 12.1337,
+        "high_time_err_bars": 294,
+        "low_time_err_bars": 109,
+        "mean_fib_err_frac": 1.2415,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 304,
+          "timestamp": "2026-04-25T16:00:00+00:00",
+          "price": 77140.23,
+          "kind": "low",
+          "prominence": 1.4051
+        },
+        "end": {
+          "index": 495,
+          "timestamp": "2026-05-27T12:00:00+00:00",
+          "price": 76174.15,
+          "kind": "high",
+          "prominence": 4.0155
+        },
+        "direction": "down",
+        "price_range": 966.08,
+        "bars": 191,
+        "features": {
+          "magnitude": 0.124,
+          "recency": 0.992,
+          "prominence": 0.8753,
+          "cleanliness": 0.0275,
+          "round_number": 0.6856,
+          "duration": 8.55,
+          "structure_alignment": 0.5,
+          "scale_confluence": 0.0
+        },
+        "score": -3.1362,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_ETH-USD_15m",
+      "metrics": {
+        "high_price_err_atr": 2.4739,
+        "low_price_err_atr": 17.0478,
+        "high_time_err_bars": 89,
+        "low_time_err_bars": 339,
+        "mean_fib_err_frac": 3.5978,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 320,
+          "timestamp": "2026-05-26T10:30:00+00:00",
+          "price": 2137.29,
+          "kind": "high",
+          "prominence": 6.3288
+        },
+        "end": {
+          "index": 496,
+          "timestamp": "2026-05-28T06:30:00+00:00",
+          "price": 1972.5,
+          "kind": "low",
+          "prominence": 2.4987
+        },
+        "direction": "down",
+        "price_range": 164.79,
+        "bars": 176,
+        "features": {
+          "magnitude": 0.9735,
+          "recency": 0.994,
+          "prominence": 0.9761,
+          "cleanliness": 0.244,
+          "round_number": 0.3521,
+          "duration": 7.8,
+          "structure_alignment": 1.0,
+          "scale_confluence": 0.25
+        },
+        "score": -0.8267,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_ETH-USD_1d",
+      "metrics": {
+        "high_price_err_atr": 0.4918,
+        "low_price_err_atr": 16.7425,
+        "high_time_err_bars": 427,
+        "low_time_err_bars": 219,
+        "mean_fib_err_frac": 1.9725,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 294,
+          "timestamp": "2025-11-04T00:00:00+00:00",
+          "price": 3057.0,
+          "kind": "low",
+          "prominence": 3.6612
+        },
+        "end": {
+          "index": 496,
+          "timestamp": "2026-05-25T00:00:00+00:00",
+          "price": 2141.98,
+          "kind": "high",
+          "prominence": 2.2722
+        },
+        "direction": "down",
+        "price_range": 915.02,
+        "bars": 202,
+        "features": {
+          "magnitude": 0.83,
+          "recency": 0.994,
+          "prominence": 0.9021,
+          "cleanliness": 0.0963,
+          "round_number": 0.1502,
+          "duration": 9.1,
+          "structure_alignment": 1.0,
+          "scale_confluence": 0.25
+        },
+        "score": -1.9318,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_ETH-USD_1M",
+      "metrics": {
+        "high_price_err_atr": 1.7279,
+        "low_price_err_atr": 0.4034,
+        "high_time_err_bars": 5,
+        "low_time_err_bars": 10,
+        "mean_fib_err_frac": 0.3598,
+        "price_agree": 0.1187,
+        "time_agree": 0.0821,
+        "fib_agree": 0.0,
+        "agreement": 0.0669
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 92,
+          "timestamp": "2025-04-01T00:00:00+00:00",
+          "price": 1385.05,
+          "kind": "low",
+          "prominence": 3.3087
+        },
+        "end": {
+          "index": 96,
+          "timestamp": "2025-08-01T00:00:00+00:00",
+          "price": 4956.78,
+          "kind": "high",
+          "prominence": 3.5636
+        },
+        "direction": "up",
+        "price_range": 3571.73,
+        "bars": 4,
+        "features": {
+          "magnitude": 0.3775,
+          "recency": 0.9143,
+          "prominence": 0.9376,
+          "cleanliness": 0.9683,
+          "round_number": 0.4183,
+          "duration": 0.8,
+          "structure_alignment": 0.75,
+          "scale_confluence": 0.5
+        },
+        "score": 3.4445,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_ETH-USD_1w",
+      "metrics": {
+        "high_price_err_atr": 3.4017,
+        "low_price_err_atr": 1.8807,
+        "high_time_err_bars": 214,
+        "low_time_err_bars": 69,
+        "mean_fib_err_frac": 0.0958,
+        "price_agree": 0.0051,
+        "time_agree": 0.0,
+        "fib_agree": 0.0083,
+        "agreement": 0.0045
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 321,
+          "timestamp": "2023-10-09T00:00:00+00:00",
+          "price": 1521.0,
+          "kind": "low",
+          "prominence": 2.6371
+        },
+        "end": {
+          "index": 455,
+          "timestamp": "2026-05-04T00:00:00+00:00",
+          "price": 2423.74,
+          "kind": "high",
+          "prominence": 1.3433
+        },
+        "direction": "up",
+        "price_range": 902.74,
+        "bars": 134,
+        "features": {
+          "magnitude": 0.2594,
+          "recency": 0.9934,
+          "prominence": 0.7595,
+          "cleanliness": 0.0301,
+          "round_number": 0.5526,
+          "duration": 5.7,
+          "structure_alignment": 0.75,
+          "scale_confluence": 0.75
+        },
+        "score": -0.149,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_ETH-USD_30m",
+      "metrics": {
+        "high_price_err_atr": 14.5466,
+        "low_price_err_atr": 2.4892,
+        "high_time_err_bars": 452,
+        "low_time_err_bars": 249,
+        "mean_fib_err_frac": 0.883,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 281,
+          "timestamp": "2026-05-23T22:30:00+00:00",
+          "price": 2102.65,
+          "kind": "low",
+          "prominence": 3.2963
+        },
+        "end": {
+          "index": 496,
+          "timestamp": "2026-05-28T10:00:00+00:00",
+          "price": 1998.4,
+          "kind": "high",
+          "prominence": 1.3269
+        },
+        "direction": "down",
+        "price_range": 104.25,
+        "bars": 215,
+        "features": {
+          "magnitude": 0.7702,
+          "recency": 0.994,
+          "prominence": 0.8197,
+          "cleanliness": 0.1263,
+          "round_number": 0.9575,
+          "duration": 9.75,
+          "structure_alignment": 0.5,
+          "scale_confluence": 0.0
+        },
+        "score": -3.2225,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_ETH-USD_4h",
+      "metrics": {
+        "high_price_err_atr": 7.8368,
+        "low_price_err_atr": 2.2922,
+        "high_time_err_bars": 85,
+        "low_time_err_bars": 116,
+        "mean_fib_err_frac": 0.8958,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 295,
+          "timestamp": "2026-04-24T04:00:00+00:00",
+          "price": 2300.22,
+          "kind": "low",
+          "prominence": 1.0874
+        },
+        "end": {
+          "index": 495,
+          "timestamp": "2026-05-27T12:00:00+00:00",
+          "price": 2097.4,
+          "kind": "high",
+          "prominence": 4.3492
+        },
+        "direction": "down",
+        "price_range": 202.82,
+        "bars": 200,
+        "features": {
+          "magnitude": 0.6065,
+          "recency": 0.992,
+          "prominence": 0.8762,
+          "cleanliness": 0.093,
+          "round_number": 0.9718,
+          "duration": 9.0,
+          "structure_alignment": 0.5,
+          "scale_confluence": 0.25
+        },
+        "score": -2.6035,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_SOL-USD_15m",
+      "metrics": {
+        "high_price_err_atr": 12.5047,
+        "low_price_err_atr": 1.6723,
+        "high_time_err_bars": 162,
+        "low_time_err_bars": 28,
+        "mean_fib_err_frac": 2.0882,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 308,
+          "timestamp": "2026-05-26T07:30:00+00:00",
+          "price": 84.1,
+          "kind": "low",
+          "prominence": 2.5962
+        },
+        "end": {
+          "index": 497,
+          "timestamp": "2026-05-28T06:45:00+00:00",
+          "price": 81.12,
+          "kind": "high",
+          "prominence": 1.4726
+        },
+        "direction": "down",
+        "price_range": 2.98,
+        "bars": 189,
+        "features": {
+          "magnitude": 0.6314,
+          "recency": 0.996,
+          "prominence": 0.7687,
+          "cleanliness": 0.1047,
+          "round_number": 0.78,
+          "duration": 8.45,
+          "structure_alignment": 0.25,
+          "scale_confluence": 0.5
+        },
+        "score": -2.3827,
+        "status": "provisional"
+      }
+    },
+    {
+      "label": "Bitfinex_SOL-USD_1h",
+      "metrics": {
+        "high_price_err_atr": 10.6592,
+        "low_price_err_atr": 15.2478,
+        "high_time_err_bars": 236,
+        "low_time_err_bars": 461,
+        "mean_fib_err_frac": 4.084,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 276,
+          "timestamp": "2026-05-19T00:00:00+00:00",
+          "price": 85.97,
+          "kind": "high",
+          "prominence": 1.8568
+        },
+        "end": {
+          "index": 496,
+          "timestamp": "2026-05-28T04:00:00+00:00",
+          "price": 80.0,
+          "kind": "low",
+          "prominence": 3.5877
+        },
+        "direction": "down",
+        "price_range": 5.97,
+        "bars": 220,
+        "features": {
+          "magnitude": 0.6504,
+          "recency": 0.994,
+          "prominence": 0.8767,
+          "cleanliness": 0.0715,
+          "round_number": 0.97,
+          "duration": 10.0,
+          "structure_alignment": 0.75,
+          "scale_confluence": 0.5
+        },
+        "score": -2.5366,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "Bitfinex_SOL-USD_30m",
+      "metrics": {
+        "high_price_err_atr": 5.4148,
+        "low_price_err_atr": 5.3972,
+        "high_time_err_bars": 166,
+        "low_time_err_bars": 43,
+        "mean_fib_err_frac": 0.592,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 277,
+          "timestamp": "2026-05-23T21:00:00+00:00",
+          "price": 87.5,
+          "kind": "high",
+          "prominence": 4.4559
+        },
+        "end": {
+          "index": 488,
+          "timestamp": "2026-05-28T06:30:00+00:00",
+          "price": 80.53,
+          "kind": "low",
+          "prominence": 1.3537
+        },
+        "direction": "down",
+        "price_range": 6.97,
+        "bars": 211,
+        "features": {
+          "magnitude": 0.8412,
+          "recency": 0.978,
+          "prominence": 0.8962,
+          "cleanliness": 0.1221,
+          "round_number": 0.03,
+          "duration": 9.55,
+          "structure_alignment": 0.75,
+          "scale_confluence": 0.5
+        },
+        "score": -2.2563,
+        "status": "confirmed"
+      }
+    }
+  ]
+}

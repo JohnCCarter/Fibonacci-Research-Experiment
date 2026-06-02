@@ -1,0 +1,39 @@
+{
+  "exchange": "bitfinex",
+  "symbol": "BTC/USD",
+  "timeframe": "1d",
+  "high": {
+    "timestamp": "2015-11-04T00:00:00+00:00",
+    "price": 504.0
+  },
+  "low": {
+    "timestamp": "2015-11-11T00:00:00+00:00",
+    "price": 300.28
+  },
+  "legs": [
+    {
+      "high": {
+        "timestamp": "2015-11-04T00:00:00+00:00",
+        "price": 504.0
+      },
+      "low": {
+        "timestamp": "2015-11-11T00:00:00+00:00",
+        "price": 300.28
+      },
+      "id": "leg_1"
+    },
+    {
+      "high": {
+        "timestamp": "2015-11-30T00:00:00+00:00",
+        "price": 384.99
+      },
+      "low": {
+        "timestamp": "2015-11-25T00:00:00+00:00",
+        "price": 316.02
+      },
+      "id": "leg_2"
+    }
+  ],
+  "created_at": "2026-06-01T16:14:21.448049+00:00",
+  "source": "human"
+}

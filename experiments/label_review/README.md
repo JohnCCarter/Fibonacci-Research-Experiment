@@ -11,7 +11,9 @@ label_review/
   packs/            # PNG review-paket (review_pack)
 ```
 
-Äldre batchar och temporära mappar → `archive/experiments/label_review/` (inte under denna mapp).
+Äldre batchar ligger i `archive/experiments/label_review/`.
+Äldre review-exporter ligger i `archive/experiments/review/`.
+Aktiv checkpoint just nu: `batches/2026-06-01_hypothesis-a-btc-1d/`.
 
 ## Skapa ny batch
 
@@ -19,4 +21,4 @@ label_review/
 uv run python -m fibengine.labeling.batch --batch-id 2026-05-28_round7 --note "beskrivning"
 ```
 
-Se `REPO_POLICY.md` §5 för vad som ska sparas/städas.
+Se `repository-layout-policy.md` §5 för vad som ska sparas/städas.
