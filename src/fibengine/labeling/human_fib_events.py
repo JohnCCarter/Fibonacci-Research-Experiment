@@ -60,6 +60,12 @@ def swing_from_annotation(df: pd.DataFrame, ann: HumanFibAnnotation) -> Swing:
     """
     a_idx = _bar_index(df, ann.anchor_a.time)
     b_idx = _bar_index(df, ann.anchor_b.time)
+    if a_idx > b_idx:
+        raise ValueError(
+            "Human fib anchors must be chronological: "
+            f"anchor_a({ann.anchor_a.time}) is after anchor_b({ann.anchor_b.time}). "
+            "Re-save the annotation from labeling.tool or swap anchors in the JSON."
+        )
     start = Pivot(
         index=a_idx,
         timestamp=df.index[a_idx],

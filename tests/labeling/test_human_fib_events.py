@@ -69,6 +69,16 @@ def test_swing_reproduces_human_levels():
         assert derived[lvl.ratio] == pytest.approx(lvl.price)
 
 
+def test_raises_on_reversed_anchor_time_order():
+    df = _df(RISE)
+    # Invalid annotation order: anchor_a is later than anchor_b.
+    a = FibAnchor(df.index[10].isoformat(), float(df["high"].iloc[10]))
+    b = FibAnchor(df.index[0].isoformat(), float(df["low"].iloc[0]))
+    ann = make_annotation(symbol="BTC/USD", timeframe="1h", anchor_a=a, anchor_b=b)
+    with pytest.raises(ValueError, match="anchors must be chronological"):
+        swing_from_annotation(df, ann)
+
+
 def test_continuation_break_through_level():
     stream = _stream_for_half(RISE + [118, 116, 114, 112, 110, 108, 106])
     assert len(stream.events) == 1
