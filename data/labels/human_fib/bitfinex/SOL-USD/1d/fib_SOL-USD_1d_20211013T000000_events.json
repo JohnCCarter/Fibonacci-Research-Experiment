@@ -1,0 +1,330 @@
+{
+  "fib_id": "fib_SOL-USD_1d_20211013T000000",
+  "symbol": "SOL/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "direction": "up",
+  "anchor_a": {
+    "time": "2021-10-13T00:00:00+00:00",
+    "price": 144.7
+  },
+  "anchor_b": {
+    "time": "2021-10-17T00:00:00+00:00",
+    "price": 167.44
+  },
+  "source": "human_fib_events",
+  "created_at": "2026-06-02T12:04:54.801882+00:00",
+  "config": {
+    "levels": [],
+    "touch_tolerance_atr": 0.1,
+    "forward_window": 5,
+    "acceptance_closes": 2,
+    "immediate_rejection_bars": 2,
+    "debounce_bars": 3
+  },
+  "n_events": 19,
+  "levels": [
+    {
+      "level": "0.236",
+      "price": 162.0734,
+      "events": [
+        {
+          "event_bar": "2021-10-18T00:00:00+00:00",
+          "bar_index": 235,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 2,
+            "max_penetration_atr": 2.5476
+          }
+        },
+        {
+          "event_bar": "2021-12-11T00:00:00+00:00",
+          "bar_index": 289,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 4,
+            "max_penetration_atr": 0.348
+          }
+        },
+        {
+          "event_bar": "2022-01-05T00:00:00+00:00",
+          "bar_index": 314,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 1.938
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.382",
+      "price": 158.7533,
+      "events": [
+        {
+          "event_bar": "2021-10-18T00:00:00+00:00",
+          "bar_index": 235,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "failure_candidate",
+          "note": "Accepted beyond level then reversed back across it",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 2,
+            "closes_back": 4,
+            "max_penetration_atr": 0.2024
+          }
+        },
+        {
+          "event_bar": "2021-12-13T00:00:00+00:00",
+          "bar_index": 291,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "failure_candidate",
+          "note": "Accepted beyond level then reversed back across it",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 5,
+            "max_penetration_atr": 0.1844
+          }
+        },
+        {
+          "event_bar": "2022-01-05T00:00:00+00:00",
+          "bar_index": 314,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 1.6921
+          }
+        },
+        {
+          "event_bar": "2022-01-13T00:00:00+00:00",
+          "bar_index": 322,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.5",
+      "price": 156.07,
+      "events": [
+        {
+          "event_bar": "2021-10-18T00:00:00+00:00",
+          "bar_index": 235,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 4,
+            "max_penetration_atr": 0.0107
+          }
+        },
+        {
+          "event_bar": "2021-12-13T00:00:00+00:00",
+          "bar_index": 291,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 5,
+            "max_penetration_atr": 0.0467
+          }
+        },
+        {
+          "event_bar": "2022-01-05T00:00:00+00:00",
+          "bar_index": 314,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 1.4934
+          }
+        },
+        {
+          "event_bar": "2022-01-13T00:00:00+00:00",
+          "bar_index": 322,
+          "touch_type": "wick_above",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.618",
+      "price": 153.3867,
+      "events": [
+        {
+          "event_bar": "2021-10-19T00:00:00+00:00",
+          "bar_index": 236,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2021-12-13T00:00:00+00:00",
+          "bar_index": 291,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 5,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2022-01-05T00:00:00+00:00",
+          "bar_index": 314,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 0,
+            "max_penetration_atr": 1.2948
+          }
+        },
+        {
+          "event_bar": "2022-01-12T00:00:00+00:00",
+          "bar_index": 321,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.786",
+      "price": 149.5664,
+      "events": [
+        {
+          "event_bar": "2021-12-13T00:00:00+00:00",
+          "bar_index": 291,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2022-01-05T00:00:00+00:00",
+          "bar_index": 314,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 1,
+            "max_penetration_atr": 1.0119
+          }
+        },
+        {
+          "event_bar": "2022-01-12T00:00:00+00:00",
+          "bar_index": 321,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "failure_candidate",
+          "note": "Accepted beyond level then reversed back across it",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 5,
+            "max_penetration_atr": 0.1421
+          }
+        }
+      ]
+    },
+    {
+      "level": "1",
+      "price": 144.7,
+      "events": [
+        {
+          "event_bar": "2022-01-05T00:00:00+00:00",
+          "bar_index": 314,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 2,
+            "max_penetration_atr": 0.6516
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "fib_id": "fib_ETH-USD_1d_20180124T000000",
+  "symbol": "ETH/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "direction": "up",
+  "anchor_a": {
+    "time": "2018-01-24T00:00:00+00:00",
+    "price": 952.03
+  },
+  "anchor_b": {
+    "time": "2018-01-25T00:00:00+00:00",
+    "price": 1102.4
+  },
+  "source": "human_fib_events",
+  "created_at": "2026-06-02T12:04:54.499622+00:00",
+  "config": {
+    "levels": [],
+    "touch_tolerance_atr": 0.1,
+    "forward_window": 5,
+    "acceptance_closes": 2,
+    "immediate_rejection_bars": 2,
+    "debounce_bars": 3
+  },
+  "n_events": 11,
+  "levels": [
+    {
+      "level": "0.236",
+      "price": 1066.9127,
+      "events": [
+        {
+          "event_bar": "2018-01-26T00:00:00+00:00",
+          "bar_index": 681,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 1,
+            "max_penetration_atr": 1.2577
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.382",
+      "price": 1044.9587,
+      "events": [
+        {
+          "event_bar": "2018-01-26T00:00:00+00:00",
+          "bar_index": 681,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 5,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.5",
+      "price": 1027.215,
+      "events": [
+        {
+          "event_bar": "2018-01-26T00:00:00+00:00",
+          "bar_index": 681,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2018-01-31T00:00:00+00:00",
+          "bar_index": 686,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 1,
+            "max_penetration_atr": 2.429
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.618",
+      "price": 1009.4713,
+      "events": [
+        {
+          "event_bar": "2018-01-26T00:00:00+00:00",
+          "bar_index": 681,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2018-02-01T00:00:00+00:00",
+          "bar_index": 687,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 1,
+            "max_penetration_atr": 2.2283
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.786",
+      "price": 984.2092,
+      "events": [
+        {
+          "event_bar": "2018-01-26T00:00:00+00:00",
+          "bar_index": 681,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2018-02-01T00:00:00+00:00",
+          "bar_index": 687,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 1,
+            "max_penetration_atr": 2.0472
+          }
+        },
+        {
+          "event_bar": "2018-02-17T00:00:00+00:00",
+          "bar_index": 703,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 5,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "1",
+      "price": 952.03,
+      "events": [
+        {
+          "event_bar": "2018-02-02T00:00:00+00:00",
+          "bar_index": 688,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 1,
+            "max_penetration_atr": 1.7018
+          }
+        },
+        {
+          "event_bar": "2018-02-15T00:00:00+00:00",
+          "bar_index": 701,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 5,
+            "max_penetration_atr": 0.1744
+          }
+        }
+      ]
+    }
+  ]
+}

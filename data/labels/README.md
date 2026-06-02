@@ -15,6 +15,11 @@ labels/
 Exempel (ny default): `bitfinex/BTC-USD/1d.json`  
 Legacy Bitfinex-facit Ã¤r arkiverat under `archive/data_labels_Bitfinex/labels/`.
 
+## Aktiva mappar (Bitfinex)
+
+- Swing-facit: `data/labels/bitfinex/{symbol}/{timeframe}.json`
+- Human-fib annoteringar: `data/labels/human_fib/bitfinex/{symbol}/{timeframe}/{fib_id}.json`
+
 ## Index
 
 - `INDEX.md` â€” tabell Ã¶ver alla labels (path, exchange, symbol, timeframe).

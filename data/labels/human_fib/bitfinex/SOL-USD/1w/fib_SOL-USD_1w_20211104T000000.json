@@ -1,0 +1,44 @@
+{
+  "fib_id": "fib_SOL-USD_1w_20211104T000000",
+  "symbol": "SOL/USD",
+  "timeframe": "1w",
+  "exchange": "bitfinex",
+  "created_by": "human",
+  "source": "manual_labeling_tool",
+  "anchor_a": {
+    "time": "2021-11-04T00:00:00+00:00",
+    "price": 247.88
+  },
+  "anchor_b": {
+    "time": "2021-11-18T00:00:00+00:00",
+    "price": 200.3
+  },
+  "direction": "down",
+  "created_at": "2026-06-02T13:26:37.812333+00:00",
+  "levels": [
+    {
+      "ratio": 0.236,
+      "price": 211.52888
+    },
+    {
+      "ratio": 0.382,
+      "price": 218.47556
+    },
+    {
+      "ratio": 0.5,
+      "price": 224.09
+    },
+    {
+      "ratio": 0.618,
+      "price": 229.70444
+    },
+    {
+      "ratio": 0.786,
+      "price": 237.69788
+    },
+    {
+      "ratio": 1.0,
+      "price": 247.88
+    }
+  ]
+}

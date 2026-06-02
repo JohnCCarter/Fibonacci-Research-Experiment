@@ -1,0 +1,103 @@
+{
+  "fib_id": "fib_BTC-USD_1d_20260514T000000",
+  "symbol": "BTC/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "direction": "down",
+  "anchor_a": {
+    "time": "2026-05-14T00:00:00+00:00",
+    "price": 82010.0
+  },
+  "anchor_b": {
+    "time": "2026-05-23T00:00:00+00:00",
+    "price": 74027.0
+  },
+  "source": "human_fib_events",
+  "created_at": "2026-06-02T13:42:31.363656+00:00",
+  "config": {
+    "levels": [],
+    "touch_tolerance_atr": 0.1,
+    "forward_window": 5,
+    "acceptance_closes": 2,
+    "immediate_rejection_bars": 2,
+    "debounce_bars": 3
+  },
+  "n_events": 3,
+  "levels": [
+    {
+      "level": "0.236",
+      "price": 75910.988,
+      "events": [
+        {
+          "event_bar": "2026-05-26T00:00:00+00:00",
+          "bar_index": 992,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 0,
+            "max_penetration_atr": 1.2019
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.382",
+      "price": 77076.506,
+      "events": [
+        {
+          "event_bar": "2026-05-24T00:00:00+00:00",
+          "bar_index": 990,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 4,
+            "max_penetration_atr": 0.147
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.5",
+      "price": 78018.5,
+      "events": [
+        {
+          "event_bar": "2026-05-25T00:00:00+00:00",
+          "bar_index": 991,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.618",
+      "price": 78960.494,
+      "events": []
+    },
+    {
+      "level": "0.786",
+      "price": 80301.638,
+      "events": []
+    },
+    {
+      "level": "1",
+      "price": 82010.0,
+      "events": []
+    }
+  ]
+}

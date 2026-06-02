@@ -1,0 +1,44 @@
+{
+  "fib_id": "fib_ETH-USD_1d_20180902T000000",
+  "symbol": "ETH/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "created_by": "human",
+  "source": "manual_labeling_tool",
+  "anchor_a": {
+    "time": "2018-09-02T00:00:00+00:00",
+    "price": 300.43
+  },
+  "anchor_b": {
+    "time": "2018-09-12T00:00:00+00:00",
+    "price": 167.32111027
+  },
+  "direction": "down",
+  "created_at": "2026-06-02T11:34:07.648486+00:00",
+  "levels": [
+    {
+      "ratio": 0.236,
+      "price": 198.73480825
+    },
+    {
+      "ratio": 0.382,
+      "price": 218.16870615
+    },
+    {
+      "ratio": 0.5,
+      "price": 233.87555514
+    },
+    {
+      "ratio": 0.618,
+      "price": 249.58240412
+    },
+    {
+      "ratio": 0.786,
+      "price": 271.9446976
+    },
+    {
+      "ratio": 1.0,
+      "price": 300.43
+    }
+  ]
+}
