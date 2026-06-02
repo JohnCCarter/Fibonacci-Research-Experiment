@@ -8,6 +8,12 @@ mot de sparade nivåerna.
 kommer alltid från en människa. Ingen tuning, inga edge-påståenden, research-only
 (läses inte av motorn/eval/promotion).
 
+### Varför human-fib på 1d? (MTF-ursprung)
+
+Projektet startade på **1w**: H→L, fib-grid, några nivåträffar på veckobars. När **samma H/L-range** lades på **1d** syntes **fler** candle-interaktioner vid samma fib-nivåer — daily visar **HUR**, weekly visar **VAD**.
+
+Det ska stå som grund i [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) **§0 (läs först)**. Human-fib-filerna (`w`) är research-sättet att spara många sådana 1d-upplösta legs/gridar, inte ersättning för `1w.json`-facit.
+
 ---
 
 ## Skapa en annotering

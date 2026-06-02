@@ -1,5 +1,15 @@
 ﻿# AGENTS.md
 
+## Response style (read first)
+
+**Default: compact.** Short answers; no long reports; show what changed (not whole files); max **10** bullets; status updates = **blockers + next step** only.
+
+**Expand** when the user opts in (e.g. “förklara mer”, “det är ok att förklara”, “full rapport”) or when safety/correctness requires detail.
+
+Full spec: [docs/AGENT_RESPONSE_STYLE.md](docs/AGENT_RESPONSE_STYLE.md) · Cursor rule: `.cursor/rules/agent-response-style.mdc`
+
+---
+
 ## Cursor Cloud specific instructions
 
 ### Product
@@ -25,7 +35,7 @@ Optional local gate (same hooks as documented in README): `uv run pre-commit run
 
 ### Running the main pipeline (hello-world)
 
-1. **Candles** â€” `uv run python -m fibengine.data.fetch` caches OHLCV under `data/raw/` (gitignored). This needs outbound HTTPS to Bitfinex via CCXT. If the API is blocked in the VM, either request egress for `api.Bitfinex.com` or populate `data/raw/` manually before running pipelines that call `load_candles()`.
+1. **Candles** — `uv run python -m fibengine.data.fetch` caches OHLCV under `data/raw/` (gitignored). Cache is not auto-refreshed; use `--refresh`. Labeling set: `uv run python -m fibengine.data.fetch --labeling-set --refresh`. Needs outbound HTTPS to Bitfinex via CCXT. If the API is blocked in the VM, either request egress for `api.Bitfinex.com` or populate `data/raw/` manually before running pipelines that call `load_candles()`.
 2. **Experiment** â€” `uv run python -m fibengine.experiment` runs swing selection for all human labels in `data/labels/`, writes plots and `metrics.json` under `experiments/runs/experiment/<date>/<run_id>/`, and appends to `experiments/results/leaderboard.jsonl`.
 3. **Labeling worklist** â€” `uv run python -m fibengine.labeling.worklist` (no network).
 4. **Interactive labeler** â€” `uv run python -m fibengine.labeling.tool` needs a display/GUI backend (not typical in headless cloud VMs).
@@ -41,7 +51,8 @@ Optional local gate (same hooks as documented in README): `uv run pre-commit run
 
 ### Gotchas
 
-- `load_candles(..., fetch_if_missing=True)` will call the exchange when cache is missingâ€”failures look like CCXT `NetworkError` / SSL errors if egress is blocked.
+- `load_candles(..., fetch_if_missing=True)` only fetches when cache is missing (never refreshes). Re-run `fibengine.data.fetch --refresh` for up-to-date bars.
+- `load_candles(..., fetch_if_missing=True)` failures look like CCXT `NetworkError` / SSL errors if egress is blocked.
 - Long timeframes use higher `timeframe_limits` in `config/settings.yaml`; labels can be `out_of_window` if history is too short (see experiment logs).
 - Coverage gate is **60%** via pytest `addopts` in `pyproject.toml`; `labeling/tool.py` is omitted from coverage.
 

@@ -1,0 +1,12 @@
+---
+description: Default compact agent replies; expand only when user opts in
+alwaysApply: true
+---
+
+# Response style (repo default)
+
+Follow [docs/AGENT_RESPONSE_STYLE.md](../../docs/AGENT_RESPONSE_STYLE.md).
+
+**Default:** short answers; no long reports; diff/summary not full files; ≤10 bullets; status = blockers + next step only.
+
+**Expand** only if the user asks (e.g. "förklara mer", "det är ok att förklara", "full rapport") or a deep answer is required for correctness/safety.

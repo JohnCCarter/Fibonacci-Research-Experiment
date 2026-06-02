@@ -1,7 +1,7 @@
 # HTF → LTF: jobba oss ner med fiben (research protocol)
 
 **Status:** policy / facit-rutin (inte motor-promotion).  
-**Relaterat:** [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md), [RESEARCH_HANDOFF.md](RESEARCH_HANDOFF.md), [GitHub #14](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/14)
+**Relaterat:** [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) (**§0 — ursprung:** samma H/L på 1w vs 1d, fler nivåträffar på daily), [RESEARCH_HANDOFF.md](RESEARCH_HANDOFF.md), [GitHub #14](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/14)
 
 ---
 

@@ -16,6 +16,7 @@ Kurerad översikt. Nya reflektioner: `YYYY-MM-DD-<kort-beskrivning>.md` (se [REA
 | 2026-05-29 | [fib-multi-behavior-per-level](2026-05-29-fib-multi-behavior-per-level.md) | **finding** | behavior, events, #12 | Samma nivå → flera events; v3; realign → Hypothesis A spot-check |
 | 2026-06-01 | [hypothesis-a-spot-check-pilot](2026-06-01-hypothesis-a-spot-check-pilot.md) | run | #12, level_events, review | BTC 1d review_20260601T152524Z (40 events); labels pending |
 | 2026-06-01 | [human-fib-annotation-layer](2026-06-01-human-fib-annotation-layer.md) | decision | labeling, fib, behavior | Human-fib ground truth + candidates (emit-only); atoms vs path |
+| 2026-06-02 | [mtf-origin-1w-to-1d](2026-06-02-mtf-origin-1w-to-1d.md) | **finding** | MTF, 1w, 1d, origin | Chart-ursprung: samma H/L på 1d → fler nivåträffar; VAD vs HUR |
 
 **Djupare guider:**
 
@@ -26,7 +27,7 @@ Kurerad översikt. Nya reflektioner: `YYYY-MM-DD-<kort-beskrivning>.md` (se [REA
 ## Ämnesindex (snabbnavigering)
 
 - **labeling:** worklist, machine-labeling, btc-1w-machine-approved, mtf-daily-fib-research → [MACHINE_LABELING.md](../../docs/MACHINE_LABELING.md), [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md)
-- **MTF / 1w / 1d:** mtf-daily-fib-research, fib-multi-behavior-per-level → [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md), [BEHAVIOR_FACIT.md](../../docs/BEHAVIOR_FACIT.md)
+- **MTF / 1w / 1d:** mtf-origin-1w-to-1d, mtf-daily-fib-research, fib-multi-behavior-per-level → [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md) §0, [BEHAVIOR_FACIT.md](../../docs/BEHAVIOR_FACIT.md)
 - **behavior / events:** fib-multi-behavior-per-level, human-fib-annotation-layer → [HUMAN_FIB_ANNOTATION.md](../../docs/HUMAN_FIB_ANNOTATION.md)
 - **validate / backtest:** real-data-matrix, premortem-mitigations
 - **process / risk:** branch-premortem

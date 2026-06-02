@@ -1,5 +1,7 @@
 # Contributing / quality gate
 
+AI-agenter i repot: se [AGENT_RESPONSE_STYLE.md](AGENT_RESPONSE_STYLE.md) (korta svar som default).
+
 Kör detta **innan commit och push** (lokalt samma som CI).
 
 ## Setup (en gång per klon)

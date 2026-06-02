@@ -1,6 +1,6 @@
 ﻿# Research handoff (start here for agents)
 
-**Last updated:** 2026-05-31  
+**Last updated:** 2026-06-02
 **Scope anchor:** [GitHub issue #12](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/12) â€” research direction, not an implementation ticket.
 
 ---
@@ -74,6 +74,31 @@ bÃ¥da deterministiska och research-only (motorn lÃ¤ser dem inte):
 Bryggan: `swing.start = anchor_a` (1.0), `swing.end = anchor_b` (0.0) â†’ identiska nivÃ¥priser;
 fÃ¶nstret skannas efter legens slut. **Candidates Ã¤r aldrig facit.** Lagras under
 `data/labels/human_fib/.../`. Detaljer: [HUMAN_FIB_ANNOTATION.md](HUMAN_FIB_ANNOTATION.md).
+
+---
+
+## Origin: why MTF exists (1w H/L, same range on 1d)
+
+**Read first:** [MTF_DAILY_RESEARCH.md](MTF_DAILY_RESEARCH.md) **§0** · reflection: [2026-06-02-mtf-origin-1w-to-1d](../premortem/reflections/2026-06-02-mtf-origin-1w-to-1d.md)
+
+The project did **not** start as “label many timeframes in parallel.” It started on **1w**:
+
+1. Draw **H → L** on the weekly chart and place fib on that range (**VAD** — which impulse to measure).
+2. On 1w you see price reach **some** fib levels on **some** weekly candles (few bars per period).
+3. Put the **same H/L range** (same fib grid) on **1d** in the labeling tool → you suddenly see **many more** daily candles touching, crossing, or reacting at those levels (**HUR** — how price moves in detail).
+
+| TF | Question | What you see |
+|----|----------|--------------|
+| **1w** | **VAD** — which swing / range? | Coarse: which levels matter for the impulse |
+| **1d** | **HUR** — how does price behave? | More bars → more level interactions and legs |
+
+**Implications for agents:**
+
+- Weekly `1w.json` = range/grid context, not a substitute for daily behavior facit.
+- Daily needs its own resolution: `legs[]`, `human_fib` (`w`), `*_events.json` — not “copy weekly H/L once and done.”
+- `experiment` / motor swing recall does **not** test this observation; it compares one global swing to `leg_1`.
+
+**One-liner:** *Same fib-range on 1w shows VAD; on 1d it shows HUR — more candles, more level interactions.*
 
 ---
 

@@ -10,10 +10,43 @@ Relaterat:
 - [LABELING_TOOL.md](LABELING_TOOL.md) â€” verktyg, tangenter, begrÃ¤nsningar
 - [MACHINE_LABELING.md](MACHINE_LABELING.md) â€” motor-swing vs chartfÃ¶nster
 - `config/settings.yaml` â€” `labeling.*` flags
+- [HUMAN_FIB_ANNOTATION.md](HUMAN_FIB_ANNOTATION.md) â€” manuell fib (`w`) och kandidat-events
 
 ---
 
-## 0. VarfÃ¶r det inte gick frÃ¥n bÃ¶rjan â€” och hur vi lÃ¶ste det
+## 0. Upptäckten som startade MTF-arbetet (läs först)
+
+**Allt började på 1w.** Vi drog **H till L** på veckochartet och ritade fib-nivåer på den range som facit.
+
+**Vad vi såg på 1w:** På weekly-candles kunde vi se att priset **vid vissa tillfällen** nådde eller reagerade vid **vissa** fib-nivåer (t.ex. 0.382, 0.5, 0.618). Det var redan användbart — men chartet har **få bars** per samma kalenderperiod.
+
+**Samma H och L på 1d:** När vi lade **samma facit-range** (samma weekly H/L-priser, samma fib-grid) på **daily**-timeframe i labeling tool kunde vi plötsligt se **mycket mer**:
+
+- fler **daily-candles** som **rör sig mot, touch:ar eller korsar** fib-nivåerna;
+- fler **tillfällen** och **segment** (inte bara "en touch per nivå");
+- tydligare **HUR** priset beter sig **mellan** ankarna — inte bara **VAD** range som ska mätas.
+
+Det är **inte** samma sak som att weekly och daily alltid ska ha **identiska bar-index** för H/L. Weekly-snap och daily-snap kan ligga på olika dagar (särskilt same-candle weekly → se [LABELING_TOOL.md](LABELING_TOOL.md) §3A). Poängen är:
+
+| Timeframe | Roll | Vad du ser |
+|-----------|------|------------|
+| **1w** | **VAD** — vilken stor swing / vilken fib-range? | Grov bild: vilka nivåer som är relevanta för impulsen |
+| **1d** | **HUR** — hur rör sig priset i detalj? | Fler bars → **fler** observerbara nivåkontakter och legs inuti samma berättelse |
+
+**Konsekvens för repot (skall inte glömmas bort):**
+
+1. **Weekly-facit** (`…/1w.json`) = range + grid — *vilken* fib ska vi tala om?
+2. **Daily** = egna **legs** (`…/1d.json`, `legs[]`) och/eller många **human-fib** (`w` → `human_fib/…`) — *hur* priset faktiskt rör sig vid nivåerna.
+3. Att bara titta på 1w räcker **inte** för beteendefacit; att kopiera weekly H/L som enda daily-leg räcker **inte** — daily behöver egen upplösning.
+4. Experiment som jämför **en** motor-swing mot **leg_1** mäter **inte** den här insikten; den mäter swing-val, inte "fler nivåträffar på 1d".
+
+**Kort formulering:** *Samma fib-range på 1w visar VAD; samma range på 1d visar HUR — med fler candles ser du fler nivåinteraktioner.*
+
+**Reflection:** [premortem/reflections/2026-06-02-mtf-origin-1w-to-1d.md](../premortem/reflections/2026-06-02-mtf-origin-1w-to-1d.md)
+
+---
+
+## 0A. VarfÃ¶r det inte gick frÃ¥n bÃ¶rjan â€” och hur vi lÃ¶ste det
 
 ### A. Flera fibs pÃ¥ daily syntes inte i repot (labeling tool)
 
