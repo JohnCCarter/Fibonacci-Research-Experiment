@@ -133,7 +133,9 @@ def run_reference_backtest_from_settings(settings: Settings | None = None) -> di
     from fibengine.data.loader import load_candles
 
     df = load_candles(settings.data)
-    records = walk_forward_selection(df, settings, settings.backtest.warmup_bars, settings.backtest.step)
+    records = walk_forward_selection(
+        df, settings, settings.backtest.warmup_bars, settings.backtest.step
+    )
     plans = build_reference_trade_plans(df, settings, records)
     return {
         "config_hash": settings.config_hash(),

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import pandera as pa
 import pandas as pd
+import pandera.pandas as pa
 
 _CANDLE_SCHEMA = pa.DataFrameSchema(
     columns={

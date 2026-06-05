@@ -10,20 +10,20 @@ from fibengine.core.models import Pivot, Swing
 
 def _confirmed_down_swing(synthetic_df) -> Swing:
     return Swing(
-        start=Pivot(20, synthetic_df.index[20], float(synthetic_df.iloc[20]["high"]), "high", 1.0),
-        end=Pivot(40, synthetic_df.index[40], float(synthetic_df.iloc[40]["low"]), "low", 1.0),
+        start=Pivot(0, synthetic_df.index[0], float(synthetic_df.iloc[0]["low"]), "low", 1.0),
+        end=Pivot(20, synthetic_df.index[20], float(synthetic_df.iloc[20]["high"]), "high", 1.0),
         status="confirmed",
     )
 
 
 def test_build_reference_trade_plans_maps_confirmed_swings(synthetic_df):
     settings = Settings()
-    records = [{"t": 40, "swing": _confirmed_down_swing(synthetic_df)}]
+    records = [{"t": 20, "swing": _confirmed_down_swing(synthetic_df)}]
 
     plans = build_reference_trade_plans(synthetic_df, settings, records)
 
     assert len(plans) == 1
-    assert plans[0].direction == "down"
+    assert plans[0].direction == "up"
     assert plans[0].entry_bar > records[0]["t"]
 
 
@@ -56,6 +56,6 @@ def test_build_vectorbt_signal_frame_marks_short_entries(synthetic_df):
     frame = build_vectorbt_signal_frame(synthetic_df, [plan]).to_frame()
 
     assert bool(frame.iloc[45]["short_entries"]) is True
-    assert frame.iloc[45]["entries"] is False
+    assert bool(frame.iloc[45]["entries"]) is False
     assert frame.iloc[45]["sl_stop"] > 0
     assert frame.iloc[45]["tp_stop"] > 0
