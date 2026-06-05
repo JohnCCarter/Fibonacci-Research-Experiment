@@ -14,6 +14,7 @@ Djupare styrning och ramverk utöver snabbstart.
 - `MACHINE_LABELING.md` — maskin-kandidater: motor-swing vs chartfönster (båda giltiga)
 - `LABELING_TOOL.md` — labeling GUI: begränsningar, redraw, säkra UI-ändringar
 - `HUMAN_FIB_ANNOTATION.md` — **manuell fib som ground truth** (`w` / CLI): nivå-beräkning, candle-interaktion (`above/below/touch/cross`), och behavior-candidates (`human_fib_events`: `rejection/continuation/failure/reaction`); ingen auto-fib
+- `research_wiki/` — persistent research-wiki: index, logg, koncept, beslut och review-insikter
 
 ## Aktiva label-ytor
 

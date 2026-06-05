@@ -1,0 +1,42 @@
+---
+description: Maintain the repo research wiki as a compounding LLM knowledge base
+alwaysApply: true
+---
+
+# Research Wiki Maintenance
+
+Follow `docs/research_wiki/` as the repo's persistent LLM-maintained wiki.
+
+## Read Before Substantial Work
+
+For research, architecture, labeling, review tooling, workflow, or non-trivial
+implementation tasks, first consult:
+
+- `docs/research_wiki/index.md`
+- `docs/research_wiki/log.md`
+- `docs/research_wiki/handoff.md`
+
+Use source docs, code, labels, experiment outputs, and GitHub issues as truth.
+Use wiki pages as synthesis and navigation.
+
+## Update After Meaningful Work
+
+After work that creates durable context, update the wiki before final response:
+
+- Add or update the smallest relevant page under `docs/research_wiki/`.
+- Update `docs/research_wiki/index.md` when pages are added, moved, or retired.
+- Append one entry to `docs/research_wiki/log.md`.
+- Update `docs/research_wiki/handoff.md` when current focus, next action,
+  blockers, or verification status changed.
+
+Skip wiki edits for trivial answers, status-only replies, or purely mechanical
+changes with no durable research or workflow context.
+
+## Guardrails
+
+- Link to source docs instead of copying them.
+- Keep pages small and within repo docs bounds.
+- Do not promote behavior from wiki notes.
+- Do not add auto-fib, trading signals, edge claims, ML behavior, or optimization
+  loops through wiki maintenance.
+- Keep `*_candidate` separate from human facit.
