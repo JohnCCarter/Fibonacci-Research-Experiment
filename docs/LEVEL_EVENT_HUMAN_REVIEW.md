@@ -23,8 +23,9 @@ and a review sheet (CSV + JSONL). The reviewer:
 3. Fills in three columns for that `review_id` in `review_sample.csv` (or the
    JSONL): `human_label`, `human_confidence`, `human_note`.
 
-Charts are intentionally simple (close-line by default, ~7×5in, dpi 130) so they
-load fast and read well on a small screen.
+Charts are intentionally context-first: the human fib leg, H/L anchors, and full
+fib stack are drawn before the event marker so the reviewer can orient on the
+original fib before judging the auto label.
 
 ## CLI usage
 
@@ -99,10 +100,14 @@ human_note`.
 
 ## How to read a chart
 
-- **Dashed blue line** — the fib level price.
-- **Orange marker / vertical line** — the event bar (the touch being judged).
-- **Purple ▲ / ▼** — swing start / end (the leg the fib is drawn from), when in view.
-- **Title** — symbol, timeframe, fib level, `auto_candidate`, event time.
+- **Purple arrow + label** — original human fib direction (`H -> L` or `L -> H`).
+- **High `*` / Low `*` labels** — human anchor prices used for the fib.
+- **Muted dashed horizontal levels** — the full fib stack for that human leg.
+- **Bold blue `ACTIVE` level** — the fib level price being reviewed.
+- **Orange marker / vertical line / callout** — event bar, event point,
+  `auto_candidate`, touch type, and approach side.
+- **Title** — symbol, timeframe, fib direction, active level, `auto_candidate`,
+  event time, and visible bar span.
 
 ## What this validates
 

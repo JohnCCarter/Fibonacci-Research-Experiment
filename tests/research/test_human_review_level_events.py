@@ -45,6 +45,36 @@ def _up_swing(df: pd.DataFrame, start: int = 0, end: int = 40) -> Swing:
     )
 
 
+def _down_review_row(df: pd.DataFrame) -> dict:
+    return {
+        "review_id": "BTC-USDT_1h_L0p618_s40_e70_b90_rej",
+        "symbol": "BTC/USDT",
+        "timeframe": "1h",
+        "exchange": "binance",
+        "fib_level": "0.618",
+        "fib_price": 138.658,
+        "event_bar": 90,
+        "event_time": df.index[90].isoformat(),
+        "auto_candidate": "rejection_candidate",
+        "touch_type": "wick_below",
+        "approach_side": "above",
+        "note": "Touched level and rejected back to the approach side",
+        "evidence_forward_bars": 5,
+        "evidence_closes_beyond": 0,
+        "evidence_closes_back": 3,
+        "evidence_max_penetration_atr": 0.2,
+        "swing_start_time": df.index[40].isoformat(),
+        "swing_end_time": df.index[70].isoformat(),
+        "swing_direction": "down",
+        "swing_start_bar": 40,
+        "swing_end_bar": 70,
+        "chart_path": "charts/BTC-USDT_1h_L0p618_s40_e70_b90_rej.png",
+        "human_label": "",
+        "human_confidence": "",
+        "human_note": "",
+    }
+
+
 def _settings() -> Settings:
     s = Settings()
     s.data.symbol = "BTC/USDT"
@@ -187,6 +217,51 @@ def test_render_chart_writes_nonempty_png(tmp_path):
     render_chart(df, rows[0], out, cfg)
     assert out.exists()
     assert out.stat().st_size > 0
+
+
+def test_fib_context_reconstructs_down_leg_and_expands_window():
+    df = _trend_df()
+    row = _down_review_row(df)
+    cfg = HumanReviewConfig(context_before=5, context_after=5)
+
+    anchors = hr._anchor_points(df, row)
+    lo, hi = hr._chart_window(df, row, cfg)
+    levels = hr._context_level_prices(row, anchors)
+
+    assert anchors["direction_label"] == "H -> L fib leg"
+    assert anchors["high"]["bar"] == 40
+    assert anchors["high"]["price"] == float(df["high"].iloc[40])
+    assert anchors["low"]["bar"] == 70
+    assert anchors["low"]["price"] == float(df["low"].iloc[70])
+    assert lo <= 40
+    assert hi >= 95
+    assert set(levels) >= {0.0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0}
+
+
+def test_render_chart_draws_fib_context_labels(monkeypatch, tmp_path):
+    df = _trend_df()
+    row = _down_review_row(df)
+    cfg = HumanReviewConfig(context_before=5, context_after=5)
+    out = tmp_path / "charts" / f"{row['review_id']}.png"
+    saved = {}
+    real_close = hr.plt.close
+
+    def capture_close(fig):
+        saved["fig"] = fig
+
+    monkeypatch.setattr(hr.plt, "close", capture_close)
+    render_chart(df, row, out, cfg)
+
+    fig = saved["fig"]
+    try:
+        texts = [text.get_text() for text in fig.axes[0].texts]
+        assert any("H -> L fib leg" in text for text in texts)
+        assert any("High * @" in text for text in texts)
+        assert any("Low * @" in text for text in texts)
+        assert any("ACTIVE 0.618" in text for text in texts)
+        assert any("rejection_candidate" in text for text in texts)
+    finally:
+        real_close(fig)
 
 
 def test_collect_candidates_single_mode_uses_selected_swing(monkeypatch):

@@ -81,6 +81,8 @@ _CANDIDATE_SHORT = {
     "failure_candidate": "fail",
 }
 
+_FIB_CONTEXT_LEVELS = (0.0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0)
+
 # Stabil kolumnordning för CSV/JSONL och REVIEW_INDEX.
 REVIEW_COLUMNS = [
     "review_id",
@@ -315,66 +317,182 @@ def _draw_candles(ax, sub: pd.DataFrame, lo: int) -> None:
             ax.vlines(x, body_lo, body_hi, color=color, lw=3.2, zorder=3)  # body (open-close)
 
 
-def _mark_swing_point(ax, df, bar_idx, lo, hi, *, marker, color, label) -> None:
-    """Markera en swing-punkt. Ligger den i fönstret ritas en markör vid dess pris;
-    annars ritas en kant-annotering med pil som pekar mot punkten utanför vyn."""
-    if lo <= bar_idx <= hi:
+def _anchor_points(df: pd.DataFrame, row: dict) -> dict:
+    """Reconstruct the human H/L anchors from the stored swing bars."""
+    start_bar = int(row["swing_start_bar"])
+    end_bar = int(row["swing_end_bar"])
+    direction = row["swing_direction"]
+    if direction == "up":
+        start_kind, end_kind = "L", "H"
+        low_bar, high_bar = start_bar, end_bar
+    else:
+        start_kind, end_kind = "H", "L"
+        high_bar, low_bar = start_bar, end_bar
+
+    high_price = float(df["high"].iloc[high_bar])
+    low_price = float(df["low"].iloc[low_bar])
+    return {
+        "start": {
+            "kind": start_kind,
+            "bar": start_bar,
+            "price": low_price if start_kind == "L" else high_price,
+        },
+        "end": {
+            "kind": end_kind,
+            "bar": end_bar,
+            "price": low_price if end_kind == "L" else high_price,
+        },
+        "high": {"kind": "H", "bar": high_bar, "price": high_price},
+        "low": {"kind": "L", "bar": low_bar, "price": low_price},
+        "direction_label": f"{start_kind} -> {end_kind} fib leg",
+    }
+
+
+def _chart_window(df: pd.DataFrame, row: dict, cfg: HumanReviewConfig) -> tuple[int, int]:
+    """Show the human fib range first, plus the event-specific bars."""
+    eb = int(row["event_bar"])
+    lo = min(eb - cfg.context_before, int(row["swing_start_bar"]), int(row["swing_end_bar"]))
+    hi = max(eb + cfg.context_after, int(row["swing_start_bar"]), int(row["swing_end_bar"]))
+    return max(0, lo), min(len(df) - 1, hi)
+
+
+def _context_level_prices(row: dict, anchors: dict) -> dict[float, float]:
+    """Prices for the visible fib stack; includes the active level even if non-standard."""
+    levels = set(_FIB_CONTEXT_LEVELS)
+    try:
+        levels.add(float(row["fib_level"]))
+    except (TypeError, ValueError):
+        pass
+
+    start_price = float(anchors["start"]["price"])
+    end_price = float(anchors["end"]["price"])
+    span = end_price - start_price
+    return {level: end_price - level * span for level in sorted(levels)}
+
+
+def _draw_fib_context(ax, df: pd.DataFrame, row: dict, lo: int, hi: int) -> None:
+    """Draw the human fib leg, full fib stack, and anchor labels before event layers."""
+    anchors = _anchor_points(df, row)
+    levels = _context_level_prices(row, anchors)
+    active_level = None
+    try:
+        active_level = float(row["fib_level"])
+    except (TypeError, ValueError):
+        pass
+
+    label_x = hi + max(1.0, (hi - lo + 1) * 0.012)
+    for level, price in levels.items():
+        is_active = active_level is not None and abs(level - active_level) < 1e-9
+        color = "tab:blue" if is_active else "0.55"
+        lw = 1.8 if is_active else 0.8
+        alpha = 0.95 if is_active else 0.45
+        ls = "-" if is_active else "--"
+        ax.axhline(
+            price,
+            color=color,
+            ls=ls,
+            lw=lw,
+            alpha=alpha,
+            zorder=4 if is_active else 1,
+            label=f"active fib {row['fib_level']} @ {price:g}" if is_active else None,
+        )
+        label = f"{level:g}"
+        if is_active:
+            label = f"ACTIVE {label}"
+        ax.text(
+            label_x,
+            price,
+            f" {label} @ {price:g}",
+            color=color,
+            va="center",
+            ha="left",
+            fontsize=8,
+            fontweight="bold" if is_active else "normal",
+            bbox=(
+                {"boxstyle": "round,pad=0.18", "fc": "white", "ec": color, "alpha": 0.78}
+                if is_active
+                else None
+            ),
+            zorder=6 if is_active else 2,
+        )
+
+    start = anchors["start"]
+    end = anchors["end"]
+    ax.annotate(
+        "",
+        xy=(end["bar"], end["price"]),
+        xytext=(start["bar"], start["price"]),
+        arrowprops={
+            "arrowstyle": "->",
+            "color": "tab:purple",
+            "lw": 2.0,
+            "alpha": 0.9,
+            "shrinkA": 8,
+            "shrinkB": 8,
+        },
+        zorder=5,
+    )
+    mid_x = (start["bar"] + end["bar"]) / 2
+    mid_y = (start["price"] + end["price"]) / 2
+    ax.text(
+        mid_x,
+        mid_y,
+        f" {anchors['direction_label']}\n direction: {row['swing_direction']}",
+        color="tab:purple",
+        fontsize=8,
+        fontweight="bold",
+        ha="center",
+        va="center",
+        bbox={"boxstyle": "round,pad=0.25", "fc": "white", "ec": "tab:purple", "alpha": 0.85},
+        zorder=7,
+    )
+
+    for key, marker, va in (("high", "*", "bottom"), ("low", "*", "top")):
+        anchor = anchors[key]
+        color = "darkgreen" if key == "high" else "darkred"
         ax.scatter(
-            [bar_idx],
-            [df["close"].iloc[bar_idx]],
+            [anchor["bar"]],
+            [anchor["price"]],
             color=color,
             marker=marker,
-            s=130,
+            s=180,
             edgecolors="black",
-            linewidths=0.6,
-            zorder=7,
-            label=label,
+            linewidths=0.7,
+            zorder=8,
+            label=f"{key.title()} anchor",
         )
-        return
-    # Utanför vyn: annotera vid närmaste kant.
-    edge_x = lo if bar_idx < lo else hi
-    arrow = "◀" if bar_idx < lo else "▶"
-    ax.annotate(
-        f"{arrow} {label} (bar {bar_idx})",
-        xy=(edge_x, df["close"].iloc[edge_x]),
-        xytext=(0.02 if bar_idx < lo else 0.98, 0.02),
-        textcoords="axes fraction",
-        ha="left" if bar_idx < lo else "right",
-        va="bottom",
-        fontsize=7,
-        color=color,
-        fontweight="bold",
-    )
+        ax.annotate(
+            f"{key.title()} * @ {anchor['price']:g}",
+            xy=(anchor["bar"], anchor["price"]),
+            xytext=(7, 12 if key == "high" else -16),
+            textcoords="offset points",
+            ha="left",
+            va=va,
+            fontsize=8,
+            fontweight="bold",
+            color=color,
+            bbox={"boxstyle": "round,pad=0.2", "fc": "white", "ec": color, "alpha": 0.82},
+            zorder=9,
+        )
 
 
 def render_chart(df: pd.DataFrame, row: dict, out_path: Path, cfg: HumanReviewConfig) -> Path:
     """Rendera en mobilvänlig PNG för ett event (candlesticks default, close-line-fallback).
 
-    Visar ±N barer runt event-baren, fib-nivån, en tydligt markerad event-bar samt
-    swing start/end (markör i vyn, annars kant-annotering)."""
-    eb = row["event_bar"]
-    lo = max(0, eb - cfg.context_before)
-    hi = min(len(df) - 1, eb + cfg.context_after)
+    Visar den mänskliga H/L- eller L/H-fibben först, därefter aktiv nivå och
+    event-baren som ska granskas."""
+    eb = int(row["event_bar"])
+    lo, hi = _chart_window(df, row, cfg)
     sub = df.iloc[lo : hi + 1]
     x = list(range(lo, hi + 1))
 
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(9, 5.6))
     if cfg.candlestick:
         _draw_candles(ax, sub, lo)
     else:
         ax.plot(x, sub["close"].to_numpy(), color="black", lw=1.0, label="close")
 
-    # Fib-nivån, med ratio-etikett vid höger kant.
-    fib_price = row["fib_price"]
-    ax.axhline(
-        fib_price,
-        color="tab:blue",
-        ls="--",
-        lw=1.2,
-        zorder=4,
-        label=f"fib {row['fib_level']} @ {fib_price:g}",
-    )
-    ax.text(hi, fib_price, f" {row['fib_level']}", color="tab:blue", va="center", fontsize=8)
+    _draw_fib_context(ax, df, row, lo, hi)
 
     # Event-baren tydligt markerad: highlight-band, wick i accentfärg + stor stjärna.
     ax.axvspan(eb - 0.5, eb + 0.5, color="tab:orange", alpha=0.18, zorder=1)
@@ -391,22 +509,31 @@ def render_chart(df: pd.DataFrame, row: dict, out_path: Path, cfg: HumanReviewCo
         zorder=8,
         label=f"event bar ({row['touch_type']})",
     )
-
-    # Swing start/end (markör i vyn, annars kant-annotering).
-    _mark_swing_point(
-        ax, df, row["swing_start_bar"], lo, hi, marker="^", color="tab:purple", label="swing start"
+    ax.annotate(
+        f"{row['auto_candidate']}\n{row['touch_type']} from {row['approach_side']}",
+        xy=(eb, df["close"].iloc[eb]),
+        xytext=(12, 28),
+        textcoords="offset points",
+        ha="left",
+        va="bottom",
+        fontsize=8,
+        color="saddlebrown",
+        bbox={"boxstyle": "round,pad=0.25", "fc": "white", "ec": "tab:orange", "alpha": 0.88},
+        arrowprops={"arrowstyle": "->", "color": "tab:orange", "lw": 1.0},
+        zorder=9,
     )
-    _mark_swing_point(
-        ax, df, row["swing_end_bar"], lo, hi, marker="v", color="tab:purple", label="swing end"
-    )
 
-    span = f"±{max(cfg.context_before, cfg.context_after)} bars"
+    anchors = _anchor_points(df, row)
+    span = f"bars {lo}-{hi}"
     ax.set_title(
-        f"{row['symbol']} {row['timeframe']} | fib {row['fib_level']} | "
-        f"{row['auto_candidate']} | {span}\n{row['event_time']}",
+        f"{row['symbol']} {row['timeframe']} | {anchors['direction_label']} | "
+        f"active fib {row['fib_level']} | {row['auto_candidate']} | {span}\n{row['event_time']}",
         fontsize=9,
     )
     ax.set_xlabel("bar index")
+    right_pad = max(2.0, (hi - lo + 1) * 0.06)
+    ax.set_xlim(lo - 0.8, hi + right_pad)
+    ax.margins(y=0.12)
     ax.legend(loc="best", fontsize=7)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=130, bbox_inches="tight")
@@ -472,10 +599,15 @@ def write_index(rows: list[dict], summary: dict, out_dir: Path) -> Path:
     lines.append("")
     lines.append("### How to read the chart")
     lines.append("")
-    lines.append("- **Dashed blue line** = the fib level price.")
+    lines.append(
+        "- **Purple arrow + label** = the original human fib leg direction (`H -> L` or `L -> H`)."
+    )
+    lines.append("- **High star / Low star labels** = the human anchor prices used for the fib.")
+    lines.append("- **Muted dashed levels** = the full fib stack for that human leg.")
+    lines.append("- **Bold blue ACTIVE level** = the fib level price being reviewed.")
     lines.append("- **Orange marker / vertical line** = the event bar (the touch being judged).")
     lines.append(
-        "- **Purple ▲ / ▼** = swing start / end (the leg the fib is drawn from), when in view."
+        "- **Orange callout** = the auto_candidate plus touch/approach context for the event."
     )
     lines.append("- The title shows symbol, timeframe, fib level, auto_candidate and event time.")
     lines.append("")
