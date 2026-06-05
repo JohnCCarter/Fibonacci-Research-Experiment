@@ -45,9 +45,11 @@ from pydantic import BaseModel, Field  # noqa: E402
 
 from fibengine.backtest.stability import walk_forward_selection  # noqa: E402
 from fibengine.core.config import REPO_ROOT, Settings, load_settings  # noqa: E402
+from fibengine.core.fib import fib_levels  # noqa: E402
 from fibengine.core.models import Swing  # noqa: E402
 from fibengine.core.scoring import select_swing  # noqa: E402
 from fibengine.data.loader import load_candles  # noqa: E402
+from fibengine.labeling.human_fib import classify_candle  # noqa: E402
 from fibengine.research.level_events import (  # noqa: E402
     LevelEventConfig,
     _unique_confirmed_legs,
@@ -87,10 +89,14 @@ REVIEW_COLUMNS = [
     "symbol",
     "timeframe",
     "exchange",
+    "fib_source",
+    "fib_id",
     "fib_level",
     "fib_price",
+    "fib_levels",
     "event_bar",
     "event_time",
+    "relation",
     "auto_candidate",
     "touch_type",
     "approach_side",
@@ -104,6 +110,12 @@ REVIEW_COLUMNS = [
     "swing_direction",
     "swing_start_bar",
     "swing_end_bar",
+    "anchor_a_time",
+    "anchor_a_price",
+    "anchor_a_bar",
+    "anchor_b_time",
+    "anchor_b_price",
+    "anchor_b_bar",
     "chart_path",
     "human_label",
     "human_confidence",
@@ -149,8 +161,90 @@ def make_review_id(
     return f"{sym}_{tf}_L{lvl}_s{swing_start_bar}_e{swing_end_bar}_b{event_bar}_{short}"
 
 
+def _bar_index(df: pd.DataFrame, time_str: str) -> int:
+    """Nearest candle index for a saved ISO timestamp."""
+    ts = pd.to_datetime(time_str, utc=True)
+    return int(df.index.get_indexer([ts], method="nearest")[0])
+
+
+def _relation_for_bar(df: pd.DataFrame, bar_idx: int, price: float) -> str:
+    bar = df.iloc[int(bar_idx)]
+    return classify_candle(
+        float(bar["open"]),
+        float(bar["high"]),
+        float(bar["low"]),
+        float(bar["close"]),
+        float(price),
+    )
+
+
+def _level_rows_from_swing(swing: Swing, ratios: list[float]) -> list[dict]:
+    prices = fib_levels(swing, ratios)
+    return [
+        {"ratio": f"{ratio:g}", "price": round(float(prices[ratio]), 6)} for ratio in sorted(prices)
+    ]
+
+
+def _level_rows_from_payload(payload: dict) -> list[dict]:
+    levels = []
+    for lvl in payload.get("levels", []):
+        ratio = lvl.get("level", lvl.get("ratio"))
+        if ratio is None:
+            continue
+        levels.append({"ratio": f"{float(ratio):g}", "price": round(float(lvl["price"]), 6)})
+    return levels
+
+
+def _encode_levels(levels: list[dict]) -> str:
+    return json.dumps(levels, sort_keys=True, separators=(",", ":"))
+
+
+def _decode_levels(row: dict) -> list[dict]:
+    raw = row.get("fib_levels")
+    if isinstance(raw, list):
+        return raw
+    if isinstance(raw, str) and raw.strip():
+        try:
+            parsed = json.loads(raw)
+            if isinstance(parsed, list):
+                return parsed
+        except json.JSONDecodeError:
+            pass
+    return [{"ratio": str(row["fib_level"]), "price": float(row["fib_price"])}]
+
+
+def _anchor_fields_from_swing(swing: Swing) -> dict:
+    return {
+        "anchor_a_time": swing.start.timestamp.isoformat(),
+        "anchor_a_price": round(float(swing.start.price), 6),
+        "anchor_a_bar": int(swing.start.index),
+        "anchor_b_time": swing.end.timestamp.isoformat(),
+        "anchor_b_price": round(float(swing.end.price), 6),
+        "anchor_b_bar": int(swing.end.index),
+    }
+
+
+def _anchor_fields_from_payload(df: pd.DataFrame, payload: dict) -> dict:
+    a = payload["anchor_a"]
+    b = payload["anchor_b"]
+    return {
+        "anchor_a_time": a["time"],
+        "anchor_a_price": round(float(a["price"]), 6),
+        "anchor_a_bar": _bar_index(df, a["time"]),
+        "anchor_b_time": b["time"],
+        "anchor_b_price": round(float(b["price"]), 6),
+        "anchor_b_bar": _bar_index(df, b["time"]),
+    }
+
+
 def _row_for_event(
-    df: pd.DataFrame, swing: Swing, meta: dict, level: str, price: float, ev
+    df: pd.DataFrame,
+    swing: Swing,
+    meta: dict,
+    level: str,
+    price: float,
+    ev,
+    all_levels: list[dict] | None = None,
 ) -> dict:
     """Bygg en review-rad genom att slå ihop event + swing- + symbol-kontext."""
     review_id = make_review_id(
@@ -162,15 +256,20 @@ def _row_for_event(
         ev.bar_index,
         ev.auto_candidate,
     )
+    levels = all_levels or [{"ratio": level, "price": round(float(price), 6)}]
     return {
         "review_id": review_id,
         "symbol": meta["symbol"],
         "timeframe": meta["timeframe"],
         "exchange": meta["exchange"],
+        "fib_source": meta.get("fib_source", "machine_swing"),
+        "fib_id": meta.get("fib_id", ""),
         "fib_level": level,
         "fib_price": round(float(price), 6),
+        "fib_levels": _encode_levels(levels),
         "event_bar": int(ev.bar_index),
         "event_time": ev.event_bar,
+        "relation": _relation_for_bar(df, ev.bar_index, price),
         "auto_candidate": ev.auto_candidate,
         "touch_type": ev.touch_type,
         "approach_side": ev.approach_side,
@@ -184,6 +283,7 @@ def _row_for_event(
         "swing_direction": swing.direction,
         "swing_start_bar": int(swing.start.index),
         "swing_end_bar": int(swing.end.index),
+        **_anchor_fields_from_swing(swing),
         "chart_path": f"charts/{review_id}.png",
         # Tomma platshållare som människan fyller i (aldrig auto-ifyllt).
         "human_label": "",
@@ -234,10 +334,93 @@ def collect_candidates(
             lo = swing.end.index
             hi = n
         streams = detect_level_events(df, swing, level_cfg, ratios, settings.pivots.atr_period)
+        level_rows = _level_rows_from_swing(swing, ratios)
         for stream in streams:
             for ev in stream.events:
                 if lo <= ev.bar_index < hi:
-                    rows.append(_row_for_event(df, swing, meta, stream.level, stream.price, ev))
+                    rows.append(
+                        _row_for_event(df, swing, meta, stream.level, stream.price, ev, level_rows)
+                    )
+    return rows
+
+
+def _rows_from_human_fib_events_payload(df: pd.DataFrame, payload: dict) -> list[dict]:
+    """Flatten a saved ``<fib_id>_events.json`` payload into review rows."""
+    levels = _level_rows_from_payload(payload)
+    anchors = _anchor_fields_from_payload(df, payload)
+    rows: list[dict] = []
+    for stream in payload.get("levels", []):
+        level = str(stream["level"])
+        price = float(stream["price"])
+        for ev in stream.get("events", []):
+            event_bar = int(ev["bar_index"])
+            review_id = make_review_id(
+                payload["symbol"],
+                payload["timeframe"],
+                level,
+                int(anchors["anchor_a_bar"]),
+                int(anchors["anchor_b_bar"]),
+                event_bar,
+                ev["auto_candidate"],
+            )
+            evidence = ev.get("evidence", {})
+            rows.append(
+                {
+                    "review_id": review_id,
+                    "symbol": payload["symbol"],
+                    "timeframe": payload["timeframe"],
+                    "exchange": payload.get("exchange", "bitfinex"),
+                    "fib_source": payload.get("source", "human_fib_events"),
+                    "fib_id": payload["fib_id"],
+                    "fib_level": level,
+                    "fib_price": round(price, 6),
+                    "fib_levels": _encode_levels(levels),
+                    "event_bar": event_bar,
+                    "event_time": ev["event_bar"],
+                    "relation": _relation_for_bar(df, event_bar, price),
+                    "auto_candidate": ev["auto_candidate"],
+                    "touch_type": ev["touch_type"],
+                    "approach_side": ev["approach_side"],
+                    "note": ev.get("note", ""),
+                    "evidence_forward_bars": evidence.get("forward_bars"),
+                    "evidence_closes_beyond": evidence.get("closes_beyond"),
+                    "evidence_closes_back": evidence.get("closes_back"),
+                    "evidence_max_penetration_atr": evidence.get("max_penetration_atr"),
+                    "swing_start_time": anchors["anchor_a_time"],
+                    "swing_end_time": anchors["anchor_b_time"],
+                    "swing_direction": payload["direction"],
+                    "swing_start_bar": int(anchors["anchor_a_bar"]),
+                    "swing_end_bar": int(anchors["anchor_b_bar"]),
+                    **anchors,
+                    "chart_path": f"charts/{review_id}.png",
+                    "human_label": "",
+                    "human_confidence": "",
+                    "human_note": "",
+                }
+            )
+    return rows
+
+
+def collect_human_fib_event_candidates(
+    event_paths: list[Path], settings: Settings | None = None
+) -> list[dict]:
+    """Load saved human-fib event JSON files and build review rows from them."""
+    settings = settings or load_settings()
+    rows: list[dict] = []
+    df_cache: dict[tuple[str, str, str], pd.DataFrame] = {}
+    for event_path in event_paths:
+        payload = json.loads(Path(event_path).read_text(encoding="utf-8"))
+        key = (
+            payload.get("exchange", settings.data.exchange),
+            payload["symbol"],
+            payload["timeframe"],
+        )
+        if key not in df_cache:
+            data_cfg = settings.data.model_copy(
+                update={"exchange": key[0], "symbol": key[1], "timeframe": key[2]}
+            )
+            df_cache[key] = load_candles(data_cfg, fetch_if_missing=False)
+        rows.extend(_rows_from_human_fib_events_payload(df_cache[key], payload))
     return rows
 
 
@@ -315,13 +498,14 @@ def _draw_candles(ax, sub: pd.DataFrame, lo: int) -> None:
             ax.vlines(x, body_lo, body_hi, color=color, lw=3.2, zorder=3)  # body (open-close)
 
 
-def _mark_swing_point(ax, df, bar_idx, lo, hi, *, marker, color, label) -> None:
-    """Markera en swing-punkt. Ligger den i fönstret ritas en markör vid dess pris;
+def _mark_swing_point(ax, df, bar_idx, lo, hi, *, marker, color, label, price=None) -> None:
+    """Markera en swing-/anchor-punkt. Ligger den i fönstret ritas den vid sitt pris;
     annars ritas en kant-annotering med pil som pekar mot punkten utanför vyn."""
+    y = float(price) if price is not None else float(df["close"].iloc[bar_idx])
     if lo <= bar_idx <= hi:
         ax.scatter(
             [bar_idx],
-            [df["close"].iloc[bar_idx]],
+            [y],
             color=color,
             marker=marker,
             s=130,
@@ -329,6 +513,17 @@ def _mark_swing_point(ax, df, bar_idx, lo, hi, *, marker, color, label) -> None:
             linewidths=0.6,
             zorder=7,
             label=label,
+        )
+        ax.annotate(
+            label,
+            xy=(bar_idx, y),
+            xytext=(6, 8),
+            textcoords="offset points",
+            fontsize=7,
+            color=color,
+            fontweight="bold",
+            bbox={"boxstyle": "round,pad=0.15", "fc": "white", "ec": color, "alpha": 0.78},
+            zorder=9,
         )
         return
     # Utanför vyn: annotera vid närmaste kant.
@@ -344,6 +539,103 @@ def _mark_swing_point(ax, df, bar_idx, lo, hi, *, marker, color, label) -> None:
         fontsize=7,
         color=color,
         fontweight="bold",
+    )
+
+
+def _price_label(value: float) -> str:
+    return f"{float(value):,.2f}"
+
+
+def _anchor_points(row: dict) -> list[dict]:
+    a = {
+        "bar": int(row.get("anchor_a_bar", row["swing_start_bar"])),
+        "time": row.get("anchor_a_time", row["swing_start_time"]),
+        "price": float(row.get("anchor_a_price", row.get("fib_price"))),
+    }
+    b = {
+        "bar": int(row.get("anchor_b_bar", row["swing_end_bar"])),
+        "time": row.get("anchor_b_time", row["swing_end_time"]),
+        "price": float(row.get("anchor_b_price", row.get("fib_price"))),
+    }
+    if row.get("swing_direction") == "down":
+        h_anchor, l_anchor = a, b
+    else:
+        h_anchor, l_anchor = b, a
+    tf = row["timeframe"]
+    return [
+        {
+            **h_anchor,
+            "label": f"H anchor {tf} @ {_price_label(h_anchor['price'])}",
+            "marker": "^",
+        },
+        {
+            **l_anchor,
+            "label": f"L anchor {tf} @ {_price_label(l_anchor['price'])}",
+            "marker": "v",
+        },
+    ]
+
+
+def _draw_anchor_labels(ax, df: pd.DataFrame, row: dict, lo: int, hi: int, *, color: str) -> None:
+    for anchor in _anchor_points(row):
+        _mark_swing_point(
+            ax,
+            df,
+            anchor["bar"],
+            lo,
+            hi,
+            marker=anchor["marker"],
+            color=color,
+            label=anchor["label"],
+            price=anchor["price"],
+        )
+
+
+def _draw_fib_levels(ax, row: dict, hi: int) -> None:
+    fib_id = row.get("fib_id") or ""
+    active = str(row["fib_level"])
+    for lvl in _decode_levels(row):
+        ratio = str(lvl["ratio"])
+        price = float(lvl["price"])
+        is_active = ratio == active
+        color = "tab:blue" if is_active else "#6f8fbf"
+        ax.axhline(
+            price,
+            color=color,
+            ls="--",
+            lw=1.35 if is_active else 0.75,
+            alpha=0.95 if is_active else 0.45,
+            zorder=4 if is_active else 2,
+            label=f"fib {ratio} @ {price:g}" if is_active else None,
+        )
+        suffix = f" - {fib_id}" if fib_id else ""
+        ax.text(
+            hi,
+            price,
+            f" {ratio} - {_price_label(price)}{suffix}",
+            color=color,
+            va="center",
+            fontsize=7,
+            zorder=6,
+        )
+
+
+def _draw_event_label(ax, row: dict) -> None:
+    eb = int(row["event_bar"])
+    price = float(row["fib_price"])
+    relation = row.get("relation") or row.get("touch_type") or "event"
+    label = f"{row['fib_level']} {relation} -> {row['auto_candidate']}"
+    ax.annotate(
+        label,
+        xy=(eb, price),
+        xytext=(8, 16),
+        textcoords="offset points",
+        fontsize=8,
+        color="tab:orange",
+        fontweight="bold",
+        bbox={"boxstyle": "round,pad=0.2", "fc": "white", "ec": "tab:orange", "alpha": 0.82},
+        arrowprops={"arrowstyle": "->", "color": "tab:orange", "lw": 0.8},
+        zorder=10,
     )
 
 
@@ -364,17 +656,8 @@ def render_chart(df: pd.DataFrame, row: dict, out_path: Path, cfg: HumanReviewCo
     else:
         ax.plot(x, sub["close"].to_numpy(), color="black", lw=1.0, label="close")
 
-    # Fib-nivån, med ratio-etikett vid höger kant.
-    fib_price = row["fib_price"]
-    ax.axhline(
-        fib_price,
-        color="tab:blue",
-        ls="--",
-        lw=1.2,
-        zorder=4,
-        label=f"fib {row['fib_level']} @ {fib_price:g}",
-    )
-    ax.text(hi, fib_price, f" {row['fib_level']}", color="tab:blue", va="center", fontsize=8)
+    # Fib-nivåer från samma human/machine fib-kontext. Aktiv event-nivå markeras tydligast.
+    _draw_fib_levels(ax, row, hi)
 
     # Event-baren tydligt markerad: highlight-band, wick i accentfärg + stor stjärna.
     ax.axvspan(eb - 0.5, eb + 0.5, color="tab:orange", alpha=0.18, zorder=1)
@@ -389,21 +672,19 @@ def render_chart(df: pd.DataFrame, row: dict, out_path: Path, cfg: HumanReviewCo
         edgecolors="black",
         linewidths=0.7,
         zorder=8,
-        label=f"event bar ({row['touch_type']})",
+        label=f"event bar ({row.get('relation') or row['touch_type']})",
     )
+    _draw_event_label(ax, row)
 
-    # Swing start/end (markör i vyn, annars kant-annotering).
-    _mark_swing_point(
-        ax, df, row["swing_start_bar"], lo, hi, marker="^", color="tab:purple", label="swing start"
-    )
-    _mark_swing_point(
-        ax, df, row["swing_end_bar"], lo, hi, marker="v", color="tab:purple", label="swing end"
-    )
+    # Human-aware H/L anchors (or machine-swing anchors for legacy review rows).
+    _draw_anchor_labels(ax, df, row, lo, hi, color="tab:purple")
 
     span = f"±{max(cfg.context_before, cfg.context_after)} bars"
+    source = row.get("fib_id") or row.get("fib_source", "fib")
     ax.set_title(
-        f"{row['symbol']} {row['timeframe']} | fib {row['fib_level']} | "
-        f"{row['auto_candidate']} | {span}\n{row['event_time']}",
+        f"{row['symbol']} {row['timeframe']} | {source} | fib {row['fib_level']} | "
+        f"{row.get('relation') or row['touch_type']} -> {row['auto_candidate']} | {span}\n"
+        f"{row['event_time']}",
         fontsize=9,
     )
     ax.set_xlabel("bar index")
@@ -472,12 +753,12 @@ def write_index(rows: list[dict], summary: dict, out_dir: Path) -> Path:
     lines.append("")
     lines.append("### How to read the chart")
     lines.append("")
-    lines.append("- **Dashed blue line** = the fib level price.")
-    lines.append("- **Orange marker / vertical line** = the event bar (the touch being judged).")
+    lines.append("- **Blue dashed lines** = calculated fib levels from the same saved fib context.")
+    lines.append("- **Orange marker / vertical line** = the event bar being judged.")
+    lines.append("- **Purple H/L anchor labels** = the high/low anchors, with timeframe and price.")
     lines.append(
-        "- **Purple ▲ / ▼** = swing start / end (the leg the fib is drawn from), when in view."
+        "- Event labels keep raw relation and candidate separate: `relation -> candidate`."
     )
-    lines.append("- The title shows symbol, timeframe, fib level, auto_candidate and event time.")
     lines.append("")
     lines.append("## Summary")
     lines.append("")
@@ -496,10 +777,12 @@ def write_index(rows: list[dict], summary: dict, out_dir: Path) -> Path:
         lines.append("")
         lines.append(
             f"- {r['symbol']} {r['timeframe']} ({r['exchange']}) | fib **{r['fib_level']}** "
-            f"@ {r['fib_price']}"
+            f"@ {r['fib_price']} | fib_id: `{r.get('fib_id') or r.get('fib_source', '')}`"
         )
         lines.append(
-            f"- auto_candidate: **{r['auto_candidate']}** | touch_type: {r['touch_type']} | "
+            f"- relation: **{r.get('relation', '')}** | "
+            f"auto_candidate: **{r['auto_candidate']}** | "
+            f"touch_type: {r['touch_type']} | "
             f"approach_side: {r['approach_side']}"
         )
         lines.append(f"- event_time: {r['event_time']} (bar {r['event_bar']})")
@@ -510,8 +793,9 @@ def write_index(rows: list[dict], summary: dict, out_dir: Path) -> Path:
             f"max_penetration_atr={r['evidence_max_penetration_atr']}"
         )
         lines.append(
-            f"- swing: {r['swing_direction']} | start {r['swing_start_time']} "
-            f"→ end {r['swing_end_time']}"
+            f"- anchors: H/L shown on chart | direction {r['swing_direction']} | "
+            f"anchor_a {r.get('anchor_a_time', r['swing_start_time'])} "
+            f"-> anchor_b {r.get('anchor_b_time', r['swing_end_time'])}"
         )
         lines.append("- **human_label:** ____  **human_confidence:** ____  **human_note:** ____")
         lines.append("")
@@ -543,6 +827,42 @@ def run_human_review(
     write_index(sampled, summary, run_dir)
 
     return {"run_id": run_id, "run_dir": str(run_dir), "mode": mode, "dedupe": dedupe, **summary}
+
+
+def run_human_fib_review(
+    event_paths: list[Path],
+    settings: Settings | None = None,
+    cfg: HumanReviewConfig | None = None,
+) -> dict:
+    """Generate a review package from saved human-fib event JSON files."""
+    settings = settings or load_settings()
+    cfg = cfg or HumanReviewConfig()
+    candidates = collect_human_fib_event_candidates(event_paths, settings)
+    sampled = sample_candidates(candidates, cfg)
+
+    run_id = datetime.now(UTC).strftime("human_fib_review_%Y%m%dT%H%M%SZ")
+    run_dir = REVIEW_ROOT / run_id
+    charts_dir = run_dir / "charts"
+    df_cache: dict[tuple[str, str, str], pd.DataFrame] = {}
+    for r in sampled:
+        key = (r.get("exchange", settings.data.exchange), r["symbol"], r["timeframe"])
+        if key not in df_cache:
+            data_cfg = settings.data.model_copy(
+                update={"exchange": key[0], "symbol": key[1], "timeframe": key[2]}
+            )
+            df_cache[key] = load_candles(data_cfg, fetch_if_missing=False)
+        render_chart(df_cache[key], r, charts_dir / f"{r['review_id']}.png", cfg)
+    write_review_sheets(sampled, run_dir)
+    summary = _summary(len(candidates), sampled, run_dir)
+    write_index(sampled, summary, run_dir)
+
+    return {
+        "run_id": run_id,
+        "run_dir": str(run_dir),
+        "mode": "human-fib-events",
+        "event_files": [str(p) for p in event_paths],
+        **summary,
+    }
 
 
 def _parse_args() -> argparse.Namespace:
@@ -602,6 +922,13 @@ def _parse_args() -> argparse.Namespace:
     )
     p.add_argument("--context-before", type=int, default=25)
     p.add_argument("--context-after", type=int, default=25)
+    p.add_argument(
+        "--human-fib-events",
+        action="append",
+        type=Path,
+        default=[],
+        help="Review saved <fib_id>_events.json files from human_fib_events (repeatable).",
+    )
     return p.parse_args()
 
 
@@ -627,5 +954,8 @@ if __name__ == "__main__":
         context_after=after,
         candlestick=not args.line,
     )
-    result = run_human_review(settings=settings, cfg=cfg, mode=args.mode, dedupe=args.dedupe)
+    if args.human_fib_events:
+        result = run_human_fib_review(args.human_fib_events, settings=settings, cfg=cfg)
+    else:
+        result = run_human_review(settings=settings, cfg=cfg, mode=args.mode, dedupe=args.dedupe)
     print(json.dumps(result, indent=2))

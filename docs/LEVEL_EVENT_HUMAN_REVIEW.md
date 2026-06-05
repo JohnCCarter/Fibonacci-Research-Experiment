@@ -69,8 +69,9 @@ uv run python -m fibengine.research.human_review_level_events \
   --candidate-type continuation_candidate --candidate-type rejection_candidate \
   --level 0.5 --level 0.618 --seed 7
 
-# Candlesticks instead of close-line:
-uv run python -m fibengine.research.human_review_level_events --candlestick
+# Review saved human-fib event JSON:
+uv run python -m fibengine.research.human_review_level_events \
+  --human-fib-events data/labels/human_fib/bitfinex/BTC-USD/1d/<fib_id>_events.json
 ```
 
 Flags:
@@ -85,8 +86,9 @@ Flags:
 | `--candidate-type` | Filter to a candidate type (repeatable) | all |
 | `--level` | Filter to a fib level e.g. `0.5` (repeatable) | all |
 | `--seed` | Random seed → reproducible sample | none |
-| `--candlestick` | Candlesticks instead of close-line | off |
+| `--line` | Close-line instead of candlesticks | off |
 | `--context-before` / `--context-after` | Bars shown around the event | `30` / `15` |
+| `--human-fib-events` | Review saved human-fib event JSON files (repeatable) | off |
 
 ## Artifact structure
 
@@ -101,12 +103,10 @@ experiments/review/fib_level_events/<run_id>/
 `<run_id>` is `review_<UTC timestamp>`. The whole `experiments/review/` tree is
 git-ignored: these are generated artifacts, not committed repo data.
 
-Each review row contains: `review_id, symbol, timeframe, exchange, fib_level,
-fib_price, event_bar, event_time, auto_candidate, touch_type, approach_side,
-note, evidence_forward_bars, evidence_closes_beyond, evidence_closes_back,
-evidence_max_penetration_atr, swing_start_time, swing_end_time, swing_direction,
-swing_start_bar, swing_end_bar, chart_path, human_label, human_confidence,
-human_note`.
+Each review row contains market context, fib context (`fib_source`, `fib_id`,
+`fib_level`, `fib_price`, `fib_levels`), event context (`relation`,
+`auto_candidate`, `touch_type`, evidence), anchor context (`anchor_a`,
+`anchor_b`, swing bars), and blank `human_*` review fields.
 
 ## Label schema
 
@@ -124,10 +124,11 @@ human_note`.
 
 ## How to read a chart
 
-- **Dashed blue line** — the fib level price.
+- **Blue dashed lines** — all calculated fib levels from the saved fib context.
 - **Orange marker / vertical line** — the event bar (the touch being judged).
-- **Purple ▲ / ▼** — swing start / end (the leg the fib is drawn from), when in view.
-- **Title** — symbol, timeframe, fib level, `auto_candidate`, event time.
+- **Purple H/L anchor labels** — human high/low anchors with timeframe and price.
+- **Event label** — raw relation and candidate kept separate, e.g.
+  `0.618 touch -> rejection_candidate`.
 
 ## What this validates
 

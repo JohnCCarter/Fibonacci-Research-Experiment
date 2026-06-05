@@ -25,7 +25,9 @@ from fibengine.data.loader import load_candles
 from fibengine.labeling.hover import HoverReadout
 from fibengine.research.human_review_level_events import (
     HumanReviewConfig,
-    _mark_swing_point,
+    _draw_anchor_labels,
+    _draw_event_label,
+    _draw_fib_levels,
     write_review_sheets,
 )
 
@@ -106,15 +108,7 @@ def _overlay_event(ax, df: pd.DataFrame, row: dict, cfg: HumanReviewConfig) -> t
     eb = int(row["event_bar"])
     lo = max(0, eb - cfg.context_before)
     hi = min(len(df) - 1, eb + cfg.context_after)
-    fib_price = float(row["fib_price"])
-    ax.axhline(
-        fib_price,
-        color="#5b9cf5",
-        ls="--",
-        lw=1.2,
-        zorder=4,
-        label=f"fib {row['fib_level']}",
-    )
+    _draw_fib_levels(ax, row, hi)
     ax.axvspan(eb - 0.5, eb + 0.5, color="#ff9f43", alpha=0.2, zorder=1)
     ax.axvline(eb, color="#ff9f43", lw=1.4, zorder=5)
     ax.scatter(
@@ -127,19 +121,8 @@ def _overlay_event(ax, df: pd.DataFrame, row: dict, cfg: HumanReviewConfig) -> t
         linewidths=0.6,
         zorder=8,
     )
-    _mark_swing_point(
-        ax,
-        df,
-        int(row["swing_start_bar"]),
-        lo,
-        hi,
-        marker="^",
-        color="#b388ff",
-        label="swing start",
-    )
-    _mark_swing_point(
-        ax, df, int(row["swing_end_bar"]), lo, hi, marker="v", color="#b388ff", label="swing end"
-    )
+    _draw_event_label(ax, row)
+    _draw_anchor_labels(ax, df, row, lo, hi, color="#b388ff")
     return lo, hi
 
 
@@ -184,7 +167,8 @@ def run_review_tool(run_dir: Path, cfg: HumanReviewConfig | None = None) -> None
         hc = row.get("human_confidence") or "—"
         ax.set_title(
             f"[{idx + 1}/{len(rows)}] {row['symbol']} {row['timeframe']} | "
-            f"fib {row['fib_level']} | auto={row['auto_candidate']}\n"
+            f"{row.get('fib_id') or row.get('fib_source', 'fib')} | fib {row['fib_level']} | "
+            f"{row.get('relation') or row.get('touch_type', 'event')} -> {row['auto_candidate']}\n"
             f"event {row['event_time']} | human_label={hl} | confidence={hc} | "
             f"labeled {labeled_count()}/{len(rows)}",
             color="#d6d9e0",
