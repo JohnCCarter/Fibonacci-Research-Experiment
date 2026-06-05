@@ -8,6 +8,7 @@ import pandas as pd
 
 from fibengine.core.config import DataConfig
 from fibengine.data.fetch import cache_path, fetch_and_cache, legacy_cache_path
+from fibengine.data.schema import validate_candles
 
 
 def atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
@@ -34,10 +35,10 @@ def load_candles(cfg: DataConfig, fetch_if_missing: bool = True) -> pd.DataFrame
         path = fetch_and_cache(cfg)
     df = pd.read_csv(path, parse_dates=["timestamp"], index_col="timestamp")
     df.index = pd.to_datetime(df.index, utc=True)
-    return df
+    return validate_candles(df)
 
 
 def load_candles_from_path(path: str | Path) -> pd.DataFrame:
     df = pd.read_csv(path, parse_dates=["timestamp"], index_col="timestamp")
     df.index = pd.to_datetime(df.index, utc=True)
-    return df
+    return validate_candles(df)

@@ -12,6 +12,9 @@ dependencies = [
     "loguru>=0.7",
     "pyyaml>=6.0",
     "pydantic>=2.0",
+    "mplfinance>=0.12.10b0",
+    "pandera>=0.31.1",
+    "backtesting>=0.6.5",
 ]
 
 [project.optional-dependencies]

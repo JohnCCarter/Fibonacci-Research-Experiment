@@ -38,6 +38,7 @@ uv run python -m fibengine.labeling.batch    # lättviktig label-checkpoint (man
 uv run python -m fibengine.experiment        # kör pipeline + logga resultat
 uv run python -m fibengine.backtest.runner   # kausalt walk-forward: urvals-stabilitet
 uv run python -m fibengine.backtest.matrix   # stabilitet över symbol/timeframe-matris
+uv run python -m fibengine.backtest.reference # backtesting.py-referens mot samma candles
 uv run pytest                                 # kör tester
 uv run pre-commit install                     # git hooks (en gång)
 uv run pre-commit run --all-files             # lint + format + test före push
@@ -114,6 +115,18 @@ provisoriska ritas streckade i plotten.
 - `experiments/label_review/` — versionerade label-checkpoints
 - `premortem/` — premortem + reflektioner (`reflections/`)
 - `docs/TRACKS.md` — beslutsgate mellan Research, Validate och Promotion
+
+## Research tooling
+
+- `mplfinance` används nu för candlestick-plots i `fibengine.viz.plot`, vilket gör
+  audit-bilderna mer chart-lika direkt.
+- `pandera` validerar laddade OHLCV-frames i `fibengine.data.loader` så att trasig
+  cache fångas tidigt istället för att läcka längre in i pipelinen.
+- `backtesting.py` finns i `fibengine.backtest.reference` som referensimplementation
+  för Lager B-jämförelser mot den skräddarsydda trade-runnern.
+- `vectorbt` installeras **inte** ännu; framtida signal-prep finns i
+  `fibengine.backtest.vectorbt_future` så att acceleration kan kopplas på senare utan
+  att ändra signalformat igen.
 
 ## Arbetsflöde för facit
 
