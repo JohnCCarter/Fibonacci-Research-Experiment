@@ -9,12 +9,23 @@
 > (kat. 1–8) · `TOOLING_ECOSYSTEM_CATEGORIES_B.md` (kat. 9–16) ·
 > `TOOLING_ECOSYSTEM_DECISIONS.md` (kopiera/undvik · struktur · roadmap · risk · checklist).
 
-## Scope-avvikelse (flaggad)
+## Scope-komplettering (overlay nu granskad)
 
-Den efterfrågade grounding-branchen `cursor/fib-context-review-overlay-64ac` fanns **inte**
-i klonen vid granskningen (endast `main` + arbetsbranch). Grounding gjordes mot aktuell
-branch (utgrenad från `main`). Overlay-koden (PR #20 / issue #21) är därför **ej direkt
-granskad** → markerad *Unverified*. Scannen är i den meningen ofullständig för overlay-arbetet.
+Branchen `cursor/fib-context-review-overlay-64ac` saknades i den *initiala* klonen men finns
+på origin och har nu hämtats och granskats (PR #20 "Add fib context overlay to review charts",
+1 commit). Overlay-arbetet är därmed **Observed**:
+
+- `research/human_review_level_events.py` (+240/−60, 609→741 rader): ny `_draw_fib_context()`
+  ritar — **före** event-markören — den mänskliga fib-leggen (lila pil `H -> L`/`L -> H`),
+  H/L-ankare (`*`, rekonstruerade från `swing_start_bar`/`swing_end_bar` + `df.high/low`), hela
+  fib-stacken (0.0–1.0) som dämpade nivåer + aktiv nivå (fet blå `ACTIVE`). `_chart_window()`
+  vidgar vyn till hela H/L-spannet → issue #21 "full range före event-zoom".
+- `docs/LEVEL_EVENT_HUMAN_REVIEW.md` (+17) + 75 rader tester.
+- **Label-integritet bevarad:** human-anchor = ritkälla; `auto_candidate` visas som det som
+  *granskas*, aldrig som facit. Konsekvens för §2.15: en context-first fib-overlay-renderare
+  **finns redan** (handrullad matplotlib) → mplfinance vore en *förenkling*, inte greenfield.
+- **Bounds-not:** filen är `GRANDFATHERED` (undantagen per-fil-check) men växer; `REPO_POLICY §2B`
+  säger "dela före tillväxt". Explicit tillstånd givet att inte blockera på 400-gränsen här.
 
 ## 1. Repo-grounding (Observed)
 
@@ -54,7 +65,8 @@ ingen tracing. Endast `AGENTS.md` (Cursor) + `.vscode/settings.json`.
 
 ## Evidensläge — Observed / Inferred / Unverified
 
-**Observed:** all grounding i §1 (lästa filer); issue #14–#25 via GitHub; externa
+**Observed:** all grounding i §1 (lästa filer); overlay-branchen / PR #20 (hämtad & granskad,
+se "Scope-komplettering"); issue #14–#25 via GitHub; externa
 verktygsfakta cross-checkade mot primärkällor (anthropics/skills öppen standard 2025-12-18,
 Claude Code subagents-format, LangGraph 1.0, AutoGen maintenance mode, Letta v0.16.8, DSPy 3.2.1,
 promptfoo/DeepEval/Inspect MIT, Phoenix/Langfuse/OpenLLMetry, OWASP LLM 2025 + Agentic 2025-12,
@@ -67,7 +79,6 @@ ROI-ordning (label-kontrakt > review-rendering > query-lager) utifrån öppna is
 multi-agent-orchestration = negativ ROI för detta single-dev-repo.
 
 **Unverified (kräver kontroll före beslut):**
-- Branch `cursor/fib-context-review-overlay-64ac` saknas → overlay (PR #20/issue #21) ej granskad.
 - Exakta versioner märkta *UV* i kategorifilerna (vissa patch-nummer, senaste-releaser).
 - Vissa licenser *UV* (mplfinance, streamlit, bokeh, backtesting.py [misstänkt AGPL], TA-Lib,
   ruptures, stumpy, tsfresh m.fl.) — verifiera mot PyPI/GitHub/release före adoption.

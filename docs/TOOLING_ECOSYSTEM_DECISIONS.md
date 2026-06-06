@@ -70,7 +70,7 @@ tool-allowlist; skills citerar policy med file:line; anti-blob-bounds gäller ä
 1. Label-/ledger-schemakontrakt (pandera+pydantic) som upprätthåller `source`-separation. *(kärnskydd)*
 2. Repo-native `.claude/skills` + read-only subagents (`fib-label-integrity`, `promotion-gate-check`, `label-auditor`, `explore`).
 3. CI-/supply-chain-härdning: SHA-pin, least-priv token, push protection, gitleaks pre-commit, pip-audit.
-4. mplfinance statisk review-renderare i `viz/`.
+4. Dela grandfathered `human_review_level_events.py` (741 rader) i renderare/pack/CLI; ev. mplfinance-förenkling.
 5. GLOSSARY.md + CONTEXT_MAP.md; formalisera reflektioner som ADR-light.
 
 **Fas 2 — när behov bekräftats:**
@@ -98,7 +98,7 @@ tool-allowlist; skills citerar policy med file:line; anti-blob-bounds gäller ä
 | Komprometterad Action / överbehörig token | Medel | SHA-pin, least-priv token, Harden-Runner |
 | Tooling-blobs bryter bounds | Låg | `check_repo_bounds.py` gäller även nya filer/skills |
 | Review-verktyg auto-genererar facit | Hög | human anchor = sanning; output `source`-märkt; ingen auto-fib/ML |
-| Branch-grounding ofullständig (overlay saknas) | Info | flaggat; verifiera mot PR #20 innan overlay-beslut |
+| Overlay-renderaren växer i grandfathered fil (741 rader) | Medel | dela `human_review_level_events.py` före vidare tillväxt (REPO_POLICY §2B) |
 
 ## Verification checklist (innan någon adoption)
 - [ ] Eget scoped issue + explicit order (`REPO_POLICY.md §13`).

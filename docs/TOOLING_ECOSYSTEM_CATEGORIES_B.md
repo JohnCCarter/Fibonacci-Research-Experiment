@@ -81,8 +81,9 @@
 - **Etablerade:** mplfinance (BSD, statiska candlesticks), plotly (MIT), streamlit 1.55 (Apache-2.0), bokeh/panel/dash; annotation: Label Studio (Apache, Docker), CVAT, doccano (**stale**).
 - **Kopiera:** mplfinance för deterministiska review-PNG (kompletterar `viz/plot.py`); Streamlit+Plotly som *lätt* review-workbench med append-only JSONL (matchar #16).
 - **Importera EJ:** Label Studio/CVAT nu (Docker, overkill, risk maskin-pre-labels→facit); doccano (stale); auto-fib/ML i verktyget (förbjudet enligt #16).
-- **Repo-native:** mplfinance-baserad statisk renderare i `viz/`; ev. liten Streamlit-app som läser candles+human-anchors+events, skriver `source`-märkt JSONL.
-- **ROI-först:** **mplfinance statisk review** (lägst risk, högst omedelbar nytta, deterministiskt).
+- **Finns redan (Observed, PR #20):** `research/human_review_level_events.py` har en context-first fib-overlay-renderare (`_draw_fib_context`): human-leg-pil, H/L-ankare, full fib-stack + aktiv nivå, vy vidgad till hela H/L-spannet (issue #21). Handrullad matplotlib.
+- **Repo-native:** behåll/utöka den befintliga renderaren; mplfinance vore en *förenkling* (ej greenfield). Ev. liten Streamlit-app som läser candles+human-anchors+events, skriver `source`-märkt JSONL.
+- **ROI-först:** stabilisera befintlig renderare; mplfinance-migrering endast om den minskar kod/maintenance (filen är grandfathered & växer → dela före tillväxt).
 - **Risker:** interaktiv UI ökar maintenance; verktyg som auto-genererar facit; Streamlit bytte till Starlette/Uvicorn 2026 → pinna & retesta.
 - **Verifiering:** output `source`-märkt; human anchor = sanning; deterministiska bilder; pinnade versioner.
 - **Skjut upp:** Label Studio tills annotation-volym överstiger tröskel; full React/TradingView-UI.
