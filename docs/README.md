@@ -11,3 +11,6 @@ Djupare styrning och ramverk utöver snabbstart.
 - `CONTRIBUTING.md` — lint, test, pre-commit, CI före commit/push
 - `MACHINE_LABELING.md` — maskin-kandidater: motor-swing vs chartfönster (båda giltiga)
 - `LABELING_TOOL.md` — labeling GUI: begränsningar, redraw, säkra UI-ändringar
+- `TOOLING_ECOSYSTEM_REVIEW.md` — read-only verktygs-/ekosysteminventering (svar på issue #25):
+  - `TOOLING_ECOSYSTEM_CATEGORIES_A.md` / `_B.md` — kategori-findings 1–8 / 9–16
+  - `TOOLING_ECOSYSTEM_DECISIONS.md` — kopiera/undvik, struktur, roadmap, risk, checklist
