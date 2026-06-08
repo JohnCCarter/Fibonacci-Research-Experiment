@@ -1,57 +1,46 @@
 ---
-description: GLM-5.1 lead (plan/review) + Qwen3-Coder implement (scoped diffs only)
+description: GLM lead + Qwen implementer subagent workflow (enforcement layer)
 alwaysApply: true
 ---
 
 # Model collaboration policy
 
-**Constitution:** [AGENTS.md](../../AGENTS.md) — roles and workflow are canonical there.
+**Constitution:** [AGENTS.md](../../AGENTS.md) — *CONSTITUTION FOR AGENTS AND SUBAGENTS* (canonical roles, §2 workflow, guardrails).
 
-Two NVIDIA NIM models, one workflow. **Do not let both models freely change scope.**
-
-## Roles
+This rule **enforces** the constitution in Cursor. Setup detail: [MODEL_COLLABORATION.md](../../docs/agent/MODEL_COLLABORATION.md).
 
 | Model | NVIDIA id | Role |
 |-------|-----------|------|
-| **GLM-5.1** | `z-ai/glm-5.1` | **Lead** — architect, planner, reviewer, final verifier |
-| **Qwen3-Coder** | `qwen/qwen3-coder-480b-a35b-instruct` | **Implementer** — code, debug, minimal diffs within approved scope |
+| **GLM-5.1** | `z-ai/glm-5.1` | **Lead** — plan, handoff, review, approve |
+| **Qwen3-Coder** | `qwen/qwen3-coder-480b-a35b-instruct` | **Implementer subagent** — scoped diffs only |
+| **Auto / other** | Cursor router | Same guardrails; no freelancing scope |
 
-## GLM-5.1 (lead) — you MUST when this model is active
+Qwen is **GLM's subagent**, not a parallel architect.
 
-- Inspect repo / wiki before directing work ([research wiki](../../docs/research_wiki/index.md), [handoff](../../docs/research_wiki/handoff.md)).
-- Produce a clear **implementation handoff** (scope, files, steps, tests, out-of-scope).
-- **Delegate implementation** to subagent `qwen-implementer` (`.cursor/agents/qwen-implementer.md`) — Qwen is GLM's subagent, not a parallel ad-hoc chat.
-- Review Qwen output against that handoff before acceptance.
-- Own reasoning, architecture, risk, and **approval** — not drive-by scope creep.
-- Do **not** replace Qwen for large mechanical edits unless user explicitly asks.
+## When GLM-5.1 is active
 
-Handoff template: [docs/research_wiki/templates/model-handoff.md](../../docs/research_wiki/templates/model-handoff.md).  
-Slash command: `/glm-plan`.  
-Lead subagent: `glm-lead`. Implement subagent: `qwen-implementer`.
+- Inspect wiki ([handoff](../../docs/research_wiki/handoff.md)) before directing work.
+- Produce **implementation handoff** ([template](../../docs/research_wiki/templates/model-handoff.md)).
+- **Delegate** to `qwen-implementer` — do not land large mechanical patches unless user asks.
+- Review Qwen output against handoff before acceptance.
 
-## Qwen3-Coder (implementer) — you MUST when this model is active
+Slash: `/glm-plan` · Subagent: [`glm-lead`](../../.cursor/agents/glm-lead.md)
 
-- Implement **only** the approved scope from GLM-5.1's handoff.
-- Minimal, focused diffs; no architecture changes unless handoff says so.
-- Return: changed files, rationale, commands/tests to run.
-- If handoff is missing or ambiguous → **stop and ask**; do not expand scope.
-- After fixes from GLM review → stay within the same scope.
+## When Qwen3-Coder is active
 
-Slash command: `/qwen-implement` (paste GLM handoff below the command block).
+- Implement **only** approved GLM handoff (or user paste with Goal / In scope / Out of scope / Files / Steps / Tests).
+- Missing or ambiguous handoff → **stop and ask**; do not replan or expand scope.
+- Return: changed files, rationale, tests run.
 
-## Workflow (mandatory sequence)
+Slash: `/qwen-implement` · Subagent: [`qwen-implementer`](../../.cursor/agents/qwen-implementer.md)
 
-1. **GLM-5.1** — analyze task → implementation plan + handoff.
-2. **GLM delegates** → `Use the qwen-implementer subagent to implement this GLM handoff:` + handoff block.
-3. **Qwen3-Coder** (subagent) — implement approved scope only.
-4. **GLM-5.1** — review result (facts from diff/tests, not assumptions).
-5. **GLM delegates fixes** → `qwen-implementer` again if needed.
-6. **GLM-5.1** — final verification.
+## When Auto or another model is active
 
-## Guardrails (both models)
+- Follow [AGENTS.md](../../AGENTS.md) §3 duties and §6 guardrails.
+- Non-trivial code: prefer GLM handoff + Qwen implement pattern; do not bypass facit rules.
 
-- Human fib = facit; `*_candidate` ≠ facit.
-- Wiki = navigation; source docs/code = truth.
-- See [repo-aware-coding-agent.mdc](repo-aware-coding-agent.mdc) for inspect / Observed vs Assumptions.
+## Guardrails (all models)
 
-Full setup: [docs/agent/MODEL_COLLABORATION.md](../../docs/agent/MODEL_COLLABORATION.md).
+Human fib = facit · `*_candidate` ≠ facit · wiki = navigation · source code/docs = truth.
+
+Inspect / Observed vs Assumptions: [repo-aware-coding-agent.mdc](repo-aware-coding-agent.mdc).

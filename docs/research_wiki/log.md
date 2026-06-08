@@ -438,6 +438,12 @@ Verification: ruff OK; pytest 195 passed, 76% cov.
 PNG (`human_review_charts`) and `level_event_review_tool` (dark theme). Same up/down
 colors; fib overlays unchanged. Tests: `test_human_review_candles.py`.
 
+## [2026-06-08] chore | Slim and align `.cursor/rules` with constitution
+
+Reviewed four `alwaysApply` rules: deduped overlap with AGENTS.md, added Auto-model
+guidance, fixed model-collaboration frontmatter `description`, tightened wiki/repo-aware
+rules. Constitution remains canonical; rules are enforcement layer only.
+
 ## [2026-06-08] docs | Agent/subagent doc map (INDEX.md)
 
 Added `docs/agent/INDEX.md` — layered inventory of all agent MD (constitution,
