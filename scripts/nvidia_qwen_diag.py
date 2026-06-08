@@ -50,7 +50,7 @@ def probe(key: str, label: str, timeout: int) -> None:
 
 def main() -> None:
     real = load_key()
-    print(f"real_key_len={len(real)} prefix={real[:12]}..." if real else "real_key_missing")
+    print("real_key_present" if real else "real_key_missing")
     probe("INVALID", "invalid_key", 30)
     if real:
         probe(real, "real_key", 60)
