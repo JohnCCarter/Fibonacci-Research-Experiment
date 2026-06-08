@@ -3,6 +3,9 @@
 
 Requires NVIDIA_API_KEY in the environment (never commit the key).
 Docs: https://docs.api.nvidia.com/nim/reference/qwen-qwen3-coder-480b-a35b-instruct-infer
+
+Status: manuell smoke-test, körs ej i CI. Bekräfta att den fortfarande används
+innan borttagning/arkivering (flaggad i repo-audit för token-effektivitet).
 """
 
 from __future__ import annotations

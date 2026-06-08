@@ -2,6 +2,9 @@
 """Smoke-test NVIDIA NIM chat API for z-ai/glm-5.1 (lead agent).
 
 Requires NVIDIA_API_KEY. Docs: https://docs.api.nvidia.com/nim/reference/z-ai-glm5.1
+
+Status: manuell smoke-test, körs ej i CI. Bekräfta att den fortfarande används
+innan borttagning/arkivering (flaggad i repo-audit för token-effektivitet).
 """
 
 from __future__ import annotations

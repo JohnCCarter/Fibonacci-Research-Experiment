@@ -1,4 +1,8 @@
-"""Quick NVIDIA API connectivity diag (no secrets printed)."""
+"""Quick NVIDIA API connectivity diag (no secrets printed).
+
+Status: manuell diagnostik, körs ej i CI. Bekräfta att den fortfarande används
+innan borttagning/arkivering (flaggad i repo-audit för token-effektivitet).
+"""
 
 from __future__ import annotations
 
