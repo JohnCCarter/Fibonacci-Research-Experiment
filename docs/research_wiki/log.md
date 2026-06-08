@@ -438,6 +438,12 @@ Verification: ruff OK; pytest 195 passed, 76% cov.
 PNG (`human_review_charts`) and `level_event_review_tool` (dark theme). Same up/down
 colors; fib overlays unchanged. Tests: `test_human_review_candles.py`.
 
+## [2026-06-08] release | Merge PR #27 to main
+
+Merged `feature/research-spot-check` → `main` (`bd22e87`): tooling A–F, fib/MTF
+research stack, docs/wiki, cursor collaboration, security fixes. Closed superseded
+PRs #20/#24/#26. Local `main` verified: pytest 198 passed.
+
 ## [2026-06-08] chore | Close #25; remove scratch scripts
 
 Closed **#25** on GitHub after tooling A–F landed on `feature/research-spot-check`
