@@ -19,8 +19,8 @@ second source of roles or authority.
 
 | Path | Model | Role |
 |------|-------|------|
-| [.cursor/agents/glm-lead.md](../../.cursor/agents/glm-lead.md) | `z-ai/glm-5.1` | Lead: plan, handoff, review, delegate |
-| [.cursor/agents/qwen-implementer.md](../../.cursor/agents/qwen-implementer.md) | `qwen/qwen3-coder-480b-a35b-instruct` | **Subagent of GLM** — implement handoff only |
+| [.cursor/agents/glm-lead.md](../../.cursor/agents/glm-lead.md) | `z-ai/glm-5.1` | Lead subagent — `/glm-plan` enforcement in Agent mode |
+| [.cursor/agents/qwen-implementer.md](../../.cursor/agents/qwen-implementer.md) | `qwen/qwen3-coder-480b-a35b-instruct` | **Subagent of GLM** — `/qwen-implement` Chat fallback |
 
 ---
 
@@ -37,11 +37,11 @@ second source of roles or authority.
 
 ## Layer 3 — Slash commands (`.cursor/commands/`)
 
-| Command | File | Who |
-|---------|------|-----|
-| `/glm-plan` | [glm-plan.md](../../.cursor/commands/glm-plan.md) | GLM lead |
-| `/qwen-implement` | [qwen-implement.md](../../.cursor/commands/qwen-implement.md) | Qwen (fallback chat) |
-| `/repo-agent` | [repo-agent.md](../../.cursor/commands/repo-agent.md) | Any — wiki bootstrap |
+| Command | File | Who / when |
+|---------|------|------------|
+| `/glm-plan` | [glm-plan.md](../../.cursor/commands/glm-plan.md) | GLM Chat — plan, handoff, delegate subagent |
+| `/qwen-implement` | [qwen-implement.md](../../.cursor/commands/qwen-implement.md) | Qwen Chat fallback — implement pasted handoff only |
+| `/repo-agent` | [repo-agent.md](../../.cursor/commands/repo-agent.md) | Any model — wiki bootstrap; Qwen send-gate bypass |
 
 ---
 
@@ -62,9 +62,9 @@ second source of roles or authority.
 | Path | Role |
 |------|------|
 | [.cursor/hooks.json](../../.cursor/hooks.json) | `sessionStart` / `beforeSubmitPrompt` wiring |
-| [.cursor/hooks/on_glm_session.py](../../.cursor/hooks/on_glm_session.py) | GLM session context |
-| [.cursor/hooks/on_qwen_session.py](../../.cursor/hooks/on_qwen_session.py) | Qwen session context |
-| [.cursor/hooks/on_qwen_prompt.py](../../.cursor/hooks/on_qwen_prompt.py) | Qwen send gate |
+| [.cursor/hooks/on_glm_session.py](../../.cursor/hooks/on_glm_session.py) | GLM `sessionStart` — handoff + template (model-gated) |
+| [.cursor/hooks/on_qwen_session.py](../../.cursor/hooks/on_qwen_session.py) | Qwen `sessionStart` — implementer context + handoff (model-gated) |
+| [.cursor/hooks/on_qwen_prompt.py](../../.cursor/hooks/on_qwen_prompt.py) | Qwen `beforeSubmitPrompt` — handoff/bootstrap gate |
 | [.cursor/README.md](../../.cursor/README.md) | Version-controlled Cursor shell index |
 
 ---
