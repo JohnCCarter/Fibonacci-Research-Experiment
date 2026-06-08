@@ -111,20 +111,24 @@ Expect sections: `Inspected:` / `Observed:` / `Assumptions:`.
 
 ---
 
-## Hooks (auto when Qwen is selected)
+## Hooks (model-gated — not Auto by default)
 
-Project hooks in [`.cursor/hooks.json`](../.cursor/hooks.json):
+Hooks in [`.cursor/hooks.json`](../.cursor/hooks.json) run on every session; each script **no-ops** unless the session model matches.
 
-| Event | Script | Behavior |
-|-------|--------|----------|
-| `sessionStart` | `on_qwen_session.py` | If `model` contains `qwen` → set `FIB_QWEN_REPO_AGENT=1` and inject handoff + repo-agent policy (`additional_context`) |
-| `beforeSubmitPrompt` | `on_qwen_prompt.py` | If Qwen and prompt lacks `/repo-agent`, wiki `@`, or `Repo-aware` → block with short nudge |
+| Event | Script | When active | Behavior |
+|-------|--------|-------------|----------|
+| `sessionStart` | `on_glm_session.py` | `model` contains `glm` | `FIB_GLM_LEAD_AGENT=1`; inject lead context + `handoff.md` + handoff template |
+| `sessionStart` | `on_qwen_session.py` | `model` contains `qwen` | `FIB_QWEN_IMPLEMENTER=1`; inject implementer context + `handoff.md` excerpt |
+| `beforeSubmitPrompt` | `on_qwen_prompt.py` | Qwen only | Block send without `/qwen-implement`, handoff markers, `/repo-agent`, wiki `@`, or `research_wiki` attachment |
+
+**Auto / other models:** no hook injection; [`.cursor/rules/`](../.cursor/rules/) (`alwaysApply`) still apply.
 
 **Enable:** Cursor Settings → **Hooks** — confirm project hooks load (restart Cursor after first add).
 
 **Test locally:**
 
 ```powershell
+'{"model":"z-ai/glm-5.1"}' | python .cursor/hooks/on_glm_session.py
 '{"model":"qwen/qwen3-coder-480b-a35b-instruct"}' | python .cursor/hooks/on_qwen_session.py
 ```
 
@@ -135,7 +139,7 @@ To disable the send-time gate only, remove the `beforeSubmitPrompt` entry from `
 ## Repo files (already committed)
 
 - `.cursor/rules/*.mdc` — agent policy
-- `.cursor/hooks.json` + `.cursor/hooks/*.py` — Qwen auto bootstrap
+- `.cursor/hooks.json` + `.cursor/hooks/*.py` — GLM/Qwen session context + Qwen send gate
 - `.cursor/commands/repo-agent.md` — slash command template
 - `AGENTS.md` — constitution
 - `.github/copilot-instructions.md` — VS Code Copilot parity
