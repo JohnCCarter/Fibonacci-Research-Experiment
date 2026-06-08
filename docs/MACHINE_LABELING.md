@@ -1,92 +1,93 @@
-# Maskin-labeling — två giltiga frågor
+﻿# Maskin-labeling â€” tvÃ¥ giltiga frÃ¥gor
 
-Provisoriska kandidater (`source="machine"`). Fullständiga integritetsregler: README § Maskin-labeling,
+Provisoriska kandidater (`source="machine"`). FullstÃ¤ndiga integritetsregler: README Â§ Maskin-labeling,
 `premortem/reflections/2026-05-29-machine-labeling.md`.
 
-**Lärdom (2026-05-29, BTC/USDT 1w):** Ett *chartfönster* du beskriver är inte alltid samma fråga som
-*vilken swing motorn väljer på full historik*. **Båda svaren kan vara giltiga** — dokumentera vilket
-du menar innan du jämför eller befordrar till facit.
+**LÃ¤rdom (2026-05-29, BTC/USD 1w):** Ett *chartfÃ¶nster* du beskriver Ã¤r inte alltid samma frÃ¥ga som
+*vilken swing motorn vÃ¤ljer pÃ¥ full historik*. **BÃ¥da svaren kan vara giltiga** â€” dokumentera vilket
+du menar innan du jÃ¤mfÃ¶r eller befordrar till facit.
 
 ---
 
-## Fråga A — Motorns swing (standard `autolabel`)
+## FrÃ¥ga A â€” Motorns swing (standard `autolabel`)
 
-**Vad det svarar på:** Vilken swing-leg skulle motorn välja som **bästa** leg på tillgänglig
-weekly-historik (med warmup för pivots/ATR)?
+**Vad det svarar pÃ¥:** Vilken swing-leg skulle motorn vÃ¤lja som **bÃ¤sta** leg pÃ¥ tillgÃ¤nglig
+weekly-historik (med warmup fÃ¶r pivots/ATR)?
 
 **Kommando:**
 
 ```bash
-uv run python -m fibengine.labeling.autolabel --symbols BTC/USDT --timeframes 1w
+uv run python -m fibengine.labeling.autolabel --symbols BTC/USD --timeframes 1w
 ```
 
-**Typiskt beteende:** Endpoints kan ligga **utanför** det synliga fönster du har på TradingView just nu,
-om en äldre/nyligare leg poängsätter högre.
+**Typiskt beteende:** Endpoints kan ligga **utanfÃ¶r** det synliga fÃ¶nster du har pÃ¥ TradingView just nu,
+om en Ã¤ldre/nyligare leg poÃ¤ngsÃ¤tter hÃ¶gre.
 
-**När det är rätt:** Du vill ha **facit för “vilken swing gäller på denna TF”** (golden set) efter
-mänsklig granskning → spara som `source="human"` i `labeling.tool`.
+**NÃ¤r det Ã¤r rÃ¤tt:** Du vill ha **facit fÃ¶r â€œvilken swing gÃ¤ller pÃ¥ denna TFâ€** (golden set) efter
+mÃ¤nsklig granskning â†’ spara som `source="human"` i `labeling.tool`.
 
-**Exempel (godkänt facit):** BTC/USDT 1w — high **2025-10-27** @ 116 400, low **2026-02-02** @ 60 000.
-Se `data/labels/binance/BTC-USDT/1w.json`, reflektion
+**Exempel (godkÃ¤nt facit, legacy):** BTC/USD 1w â€” high **2025-10-27** @ 116â€¯400, low **2026-02-02** @ 60â€¯000.
+Se reflektion
 `premortem/reflections/2026-05-29-btc-1w-machine-approved.md`.
 
 ---
 
-## Fråga B — Synligt chartfönster (lokal vy)
+## FrÃ¥ga B â€” Synligt chartfÃ¶nster (lokal vy)
 
-**Vad det svarar på:** Vilken swing **syns** mellan två datum du anger (t.ex. “måndag 23 mar – måndag 4 maj 2026”
-på weekly)?
+**Vad det svarar pÃ¥:** Vilken swing **syns** mellan tvÃ¥ datum du anger (t.ex. â€œmÃ¥ndag 23 mar â€“ mÃ¥ndag 4 maj 2026â€
+pÃ¥ weekly)?
 
-**Status i kod:** Standard-`autolabel` gör **inte** detta automatiskt. Det kräver att endpoints filtreras
-till fönstret (kommande flagga `--chart-window-start` / `--chart-window-end`, eller manuell omkörning
-med `rank_swings` + filter). Tills dess: beskriv fönstret i chat/issue så vi inte blandar ihop med fråga A.
+**Status i kod:** Standard-`autolabel` gÃ¶r **inte** detta automatiskt. Det krÃ¤ver att endpoints filtreras
+till fÃ¶nstret (kommande flagga `--chart-window-start` / `--chart-window-end`, eller manuell omkÃ¶rning
+med `rank_swings` + filter). Tills dess: beskriv fÃ¶nstret i chat/issue sÃ¥ vi inte blandar ihop med frÃ¥ga A.
 
-**Typiskt beteende:** Low/high nära **första/sista veckan** i fönstret; pris från **vecko-OHLC** (Binance-cache),
-inte nödvändigtvis exakt samma som en manuell wick-klick i TradingView.
+**Typiskt beteende:** Low/high nÃ¤ra **fÃ¶rsta/sista veckan** i fÃ¶nstret; pris frÃ¥n **vecko-OHLC** (Bitfinex-cache),
+inte nÃ¶dvÃ¤ndigtvis exakt samma som en manuell wick-klick i TradingView.
 
-**När det är rätt:** Du vill validera “vad motorn ser i **den här rutan**” — bra maskin-kandidat eller
-jämförelse mot screenshot, **inte** automatiskt samma som facit för hela TF.
+**NÃ¤r det Ã¤r rÃ¤tt:** Du vill validera â€œvad motorn ser i **den hÃ¤r rutan**â€ â€” bra maskin-kandidat eller
+jÃ¤mfÃ¶relse mot screenshot, **inte** automatiskt samma som facit fÃ¶r hela TF.
 
-**Exempel (BTC/USDT 1w, fönster 2026-03-23 – 2026-05-04):**
+**Exempel (BTC/USD 1w, fÃ¶nster 2026-03-23 â€“ 2026-05-04):**
 
-| Källa | Low | High |
+| KÃ¤lla | Low | High |
 |--------|-----|------|
-| Motor (endpoints i fönster) | 65 000 (vecko 23 mar) | 82 850 (vecko 4 maj) |
-| TradingView (användare) | 65 019 | 82 807 |
+| Motor (endpoints i fÃ¶nster) | 65â€¯000 (vecko 23 mar) | 82â€¯850 (vecko 4 maj) |
+| TradingView (anvÃ¤ndare) | 65â€¯019 | 82â€¯807 |
 | Skillnad | ~19 USDT | ~43 USDT |
 
-Liten marginal = **bra resultat** för fråga B; det **ersätter inte** godkänd fråga A om de skiljer sig.
+Liten marginal = **bra resultat** fÃ¶r frÃ¥ga B; det **ersÃ¤tter inte** godkÃ¤nd frÃ¥ga A om de skiljer sig.
 
-Artefakt från omkörning: `experiments/runs/experiment/2026-05-29/btc_1w_machine_window/candidate.json`.
+Artefakt frÃ¥n omkÃ¶rning: `experiments/runs/experiment/2026-05-29/btc_1w_machine_window/candidate.json`.
 
 ---
 
 ## Kommunikationsfallgropar
 
-| Du säger | Risk om vi tolkar fel | Rätt tolkning |
+| Du sÃ¤ger | Risk om vi tolkar fel | RÃ¤tt tolkning |
 |----------|------------------------|---------------|
-| “Kör maskin på weekly 23 mar – 4 maj” | Endpoints måste ligga i datumintervallet | Antingen **fråga B** (fönster) eller **fråga A** (bästa leg) — **fråga explicit** |
-| “Det blev fel datum” | Vi byter facit till fönster-swing | Fönster-swing kan vara **rätt för B** medan **A fortfarande är facit** |
-| “TV visar andra priser” | Bug i motorn | Ofta **OHLC vs wick**; jämför apples-to-apples |
+| â€œKÃ¶r maskin pÃ¥ weekly 23 mar â€“ 4 majâ€ | Endpoints mÃ¥ste ligga i datumintervallet | Antingen **frÃ¥ga B** (fÃ¶nster) eller **frÃ¥ga A** (bÃ¤sta leg) â€” **frÃ¥ga explicit** |
+| â€œDet blev fel datumâ€ | Vi byter facit till fÃ¶nster-swing | FÃ¶nster-swing kan vara **rÃ¤tt fÃ¶r B** medan **A fortfarande Ã¤r facit** |
+| â€œTV visar andra priserâ€ | Bug i motorn | Ofta **OHLC vs wick**; jÃ¤mfÃ¶r apples-to-apples |
 
-**Regel:** Innan befordran till `source="human"`, skriv i not/reflektion: **A (motor-swing)** eller **B (chartfönster)**.
+**Regel:** Innan befordran till `source="human"`, skriv i not/reflektion: **A (motor-swing)** eller **B (chartfÃ¶nster)**.
 
 ---
 
-## Facit och evaluering (oförändrat)
+## Facit och evaluering (ofÃ¶rÃ¤ndrat)
 
-- Endast `source="human"` räknas i `pivot_recall`, `experiment`, och 20–30-målet (`worklist`).
-- Maskin-labels skriver **aldrig** över human (`skipped_human`).
-- Befordran: `labeling.tool` → justera → `s` → `human`.
+- Endast `source="human"` rÃ¤knas i `pivot_recall`, `experiment`, och 20â€“30-mÃ¥let (`worklist`).
+- Maskin-labels skriver **aldrig** Ã¶ver human (`skipped_human`).
+- Befordran: `labeling.tool` â†’ justera â†’ `s` â†’ `human`.
 
 ---
 
 ## Relaterat
 
-| Fil | Innehåll |
+| Fil | InnehÃ¥ll |
 |-----|----------|
-| `premortem/reflections/2026-05-29-machine-labeling.md` | Införande av maskin-labeling |
-| `premortem/reflections/2026-05-29-btc-1w-machine-approved.md` | BTC 1w: A godkänd som facit |
-| `data/labels/README.md` | `source`-fält |
+| `premortem/reflections/2026-05-29-machine-labeling.md` | InfÃ¶rande av maskin-labeling |
+| `premortem/reflections/2026-05-29-btc-1w-machine-approved.md` | BTC 1w: A godkÃ¤nd som facit |
+| `data/labels/README.md` | `source`-fÃ¤lt |
 
-**Planerat:** `--chart-window-start` / `--chart-window-end` på `labeling.autolabel` för fråga B i CLI.
+**Planerat:** `--chart-window-start` / `--chart-window-end` pÃ¥ `labeling.autolabel` fÃ¶r frÃ¥ga B i CLI.
+

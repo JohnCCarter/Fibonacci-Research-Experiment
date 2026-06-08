@@ -12,11 +12,12 @@ data:
   symbol: BTC/USD          # Bitfinex spot (inte USDT); justera mot er Genesis-paper-lista
   timeframe: 1h
   limit: 500
+  history_start: "2022-10-31"
   timeframe_limits:
-    4h: 1000
-    1d: 1000
-    1w: 1000
-    1M: 500
+    4h: 8000
+    1d: 1400
+    1w: 220
+    1M: 48
 
 pivots:
   lookback: 3

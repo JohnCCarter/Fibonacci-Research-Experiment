@@ -1,0 +1,76 @@
+seed: 42
+
+# Research-only DATA EXPANSION window for the fib fingerprint × outcome study.
+# Identical method/thresholds to settings.yaml — ONLY the candle data scope is
+# widened so older human-fib events stop being load-skipped and sample size per
+# candidate/fingerprint bucket grows.
+#
+# Window starts 2016-11-05 (deepest cached 1d history for BTC/ETH, limit_3500.csv).
+# This recovers ETH 2017-2018 fibs. BTC pre-2016 and SOL pre-2022 1d have no deep
+# cache, so those remain skipped (would need a network refetch).
+#
+# Do NOT use this as the global default — settings.yaml stays at 2022-10-31 for
+# experiment/review/leaderboard reproducibility.
+
+data:
+  exchange: bitfinex
+  symbol: BTC/USD
+  timeframe: 1h
+  limit: 500
+  history_start: "2016-11-05"
+  timeframe_limits:
+    4h: 8000
+    # 1d deepened to select the limit_3500.csv caches (from 2016-11-05).
+    1d: 3500
+    1w: 1000
+    1M: 500
+
+pivots:
+  lookback: 3
+  atr_period: 14
+  min_prominence_atr: 0.5
+  mode: fractal
+  fractal_n: 1
+
+scoring:
+  weights:
+    magnitude: 0.8
+    recency: 0.6
+    prominence: 0.5
+    cleanliness: 0.9
+    round_number: 0.2
+    duration: -0.4
+    structure_alignment: 1.4
+    scale_confluence: 1.2
+  duration_target: 20
+  max_candidate_legs: 50
+  structure_window: 6
+  confluence_degrees: [5, 12]
+  confluence_tol_bars: 3
+  confirm_min_retrace: 0.1
+
+fib:
+  levels: [0.236, 0.382, 0.5, 0.618, 0.786]
+
+evaluation:
+  price_tol_atr: 0.5
+  time_tol_bars: 3
+  fib_level_tol: 0.02
+
+sizing:
+  enabled: false
+  entry_levels: [0.382, 0.5, 0.618]
+  sizes: [1.0, 2.0, 3.0]
+
+labeling:
+  enable_same_candle_mtf_resolution: true
+  mtf_disambiguation: false
+
+backtest:
+  warmup_bars: 60
+  step: 1
+  extension_tol_bars: 5
+  gate_max_flip_rate: 0.35
+  gate_min_confirmed_rate: 0.5
+  gate_min_direction_consistency: 0.8
+  gate_max_endpoint_drift_bars: 40.0

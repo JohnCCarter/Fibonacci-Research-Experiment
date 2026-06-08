@@ -18,6 +18,9 @@ class DataConfig(BaseModel):
     symbol: str = "BTC/USD"
     timeframe: str = "1h"
     limit: int = Field(default=500, ge=1)
+    # Inkluderande startdatum för cachad OHLCV (ISO-datum, UTC). Fetch hämtar från
+    # detta datum; load_candles trimmar äldre rader. None → endast ``limit``/``since``.
+    history_start: str | None = Field(default=None)
     # Per-timeframe limit-override. Långa timeframes (1d/1w/1M) behöver fler
     # candles för att täcka äldre labels — annars hamnar facit utanför fönstret
     # (out-of-window) och tystas ur måtten. Saknad nyckel → faller tillbaka på

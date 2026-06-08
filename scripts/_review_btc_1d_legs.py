@@ -8,11 +8,9 @@ from fibengine.data.loader import load_candles
 from fibengine.evaluation.bars import bar_of_timestamp
 from fibengine.labeling.store import load_label
 
-lbl = load_label("data/labels/binance/BTC-USDT/1d.json")
-w = load_label("data/labels/binance/BTC-USDT/1w.json")
-ddf = load_candles(
-    load_settings().data.model_copy(update={"symbol": "BTC/USDT", "timeframe": "1d"})
-)
+lbl = load_label("data/labels/Bitfinex/BTC-USD/1d.json")
+w = load_label("data/labels/Bitfinex/BTC-USD/1w.json")
+ddf = load_candles(load_settings().data.model_copy(update={"symbol": "BTC/USD", "timeframe": "1d"}))
 legs = lbl.all_legs()
 print("n_legs", len(legs))
 print("created", lbl.created_at[:19])

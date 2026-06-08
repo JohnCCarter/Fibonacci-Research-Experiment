@@ -1,22 +1,22 @@
-"""Maskin-labeling: generera provisoriska swing-kandidater för granskning.
+"""Maskin-labeling: generera provisoriska swing-kandidater fÃ¶r granskning.
 
-Två giltiga frågor (båda kan vara rätt — blanda inte ihop dem):
-- **A Motor-swing:** `autolabel` = bästa leg på tillgänglig historik (standard CLI).
-- **B Chartfönster:** endpoints inom ett synligt datumintervall (ej standard än;
+TvÃ¥ giltiga frÃ¥gor (bÃ¥da kan vara rÃ¤tt â€” blanda inte ihop dem):
+- **A Motor-swing:** `autolabel` = bÃ¤sta leg pÃ¥ tillgÃ¤nglig historik (standard CLI).
+- **B ChartfÃ¶nster:** endpoints inom ett synligt datumintervall (ej standard Ã¤n;
   se docs/MACHINE_LABELING.md).
 
-VIKTIGT — integritet:
-- Maskin-labels (`source="machine"`) är KANDIDATER, inte facit. De skrivs så att de
-  kan öppnas i `labeling.tool`, granskas och justeras av en människa. Sparar du dem
+VIKTIGT â€” integritet:
+- Maskin-labels (`source="machine"`) Ã¤r KANDIDATER, inte facit. De skrivs sÃ¥ att de
+  kan Ã¶ppnas i `labeling.tool`, granskas och justeras av en mÃ¤nniska. Sparar du dem
   i verktyget blir de `source="human"` (befordran).
-- De EXKLUDERAS från recall/agreement (`evaluation/pivot_recall`, `experiment`) —
-  annars mäter vi motorn mot sin egen output (cirkulärt). De räknas INTE mot
-  20–30-facit-målet i `labeling.worklist`.
-- En befintlig MÄNSKLIG label skrivs aldrig över (skyddar golden set).
+- De EXKLUDERAS frÃ¥n recall/agreement (`evaluation/pivot_recall`, `experiment`) â€”
+  annars mÃ¤ter vi motorn mot sin egen output (cirkulÃ¤rt). De rÃ¤knas INTE mot
+  20â€“30-facit-mÃ¥let i `labeling.worklist`.
+- En befintlig MÃ„NSKLIG label skrivs aldrig Ã¶ver (skyddar golden set).
 
-Kör:
+KÃ¶r:
     uv run python -m fibengine.labeling.autolabel
-    uv run python -m fibengine.labeling.autolabel --symbols SOL/USDT --timeframes 4h,1d
+    uv run python -m fibengine.labeling.autolabel --symbols SOL/USD --timeframes 4h,1d
 """
 
 from __future__ import annotations
@@ -31,11 +31,11 @@ from fibengine.data.loader import load_candles
 from fibengine.labeling.store import Point, SwingLabel, find_label, save_label
 from fibengine.labeling.worklist import DEFAULT_SYMBOLS, DEFAULT_TIMEFRAMES
 
-MACHINE_NOTE = "maskin-labeling: provisorisk kandidat — granska och justera i labeling.tool"
+MACHINE_NOTE = "maskin-labeling: provisorisk kandidat â€” granska och justera i labeling.tool"
 
 
 def label_from_swing(swing: Swing, exchange: str, symbol: str, timeframe: str) -> SwingLabel:
-    """Bygg en maskin-label från motorns valda swing (high/low-endpunkter)."""
+    """Bygg en maskin-label frÃ¥n motorns valda swing (high/low-endpunkter)."""
     high = swing.start if swing.start.kind == "high" else swing.end
     low = swing.start if swing.start.kind == "low" else swing.end
     return SwingLabel(
@@ -52,7 +52,7 @@ def label_from_swing(swing: Swing, exchange: str, symbol: str, timeframe: str) -
 def autolabel_one(
     settings: Settings, exchange: str, symbol: str, timeframe: str, overwrite: bool = False
 ) -> dict:
-    """Generera (eller hoppa över) en maskin-label för en kombination."""
+    """Generera (eller hoppa Ã¶ver) en maskin-label fÃ¶r en kombination."""
     existing = find_label(exchange, symbol, timeframe)
     if existing is not None and existing.source == "human":
         return {"symbol": symbol, "timeframe": timeframe, "status": "skipped_human"}
@@ -112,17 +112,17 @@ def _split_csv(value: str | None) -> list[str] | None:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generera provisoriska maskin-labels (kandidater) för granskning."
+        description="Generera provisoriska maskin-labels (kandidater) fÃ¶r granskning."
     )
     parser.add_argument(
         "--exchange", default="bitfinex", help="CCXT exchange id (default: bitfinex)"
     )
-    parser.add_argument("--symbols", help="Comma-separated symbols, e.g. SOL/USDT")
+    parser.add_argument("--symbols", help="Comma-separated symbols, e.g. SOL/USD")
     parser.add_argument("--timeframes", help="Comma-separated timeframes, e.g. 4h,1d")
     parser.add_argument(
         "--overwrite",
         action="store_true",
-        help="Skriv över befintliga MASKIN-labels (mänskliga rörs aldrig)",
+        help="Skriv Ã¶ver befintliga MASKIN-labels (mÃ¤nskliga rÃ¶rs aldrig)",
     )
     return parser.parse_args()
 
@@ -137,7 +137,7 @@ def main() -> None:
     )
     written = [r for r in results if r["status"] == "written"]
     print(f"Skrev {len(written)} maskin-labels (source=machine).")
-    print("Granska dem i labeling.tool och tryck 's' för att befordra till human-facit.")
+    print("Granska dem i labeling.tool och tryck 's' fÃ¶r att befordra till human-facit.")
 
 
 if __name__ == "__main__":

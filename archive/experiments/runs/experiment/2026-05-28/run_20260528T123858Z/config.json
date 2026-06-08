@@ -1,0 +1,70 @@
+﻿{
+  "seed": 42,
+  "data": {
+    "exchange": "Bitfinex",
+    "symbol": "BTC/USD",
+    "timeframe": "1h",
+    "limit": 500
+  },
+  "pivots": {
+    "lookback": 3,
+    "atr_period": 14,
+    "min_prominence_atr": 0.5,
+    "mode": "fractal",
+    "fractal_n": 1
+  },
+  "scoring": {
+    "weights": {
+      "magnitude": 0.8,
+      "recency": 0.6,
+      "prominence": 0.5,
+      "cleanliness": 0.9,
+      "round_number": 0.2,
+      "duration": -0.3,
+      "structure_alignment": 1.4,
+      "scale_confluence": 1.2
+    },
+    "duration_target": 20,
+    "max_candidate_legs": 50,
+    "magnitude_scale_atr": 10.0,
+    "structure_window": 6,
+    "confluence_degrees": [
+      5,
+      12
+    ],
+    "confluence_tol_bars": 3,
+    "confirm_min_retrace": 0.1
+  },
+  "fib": {
+    "levels": [
+      0.236,
+      0.382,
+      0.5,
+      0.618,
+      0.786
+    ]
+  },
+  "evaluation": {
+    "price_tol_atr": 0.5,
+    "time_tol_bars": 3,
+    "fib_level_tol": 0.02
+  },
+  "sizing": {
+    "enabled": false,
+    "entry_levels": [
+      0.382,
+      0.5,
+      0.618
+    ],
+    "sizes": [
+      1.0,
+      2.0,
+      3.0
+    ]
+  },
+  "backtest": {
+    "warmup_bars": 60,
+    "step": 1,
+    "extension_tol_bars": 5
+  }
+}

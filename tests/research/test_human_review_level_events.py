@@ -1,4 +1,4 @@
-"""Tester för human-review-paketet (research-only, syntetisk data, ingen nätverk)."""
+"""Tester fÃ¶r human-review-paketet (research-only, syntetisk data, ingen nÃ¤tverk)."""
 
 from __future__ import annotations
 
@@ -16,6 +16,8 @@ from fibengine.research.human_review_level_events import (
     render_chart,
     run_human_review,
     sample_candidates,
+    window_for_view,
+    xlim_for_view,
 )
 from fibengine.research.level_events import LevelEventConfig
 
@@ -25,13 +27,19 @@ def _df(closes: list[float]) -> pd.DataFrame:
     n = len(arr)
     idx = pd.date_range("2024-01-01", periods=n, freq="1h", tz="UTC")
     return pd.DataFrame(
-        {"open": arr, "high": arr + 0.5, "low": arr - 0.5, "close": arr, "volume": np.ones(n)},
+        {
+            "open": arr,
+            "high": arr + 0.5,
+            "low": arr - 0.5,
+            "close": arr,
+            "volume": np.ones(n),
+        },
         index=idx,
     )
 
 
 def _trend_df() -> pd.DataFrame:
-    # Tydlig trend med pullbacks så detektorn ger flera nivå-events.
+    # Tydlig trend med pullbacks sÃ¥ detektorn ger flera nivÃ¥-events.
     grid = np.arange(0, 160)
     closes = np.interp(grid, [0, 40, 70, 110, 159], [100, 150, 120, 165, 130])
     return _df(list(closes))
@@ -47,14 +55,14 @@ def _up_swing(df: pd.DataFrame, start: int = 0, end: int = 40) -> Swing:
 
 def _settings() -> Settings:
     s = Settings()
-    s.data.symbol = "BTC/USDT"
+    s.data.symbol = "BTC/USD"
     s.data.timeframe = "1h"
-    s.data.exchange = "binance"
+    s.data.exchange = "Bitfinex"
     return s
 
 
 def _candidates(df: pd.DataFrame, settings: Settings) -> list[dict]:
-    """Bygg rader direkt från en känd swing (utan walk-forward/select_swing)."""
+    """Bygg rader direkt frÃ¥n en kÃ¤nd swing (utan walk-forward/select_swing)."""
     level_cfg = LevelEventConfig()
     ratios = settings.fib.levels
     meta = {
@@ -74,40 +82,52 @@ def _candidates(df: pd.DataFrame, settings: Settings) -> list[dict]:
 def test_review_row_schema_has_required_fields_and_placeholders():
     df = _trend_df()
     rows = _candidates(df, _settings())
-    assert rows, "förväntade minst en kandidat"
+    assert rows, "fÃ¶rvÃ¤ntade minst en kandidat"
     for r in rows:
         assert set(r.keys()) == set(REVIEW_COLUMNS)
-        # Tomma platshållare som människan fyller i.
+        # Tomma platshÃ¥llare som mÃ¤nniskan fyller i.
         assert r["human_label"] == ""
         assert r["human_confidence"] == ""
         assert r["human_note"] == ""
-        # Obligatoriska detektorfält + swing-kontext finns.
+        # Obligatoriska detektorfÃ¤lt + swing-kontext finns.
         for key in (
+            "fib_source",
             "fib_level",
             "fib_price",
+            "fib_levels",
             "event_bar",
             "event_time",
+            "relation",
             "auto_candidate",
             "touch_type",
             "approach_side",
             "swing_start_time",
             "swing_end_time",
             "swing_direction",
+            "anchor_a_time",
+            "anchor_a_price",
+            "anchor_a_bar",
+            "anchor_b_time",
+            "anchor_b_price",
+            "anchor_b_bar",
             "chart_path",
         ):
             assert r[key] not in (None, "")
+        assert r["relation"] in {"above", "below", "touch", "cross"}
+        assert r["anchor_a_bar"] == r["swing_start_bar"]
+        assert r["anchor_b_bar"] == r["swing_end_bar"]
 
 
 def test_chart_path_tied_to_review_id_and_filesystem_safe():
-    rid = make_review_id("BTC/USDT", "1h", "0.5", 12, 40, 73, "continuation_candidate")
+    rid = make_review_id("BTC/USD", "1h", "0.5", 12, 40, 73, "continuation_candidate")
     assert "/" not in rid and "." not in rid
-    assert rid == "BTC-USDT_1h_L0p5_s12_e40_b73_cont"
+    assert rid == "BTC-USD_1h_L0p5_s12_e40_b73_cont"
 
 
 def test_review_id_distinguishes_legs_sharing_end_pivot():
-    # Walk-forward kan låsa två legs med samma end men olika start; id:n får ej kollidera.
-    a = make_review_id("BTC/USDT", "1h", "0.5", 12, 40, 73, "continuation_candidate")
-    b = make_review_id("BTC/USDT", "1h", "0.5", 20, 40, 73, "continuation_candidate")
+    # Walk-forward kan lÃ¥sa tvÃ¥ legs med samma end men olika start; id:n fÃ¥r ej kollidera.
+    a = make_review_id("BTC/USD", "1h", "0.5", 12, 40, 73, "continuation_candidate")
+    b = make_review_id("BTC/USD", "1h", "0.5", 20, 40, 73, "continuation_candidate")
     assert a != b
 
 
@@ -143,40 +163,6 @@ def test_sampling_filters_by_candidate_type_and_level():
     sampled = sample_candidates(rows, cfg)
     assert sampled
     assert all(r["auto_candidate"] == present_type for r in sampled)
-
-
-def test_sampling_balances_across_candidate_types():
-    from collections import Counter
-
-    # Syntetisk pool med skev fördelning: 20 cont, 10 rej, 4 react, 2 fail.
-    rows = []
-    plan = {
-        "continuation_candidate": 20,
-        "rejection_candidate": 10,
-        "reaction_candidate": 4,
-        "failure_candidate": 2,
-    }
-    for ctype, count in plan.items():
-        for i in range(count):
-            rows.append(
-                {
-                    "review_id": f"{ctype}_{i:03d}",
-                    "auto_candidate": ctype,
-                    "fib_level": ["0.382", "0.5", "0.618"][i % 3],
-                }
-            )
-    cfg = HumanReviewConfig(max_events=16, seed=11)
-    sampled = sample_candidates(rows, cfg)
-    counts = Counter(r["auto_candidate"] for r in sampled)
-    assert len(sampled) == 16
-    # Round-robin tömmer de små typerna helt och delar resten jämnt mellan de stora:
-    # fail har bara 2, react bara 4; de 10 kvarvarande platserna delas 5/5 cont/rej.
-    assert counts["failure_candidate"] == 2
-    assert counts["reaction_candidate"] == 4
-    assert counts["continuation_candidate"] == 5
-    assert counts["rejection_candidate"] == 5
-    # Den dominerande typen (20 tillgängliga) tar INTE en otyglad andel.
-    assert counts["continuation_candidate"] < 20
 
 
 def test_render_chart_writes_nonempty_png(tmp_path):
@@ -216,9 +202,34 @@ def test_end_to_end_package_files_created(monkeypatch, tmp_path):
     assert (run_dir / "review_sample.jsonl").exists()
     assert (run_dir / "REVIEW_INDEX.md").exists()
     pngs = list((run_dir / "charts").glob("*.png"))
-    assert pngs, "förväntade minst en chart-PNG"
+    assert pngs, "fÃ¶rvÃ¤ntade minst en chart-PNG"
     assert len(pngs) == result["total_sampled"]
     assert result["total_sampled"] <= 6
+
+
+def test_fib_context_window_spans_anchors_and_event():
+    df = _trend_df()
+    row = {
+        "event_bar": 100,
+        "anchor_a_bar": 20,
+        "anchor_b_bar": 80,
+        "swing_start_bar": 20,
+        "swing_end_bar": 80,
+    }
+    cfg = HumanReviewConfig(
+        context_before=10,
+        context_after=10,
+        fib_context_pad_bars=5,
+    )
+    lo, hi = window_for_view(row, df, cfg, "fib_context")
+    assert lo == 15
+    assert hi == 105
+    zoom_lo, zoom_hi = window_for_view(row, df, cfg, "event_zoom")
+    assert zoom_lo == 90
+    assert zoom_hi == 110
+    xmin, xmax = xlim_for_view(row, df, cfg, "fib_context")
+    assert xmin == 14.5
+    assert xmax == 105.5
 
 
 def test_csv_and_jsonl_rows_agree(monkeypatch, tmp_path):

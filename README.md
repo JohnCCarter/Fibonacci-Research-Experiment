@@ -7,9 +7,9 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 > Status: MVP / prototyp / premortem. Lättviktig disciplin (logging, audits,
 > reflektion) — ingen tung governance. Kan ev. portas in i Genesis-Core senare.
 
-> Organisation: se [`REPO_POLICY.md`](REPO_POLICY.md) för mappindex, namnkonventioner
+> Organisation: se [`repository-layout-policy.md`](repository-layout-policy.md) för mappindex, namnkonventioner
 > och städningsregler.
-> Premortem/reflektion är obligatoriskt: se `premortem/` och `REPO_POLICY.md` §11.
+> Premortem/reflektion är obligatoriskt: se `premortem/` och `repository-layout-policy.md` §11.
 > Spårmodell: se `docs/TRACKS.md` (Research / Validate / Promotion).
 > Backtest-roadmap: [`docs/FIB_BACKTEST_PLAN.md`](docs/FIB_BACKTEST_PLAN.md).
 > Bitfinex / Genesis validate: [`docs/GENESIS_BITFINEX_VALIDATE.md`](docs/GENESIS_BITFINEX_VALIDATE.md).
@@ -31,6 +31,7 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 ```bash
 uv sync --extra dev                          # bygg miljö + lockfile
 uv run python -m fibengine.data.fetch        # hämta + cacha candles (CCXT)
+uv run python -m fibengine.data.fetch --labeling-set --refresh  # BTC/ETH/SOL 1w+1d till idag
 uv run python -m fibengine.labeling.worklist # vad återstår att labela mot 20–30-målet
 uv run python -m fibengine.labeling.autolabel # maskin-kandidater (source=machine) att granska
 uv run python -m fibengine.labeling.tool     # klicka swing high/low -> facit
@@ -51,11 +52,6 @@ Använd `--config` för en principmotiverad variant under `config/variants/` uta
 uv run python -m fibengine.experiment --config config/variants/<profil>.yaml
 uv run python -m fibengine.backtest.runner --config config/variants/<profil>.yaml
 ```
-
-> Obs: automatisk vikt-optimering (Optuna) togs medvetet bort — den optimerade mot
-> de manuella labelsen, vilket bryter mot filosofin (labels = referens, inte domare).
-> Se `premortem/reflections/2026-05-28-remove-optuna.md`. Vikter sätts på principgrund.
-> Arkiverade Optuna-artefakter finns kvar under `archive/` som historik.
 
 ## Pipeline (Lager A)
 

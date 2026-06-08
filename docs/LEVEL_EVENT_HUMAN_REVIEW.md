@@ -13,7 +13,29 @@ that confirmation cheap. It samples a bounded set of candidates, renders one
 chart per event, and writes a review sheet with blank columns the reviewer fills
 in. No TradingView, no manual chart hunting.
 
-## Mobile-friendly workflow
+## Interactive review (recommended on desktop)
+
+Same candlestick chart feel as the labeling tool — pan/zoom, hover OHLC:
+
+```bash
+uv run python -m fibengine.research.level_event_review_tool \
+  --run-dir experiments/review/fib_level_events/review_20260601T152524Z
+```
+
+| Key | Action |
+|-----|--------|
+| `1`–`5` | `agree`, `wrong_type`, `missed_context`, `noise`, `unclear` |
+| `h` / `m` / `l` | confidence high / medium / low |
+| `n` or `→` | next event |
+| `p` or `←` | previous event |
+| `g` | toggle **fib-context** (full H/L range) / **event-zoom** (tight event window) |
+| `s` | save `review_sample.csv` + `.jsonl` |
+| `z` | reset view to current mode default |
+| `q` | save and quit |
+
+Use the matplotlib toolbar to pan/zoom like `fibengine.labeling.tool`.
+
+## Mobile-friendly workflow (PNG + CSV)
 
 Each run produces a self-contained folder of PNG charts plus a markdown index
 and a review sheet (CSV + JSONL). The reviewer:
@@ -29,7 +51,11 @@ load fast and read well on a small screen.
 ## CLI usage
 
 ```bash
-# Default: balanced sample of up to 40 events across candidate types & fib levels.
+# BTC 1d spot-check (Hypothesis A default sample):
+uv run python -m fibengine.research.human_review_level_events \
+  --symbol BTC/USD --timeframe 1d --max-events 40 --seed 7 --line
+
+# Default config TF (often 1h): balanced sample across candidate types & levels.
 uv run python -m fibengine.research.human_review_level_events --max-events 40 --seed 7
 
 # Single currently-selected swing instead of all walk-forward legs:
@@ -44,8 +70,9 @@ uv run python -m fibengine.research.human_review_level_events \
   --candidate-type continuation_candidate --candidate-type rejection_candidate \
   --level 0.5 --level 0.618 --seed 7
 
-# Candlesticks instead of close-line:
-uv run python -m fibengine.research.human_review_level_events --candlestick
+# Review saved human-fib event JSON:
+uv run python -m fibengine.research.human_review_level_events \
+  --human-fib-events data/labels/human_fib/bitfinex/BTC-USD/1d/<fib_id>_events.json
 ```
 
 Flags:
@@ -60,8 +87,9 @@ Flags:
 | `--candidate-type` | Filter to a candidate type (repeatable) | all |
 | `--level` | Filter to a fib level e.g. `0.5` (repeatable) | all |
 | `--seed` | Random seed → reproducible sample | none |
-| `--candlestick` | Candlesticks instead of close-line | off |
+| `--line` | Close-line instead of candlesticks | off |
 | `--context-before` / `--context-after` | Bars shown around the event | `30` / `15` |
+| `--human-fib-events` | Review saved human-fib event JSON files (repeatable) | off |
 
 ## Artifact structure
 
@@ -76,12 +104,10 @@ experiments/review/fib_level_events/<run_id>/
 `<run_id>` is `review_<UTC timestamp>`. The whole `experiments/review/` tree is
 git-ignored: these are generated artifacts, not committed repo data.
 
-Each review row contains: `review_id, symbol, timeframe, exchange, fib_level,
-fib_price, event_bar, event_time, auto_candidate, touch_type, approach_side,
-note, evidence_forward_bars, evidence_closes_beyond, evidence_closes_back,
-evidence_max_penetration_atr, swing_start_time, swing_end_time, swing_direction,
-swing_start_bar, swing_end_bar, chart_path, human_label, human_confidence,
-human_note`.
+Each review row contains market context, fib context (`fib_source`, `fib_id`,
+`fib_level`, `fib_price`, `fib_levels`), event context (`relation`,
+`auto_candidate`, `touch_type`, evidence), anchor context (`anchor_a`,
+`anchor_b`, swing bars), and blank `human_*` review fields.
 
 ## Label schema
 
@@ -97,12 +123,29 @@ human_note`.
 
 `human_note` — free text (optional).
 
+## View modes (#21)
+
+Default is **fib-context**: the chart spans human H/L anchors (plus padding) with all
+fib levels and the selected event overlaid — like a normal human fib chart first.
+
+Press **`g`** to switch to **event-zoom** (tighter window around the event bar only).
+**`z`** resets pan/zoom to the default for the active mode.
+
+PNG charts from `human_review_level_events` use fib-context by default. Override with
+`--default-view event_zoom` on the review tool CLI (interactive only) or set
+`HumanReviewConfig.default_view_mode`.
+
 ## How to read a chart
 
-- **Dashed blue line** — the fib level price.
+- **VIEW badge** (bottom-left) — `fib-context` or `event-zoom`.
+- **Fib leg overlay** (purple) — arrow/line `H → L` or `L → H` with `direction: down/up`.
+- **ACTIVE badge** (top-left) — the fib level under review, e.g. `ACTIVE: 0.236 @ 346.46`.
+- **Fib horizontals** — active level solid/bright; inactive levels subdued (no edge clutter).
 - **Orange marker / vertical line** — the event bar (the touch being judged).
-- **Purple ▲ / ▼** — swing start / end (the leg the fib is drawn from), when in view.
-- **Title** — symbol, timeframe, fib level, `auto_candidate`, event time.
+- **Event callout** — arrow to candle/level: `0.236 touch → rejection_candidate`.
+- **Purple H/L markers** — only when anchors are inside the zoom window.
+- **Review panel** (right) — fib ladder with `ACTIVE`, H/L prices, relation + candidate.
+- **Title / suptitle** — multi-line: symbol/TF, fib_id, event, human label/confidence.
 
 ## What this validates
 

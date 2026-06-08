@@ -1,0 +1,25 @@
+{
+  "status": "written",
+  "window_start": "2026-03-23T00:00:00+00:00",
+  "window_end": "2026-05-04T00:00:00+00:00",
+  "method": "rank_swings with both endpoints inside window (warmup for pivots only)",
+  "label": {
+    "high": {
+      "timestamp": "2026-05-04T00:00:00+00:00",
+      "price": 82850.0
+    },
+    "low": {
+      "timestamp": "2026-03-23T00:00:00+00:00",
+      "price": 65000.0
+    },
+    "note": "maskin-labeling: provisorisk kandidat \u2014 granska och justera i labeling.tool | chartf\u00f6nster 2026-03-23\u20132026-05-04 (weekly, endpoints in window).",
+    "source": "machine"
+  },
+  "fib_levels": {
+    "0.236": 69212.6,
+    "0.382": 71818.7,
+    "0.5": 73925.0,
+    "0.618": 76031.3,
+    "0.786": 79030.1
+  }
+}

@@ -1,5 +1,7 @@
 # Contributing / quality gate
 
+AI-agenter i repot: se [AGENT_RESPONSE_STYLE.md](AGENT_RESPONSE_STYLE.md) (korta svar som default).
+
 Kör detta **innan commit och push** (lokalt samma som CI).
 
 ## Setup (en gång per klon)
@@ -33,4 +35,4 @@ GitHub Actions workflow: `.github/workflows/ci.yml` (ruff + pytest på push/PR m
 - `uv run pytest` grönt innan push.
 - Baseline `config/settings.yaml` ändras bara via Promotion-gate (`docs/FIB_BACKTEST_PLAN.md` fas 7).
 - **Filstorlek:** `uv run python scripts/check_repo_bounds.py` (reflektioner, `src/`, `tests/`, `docs/`).
-  Se `REPO_POLICY.md` §2B — inga monoliter eller blobs.
+  Se `repository-layout-policy.md` §2B — inga monoliter eller blobs.

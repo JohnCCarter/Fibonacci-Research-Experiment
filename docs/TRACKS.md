@@ -58,7 +58,7 @@ Syftet är att separera discovery från verifiering och från trusted behavior.
 - `config/settings.yaml` (baseline)
 - `src/fibengine/core/` + etablerade runtime-moduler
 - `README.md` snabbstart
-- `REPO_POLICY.md`
+- `repository-layout-policy.md`
 
 ## Promotion-gate (MÅSTE)
 

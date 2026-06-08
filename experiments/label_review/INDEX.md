@@ -2,13 +2,10 @@
 
 | batch_id | typ | manifest | notes |
 |---|---|---|---|
-| `2026-05-28_post-labeling` | batch | ja | `batches/2026-05-28_post-labeling/notes.md` |
-| `2026-05-28_round4` | batch | nej (metadata only) | `batches/2026-05-28_round4/notes.md` |
-| `2026-05-28_round5_tuned` | batch | ja | `batches/2026-05-28_round5_tuned/notes.md` |
-| `2026-05-28_round6_locked` | batch | ja | `batches/2026-05-28_round6_locked/notes.md` |
+| `2026-06-01_hypothesis-a-btc-1d` | batch | nej (`review_sample.*`) | `batches/2026-06-01_hypothesis-a-btc-1d/notes.md` |
 
 ## Kategorier
 
 - `batches/` — aktiva checkpoints (manifest/metadata/notes).
 - `packs/` — review-PNG från `labeling.review_pack`.
-- Arkiv: `archive/experiments/label_review/` (repo-rot, se `archive/INDEX.md`).
+- Arkiv: `archive/experiments/label_review/` för äldre batchar och `archive/experiments/review/` för review-exporter.

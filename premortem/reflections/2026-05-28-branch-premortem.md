@@ -1,59 +1,60 @@
-# 2026-05-28 Branch-premortem (`claude/branch-premortem-OViqi`)
+﻿# 2026-05-28 Branch-premortem (`claude/branch-premortem-OViqi`)
 
-Premortem över hela branchens nuläge: tänk dig att projektet har misslyckats om
-sex månader — vad gick fel, och vad förankrar vi i koden redan nu? Nya
-failure modes är inlagda i `PREMORTEM.md`; den här reflektionen sammanfattar
-branch-genomgången.
+Premortem Ã¶ver hela branchens nulÃ¤ge: tÃ¤nk dig att projektet har misslyckats om
+sex mÃ¥nader â€” vad gick fel, och vad fÃ¶rankrar vi i koden redan nu? Nya
+failure modes Ã¤r inlagda i `PREMORTEM.md`; den hÃ¤r reflektionen sammanfattar
+branch-genomgÃ¥ngen.
 
 Hypotes:
-- Branchen upplevs "klar nog" att gå mot Validate/Promotion. Premortemen prövar
-  vad som realistiskt skulle få det att misslyckas innan vi tar det steget.
+- Branchen upplevs "klar nog" att gÃ¥ mot Validate/Promotion. Premortemen prÃ¶var
+  vad som realistiskt skulle fÃ¥ det att misslyckas innan vi tar det steget.
 
 Scope:
-- Branch: `claude/branch-premortem-OViqi` (hela projektets nuläge, t.o.m. commit
+- Branch: `claude/branch-premortem-OViqi` (hela projektets nulÃ¤ge, t.o.m. commit
   `a3186b4` "Address PR review feedback (out-of-window edge cases)").
-- Exchange/symboler: Binance spot — `BTC/USDT`, `ETH/USDT`, `SOL/USDT`.
-- Timeframes: `15m`–`1M`.
-- Datamängd: 15 manuella labels totalt (≈ 1 high/low-par per symbol/timeframe);
+- Exchange/symboler: Bitfinex spot â€” `BTC/USD`, `ETH/USD`, `SOL/USD`.
+- Timeframes: `15m`â€“`1M`.
+- DatamÃ¤ngd: 15 manuella labels totalt (â‰ˆ 1 high/low-par per symbol/timeframe);
   limit 500 candles per marknad/timeframe.
-- Körningar i fokus: stabilitetsmatris `matrix_20260528T072357Z`, trade-matris
+- KÃ¶rningar i fokus: stabilitetsmatris `matrix_20260528T072357Z`, trade-matris
   `trade_matrix_20260528T075650Z`.
 
 Observationer:
-- **Bekräftat säkert (behåll disciplinen):**
-  - *Kausalitet håller.* Walk-forward slicar `df.iloc[: t + 1]`
-    (`backtest/stability.py:24`); features/structure/scale filtrerar konsekvent på
+- **BekrÃ¤ftat sÃ¤kert (behÃ¥ll disciplinen):**
+  - *Kausalitet hÃ¥ller.* Walk-forward slicar `df.iloc[: t + 1]`
+    (`backtest/stability.py:24`); features/structure/scale filtrerar konsekvent pÃ¥
     `index <= end_index` (`core/features.py:41`, `core/structure.py:20`,
     `core/scale.py:20`). Testas av `test_walk_forward_is_causal()`.
-  - *Lager A/B är frikopplat.* `sizing/solros.py` och `backtest/trade.py`
+  - *Lager A/B Ã¤r frikopplat.* `sizing/solros.py` och `backtest/trade.py`
     konsumerar swing-output enkelriktat; `core/scoring.py` importerar aldrig
     sizing/trade.
-  - *Out-of-window är fixat.* `evaluation/metrics.py:26-42` flaggar `in_window`;
+  - *Out-of-window Ã¤r fixat.* `evaluation/metrics.py:26-42` flaggar `in_window`;
     `pivot_recall.py:59-65` och `experiment.py:75-101` exkluderar och loggar.
     Testas av `test_out_of_window_label_does_not_count_as_recall_hit()`.
-- **Kvarstående HIGH-risk:**
+- **KvarstÃ¥ende HIGH-risk:**
   - *Tunt underlag.* 15 labels och 8 handsatta vikter (`config/settings.yaml:19-27`)
-    räcker inte för att hävda generalisering.
-  - *Per-marknad-varians döljs i aggregat.* Enligt
+    rÃ¤cker inte fÃ¶r att hÃ¤vda generalisering.
+  - *Per-marknad-varians dÃ¶ljs i aggregat.* Enligt
     `reflections/2026-05-28-real-data-matrix.md` var BTC 15m svagast, och SOL 1h
-    hade hög endpoint-drift (~52 barer) trots bra flip-rate.
-  - *Drift mäts men gatas inte.* `flip_rate` ensamt kan ge falsk stabilitetsbild.
-- **Medvetet avvisat:** att "lära" vikter mot agreement/labels. Det bryter mot
-  filosofin och mot lärdomen i `reflections/2026-05-28-optuna-rollback.md`.
-  Mitigering är bredare stabilitet/recall-validering — aldrig label-optimering.
+    hade hÃ¶g endpoint-drift (~52 barer) trots bra flip-rate.
+  - *Drift mÃ¤ts men gatas inte.* `flip_rate` ensamt kan ge falsk stabilitetsbild.
+- **Medvetet avvisat:** att "lÃ¤ra" vikter mot agreement/labels. Det bryter mot
+  filosofin och mot principen att labels bara Ã¤r referens.
+  Mitigering Ã¤r bredare stabilitet/recall-validering â€” aldrig label-optimering.
 
 Beslut:
-- Håll motorn i spåren *Research/Validate*. Promota inget (t.ex. till
-  `config/settings.yaml`) förrän promotion-gaten i `REPO_POLICY.md §13` är
+- HÃ¥ll motorn i spÃ¥ren *Research/Validate*. Promota inget (t.ex. till
+  `config/settings.yaml`) fÃ¶rrÃ¤n promotion-gaten i `repository-layout-policy.md Â§13` Ã¤r
   uppfylld.
-- Vikter förblir principsatta; matris-/backtest-resultat är Research-evidens, inte
+- Vikter fÃ¶rblir principsatta; matris-/backtest-resultat Ã¤r Research-evidens, inte
   Validate i sig.
 - Rapportera alltid per symbol/timeframe, inte bara aggregerat.
 
-Nästa steg:
-- Mät pivot-recall mot ett större labelset *innan* scoring/detektering ändras.
-- Lyft `drift` till en förstklassig gate-metric vid sidan av flip/confirmed-rate.
-- Utöka labelkorpusen (mot tröskeln 20–30+ per relevant marknad/timeframe) och
-  åtgärda out-of-window-källan för långa timeframes (1M/1w/1d) med längre fönster.
-- Lägg adversariella/invariant-tester (t.ex. assert att vald swing-endpunkt
-  aldrig ligger efter cursorn) i stället för att luta sig mot coverage-gaten.
+NÃ¤sta steg:
+- MÃ¤t pivot-recall mot ett stÃ¶rre labelset *innan* scoring/detektering Ã¤ndras.
+- Lyft `drift` till en fÃ¶rstklassig gate-metric vid sidan av flip/confirmed-rate.
+- UtÃ¶ka labelkorpusen (mot trÃ¶skeln 20â€“30+ per relevant marknad/timeframe) och
+  Ã¥tgÃ¤rda out-of-window-kÃ¤llan fÃ¶r lÃ¥nga timeframes (1M/1w/1d) med lÃ¤ngre fÃ¶nster.
+- LÃ¤gg adversariella/invariant-tester (t.ex. assert att vald swing-endpunkt
+  aldrig ligger efter cursorn) i stÃ¤llet fÃ¶r att luta sig mot coverage-gaten.
+

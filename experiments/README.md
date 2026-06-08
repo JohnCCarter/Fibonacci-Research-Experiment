@@ -1,19 +1,19 @@
 # experiments
 
-Körningsartefakter och sammanställningar från experiment.
+Aktiva experimentytor och versionerade sammanställningar.
 
 ## Struktur
 
 - `results/` append-only jsonl-ledgers (historik per körning).
-- `runs/` per-körning audit-mappar, kategoriserade som `experiment/` och `stability/` + `INDEX.md`.
+- `runs/` aktiv yta för framtida per-körning audit-mappar + `INDEX.md`.
 - `label_review/` versionerade label-checkpoints (`batches/`, `packs/`).
 
-Arkiverat material (gamla jsonl-paths, label-dubletter): `archive/experiments/`.
+Historiska audit-mappar och review-exporter ligger i `archive/experiments/`.
 
-Se även `REPO_POLICY.md` §5 och §10 för vad som ska sparas/städas.
+Se även `repository-layout-policy.md` §5 och §10 för vad som ska sparas/städas.
 
 ## Koppling till 3 spår
 
 - **Research / Experiment:** `label_review/`, principmotiverade `config/variants/`.
-- **Validate:** `runs/stability/`, `pivot_recall/backtests/backtest_matrix` i `results/`.
+- **Validate:** `pivot_recall/backtests/backtest_matrix` i `results/`.
 - **Promotion:** inga direkta ändringar här; promotion sker först efter validate-gate enligt `docs/TRACKS.md`.

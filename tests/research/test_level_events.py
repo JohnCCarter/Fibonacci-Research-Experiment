@@ -21,7 +21,13 @@ def _df(closes: list[float]) -> pd.DataFrame:
     n = len(arr)
     idx = pd.date_range("2024-01-01", periods=n, freq="1h", tz="UTC")
     return pd.DataFrame(
-        {"open": arr, "high": arr + 0.5, "low": arr - 0.5, "close": arr, "volume": np.ones(n)},
+        {
+            "open": arr,
+            "high": arr + 0.5,
+            "low": arr - 0.5,
+            "close": arr,
+            "volume": np.ones(n),
+        },
         index=idx,
     )
 

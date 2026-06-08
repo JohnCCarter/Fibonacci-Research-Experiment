@@ -3,7 +3,7 @@
 Run:
     uv run python scripts/compare_mtf_disambiguation.py
     uv run python scripts/compare_mtf_disambiguation.py --summary
-    uv run python scripts/compare_mtf_disambiguation.py --symbol BTC/USDT --timeframe 1w
+    uv run python scripts/compare_mtf_disambiguation.py --symbol BTC/USD --timeframe 1w
 """
 
 from __future__ import annotations

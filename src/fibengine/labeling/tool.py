@@ -13,6 +13,7 @@ Controls:
 - r: clear current picks
 - f: toggle fib levels
 - g: toggle high-low range shading
+- w: write active fib as a human ground-truth annotation (data/labels/human_fib/...)
 - s: save label (all legs) for the active symbol/timeframe
 - p or a: push current high/low as a new leg (keeps prior legs; clears picks)
 - j / k: previous / next leg when multiple legs exist
@@ -43,6 +44,11 @@ from fibengine.core.config import DataConfig, Settings, load_settings
 from fibengine.core.fib import fib_from_prices
 from fibengine.data.loader import load_candles
 from fibengine.labeling.hover import HoverReadout
+from fibengine.labeling.human_fib import (
+    anchors_from_picks,
+    make_annotation,
+    save_annotation,
+)
 from fibengine.labeling.same_candle_mtf_resolution import (
     attempt_same_candle_mtf_resolution,
     mtf_resolution_enabled,
@@ -467,6 +473,27 @@ class LabelWorkspace:
         else:
             print(f"Saved label -> {path}")
 
+    def save_human_fib_annotation(self) -> None:
+        """Persist the active drawn fib as a human ground-truth annotation.
+
+        The human-drawn anchors are the source of truth; this only stores them
+        and the derived fib levels (no auto-fib, no behaviour classification)."""
+        if not self._picks_complete():
+            print("Set both high and low before writing a fib annotation (w).")
+            return
+        hi_idx, hi_price = self.picks["high"]
+        lo_idx, lo_price = self.picks["low"]
+        anchor_a, anchor_b = anchors_from_picks(self.df, hi_idx, hi_price, lo_idx, lo_price)
+        annotation = make_annotation(
+            symbol=self.data.symbol,
+            timeframe=self.data.timeframe,
+            exchange=self.data.exchange,
+            anchor_a=anchor_a,
+            anchor_b=anchor_b,
+        )
+        path = save_annotation(annotation)
+        print(f"Saved human fib annotation ({annotation.direction}) -> {path}")
+
 
 def _apply_cli_overrides(settings: Settings, args: argparse.Namespace) -> Settings:
     settings.data = settings.data.model_copy(
@@ -582,7 +609,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
             f"| {queue_index() + 1}/{len(queue)} "
             f"| legs={len(workspace.legs)} "
             f"| {'unsaved' if is_dirty else 'saved'} "
-            "| h/l p push-leg j/k leg fib g s save d delete q quit",
+            "| h/l p push-leg j/k leg fib g w fib-annot s save d delete q quit",
             color="#d6d9e0",
         )
 
@@ -841,6 +868,8 @@ def run_label_tool(args: argparse.Namespace | None = None):
         elif key == "g":
             workspace.show_range = not workspace.show_range
             print(f"High-low range {'ON' if workspace.show_range else 'OFF'}.")
+        elif key == "w":
+            workspace.save_human_fib_annotation()
         elif key in KEY_NEXT_SYMBOL:
             goto_market(_cycle(symbols, workspace.data.symbol, 1), workspace.data.timeframe)
         elif key in KEY_PREV_SYMBOL:

@@ -10,13 +10,13 @@ Kurerad översikt. Nya reflektioner: `YYYY-MM-DD-<kort-beskrivning>.md` (se [REA
 | 2026-05-28 | [premortem-mitigations](2026-05-28-premortem-mitigations.md) | decision | validate, drift | Mitigationer införda |
 | 2026-05-28 | [labeling-worklist](2026-05-28-labeling-worklist.md) | decision | labeling | Worklist + 20–30-mål |
 | 2026-05-28 | [real-data-matrix](2026-05-28-real-data-matrix.md) | run | validate, backtest | Fas 1 matris klar |
-| 2026-05-28 | [optuna-start](2026-05-28-optuna-start.md) | run | tuning | **Historisk** — Optuna borttagen |
-| 2026-05-28 | [optuna-rollback](2026-05-28-optuna-rollback.md) | decision | tuning | **Historisk** |
-| 2026-05-28 | [remove-optuna](2026-05-28-remove-optuna.md) | decision | tuning, policy | Optuna bort från kodbas |
 | 2026-05-29 | [machine-labeling](2026-05-29-machine-labeling.md) | decision | labeling | `source` human/machine infört |
 | 2026-05-29 | [btc-1w-machine-approved](2026-05-29-btc-1w-machine-approved.md) | decision | labeling, BTC | Facit 1w godkänd (motor-swing) |
 | 2026-05-29 | [mtf-daily-fib-research](2026-05-29-mtf-daily-fib-research.md) | decision | MTF, 1w, 1d, fib | Weekly VAD / daily HUR; multi-leg; 30× BTC 1d |
 | 2026-05-29 | [fib-multi-behavior-per-level](2026-05-29-fib-multi-behavior-per-level.md) | **finding** | behavior, events, #12 | Samma nivå → flera events; v3; realign → Hypothesis A spot-check |
+| 2026-06-01 | [hypothesis-a-spot-check-pilot](2026-06-01-hypothesis-a-spot-check-pilot.md) | run | #12, level_events, review | BTC 1d review_20260601T152524Z (40 events); labels pending |
+| 2026-06-01 | [human-fib-annotation-layer](2026-06-01-human-fib-annotation-layer.md) | decision | labeling, fib, behavior | Human-fib ground truth + candidates (emit-only); atoms vs path |
+| 2026-06-02 | [mtf-origin-1w-to-1d](2026-06-02-mtf-origin-1w-to-1d.md) | **finding** | MTF, 1w, 1d, origin | Chart-ursprung: samma H/L på 1d → fler nivåträffar; VAD vs HUR |
 
 **Djupare guider:**
 
@@ -27,8 +27,7 @@ Kurerad översikt. Nya reflektioner: `YYYY-MM-DD-<kort-beskrivning>.md` (se [REA
 ## Ämnesindex (snabbnavigering)
 
 - **labeling:** worklist, machine-labeling, btc-1w-machine-approved, mtf-daily-fib-research → [MACHINE_LABELING.md](../../docs/MACHINE_LABELING.md), [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md)
-- **MTF / 1w / 1d:** mtf-daily-fib-research, fib-multi-behavior-per-level → [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md), [BEHAVIOR_FACIT.md](../../docs/BEHAVIOR_FACIT.md)
-- **behavior / events:** fib-multi-behavior-per-level
+- **MTF / 1w / 1d:** mtf-origin-1w-to-1d, mtf-daily-fib-research, fib-multi-behavior-per-level → [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md) §0, [BEHAVIOR_FACIT.md](../../docs/BEHAVIOR_FACIT.md)
+- **behavior / events:** fib-multi-behavior-per-level, human-fib-annotation-layer → [HUMAN_FIB_ANNOTATION.md](../../docs/HUMAN_FIB_ANNOTATION.md)
 - **validate / backtest:** real-data-matrix, premortem-mitigations
-- **tuning (historik):** optuna-*, remove-optuna
 - **process / risk:** branch-premortem

@@ -132,7 +132,7 @@ def iter_label_files() -> list[Path]:
     root = get_labels_dir()
     if not root.exists():
         return []
-    nested = [p for p in root.rglob("*.json") if p.parent != root]
+    nested = [p for p in root.rglob("*.json") if p.parent != root and "human_fib" not in p.parts]
     flat = [p for p in root.glob("*.json")]
     return sorted(set(nested) | set(flat))
 

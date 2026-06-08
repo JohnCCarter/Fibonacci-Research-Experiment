@@ -1,21 +1,18 @@
-# Label index
+﻿# Label index
 
 Oversikt over golden set (data/labels/).
 
 | path | exchange | symbol | timeframe |
 |---|---|---|---|
-| binance/BTC-USDT/15m.json | binance | BTC/USDT | 15m |
-| binance/BTC-USDT/1M.json | binance | BTC/USDT | 1M |
-| binance/BTC-USDT/1d.json | binance | BTC/USDT | 1d |
-| binance/BTC-USDT/1h.json | binance | BTC/USDT | 1h |
-| binance/BTC-USDT/1w.json | binance | BTC/USDT | 1w |
-| binance/BTC-USDT/4h.json | binance | BTC/USDT | 4h |
-| binance/ETH-USDT/15m.json | binance | ETH/USDT | 15m |
-| binance/ETH-USDT/1M.json | binance | ETH/USDT | 1M |
-| binance/ETH-USDT/1d.json | binance | ETH/USDT | 1d |
-| binance/ETH-USDT/1w.json | binance | ETH/USDT | 1w |
-| binance/ETH-USDT/30m.json | binance | ETH/USDT | 30m |
-| binance/ETH-USDT/4h.json | binance | ETH/USDT | 4h |
-| binance/SOL-USDT/15m.json | binance | SOL/USDT | 15m |
-| binance/SOL-USDT/1h.json | binance | SOL/USDT | 1h |
-| binance/SOL-USDT/30m.json | binance | SOL/USDT | 30m |
+| bitfinex/BTC-USD/1d.json | bitfinex | BTC/USD | 1d |
+| bitfinex/BTC-USD/1w.json | bitfinex | BTC/USD | 1w |
+| bitfinex/ETH-USD/1d.json | bitfinex | ETH/USD | 1d |
+| bitfinex/ETH-USD/1w.json | bitfinex | ETH/USD | 1w |
+| bitfinex/SOL-USD/1d.json | bitfinex | SOL/USD | 1d |
+| bitfinex/SOL-USD/1w.json | bitfinex | SOL/USD | 1w |
+
+Legacy Bitfinex labels are archived under `archive/data_labels_Bitfinex/labels/`.
+
+Human-fib ground-truth files are stored under `human_fib/bitfinex/` and documented in
+`docs/HUMAN_FIB_ANNOTATION.md`.
+

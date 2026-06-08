@@ -1,0 +1,148 @@
+{
+  "fib_id": "fib_SOL-USD_1d_20211221T000000",
+  "symbol": "SOL/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "direction": "up",
+  "anchor_a": {
+    "time": "2021-12-21T00:00:00+00:00",
+    "price": 170.32
+  },
+  "anchor_b": {
+    "time": "2021-12-27T00:00:00+00:00",
+    "price": 204.75
+  },
+  "source": "human_fib_events",
+  "created_at": "2026-06-02T12:04:54.934051+00:00",
+  "config": {
+    "levels": [],
+    "touch_tolerance_atr": 0.1,
+    "forward_window": 5,
+    "acceptance_closes": 2,
+    "immediate_rejection_bars": 2,
+    "debounce_bars": 3
+  },
+  "n_events": 6,
+  "levels": [
+    {
+      "level": "0.236",
+      "price": 196.6245,
+      "events": [
+        {
+          "event_bar": "2021-12-28T00:00:00+00:00",
+          "bar_index": 306,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.382",
+      "price": 191.5977,
+      "events": [
+        {
+          "event_bar": "2021-12-28T00:00:00+00:00",
+          "bar_index": 306,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 1.4082
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.5",
+      "price": 187.535,
+      "events": [
+        {
+          "event_bar": "2021-12-28T00:00:00+00:00",
+          "bar_index": 306,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 1.1429
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.618",
+      "price": 183.4723,
+      "events": [
+        {
+          "event_bar": "2021-12-28T00:00:00+00:00",
+          "bar_index": 306,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 0.8777
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.786",
+      "price": 177.688,
+      "events": [
+        {
+          "event_bar": "2021-12-28T00:00:00+00:00",
+          "bar_index": 306,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 3,
+            "closes_back": 1,
+            "max_penetration_atr": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "level": "1",
+      "price": 170.32,
+      "events": [
+        {
+          "event_bar": "2021-12-29T00:00:00+00:00",
+          "bar_index": 307,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 3,
+            "max_penetration_atr": 0.022
+          }
+        }
+      ]
+    }
+  ]
+}

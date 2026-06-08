@@ -1,4 +1,4 @@
-"""Fas 3 behavior facit — scaffold, annotate candidates, validate, print (research only).
+"""Fas 3 behavior facit â€” scaffold, annotate candidates, validate, print (research only).
 
 auto_candidate is never facit. Only human_label counts after you approve.
 """
@@ -102,7 +102,7 @@ def cmd_validate(args: argparse.Namespace) -> None:
             print(f"  - {item}")
         raise SystemExit(1)
     mode = "human facit complete" if not args.allow_auto_only else "structure OK"
-    print(f"{path}: OK — {mode} ({len(facit.legs)} legs)")
+    print(f"{path}: OK â€” {mode} ({len(facit.legs)} legs)")
 
 
 def cmd_print(args: argparse.Namespace) -> None:
@@ -140,16 +140,16 @@ def cmd_print(args: argparse.Namespace) -> None:
                 print(f"    {ratio:>5} {price:>10,.0f}  (no events)")
                 continue
             for ev in lv.events:
-                human = ev.human_label or "—"
-                auto = ev.auto_candidate or "—"
+                human = ev.human_label or "â€”"
+                auto = ev.auto_candidate or "â€”"
                 bar = f" @ {ev.event_bar[:10]}" if ev.event_bar else ""
                 print(f"    {ratio:>5} {price:>10,.0f}  human={human}  auto={auto}{bar}")
         print()
 
 
 def _add_shared_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--exchange", default="binance")
-    p.add_argument("--symbol", default="BTC/USDT")
+    p.add_argument("--exchange", default="Bitfinex")
+    p.add_argument("--symbol", default="BTC/USD")
     p.add_argument("--timeframe", default="1d")
     p.add_argument("--path", default="", help="behavior JSON path")
     p.add_argument(
@@ -173,7 +173,7 @@ def main() -> None:
     p_scaffold.add_argument("--parent", default="")
     p_scaffold.add_argument("--out", default="")
     p_scaffold.add_argument("--legs", default="", help="Comma-separated leg_ids")
-    p_scaffold.add_argument("--notes", default="Golden subset — Fas 3 pilot")
+    p_scaffold.add_argument("--notes", default="Golden subset â€” Fas 3 pilot")
     p_scaffold.add_argument(
         "--all-legs",
         action="store_true",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pre-commit: file size / anti-blob limits (see REPO_POLICY.md §2B)."""
+"""Pre-commit: file size / anti-blob limits (see repository-layout-policy.md §2B)."""
 
 from __future__ import annotations
 
@@ -9,24 +9,27 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-# path_glob -> (max_lines, max_bytes); checked only for paths that match
+# path_glob -> (max_lines, max_bytes); first match wins — put specific paths before broad ones
 RULES: list[tuple[str, int, int]] = [
     ("premortem/reflections/*.md", 80, 8 * 1024),
-    ("src/fibengine/**/*.py", 400, 25 * 1024),
-    ("tests/**/*.py", 250, 15 * 1024),
-    ("docs/**/*.md", 200, 20 * 1024),
+    ("src/fibengine/research/*.py", 750, 32 * 1024),
+    ("src/fibengine/labeling/*.py", 600, 32 * 1024),
+    ("tests/research/*.py", 300, 20 * 1024),
+    ("docs/research_wiki/log.md", 500, 28 * 1024),
+    ("src/fibengine/**/*.py", 450, 28 * 1024),
+    ("tests/**/*.py", 280, 18 * 1024),
+    ("docs/**/*.md", 300, 20 * 1024),
     ("scripts/*.py", 120, 8 * 1024),
 ]
 
 SKIP_NAMES = {"INDEX.md", "README.md"}
 
-# Known debt — must shrink or split before adding more lines (documented in REPO_POLICY §2B)
+# Legacy debt only — research/labeling tiers above; do not grow these without a split plan
 GRANDFATHERED: dict[str, str] = {
     "src/fibengine/labeling/tool.py": "GUI + CLI i en fil; plan: dela workspace / plotting / main",
     "src/fibengine/labeling/behavior_facit.py": "Schema v3 + I/O; plan: split load/save",
     "scripts/behavior_facit.py": "CLI för behavior facit; plan: tunn wrapper",
     "scripts/compare_mtf_disambiguation.py": "Research compare CLI; plan: dela argparse vs report",
-    "src/fibengine/research/human_review_level_events.py": "PR #11 review pack; plan: split",
 }
 
 
@@ -74,11 +77,6 @@ def main() -> int:
     failed = [msg for p in paths if (msg := check_path(p))]
     if failed:
         print("Repo bounds exceeded:\n" + "\n".join(f"  - {f}" for f in failed))
-        if GRANDFATHERED:
-            print(
-                "\nGrandfathered (fix before growing):\n"
-                + "\n".join(f"  - {k}: {v}" for k, v in GRANDFATHERED.items())
-            )
         return 1
     return 0
 

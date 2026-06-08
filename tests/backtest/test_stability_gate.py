@@ -18,13 +18,13 @@ def test_gate_passes_on_stable_metrics():
 
 
 def test_drift_is_first_class_and_can_fail_alone():
-    # Allt ser stabilt ut UTOM driften — gaten ska ändå falla på endpoint-drift.
+    # Allt ser stabilt ut UTOM driften â€” gaten ska Ã¤ndÃ¥ falla pÃ¥ endpoint-drift.
     metrics = _good_metrics()
-    metrics["mean_endpoint_drift_bars"] = 52.0  # jfr SOL/USDT 1h i reflektionen
+    metrics["mean_endpoint_drift_bars"] = 52.0  # jfr SOL/USD 1h i reflektionen
     gate = stability_gate(metrics, BacktestConfig())
     assert gate["passed"] is False
     assert gate["checks"]["endpoint_drift_bars"] is False
-    # Övriga kriterier är fortfarande gröna.
+    # Ã–vriga kriterier Ã¤r fortfarande grÃ¶na.
     assert gate["checks"]["flip_rate"] is True
     assert gate["checks"]["confirmed_rate"] is True
 

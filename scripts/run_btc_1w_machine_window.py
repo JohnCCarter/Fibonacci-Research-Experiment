@@ -1,4 +1,4 @@
-"""One-off: machine swing candidate for BTC/USDT 1w in a chart window (does not overwrite human)."""
+"""One-off: machine swing candidate for BTC/USD 1w in a chart window (does not overwrite human)."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ WARMUP_WEEKS = 80
 
 def main() -> None:
     settings = load_settings()
-    cfg = settings.data.model_copy(update={"symbol": "BTC/USDT", "timeframe": "1w"})
+    cfg = settings.data.model_copy(update={"symbol": "BTC/USD", "timeframe": "1w"})
     df = load_candles(cfg)
     warmup = WINDOW_START - pd.Timedelta(weeks=WARMUP_WEEKS)
     slice_df = df.loc[(df.index >= warmup) & (df.index <= WINDOW_END)].copy()
@@ -28,7 +28,7 @@ def main() -> None:
     end_d = slice_df.index[-1].date()
     print(f"Candles in slice: {len(slice_df)} ({start_d} .. {end_d})")
 
-    existing = find_label("binance", "BTC/USDT", "1w")
+    existing = find_label("Bitfinex", "BTC/USD", "1w")
     if existing:
         src = getattr(existing, "source", "human")
         print(
@@ -41,9 +41,9 @@ def main() -> None:
         print("STATUS: no_swing")
         raise SystemExit(1)
 
-    label = label_from_swing(swing, "binance", "BTC/USDT", "1w")
+    label = label_from_swing(swing, "Bitfinex", "BTC/USD", "1w")
     label.note = (
-        f"{MACHINE_NOTE} | chartfönster {WINDOW_START.date()}–{WINDOW_END.date()} (weekly)."
+        f"{MACHINE_NOTE} | chartfÃ¶nster {WINDOW_START.date()}â€“{WINDOW_END.date()} (weekly)."
     )
 
     out_dir = Path("experiments/runs/experiment/2026-05-29/btc_1w_machine_window")
@@ -70,7 +70,7 @@ def main() -> None:
 
     if existing and getattr(existing, "source", "human") == "human":
         print(
-            "Canonical data/labels/binance/BTC-USDT/1w.json unchanged (human facit). "
+            "Canonical data/labels/Bitfinex/BTC-USD/1w.json unchanged (human facit). "
             "Open labeling.tool to compare; press 's' to promote a revised human label."
         )
     else:

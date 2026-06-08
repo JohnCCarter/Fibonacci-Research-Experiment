@@ -1,4 +1,4 @@
-"""End-to-end-test för run_experiment med mockad data + labels (ingen nätverk)."""
+"""End-to-end-test fÃ¶r run_experiment med mockad data + labels (ingen nÃ¤tverk)."""
 
 import json
 
@@ -44,8 +44,8 @@ def _settings() -> Settings:
 def test_run_experiment_writes_audit_and_aggregate(tmp_path, monkeypatch):
     df = _df()
     in_window = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(df.index[60].isoformat(), 130.0),
         low=Point(df.index[40].isoformat(), 105.0),
@@ -69,8 +69,8 @@ def test_run_experiment_excludes_out_of_window_label(tmp_path, monkeypatch):
     df = _df()
     future = (df.index[-1] + pd.Timedelta(days=365)).isoformat()
     out_label = SwingLabel(
-        exchange="binance",
-        symbol="BTC/USDT",
+        exchange="Bitfinex",
+        symbol="BTC/USD",
         timeframe="1h",
         high=Point(future, 130.0),
         low=Point(future, 105.0),
@@ -84,7 +84,7 @@ def test_run_experiment_excludes_out_of_window_label(tmp_path, monkeypatch):
 
     run_dir = exp_mod.run_experiment(_settings())
     metrics = json.loads((run_dir / "metrics.json").read_text())
-    # Enda labeln är out-of-window → exkluderad ur aggregatet.
+    # Enda labeln Ã¤r out-of-window â†’ exkluderad ur aggregatet.
     assert metrics["aggregate"]["excluded_out_of_window"] == 1
     assert metrics["aggregate"]["n"] == 0
     assert metrics["aggregate"]["no_in_window_samples"] is True
