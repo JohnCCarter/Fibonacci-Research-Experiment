@@ -1,5 +1,8 @@
 # Model handoff (GLM-5.1 → Qwen3-Coder)
 
+Constitution: [AGENTS.md](../../../AGENTS.md) §2 workflow. Prefer GLM delegating to
+`qwen-implementer` subagent; this template is for fallback Chat paste.
+
 Copy this block from **GLM-5.1 chat** into **Qwen chat** after `/qwen-implement`.
 
 ```markdown

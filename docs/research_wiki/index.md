@@ -12,6 +12,8 @@ wiki pages are the map and synthesis.
 
 ## Architecture And Governance
 
+- [**CONSTITUTION FOR AGENTS AND SUBAGENTS**](../../AGENTS.md) — roles, workflow, guardrails (canonical).
+- [Agent doc map](../agent/INDEX.md) — all agent/subagent MD by layer.
 - [Module map](reference/module-map.md) — `src/fibengine` packages and roles.
 - [Data conventions](reference/data-conventions.md) — label, human-fib, and
   experiment path shapes.

@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Model collaboration policy
 
+**Constitution:** [AGENTS.md](../../AGENTS.md) — roles and workflow are canonical there.
+
 Two NVIDIA NIM models, one workflow. **Do not let both models freely change scope.**
 
 ## Roles

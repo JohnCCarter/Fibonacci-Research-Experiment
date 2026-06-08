@@ -1,5 +1,7 @@
 # Configure Cursor workspace: Qwen as a coding agent
 
+**Constitution:** [AGENTS.md](../../AGENTS.md) · **Doc map:** [INDEX.md](INDEX.md)
+
 **Model:** NVIDIA `qwen/qwen3-coder-480b-a35b-instruct` (BYOK).  
 **Shell:** Cursor (rules, `@` context, tools).  
 **Memory:** [docs/research_wiki/](research_wiki/) — read `index` → `handoff` → `log` first.
@@ -135,7 +137,7 @@ To disable the send-time gate only, remove the `beforeSubmitPrompt` entry from `
 - `.cursor/rules/*.mdc` — agent policy
 - `.cursor/hooks.json` + `.cursor/hooks/*.py` — Qwen auto bootstrap
 - `.cursor/commands/repo-agent.md` — slash command template
-- `AGENTS.md` — entry point
+- `AGENTS.md` — constitution
 - `.github/copilot-instructions.md` — VS Code Copilot parity
 - [REPO_AWARE_AGENT.md](REPO_AWARE_AGENT.md) — shorter companion to this page
 

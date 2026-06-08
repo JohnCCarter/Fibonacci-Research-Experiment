@@ -1,5 +1,7 @@
 # VS Code Copilot — NVIDIA GLM-5.1 + Qwen3-Coder (BYOK)
 
+**Constitution:** [AGENTS.md](../../AGENTS.md) · **Doc map:** [INDEX.md](INDEX.md)
+
 Guide for **GitHub Copilot Chat in VS Code** using the same NVIDIA NIM setup that works in Cursor for this repo.
 
 **Not fibengine runtime** — external LLMs for plan (GLM) and implementation (Qwen). See [MODEL_COLLABORATION.md](MODEL_COLLABORATION.md).

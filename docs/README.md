@@ -13,7 +13,7 @@ Long-lived documentation. Start here, then open a category folder.
 
 | Folder | Contents |
 |--------|----------|
-| [agent/](agent/) | Cursor, Copilot, GLM+Qwen, agent response style |
+| [agent/](agent/) | **Constitution** → [AGENTS.md](../AGENTS.md); [INDEX.md](agent/INDEX.md) maps all agent/subagent docs |
 | [labeling/](labeling/) | Human fib, machine labels, GUI, behavior facit |
 | [research/](research/) | MTF, level events, fib pipelines, handoff |
 | [validate/](validate/) | Backtest plan, Genesis/Bitfinex validate |

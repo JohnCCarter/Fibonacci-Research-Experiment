@@ -1,6 +1,7 @@
 # Model collaboration (GLM-5.1 + Qwen3-Coder)
 
-**Constitution:** [AGENTS.md](../../AGENTS.md) — roles, authority, guardrails (canonical).
+**Constitution:** [AGENTS.md](../../AGENTS.md) — *CONSTITUTION FOR AGENTS AND SUBAGENTS* (canonical).  
+**Doc map:** [INDEX.md](INDEX.md)
 
 **This doc:** operational setup — BYOK, hooks, slash commands, smoke scripts. GLM-5.1
 owns plan, review, and approval; Qwen3-Coder owns scoped implementation. Same

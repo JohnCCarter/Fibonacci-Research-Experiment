@@ -438,6 +438,12 @@ Verification: ruff OK; pytest 195 passed, 76% cov.
 PNG (`human_review_charts`) and `level_event_review_tool` (dark theme). Same up/down
 colors; fib overlays unchanged. Tests: `test_human_review_candles.py`.
 
+## [2026-06-08] docs | Agent/subagent doc map (INDEX.md)
+
+Added `docs/agent/INDEX.md` — layered inventory of all agent MD (constitution,
+subagents, rules, hooks, setup, templates, wiki). Aligned cross-links to
+*CONSTITUTION FOR AGENTS AND SUBAGENTS* in AGENTS.md.
+
 ## [2026-06-08] docs | AGENTS.md as agent constitution
 
 Rewrote root `AGENTS.md` as canonical constitution for GLM lead, Qwen implementer

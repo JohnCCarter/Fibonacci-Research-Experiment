@@ -1,7 +1,9 @@
 # Repo-aware agent setup (Cursor Chat + Qwen)
 
+> **Constitution:** [AGENTS.md](../../AGENTS.md) — *CONSTITUTION FOR AGENTS AND SUBAGENTS*  
+> **Full doc map:** [INDEX.md](INDEX.md)  
 > **Full workspace checklist:** [CURSOR_WORKSPACE_AGENT.md](CURSOR_WORKSPACE_AGENT.md)  
-> **Cursor folder index:** [.cursor/README.md](../.cursor/README.md)  
+> **Cursor folder index:** [.cursor/README.md](../../.cursor/README.md)  
 > **Slash command:** `/repo-agent` in Chat
 
 **Goal:** When you use **Qwen3 Coder** (or any model) in Cursor **Chat**, it should behave like a coding agent: inspect the repo, follow rules, minimal diffs — not answer from memory alone.
@@ -17,7 +19,7 @@
 | [.cursor/rules/repo-aware-coding-agent.mdc](../.cursor/rules/repo-aware-coding-agent.mdc) | Always-on workflow: inspect → facts vs assumptions → minimal edits → tests |
 | [.cursor/rules/agent-response-style.mdc](../.cursor/rules/agent-response-style.mdc) | Compact replies unless user opts in |
 | [.cursor/rules/research-wiki-maintenance.mdc](../.cursor/rules/research-wiki-maintenance.mdc) | Wiki read/update for substantial research work |
-| [AGENTS.md](../../AGENTS.md) | Repo agent entry + Qwen pointer |
+| [AGENTS.md](../../AGENTS.md) | Constitution — roles, workflow, guardrails |
 | [.github/copilot-instructions.md](../.github/copilot-instructions.md) | Same policy for GitHub Copilot |
 
 Cursor loads `.cursor/rules/*.mdc` into context for **Agent** and typically for **Chat** when project rules are enabled.
@@ -55,7 +57,7 @@ In this workspace, act as a repo-aware coding agent. Before implementation answe
 When tools are limited in Chat, **attach context**:
 
 - **Wiki first:** `@docs/research_wiki/index.md`, `@handoff.md`, `@log.md` (see [research_wiki/README.md](research_wiki/README.md))
-- Then `@AGENTS.md` for commands/gotchas
+- Then `@AGENTS.md` for constitution + quality gate
 - `@src/fibengine/...` for the area you change
 - `@Folder` for broad search scope
 

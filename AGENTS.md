@@ -1,4 +1,4 @@
-﻿# AGENTS.md — repo constitution for agents and subagents
+﻿# CONSTITUTION FOR AGENTS AND SUBAGENTS
 
 This file is the **canonical constitution** for every automated agent that works in
 this repository: Cursor Chat/Agent, Copilot, Cloud Agents, and declared **subagents**.
@@ -126,6 +126,7 @@ These apply to **all** agents and subagents:
 
 | Need | Go to |
 |------|--------|
+| **All agent/subagent docs (map)** | [docs/agent/INDEX.md](docs/agent/INDEX.md) |
 | Current focus / next step | [research_wiki/handoff.md](docs/research_wiki/handoff.md) |
 | Doc categories | [docs/README.md](docs/README.md) |
 | Cursor BYOK + rules setup | [CURSOR_WORKSPACE_AGENT.md](docs/agent/CURSOR_WORKSPACE_AGENT.md) |

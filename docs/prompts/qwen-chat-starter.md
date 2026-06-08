@@ -3,7 +3,7 @@
 Use in a **new Cursor Chat** with model `qwen/qwen3-coder-480b-a35b-instruct` (BYOK).
 Attach context with `@` as listed below.
 
-Prerequisites: [CURSOR_WORKSPACE_AGENT.md](../agent/CURSOR_WORKSPACE_AGENT.md), project rules enabled.
+Prerequisites: [AGENTS.md](../../AGENTS.md) (constitution), [CURSOR_WORKSPACE_AGENT.md](../agent/CURSOR_WORKSPACE_AGENT.md), project rules enabled.
 
 **Fast path:** in Chat, run slash command **`/repo-agent`** (see `.cursor/commands/repo-agent.md`).
 
