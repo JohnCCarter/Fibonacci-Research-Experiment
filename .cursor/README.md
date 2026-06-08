@@ -9,7 +9,7 @@
 | [rules/](rules/) | Always-on agent policy (`alwaysApply: true` on core rules) |
 | [commands/](commands/) | Slash commands in Chat/Agent — prefill wiki `@` + repo-aware prompt |
 | [skills/](skills/) | Optional deep dives (backtest, labeling, etc.) |
-| [../AGENTS.md](../AGENTS.md) | Commands, product scope, gotchas |
+| [../AGENTS.md](../AGENTS.md) | **Constitution** — agents, subagents, workflow, guardrails |
 | [../docs/research_wiki/](../docs/research_wiki/) | **Read first** — index, handoff, log |
 | [../docs/agent/CURSOR_WORKSPACE_AGENT.md](../docs/agent/CURSOR_WORKSPACE_AGENT.md) | **Setup checklist** (BYOK Qwen + rules) |
 | [hooks.json](hooks.json) | **GLM lead** / **Qwen implement** context on `sessionStart`; Qwen send gate |

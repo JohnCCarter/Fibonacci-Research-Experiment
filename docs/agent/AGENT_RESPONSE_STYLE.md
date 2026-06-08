@@ -1,6 +1,7 @@
 # Agent response style (default)
 
 **Audience:** Cursor agents, subagents, and anyone automating work in this repo.  
+**Constitution:** [AGENTS.md](../../AGENTS.md) — roles and workflow; this file is the **response-style** annex.  
 **Authority:** Project default unless the user overrides in the current message.
 
 Human owners may also add matching text in Cursor **User Rules**; this file is the **repo source of truth**.

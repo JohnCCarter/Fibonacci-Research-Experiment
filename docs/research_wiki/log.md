@@ -438,6 +438,12 @@ Verification: ruff OK; pytest 195 passed, 76% cov.
 PNG (`human_review_charts`) and `level_event_review_tool` (dark theme). Same up/down
 colors; fib overlays unchanged. Tests: `test_human_review_candles.py`.
 
+## [2026-06-08] docs | AGENTS.md as agent constitution
+
+Rewrote root `AGENTS.md` as canonical constitution for GLM lead, Qwen implementer
+subagent, and universal duties/guardrails; product/Cloud moved to appendices.
+Linked from `.cursor/agents/*`, `docs/agent/`, `.cursor/README.md`.
+
 ## [2026-06-08] chore | Categorize loose docs/ markdown files
 
 Moved 22 top-level `docs/*.md` into `agent/`, `labeling/`, `research/`,

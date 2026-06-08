@@ -1,6 +1,10 @@
 # Model collaboration (GLM-5.1 + Qwen3-Coder)
 
-**Policy:** GLM-5.1 owns plan, review, and approval. Qwen3-Coder owns scoped implementation and debugging. Same `NVIDIA_API_KEY`, same base URL.
+**Constitution:** [AGENTS.md](../../AGENTS.md) — roles, authority, guardrails (canonical).
+
+**This doc:** operational setup — BYOK, hooks, slash commands, smoke scripts. GLM-5.1
+owns plan, review, and approval; Qwen3-Coder owns scoped implementation. Same
+`NVIDIA_API_KEY`, same base URL.
 
 | | GLM-5.1 (lead) | Qwen3-Coder (implement) |
 |---|----------------|-------------------------|

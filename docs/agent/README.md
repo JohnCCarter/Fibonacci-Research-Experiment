@@ -1,5 +1,8 @@
 # Agent & IDE docs
 
+**Constitution (start here):** [AGENTS.md](../../AGENTS.md) — repo agents, subagents,
+workflow, guardrails.
+
 Cursor, Copilot, GLM+Qwen collaboration, and response style.
 
 | Doc | Purpose |

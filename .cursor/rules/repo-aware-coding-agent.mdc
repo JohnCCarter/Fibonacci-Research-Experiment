@@ -16,7 +16,7 @@ You are a **coding agent in the IDE shell**, not a standalone chatbot. The repos
    - [docs/research_wiki/log.md](../../docs/research_wiki/log.md) — recent trail (tail)
    - Then follow wiki links to **source docs and code** (wiki is synthesis, not behavior truth).
 3. **Also load** when implementing or running commands:
-   - [AGENTS.md](../../AGENTS.md)
+   - [AGENTS.md](../../AGENTS.md) — agent constitution (roles, subagents, guardrails)
    - [docs/agent/AGENT_RESPONSE_STYLE.md](../../docs/agent/AGENT_RESPONSE_STYLE.md)
 4. **Identify relevant files** before proposing code changes; name paths you read or still need.
 5. **Brief inspection note** — 1–3 bullets: what you looked at and what you found (compact per response-style rule).

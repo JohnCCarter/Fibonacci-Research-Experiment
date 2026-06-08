@@ -17,7 +17,7 @@ GLM = plan/review; Qwen = scoped implement — [MODEL_COLLABORATION.md](../docs/
 
 ## Source of truth
 
-- [AGENTS.md](../AGENTS.md) — product, commands, gotchas
+- [AGENTS.md](../AGENTS.md) — **constitution** (agents, subagents, workflow, guardrails)
 - [docs/agent/AGENT_RESPONSE_STYLE.md](../docs/agent/AGENT_RESPONSE_STYLE.md) — compact replies unless user asks for depth
 - [docs/research_wiki/index.md](../docs/research_wiki/index.md) — research context map
 - [docs/research_wiki/concepts/guardrails.md](../docs/research_wiki/concepts/guardrails.md) — research invariants
