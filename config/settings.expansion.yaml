@@ -1,18 +1,29 @@
-﻿seed: 42
+seed: 42
+
+# Research-only DATA EXPANSION window for the fib fingerprint × outcome study.
+# Identical method/thresholds to settings.yaml — ONLY the candle data scope is
+# widened so older human-fib events stop being load-skipped and sample size per
+# candidate/fingerprint bucket grows.
+#
+# Window starts 2016-11-05 (deepest cached 1d history for BTC/ETH, limit_3500.csv).
+# This recovers ETH 2017-2018 fibs. BTC pre-2016 and SOL pre-2022 1d have no deep
+# cache, so those remain skipped (would need a network refetch).
+#
+# Do NOT use this as the global default — settings.yaml stays at 2022-10-31 for
+# experiment/review/leaderboard reproducibility.
 
 data:
   exchange: bitfinex
   symbol: BTC/USD
   timeframe: 1h
   limit: 500
-  # Research/labeling candle window: inclusive start through latest fetch (UTC).
-  history_start: "2022-10-31"
+  history_start: "2016-11-05"
   timeframe_limits:
     4h: 8000
-    # ~1313 1d bars from 2022-10-31 to mid-2026; buffer for growth.
-    1d: 1400
-    1w: 220
-    1M: 48
+    # 1d deepened to select the limit_3500.csv caches (from 2016-11-05).
+    1d: 3500
+    1w: 1000
+    1M: 500
 
 pivots:
   lookback: 3

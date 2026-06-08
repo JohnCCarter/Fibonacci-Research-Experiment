@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from collections import Counter
 
-from fibengine.research.human_review_level_events import HumanReviewConfig, sample_candidates
+from fibengine.research.human_review_level_events import (
+    HumanReviewConfig,
+    sample_candidates,
+)
 
 
 def test_sampling_balances_across_candidate_types():

@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import argparse
+import math
 from collections.abc import Iterable
+from datetime import UTC, datetime
 from pathlib import Path
 
 import ccxt
 import pandas as pd
 
 from fibengine.core.config import REPO_ROOT, DataConfig, Settings, load_settings
+from fibengine.validation.schemas import FetchManifest, manifest_path_for_csv
 
 RAW_DIR = REPO_ROOT / "data" / "raw"
 OHLCV_COLUMNS = ["timestamp", "open", "high", "low", "close", "volume"]
@@ -34,10 +37,36 @@ def _dedupe_tail_rows(rows: list[list], want: int) -> list[list]:
     return [by_ts[ts] for ts in sorted(by_ts)][-want:]
 
 
-def fetch_ohlcv(cfg: DataConfig) -> pd.DataFrame:
-    """Hämta de senaste `limit` candles (paginerat från `since`).
+def history_start_ts(cfg: DataConfig) -> pd.Timestamp | None:
+    if not cfg.history_start:
+        return None
+    return pd.to_datetime(cfg.history_start, utc=True)
 
-    Bitfinex (och vissa börser) returnerar annars de *äldsta* N bars vid ett enda anrop.
+
+def bars_needed_since_history_start(cfg: DataConfig, *, now_ms: int, tf_ms: int) -> int | None:
+    """Bars from ``history_start`` through ``now`` (inclusive), or None if unset."""
+    start = history_start_ts(cfg)
+    if start is None:
+        return None
+    start_ms = int(start.timestamp() * 1000)
+    if now_ms <= start_ms:
+        return 1
+    return math.ceil((now_ms - start_ms) / tf_ms) + 1
+
+
+def trim_to_history_start(df: pd.DataFrame, cfg: DataConfig) -> pd.DataFrame:
+    start = history_start_ts(cfg)
+    if start is None or df.empty:
+        return df
+    return df[df.index >= start]
+
+
+def fetch_ohlcv(cfg: DataConfig) -> pd.DataFrame:
+    """Hämta candles (paginerat från ``since``).
+
+    Med ``history_start`` hämtas från det datumet till idag; annars senaste
+    ``effective_limit()`` bars. Bitfinex returnerar annars ofta de äldsta N bars
+    vid ett enda anrop utan pagination.
     """
     exchange = getattr(ccxt, cfg.exchange)({"enableRateLimit": True})
     symbol = cfg.symbol
@@ -45,11 +74,17 @@ def fetch_ohlcv(cfg: DataConfig) -> pd.DataFrame:
     want = cfg.effective_limit()
     tf_ms = int(exchange.parse_timeframe(timeframe) * 1000)
     now = exchange.milliseconds()
-    since_ms = max(0, now - want * tf_ms)
+    bars_from_start = bars_needed_since_history_start(cfg, now_ms=now, tf_ms=tf_ms)
+    if bars_from_start is not None:
+        want = max(want, bars_from_start)
+        since_ms = int(history_start_ts(cfg).timestamp() * 1000)  # type: ignore[union-attr]
+    else:
+        since_ms = max(0, now - want * tf_ms)
 
     by_ts: dict[int, list] = {}
     cursor = since_ms
-    for _ in range(max(3, (want // 500) + 2)):
+    max_iters = max(5, (want // 800) + 4)
+    for _ in range(max_iters):
         batch = exchange.fetch_ohlcv(symbol, timeframe, since=cursor, limit=1000)
         if not batch:
             break
@@ -59,7 +94,7 @@ def fetch_ohlcv(cfg: DataConfig) -> pd.DataFrame:
         if next_cursor <= cursor:
             break
         cursor = next_cursor
-        if batch[-1][0] >= now - tf_ms:
+        if len(by_ts) >= want or batch[-1][0] >= now - tf_ms:
             break
 
     rows = [by_ts[ts] for ts in sorted(by_ts)]
@@ -71,14 +106,44 @@ def fetch_ohlcv(cfg: DataConfig) -> pd.DataFrame:
 
     df = pd.DataFrame(rows, columns=OHLCV_COLUMNS)
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms", utc=True)
-    return df.set_index("timestamp")
+    return trim_to_history_start(df.set_index("timestamp"), cfg)
 
 
-def fetch_and_cache(cfg: DataConfig) -> Path:
+def _write_fetch_manifest(
+    cfg: DataConfig,
+    df: pd.DataFrame,
+    path: Path,
+    *,
+    config_hash: str | None = None,
+) -> None:
+    now = datetime.now(UTC)
+    first = pd.Timestamp(df.index[0]).to_pydatetime() if not df.empty else now
+    last = pd.Timestamp(df.index[-1]).to_pydatetime() if not df.empty else now
+    manifest = FetchManifest(
+        exchange=cfg.exchange,
+        symbol=cfg.symbol,
+        timeframe=cfg.timeframe,
+        limit=cfg.effective_limit(),
+        history_start=cfg.history_start,
+        fetched_at_utc=now,
+        row_count=len(df),
+        first_ts=first,
+        last_ts=last,
+        csv_path=str(path),
+        config_hash=config_hash,
+    )
+    manifest_path_for_csv(path).write_text(
+        manifest.model_dump_json(indent=2),
+        encoding="utf-8",
+    )
+
+
+def fetch_and_cache(cfg: DataConfig, *, config_hash: str | None = None) -> Path:
     df = fetch_ohlcv(cfg)
     path = cache_path(cfg)
     path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(path)
+    _write_fetch_manifest(cfg, df, path, config_hash=config_hash)
     return path
 
 

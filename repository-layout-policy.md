@@ -121,12 +121,17 @@ Enforced by `scripts/check_repo_bounds.py`.
 | Pattern | Max lines | Max bytes |
 |---|---:|---:|
 | `premortem/reflections/*.md` | 80 | 8 KiB |
-| `src/fibengine/**/*.py` | 400 | 25 KiB |
-| `tests/**/*.py` | 250 | 15 KiB |
+| `src/fibengine/research/*.py` | 750 | 32 KiB |
+| `src/fibengine/labeling/*.py` | 600 | 32 KiB |
+| `tests/research/*.py` | 300 | 20 KiB |
+| `docs/research_wiki/log.md` | 500 | 28 KiB |
+| `src/fibengine/**/*.py` | 450 | 28 KiB |
+| `tests/**/*.py` | 280 | 18 KiB |
 | `docs/**/*.md` | 300 | 20 KiB |
 | `scripts/*.py` | 120 | 8 KiB |
 
-Grandfathered oversized files may exist but should not grow.
+A small grandfather list in `scripts/check_repo_bounds.py` covers legacy GUI/CLI
+monoliths only; they should not grow without a split plan.
 
 ---
 

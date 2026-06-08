@@ -16,6 +16,8 @@ from fibengine.research.human_review_level_events import (
     render_chart,
     run_human_review,
     sample_candidates,
+    window_for_view,
+    xlim_for_view,
 )
 from fibengine.research.level_events import LevelEventConfig
 
@@ -25,7 +27,13 @@ def _df(closes: list[float]) -> pd.DataFrame:
     n = len(arr)
     idx = pd.date_range("2024-01-01", periods=n, freq="1h", tz="UTC")
     return pd.DataFrame(
-        {"open": arr, "high": arr + 0.5, "low": arr - 0.5, "close": arr, "volume": np.ones(n)},
+        {
+            "open": arr,
+            "high": arr + 0.5,
+            "low": arr - 0.5,
+            "close": arr,
+            "volume": np.ones(n),
+        },
         index=idx,
     )
 
@@ -197,6 +205,31 @@ def test_end_to_end_package_files_created(monkeypatch, tmp_path):
     assert pngs, "fÃ¶rvÃ¤ntade minst en chart-PNG"
     assert len(pngs) == result["total_sampled"]
     assert result["total_sampled"] <= 6
+
+
+def test_fib_context_window_spans_anchors_and_event():
+    df = _trend_df()
+    row = {
+        "event_bar": 100,
+        "anchor_a_bar": 20,
+        "anchor_b_bar": 80,
+        "swing_start_bar": 20,
+        "swing_end_bar": 80,
+    }
+    cfg = HumanReviewConfig(
+        context_before=10,
+        context_after=10,
+        fib_context_pad_bars=5,
+    )
+    lo, hi = window_for_view(row, df, cfg, "fib_context")
+    assert lo == 15
+    assert hi == 105
+    zoom_lo, zoom_hi = window_for_view(row, df, cfg, "event_zoom")
+    assert zoom_lo == 90
+    assert zoom_hi == 110
+    xmin, xmax = xlim_for_view(row, df, cfg, "fib_context")
+    assert xmin == 14.5
+    assert xmax == 105.5
 
 
 def test_csv_and_jsonl_rows_agree(monkeypatch, tmp_path):

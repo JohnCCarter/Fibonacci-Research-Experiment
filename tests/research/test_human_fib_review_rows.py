@@ -33,8 +33,14 @@ def test_human_fib_event_payload_rows_keep_anchor_and_candidate_separate():
         "timeframe": "1h",
         "exchange": "bitfinex",
         "direction": "up",
-        "anchor_a": {"time": df.index[0].isoformat(), "price": float(df["low"].iloc[0])},
-        "anchor_b": {"time": df.index[40].isoformat(), "price": float(df["high"].iloc[40])},
+        "anchor_a": {
+            "time": df.index[0].isoformat(),
+            "price": float(df["low"].iloc[0]),
+        },
+        "anchor_b": {
+            "time": df.index[40].isoformat(),
+            "price": float(df["high"].iloc[40]),
+        },
         "source": "human_fib_events",
         "levels": [
             {
@@ -72,3 +78,29 @@ def test_human_fib_event_payload_rows_keep_anchor_and_candidate_separate():
     assert row["anchor_a_bar"] == 0
     assert row["anchor_b_bar"] == 40
     assert row["human_label"] == ""
+
+
+def test_collect_skips_anchors_outside_candle_cache():
+    df = _trend_df()
+    payload = {
+        "fib_id": "fib_old",
+        "symbol": "BTC/USD",
+        "timeframe": "1d",
+        "exchange": "bitfinex",
+        "direction": "down",
+        "anchor_a": {"time": "2013-12-04T00:00:00+00:00", "price": 1000.0},
+        "anchor_b": {"time": "2013-12-10T00:00:00+00:00", "price": 900.0},
+        "source": "human_fib_events",
+        "levels": [{"level": "0.5", "price": 950.0, "events": []}],
+    }
+    load_skips: list[dict] = []
+    rows = hr._rows_from_human_fib_events_payload(
+        df,
+        payload,
+        event_path="old_events.json",
+        skip_out_of_range=True,
+        load_skips=load_skips,
+    )
+    assert rows == []
+    assert len(load_skips) == 1
+    assert load_skips[0]["reason"] == "anchors_outside_candle_cache"
