@@ -438,6 +438,30 @@ Verification: ruff OK; pytest 195 passed, 76% cov.
 PNG (`human_review_charts`) and `level_event_review_tool` (dark theme). Same up/down
 colors; fib overlays unchanged. Tests: `test_human_review_candles.py`.
 
+## [2026-06-08] maintenance | Cursor agent shell — full alignment pass (branch)
+
+Single review session on `feature/research-fib`: constitution (`AGENTS.md`), doc map
+(`docs/agent/INDEX.md`), then `.cursor/rules` → `hooks` → `commands` → `agents`.
+Principle: constitution canonical; rules/hooks/commands/subagents = enforcement layers;
+GLM/Qwen workflow for non-trivial code only (Auto uses rules + `/repo-agent`).
+Handoff + index updated; see [handoff.md](handoff.md).
+
+## [2026-06-08] chore | Align `.cursor/agents` with handoff template and constitution
+
+Reviewed `glm-lead` and `qwen-implementer`: full handoff sections (incl. Risks/facit),
+slash/fallback cross-refs, commit guardrail on Qwen, slimmed duplicate prose vs AGENTS.md.
+
+## [2026-06-08] chore | Align `.cursor/commands` with handoff template and constitution
+
+Reviewed `/glm-plan`, `/qwen-implement`, `/repo-agent`: added when-to-use lines, full handoff
+sections, subagent cross-refs, model-handoff `@`; clarified repo-agent vs implementation flow.
+
+## [2026-06-08] chore | Align `.cursor/hooks` with constitution; fix setup docs
+
+Reviewed hooks.json + three session/prompt scripts. Qwen session now injects
+`handoff.md` (not MODEL_COLLABORATION blob); GLM/Qwen context points to AGENTS.md.
+Fixed stale `CURSOR_WORKSPACE_AGENT.md` (env var, GLM hook missing, Auto clarification).
+
 ## [2026-06-08] chore | Slim and align `.cursor/rules` with constitution
 
 Reviewed four `alwaysApply` rules: deduped overlap with AGENTS.md, added Auto-model

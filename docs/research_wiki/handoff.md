@@ -5,38 +5,39 @@ append-only trail lives in [log.md](log.md).
 
 ## Current Focus
 
-Fib research stack: `fib_candidate_outcomes` (#22) + `fib_level_fingerprints` (#23)
-+ `fib_fingerprint_outcomes` (join) + `fib_toplist` (descriptive triage export).
-Candle window now `history_start: 2022-10-31`. Next direction designed: **MTF fib
-level projection** (HTF human fib -> LTF candle behavior), see
-[MTF_FIB_LEVEL_PROJECTION.md](../research/MTF_FIB_LEVEL_PROJECTION.md).
+**Branch `feature/research-fib`** (ahead of `origin`): land **agent constitution +
+Cursor shell alignment** before resuming fib reads.
+
+1. **Agent system (today)** — [AGENTS.md](../../AGENTS.md) is canonical; full map
+   [docs/agent/INDEX.md](../agent/INDEX.md). Reviewed and aligned `.cursor/rules`,
+   `hooks`, `commands`, `agents` with handoff template (no duplicate constitution in
+   rules; hooks model-gated; GLM/Qwen not required for Auto).
+2. **Fib research (paused)** — MTF projection pipeline done; clean-forward 4H =
+   `working pipeline, no stable evidence yet`. See
+   [MTF_FIB_LEVEL_PROJECTION.md](../research/MTF_FIB_LEVEL_PROJECTION.md).
 
 ## Recent Changes
 
-- Review rendering was made fib-aware: H/L anchors, all fib levels, raw relation,
-  and separate behavior candidates.
-- `docs/research_wiki/` was expanded into a full seed wiki with glossary,
-  concepts, references, decisions, sources, and logs.
-- Atomic runnable artifact and agent handoff/log patterns are now repo workflow
-  conventions.
-- `.cursor/rules/research-wiki-maintenance.mdc` now makes wiki maintenance a
-  persistent agent rule.
-- `.cursor/rules/repo-aware-coding-agent.mdc` + `docs/agent/REPO_AWARE_AGENT.md` — inspect
-  repo before answer/edit; facts vs assumptions; for BYOK Qwen in Chat.
+- **2026-06-08 docs** — 22 loose `docs/*.md` → `agent/`, `labeling/`, `research/`,
+  `validate/`, `tooling/`; `docs/agent/INDEX.md` master map.
+- **2026-06-08 constitution** — `AGENTS.md` rewritten (GLM lead, Qwen subagent, Auto
+  guardrails).
+- **2026-06-08 `.cursor`** — rules slimmed; hooks inject `handoff.md` + fix setup docs;
+  slash commands + subagent prompts match `model-handoff.md` (incl. Risks/facit).
+- **2026-06-08 release** — PR #27 merged to `main` (tooling A–F, security); #25 closed;
+  superseded PRs #20/#24/#26 closed.
 
 ## Verification Snapshot
 
-- Wiki docs have been checked against repo docs bounds.
-- IDE lints reported no markdown diagnostics on the wiki files during setup.
-- The wiki maintenance rule was added as an always-applied Cursor project rule.
-- NVIDIA smoke: `scripts/nvidia_qwen_smoke.py` OK (~28s streaming, key in `.env`).
-- Tooling stack merged to **`main`** via PR #27 (`bd22e87`, 2026-06-08): pytest 198
-  passed, ~76% cov; aiohttp 3.14.1 + CI `permissions: contents: read`.
-- Human-fib smoke pack `human_fib_review_20260605T064610Z` — #15 acceptance criteria met on PNG inspection.
+- Tooling on **`main`**: pytest 198 passed, ~76% cov (`bd22e87`).
+- `.cursor/hooks` smoke-tested locally (GLM/Qwen session + Qwen send gate + Auto noop).
+- `.cursor/rules` alignment committed (`b072ed1`); remaining `.cursor` + agent doc
+  edits on branch **uncommitted** at last check.
+- Fib MTF clean-forward review unchanged — no new edge claims.
 
 ## Open GitHub issues (not yet done)
 
-None blocking research tooling. PR #26 remains a separate agent/CI supplement (not merged).
+None blocking research tooling or agent docs.
 
 Closed 2026-06-08: **#25** (tooling report + A–F on `feature/research-spot-check`:
 validation, DuckDB, review split, mplfinance, hypothesis, fetch manifest).
@@ -49,6 +50,14 @@ active LTF path), #15–#19, #21–#23.
 - When manual review findings exist, what review summary format is most useful?
 
 ## Next Useful Action
+
+**Agent docs (branch):**
+
+1. Commit remaining `.cursor/` + `docs/agent/` edits on `feature/research-fib`.
+2. Push and open PR → `main` (constitution + doc map + Cursor shell; no fib logic).
+3. After merge, resume fib track below.
+
+**Fib research (after agent PR):**
 
 1D-only track is `working pipeline, no stable evidence yet`
 ([n>=20 review](reviews/2026-06-05-fib-n20-bucket-review.md)). New direction: **MTF
@@ -98,6 +107,7 @@ measure LTF behavior. Design + inspection done in
 
 ## Links
 
+- [Agent doc map](../agent/INDEX.md) — constitution, subagents, rules, hooks, commands
 - [Research wiki index](index.md)
 - [Atomic runnable artifacts](concepts/atomic-runnable-artifacts.md)
 - [Agent handoff and log](concepts/agent-handoff-log.md)

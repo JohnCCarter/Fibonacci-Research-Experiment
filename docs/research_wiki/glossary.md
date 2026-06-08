@@ -15,7 +15,12 @@ details.
 - **Fib level** — a derived price at a ratio such as `0.382`, `0.5`, or `0.618`.
 - **HUR** — how price behaves around a fib range at a lower timeframe, especially
   daily candles after a weekly range is selected.
-- **Handoff** — current working context for future agents and humans.
+- **Handoff** — current working context for future agents and humans
+  ([handoff.md](handoff.md)); GLM→Qwen code handoffs use
+  [model-handoff.md](templates/model-handoff.md).
+- **Agent constitution** — [AGENTS.md](../../AGENTS.md): canonical roles (GLM lead,
+  Qwen implementer subagent, Auto guardrails). Cursor enforcement in `.cursor/rules`,
+  `hooks`, `commands`, `agents` — see [agent INDEX](../agent/INDEX.md).
 - **Human fib** — manually drawn anchors plus derived levels saved under
   `data/labels/human_fib/`.
 - **Layer A** — swing selection and fib research, the core project surface.
