@@ -1,0 +1,14 @@
+# ripgrep-avgränsning för agentisk sökning och `rg`.
+# Dessa kataloger är AVSIKTLIGT versionerade (reproducerbarhet) men innehåller
+# data-/resultat-artefakter, inte källkod — de förorenar grep och äter kontext.
+# Avgränsas här i stället för i .gitignore så de förblir spårbara i git.
+# Åsidosätt vid behov med `rg --no-ignore` eller `rg -u`.
+
+# Arkiverade ledgers/runs/label-reviews (~19 MB, 325 filer) — se archive/INDEX.md
+archive/
+
+# Append-only audit-ledgers (jsonl/json)
+experiments/results/
+
+# Manuellt facit (versionerad JSON) — läs via fibengine.research.ledger_query
+data/labels/
