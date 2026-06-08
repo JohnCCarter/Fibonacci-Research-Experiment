@@ -5,10 +5,11 @@ append-only trail lives in [log.md](log.md).
 
 ## Current Focus
 
-Model collaboration policy: **GLM-5.1** (NVIDIA `z-ai/glm-5.1`) = lead plan/review;
-**Qwen3-Coder** = scoped implementation only. See [MODEL_COLLABORATION.md](../MODEL_COLLABORATION.md).
-
-Human-fib-aware review workflow and research wiki remain the navigation layer.
+Fib research stack: `fib_candidate_outcomes` (#22) + `fib_level_fingerprints` (#23)
++ `fib_fingerprint_outcomes` (join) + `fib_toplist` (descriptive triage export).
+Candle window now `history_start: 2022-10-31`. Next direction designed: **MTF fib
+level projection** (HTF human fib -> LTF candle behavior), see
+[MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md).
 
 ## Recent Changes
 
@@ -32,6 +33,14 @@ Human-fib-aware review workflow and research wiki remain the navigation layer.
 - Fib-aware review: `ruff check` OK; 12 research tests passed (2026-06-05).
 - Human-fib smoke pack `human_fib_review_20260605T064610Z` — #15 acceptance criteria met on PNG inspection.
 
+## Open GitHub issues (not yet done)
+
+- **#25** — docs on `main`; **A–F tooling implemented** (validation, DuckDB, review split,
+  mplfinance, hypothesis, fetch manifest). PR #26 still separate. Close #25 after review.
+
+Closed 2026-06-08: #14 (minimal close — 1w→1d facit done; 4h/1h facit deferred;
+MTF projection = active LTF path), #15–#19, #21–#23.
+
 ## Open Questions
 - Should atomic artifact notes live only in the wiki, or should selected ones get
   small scripts under `scripts/`?
@@ -39,9 +48,44 @@ Human-fib-aware review workflow and research wiki remain the navigation layer.
 
 ## Next Useful Action
 
-1. **Human review:** fill `review_sample.csv` in `human_fib_review_20260605T064610Z` (or re-run smoke command).
-2. **Close issues:** #15 (smoke + acceptance), #16 (spike doc + smoke gate).
-3. Optional: `level_event_review_tool --run-dir experiments/review/fib_level_events/human_fib_review_20260605T064610Z`.
+1D-only track is `working pipeline, no stable evidence yet`
+([n>=20 review](reviews/2026-06-05-fib-n20-bucket-review.md)). New direction: **MTF
+fib level projection** — project locked HTF human fib levels onto LTF candles and
+measure LTF behavior. Design + inspection done in
+[MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md).
+
+1. DONE — runner implemented: `fibengine.research.mtf_fib_level_projection` +
+   `detect_ltf_level_interactions` + 4 tests (all pass; ruff clean; suite 75%).
+2. Smoke (1W BTC fib -> 1D): 6 projected levels, 42 LTF interactions, 168 joined rows
+   (×4 horizons), 0 unmatched, 0 skipped. Artifacts under
+   `experiments/runs/mtf_fib_level_projection/2026-06-05/mtf_proj_20260605T122401Z/`;
+   `fib_toplist --run-dir <that>` works directly on `fingerprint_outcomes.jsonl`.
+3. DONE — checkpoint + toplist triage on the MTF run
+   ([page](reviews/2026-06-05-mtf-fib-projection-checkpoint.md)): toplist stack reusable
+   on MTF output; 116 buckets all LOW SAMPLE; no edge/signal/stable claim; 1W->1D
+   technically validates HTF=map / LTF=behavior.
+4. DONE — BTC 4h fetched (`limit_8000.csv`, 2022-10-31→2026-06-05) and projected:
+   1W->4H = 87 interactions (vs 42 on 1D, same fib), 1D->4H = 23. 4H adds interaction
+   *resolution* but no stable evidence (toplist watch sets disagree across runs; low N).
+   See [MTF checkpoint](reviews/2026-06-05-mtf-fib-projection-checkpoint.md).
+5. DONE — 4H sample growth: fetched ETH/SOL 4h; ran all 136 base fibs → 4H (combined
+   `mtf_proj_20260605T124041Z`): 7453 interactions, 29812 joined, 384 buckets, n≥20=332,
+   0 unmatched/0 skipped. 4H sample is now sufficient for descriptive review.
+   Caveat: pre-2022 1D fibs project cross-era (SOL 1D→4H = 5415 dominates); prefer
+   anchor_b ≥ 2022-10-31 fibs for a clean forward window. See
+   [MTF checkpoint](reviews/2026-06-05-mtf-fib-projection-checkpoint.md).
+6. DONE — cohort split (selection only): clean-forward (anchor_b ≥ 2022-10-31) = 14
+   fibs / 617 interactions / n≥20=32 (`mtf_proj_20260605T124444Z`); cross-era = 122
+   fibs / 6836 interactions / n≥20=308 (`mtf_proj_20260605T124448Z`). clean-forward is
+   BTC+SOL only (all ETH fibs pre-2022). Keep cohorts separate.
+7. DONE — clean-forward n≥20 read
+   ([page](reviews/2026-06-05-mtf-clean-forward-n20-review.md)): 32 buckets; horizon
+   "consistency" is mechanical (nested windows), BTC vs SOL disagree (no shared n≥20
+   bucket), rates revert to coin-flip → **clean-forward 4H projection works, but no
+   stable evidence yet**.
+8. Next (deferred): grow per-symbol clean-forward N (more recent fibs per asset; add
+   ETH once recent ETH fibs exist) before any further read. Cross-era stays a separate
+   historical-level-revisit track. No edge claims, no logic changes. 1h optional later.
 
 ## Guardrails
 

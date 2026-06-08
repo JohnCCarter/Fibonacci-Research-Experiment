@@ -28,8 +28,9 @@ uv run python -m fibengine.research.level_event_review_tool \
 | `h` / `m` / `l` | confidence high / medium / low |
 | `n` or `→` | next event |
 | `p` or `←` | previous event |
+| `g` | toggle **fib-context** (full H/L range) / **event-zoom** (tight event window) |
 | `s` | save `review_sample.csv` + `.jsonl` |
-| `z` | zoom back to current event |
+| `z` | reset view to current mode default |
 | `q` | save and quit |
 
 Use the matplotlib toolbar to pan/zoom like `fibengine.labeling.tool`.
@@ -122,13 +123,29 @@ Each review row contains market context, fib context (`fib_source`, `fib_id`,
 
 `human_note` — free text (optional).
 
+## View modes (#21)
+
+Default is **fib-context**: the chart spans human H/L anchors (plus padding) with all
+fib levels and the selected event overlaid — like a normal human fib chart first.
+
+Press **`g`** to switch to **event-zoom** (tighter window around the event bar only).
+**`z`** resets pan/zoom to the default for the active mode.
+
+PNG charts from `human_review_level_events` use fib-context by default. Override with
+`--default-view event_zoom` on the review tool CLI (interactive only) or set
+`HumanReviewConfig.default_view_mode`.
+
 ## How to read a chart
 
-- **Blue dashed lines** — all calculated fib levels from the saved fib context.
+- **VIEW badge** (bottom-left) — `fib-context` or `event-zoom`.
+- **Fib leg overlay** (purple) — arrow/line `H → L` or `L → H` with `direction: down/up`.
+- **ACTIVE badge** (top-left) — the fib level under review, e.g. `ACTIVE: 0.236 @ 346.46`.
+- **Fib horizontals** — active level solid/bright; inactive levels subdued (no edge clutter).
 - **Orange marker / vertical line** — the event bar (the touch being judged).
-- **Purple H/L anchor labels** — human high/low anchors with timeframe and price.
-- **Event label** — raw relation and candidate kept separate, e.g.
-  `0.618 touch -> rejection_candidate`.
+- **Event callout** — arrow to candle/level: `0.236 touch → rejection_candidate`.
+- **Purple H/L markers** — only when anchors are inside the zoom window.
+- **Review panel** (right) — fib ladder with `ACTIVE`, H/L prices, relation + candidate.
+- **Title / suptitle** — multi-line: symbol/TF, fib_id, event, human label/confidence.
 
 ## What this validates
 
