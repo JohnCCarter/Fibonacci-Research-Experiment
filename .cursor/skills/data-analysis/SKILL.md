@@ -126,9 +126,9 @@ df["rsi"] = calculate_rsi(df["close"])
 
 ## Reference Files
 
-- `docs/LEVEL_EVENTS.md` - Level event definitions
-- `docs/HUMAN_FIB_ANNOTATION.md` - Human annotation guidelines
-- `docs/FIB_BACKTEST_PLAN.md` - Backtesting methodology
+- `docs/research/LEVEL_EVENTS.md` - Level event definitions
+- `docs/labeling/HUMAN_FIB_ANNOTATION.md` - Human annotation guidelines
+- `docs/validate/FIB_BACKTEST_PLAN.md` - Backtesting methodology
 
 ## External Documentation
 

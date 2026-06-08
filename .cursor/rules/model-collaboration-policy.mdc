@@ -52,4 +52,4 @@ Slash command: `/qwen-implement` (paste GLM handoff below the command block).
 - Wiki = navigation; source docs/code = truth.
 - See [repo-aware-coding-agent.mdc](repo-aware-coding-agent.mdc) for inspect / Observed vs Assumptions.
 
-Full setup: [docs/MODEL_COLLABORATION.md](../../docs/MODEL_COLLABORATION.md).
+Full setup: [docs/agent/MODEL_COLLABORATION.md](../../docs/agent/MODEL_COLLABORATION.md).

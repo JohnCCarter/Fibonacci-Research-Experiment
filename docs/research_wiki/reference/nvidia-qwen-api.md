@@ -2,7 +2,7 @@
 
 External **implementation** model (scoped code per GLM handoff). Not part of
 fibengine runtime or promotion. Lead agent: [nvidia-glm-api.md](nvidia-glm-api.md) ·
-[MODEL_COLLABORATION.md](../../MODEL_COLLABORATION.md).
+[MODEL_COLLABORATION.md](../../agent/MODEL_COLLABORATION.md).
 
 ## Endpoint
 
@@ -80,7 +80,7 @@ print(completion.choices[0].message)
 
 ## Repo-aware agent behavior (Chat + Qwen)
 
-Qwen is only the model; Cursor is the shell. Workspace setup: [CURSOR_WORKSPACE_AGENT.md](../../CURSOR_WORKSPACE_AGENT.md) (BYOK, rules, `/repo-agent`). Policy: `.cursor/rules/repo-aware-coding-agent.mdc`.
+Qwen is only the model; Cursor is the shell. Workspace setup: [CURSOR_WORKSPACE_AGENT.md](../../agent/CURSOR_WORKSPACE_AGENT.md) (BYOK, rules, `/repo-agent`). Policy: `.cursor/rules/repo-aware-coding-agent.mdc`.
 
 ## Guardrails
 

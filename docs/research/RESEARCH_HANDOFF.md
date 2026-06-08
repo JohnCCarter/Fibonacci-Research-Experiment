@@ -239,7 +239,7 @@ uv run python scripts/summarize_human_review.py experiments/review/fib_level_eve
 ## User prompt hint (next session)
 
 ```text
-Read docs/RESEARCH_HANDOFF.md and GitHub issue #12.
+Read docs/research/RESEARCH_HANDOFF.md and GitHub issue #12.
 Primary hypothesis A: machine fib-level event candidates, human spot-check only.
 Continue schema v3 events[] â€” do not expand manual labeling or motor without explicit ask.
 ```

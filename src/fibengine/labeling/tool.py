@@ -28,7 +28,7 @@ Controls:
 Tips:
 - Matplotlib toolbar: pan/zoom; view persists across redraw until z (reset) or market change.
 
-Hover: crosshair price (mouse Y) + bar OHLC readout. See docs/LABELING_TOOL.md
+Hover: crosshair price (mouse Y) + bar OHLC readout. See docs/labeling/LABELING_TOOL.md
 """
 
 from __future__ import annotations

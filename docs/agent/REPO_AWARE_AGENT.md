@@ -17,7 +17,7 @@
 | [.cursor/rules/repo-aware-coding-agent.mdc](../.cursor/rules/repo-aware-coding-agent.mdc) | Always-on workflow: inspect → facts vs assumptions → minimal edits → tests |
 | [.cursor/rules/agent-response-style.mdc](../.cursor/rules/agent-response-style.mdc) | Compact replies unless user opts in |
 | [.cursor/rules/research-wiki-maintenance.mdc](../.cursor/rules/research-wiki-maintenance.mdc) | Wiki read/update for substantial research work |
-| [AGENTS.md](../AGENTS.md) | Repo agent entry + Qwen pointer |
+| [AGENTS.md](../../AGENTS.md) | Repo agent entry + Qwen pointer |
 | [.github/copilot-instructions.md](../.github/copilot-instructions.md) | Same policy for GitHub Copilot |
 
 Cursor loads `.cursor/rules/*.mdc` into context for **Agent** and typically for **Chat** when project rules are enabled.

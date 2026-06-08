@@ -12,7 +12,7 @@ Layering:
 
 The human fib supplies the level prices; the candidate logic is reused verbatim
 (no new formulas, no auto-fib, no tuning). **Candidates are never facts** — they
-are inputs to human review (see ``docs/LEVEL_EVENTS.md``). This module is
+are inputs to human review (see ``docs/research/LEVEL_EVENTS.md``). This module is
 additive and does not touch swing selection, evaluation, recall or promotion.
 
 Run (needs cached candles; no network):

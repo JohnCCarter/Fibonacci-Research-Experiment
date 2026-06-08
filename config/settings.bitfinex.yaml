@@ -3,7 +3,7 @@
 # Samma pivot/scoring/backtest-gates som config/settings.yaml; endast data-källan
 # pekar på Bitfinex (CCXT) för att repetera Validate innan inport i Genesis-Core.
 #
-# Se docs/GENESIS_BITFINEX_VALIDATE.md för symbol-mappning och körordning.
+# Se docs/validate/GENESIS_BITFINEX_VALIDATE.md för symbol-mappning och körordning.
 
 seed: 42
 

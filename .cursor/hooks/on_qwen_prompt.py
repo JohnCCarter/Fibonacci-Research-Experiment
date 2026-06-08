@@ -60,7 +60,7 @@ def main() -> int:
                 "user_message": (
                     "Qwen implementer: get a GLM-5.1 handoff first (/glm-plan in GLM chat), "
                     "then /qwen-implement here and paste the handoff. "
-                    "See docs/MODEL_COLLABORATION.md."
+                    "See docs/agent/MODEL_COLLABORATION.md."
                 ),
             },
             ensure_ascii=False,

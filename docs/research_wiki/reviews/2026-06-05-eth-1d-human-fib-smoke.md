@@ -46,5 +46,5 @@ Matplotlib as the main blocker.
 ## Links
 
 - [Fib-aware review decision](../decisions/2026-06-04-fib-aware-review.md)
-- [Fib-aware tooling spike](../../FIB_AWARE_TOOLING_SPIKE.md)
-- [Level event human review](../../LEVEL_EVENT_HUMAN_REVIEW.md)
+- [Fib-aware tooling spike](../../research/FIB_AWARE_TOOLING_SPIKE.md)
+- [Level event human review](../../research/LEVEL_EVENT_HUMAN_REVIEW.md)

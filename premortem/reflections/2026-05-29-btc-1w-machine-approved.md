@@ -13,5 +13,5 @@ Beslut:
 NÃ¤sta:
 - Vid behov: finjustera pris i `labeling.tool` mot TV-wicks och spara igen.
 
-AllmÃ¤n modell (bÃ¥da giltiga): `docs/MACHINE_LABELING.md`.
+AllmÃ¤n modell (bÃ¥da giltiga): `docs/labeling/MACHINE_LABELING.md`.
 

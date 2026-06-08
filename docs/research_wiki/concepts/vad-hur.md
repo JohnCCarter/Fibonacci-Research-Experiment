@@ -26,6 +26,6 @@ The planned direction is top-down:
 
 ## Source Links
 
-- [MTF daily research](../../MTF_DAILY_RESEARCH.md)
-- [HTF/LTF research alignment](../../HTF_LTF_RESEARCH_ALIGNMENT.md)
-- [Research handoff](../../RESEARCH_HANDOFF.md)
+- [MTF daily research](../../research/MTF_DAILY_RESEARCH.md)
+- [HTF/LTF research alignment](../../research/HTF_LTF_RESEARCH_ALIGNMENT.md)
+- [Research handoff](../../research/RESEARCH_HANDOFF.md)

@@ -44,7 +44,7 @@ Review packs contain `review_sample.csv`, `review_sample.jsonl`,
 
 ## Source Links
 
-- [Human fib annotation](../../HUMAN_FIB_ANNOTATION.md)
-- [Behavior facit](../../BEHAVIOR_FACIT.md)
-- [Level event human review](../../LEVEL_EVENT_HUMAN_REVIEW.md)
+- [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)
+- [Behavior facit](../../labeling/BEHAVIOR_FACIT.md)
+- [Level event human review](../../research/LEVEL_EVENT_HUMAN_REVIEW.md)
 - [data labels README](../../../data/labels/README.md)

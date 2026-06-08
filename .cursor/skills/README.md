@@ -30,4 +30,4 @@ To add a new skill:
 
 For more information about the skills framework, see the [Agent Skills specification](https://agentskills.io/specification).
 
-Repo-aware agent policy (inspect before edit): [docs/REPO_AWARE_AGENT.md](../../docs/REPO_AWARE_AGENT.md).
+Repo-aware agent policy (inspect before edit): [docs/agent/REPO_AWARE_AGENT.md](../../docs/agent/REPO_AWARE_AGENT.md).

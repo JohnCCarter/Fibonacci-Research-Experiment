@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Response style (repo default)
 
-Follow [docs/AGENT_RESPONSE_STYLE.md](../../docs/AGENT_RESPONSE_STYLE.md).
+Follow [docs/agent/AGENT_RESPONSE_STYLE.md](../../docs/agent/AGENT_RESPONSE_STYLE.md).
 
 **Default:** short answers; no long reports; diff/summary not full files; ≤10 bullets; status = blockers + next step only.
 

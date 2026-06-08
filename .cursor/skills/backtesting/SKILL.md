@@ -101,12 +101,12 @@ results = pd.read_json("experiments/results/leaderboard.jsonl", lines=True)
 
 ## Reference Files
 
-- `docs/FIB_BACKTEST_PLAN.md` - Backtesting methodology
-- `docs/LEVEL_EVENTS.md` - Level event definitions  
+- `docs/validate/FIB_BACKTEST_PLAN.md` - Backtesting methodology
+- `docs/research/LEVEL_EVENTS.md` - Level event definitions  
 - `experiments/results/leaderboard.jsonl` - Main results ledger
 - `config/settings.yaml` - Configuration with backtest gates
 
 ## External Documentation
 
-- Backtest documentation in `docs/FIB_BACKTEST_PLAN.md`
-- Stability metrics in `docs/LEVEL_EVENTS.md`
+- Backtest documentation in `docs/validate/FIB_BACKTEST_PLAN.md`
+- Stability metrics in `docs/research/LEVEL_EVENTS.md`

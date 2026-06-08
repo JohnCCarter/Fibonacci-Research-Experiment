@@ -123,7 +123,7 @@ Before implementation tasks, load:
 
 - [docs/research_wiki/index.md](research_wiki/index.md)
 - [docs/research_wiki/handoff.md](research_wiki/handoff.md)
-- [AGENTS.md](../AGENTS.md)
+- [AGENTS.md](../../AGENTS.md)
 
 Paste or `@`-reference paths as needed. VS Code has no Cursor `/repo-agent` slash command; start chats with: *Inspect repo first; separate Observed vs Assumptions; minimal diffs.*
 

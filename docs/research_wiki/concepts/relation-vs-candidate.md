@@ -38,6 +38,6 @@ This keeps the raw relation (`touch`) separate from the hypothesis
 
 ## Source Links
 
-- [Human fib annotation](../../HUMAN_FIB_ANNOTATION.md)
-- [Level events](../../LEVEL_EVENTS.md)
-- [Level event human review](../../LEVEL_EVENT_HUMAN_REVIEW.md)
+- [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)
+- [Level events](../../research/LEVEL_EVENTS.md)
+- [Level event human review](../../research/LEVEL_EVENT_HUMAN_REVIEW.md)

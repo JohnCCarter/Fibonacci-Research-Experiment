@@ -11,8 +11,8 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 > och städningsregler.
 > Premortem/reflektion är obligatoriskt: se `premortem/` och `repository-layout-policy.md` §11.
 > Spårmodell: se `docs/TRACKS.md` (Research / Validate / Promotion).
-> Backtest-roadmap: [`docs/FIB_BACKTEST_PLAN.md`](docs/FIB_BACKTEST_PLAN.md).
-> Bitfinex / Genesis validate: [`docs/GENESIS_BITFINEX_VALIDATE.md`](docs/GENESIS_BITFINEX_VALIDATE.md).
+> Backtest-roadmap: [`docs/validate/FIB_BACKTEST_PLAN.md`](docs/validate/FIB_BACKTEST_PLAN.md).
+> Bitfinex / Genesis validate: [`docs/validate/GENESIS_BITFINEX_VALIDATE.md`](docs/validate/GENESIS_BITFINEX_VALIDATE.md).
 > Arkiv (legacy/dubletter): [`archive/`](archive/README.md).
 
 ## Filosofi
@@ -124,7 +124,7 @@ leg än en ritning är det en signal att undersöka, inte automatiskt ett fel.
 ### Maskin-labeling (kandidater, inte facit)
 
 Två giltiga frågor (motor-swing vs synligt chartfönster) — se
-[`docs/MACHINE_LABELING.md`](docs/MACHINE_LABELING.md).
+[`docs/labeling/MACHINE_LABELING.md`](docs/labeling/MACHINE_LABELING.md).
 
 `labeling/autolabel.py` kan generera **provisoriska** swing-kandidater
 (`source="machine"`) från motorns eget urval, så att du slipper börja från ett

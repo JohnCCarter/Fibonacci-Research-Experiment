@@ -4,7 +4,7 @@ Copilot in this repo should behave as a **repo-aware coding agent**, not a gener
 
 ## NVIDIA models (GLM + Qwen) — setup
 
-If Chat cannot reach **GLM-5.1** or **Qwen3-Coder**, follow [docs/VSCODE_COPILOT_NVIDIA_MODELS.md](../docs/VSCODE_COPILOT_NVIDIA_MODELS.md):
+If Chat cannot reach **GLM-5.1** or **Qwen3-Coder**, follow [docs/agent/VSCODE_COPILOT_NVIDIA_MODELS.md](../docs/agent/VSCODE_COPILOT_NVIDIA_MODELS.md):
 
 1. Verify API: `python scripts/nvidia_qwen_diag.py` (key in `.env`; VS Code terminal uses `python`, not `uv`).
 2. VS Code → **Chat: Manage Language Models** → **Custom Endpoint** → `chatLanguageModels.json`.
@@ -13,12 +13,12 @@ If Chat cannot reach **GLM-5.1** or **Qwen3-Coder**, follow [docs/VSCODE_COPILOT
 5. URL per model: `https://integrate.api.nvidia.com/v1/chat/completions`, `toolCalling: true`.
 6. New chat → pick model; first reply may take 20–60 s.
 
-GLM = plan/review; Qwen = scoped implement — [MODEL_COLLABORATION.md](../docs/MODEL_COLLABORATION.md).
+GLM = plan/review; Qwen = scoped implement — [MODEL_COLLABORATION.md](../docs/agent/MODEL_COLLABORATION.md).
 
 ## Source of truth
 
 - [AGENTS.md](../AGENTS.md) — product, commands, gotchas
-- [docs/AGENT_RESPONSE_STYLE.md](../docs/AGENT_RESPONSE_STYLE.md) — compact replies unless user asks for depth
+- [docs/agent/AGENT_RESPONSE_STYLE.md](../docs/agent/AGENT_RESPONSE_STYLE.md) — compact replies unless user asks for depth
 - [docs/research_wiki/index.md](../docs/research_wiki/index.md) — research context map
 - [docs/research_wiki/concepts/guardrails.md](../docs/research_wiki/concepts/guardrails.md) — research invariants
 

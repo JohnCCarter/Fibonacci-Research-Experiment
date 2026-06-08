@@ -9,7 +9,7 @@ Fib research stack: `fib_candidate_outcomes` (#22) + `fib_level_fingerprints` (#
 + `fib_fingerprint_outcomes` (join) + `fib_toplist` (descriptive triage export).
 Candle window now `history_start: 2022-10-31`. Next direction designed: **MTF fib
 level projection** (HTF human fib -> LTF candle behavior), see
-[MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md).
+[MTF_FIB_LEVEL_PROJECTION.md](../research/MTF_FIB_LEVEL_PROJECTION.md).
 
 ## Recent Changes
 
@@ -21,7 +21,7 @@ level projection** (HTF human fib -> LTF candle behavior), see
   conventions.
 - `.cursor/rules/research-wiki-maintenance.mdc` now makes wiki maintenance a
   persistent agent rule.
-- `.cursor/rules/repo-aware-coding-agent.mdc` + `docs/REPO_AWARE_AGENT.md` — inspect
+- `.cursor/rules/repo-aware-coding-agent.mdc` + `docs/agent/REPO_AWARE_AGENT.md` — inspect
   repo before answer/edit; facts vs assumptions; for BYOK Qwen in Chat.
 
 ## Verification Snapshot
@@ -54,7 +54,7 @@ active LTF path), #15–#19, #21–#23.
 ([n>=20 review](reviews/2026-06-05-fib-n20-bucket-review.md)). New direction: **MTF
 fib level projection** — project locked HTF human fib levels onto LTF candles and
 measure LTF behavior. Design + inspection done in
-[MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md).
+[MTF_FIB_LEVEL_PROJECTION.md](../research/MTF_FIB_LEVEL_PROJECTION.md).
 
 1. DONE — runner implemented: `fibengine.research.mtf_fib_level_projection` +
    `detect_ltf_level_interactions` + 4 tests (all pass; ruff clean; suite 75%).

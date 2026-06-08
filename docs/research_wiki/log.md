@@ -30,7 +30,7 @@ to existing extract/analyze/join), artifacts under `experiments/runs/`, CLI
 `--human-fib --lower-timeframes --pre-bars --post-bars`. First runnable slice (no
 network) is **1W fib -> 1D candles**; `4h`/`1h` need a fetch first (ETH/SOL have no 4h
 cache). Layer separation: human_fib / projected_level / relation / fingerprint /
-outcome. Full design: [MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md).
+outcome. Full design: [MTF_FIB_LEVEL_PROJECTION.md](../research/MTF_FIB_LEVEL_PROJECTION.md).
 
 Guardrail: design/docs only so far; no code, no trading signal, no edge claim. No
 runner implemented until go-ahead.
@@ -55,7 +55,7 @@ determinism, leg-end-after-cache skip, e2e artifacts, missing-cache skip); full 
 186 passed, coverage 75%, ruff clean on new files. Scope guard held: no swing/
 `detect_level_events` refactor, no UI, no candidate-logic change, no edge claims. 4h/1h
 deferred until a fetch populates LTF caches. Design:
-[MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md).
+[MTF_FIB_LEVEL_PROJECTION.md](../research/MTF_FIB_LEVEL_PROJECTION.md).
 
 ## [2026-06-05] review | MTF fib projection checkpoint + toplist triage (1W->1D)
 
@@ -225,7 +225,7 @@ memory-only chatbot.
 Added:
 
 - `.cursor/rules/repo-aware-coding-agent.mdc` (always apply)
-- `docs/REPO_AWARE_AGENT.md` — Cursor settings, `@` context, User Rules snippet
+- `docs/agent/REPO_AWARE_AGENT.md` — Cursor settings, `@` context, User Rules snippet
 - `.github/copilot-instructions.md` — Copilot parity
 - `AGENTS.md` section + link from [nvidia-qwen-api.md](reference/nvidia-qwen-api.md)
 
@@ -239,7 +239,7 @@ Added `docs/prompts/qwen-chat-starter.md` and `scripts/qwen_repo_agent_check.py`
 
 ## [2026-06-04] maintenance | Cursor workspace agent shell
 
-Added `docs/CURSOR_WORKSPACE_AGENT.md`, `.cursor/README.md`, `.cursor/commands/repo-agent.md`
+Added `docs/agent/CURSOR_WORKSPACE_AGENT.md`, `.cursor/README.md`, `.cursor/commands/repo-agent.md`
 (slash command prefills wiki `@` + repo-aware prompt). AGENTS.md and wiki index updated.
 
 ## [2026-06-04] maintenance | Qwen hooks (sessionStart + beforeSubmitPrompt)
@@ -250,7 +250,7 @@ start and block bare prompts until `/repo-agent` or wiki `@` (see CURSOR_WORKSPA
 ## [2026-06-04] decision | GLM-5.1 lead + Qwen3-Coder implement
 
 Policy: GLM owns plan/review/approval; Qwen owns scoped implementation. Added
-`docs/MODEL_COLLABORATION.md`, `.cursor/rules/model-collaboration-policy.mdc`,
+`docs/agent/MODEL_COLLABORATION.md`, `.cursor/rules/model-collaboration-policy.mdc`,
 `/glm-plan`, `/qwen-implement`, `on_glm_session.py`, updated Qwen hooks, `nvidia_glm_smoke.py`,
 wiki [nvidia-glm-api.md](reference/nvidia-glm-api.md), [model-handoff template](templates/model-handoff.md).
 
@@ -277,7 +277,7 @@ visible on PNG charts. Distilled page:
 After smoke: keep Matplotlib PNG + JSON review path; defer Dash/Panel/React/HTML
 until a human reviewer flags pan/zoom as blocker. Spike doc updated with smoke
 outcome. Issue #16 deliverable (recommendation + comparison) was already in
-[FIB_AWARE_TOOLING_SPIKE.md](../../FIB_AWARE_TOOLING_SPIKE.md).
+[FIB_AWARE_TOOLING_SPIKE.md](../../research/FIB_AWARE_TOOLING_SPIKE.md).
 
 ## [2026-06-05] maintenance | GLM delegates to Qwen subagent
 
@@ -323,7 +323,7 @@ ISO timestamp, coverage check in `level_event_review_tool`. Verified pack
 `fibengine.research.fib_fingerprint_outcomes` — joins fingerprint (#23) and
 outcome (#22) layers on `event_id` (1 fingerprint × N horizons). Smoke: maj-BTC
 (1 event, 4 rows). Full batch: 51 joined events, 204 rows, 104 load-skipped
-(pre-2022-10-31). Docs: [FIB_FINGERPRINT_OUTCOMES.md](../FIB_FINGERPRINT_OUTCOMES.md).
+(pre-2022-10-31). Docs: [FIB_FINGERPRINT_OUTCOMES.md](../research/FIB_FINGERPRINT_OUTCOMES.md).
 
 ## [2026-06-05] config | candle window 2022-10-31 → today
 
@@ -333,24 +333,24 @@ outcome (#22) layers on `event_id` (1 fingerprint × N horizons). Smoke: maj-BTC
 ## [2026-06-05] feat | fib level interaction fingerprints (#23)
 
 `fibengine.research.fib_level_fingerprints` — deterministic pre/at/post features
-per human-fib event; complements #22. Docs: [FIB_LEVEL_FINGERPRINTS.md](../FIB_LEVEL_FINGERPRINTS.md).
+per human-fib event; complements #22. Docs: [FIB_LEVEL_FINGERPRINTS.md](../research/FIB_LEVEL_FINGERPRINTS.md).
 
 ## [2026-06-05] feat | fib candidate outcome backtest (#22)
 
 `fibengine.research.fib_candidate_outcomes` — forward metrics per event×horizon
 from human-fib `*_events.json`; summary by candidate/relation/level/TF. Docs:
-[FIB_CANDIDATE_OUTCOMES.md](../FIB_CANDIDATE_OUTCOMES.md).
+[FIB_CANDIDATE_OUTCOMES.md](../research/FIB_CANDIDATE_OUTCOMES.md).
 
 ## [2026-06-05] feat | fib-context review view (#21)
 
 `window_for_view` / `xlim_for_view` in `human_review_level_events`; interactive
 `level_event_review_tool` defaults to fib-context (full H/L + event overlay), `g`
 toggles event-zoom. PNG export uses fib-context by default. Docs:
-[LEVEL_EVENT_HUMAN_REVIEW.md](../LEVEL_EVENT_HUMAN_REVIEW.md).
+[LEVEL_EVENT_HUMAN_REVIEW.md](../research/LEVEL_EVENT_HUMAN_REVIEW.md).
 
 ## [2026-06-05] doc | VS Code Copilot NVIDIA BYOK
 
-Added [VSCODE_COPILOT_NVIDIA_MODELS.md](../VSCODE_COPILOT_NVIDIA_MODELS.md) and
+Added [VSCODE_COPILOT_NVIDIA_MODELS.md](../agent/VSCODE_COPILOT_NVIDIA_MODELS.md) and
 summary in `.github/copilot-instructions.md` — Custom Endpoint +
 `chatLanguageModels.json` for `z-ai/glm-5.1` and
 `qwen/qwen3-coder-480b-a35b-instruct` (same NIM API as Cursor).
@@ -363,7 +363,7 @@ when `n_events` < 5) + `TOPLIST_NOTES.md` (inventory, top-1 preview, Spearman
 fingerprint↔outcome hints, untuned watch/weak/noise buckets). Applied to
 `fp_outcomes_20260605T114206Z`: 148 buckets, **all LOW SAMPLE** (max n=3) — the
 honest triage takeaway is "needs more events", not edge. Descriptive only; no
-signal/strategy/tuning. Docs: [FIB_FINGERPRINT_OUTCOMES.md](../FIB_FINGERPRINT_OUTCOMES.md).
+signal/strategy/tuning. Docs: [FIB_FINGERPRINT_OUTCOMES.md](../research/FIB_FINGERPRINT_OUTCOMES.md).
 
 ## [2026-06-05] feat | data expansion + multi-run stability triage
 
@@ -408,16 +408,16 @@ Each close comment links smoke/docs/checkpoint. Remaining open: **#14**, **#25**
 
 ## [2026-06-08] decision | Close #14 minimal (facit vs MTF projection)
 
-Updated [HTF_LTF_RESEARCH_ALIGNMENT.md](../HTF_LTF_RESEARCH_ALIGNMENT.md): spår **A**
+Updated [HTF_LTF_RESEARCH_ALIGNMENT.md](../research/HTF_LTF_RESEARCH_ALIGNMENT.md): spår **A**
 (facit chain 1w→1d ✅; 4h/1h `legs[]` + 1d→4h disambiguation deferred) vs spår **B**
 (MTF projection research — 1W→1D/4H, 1D→4H implemented; does not replace 4h facit).
 Closed **#14** on GitHub with decision + links to
-[MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md) and MTF wiki checkpoints.
+[MTF_FIB_LEVEL_PROJECTION.md](../research/MTF_FIB_LEVEL_PROJECTION.md) and MTF wiki checkpoints.
 No code or research-logic changes.
 
 ## [2026-06-08] doc | Issue #25 tooling recommendation (main, not PR #26)
 
-Added `docs/TOOLING_RECOMMENDATION_REPORT.md` + `TOOLING_RECOMMENDATION_TOOLS.md` —
+Added `docs/tooling/TOOLING_RECOMMENDATION_REPORT.md` + `TOOLING_RECOMMENDATION_TOOLS.md` —
 issue #25 format (per-tool category, strategy, success-criteria map). Grounded in repo
 (uv/ruff/pytest/pydantic/ccxt/matplotlib/custom research stack). PR #26 noted as separate
 agent/CI supplement. No deps, no adoption. Next: human review → close #25 on GitHub.
@@ -437,6 +437,12 @@ Verification: ruff OK; pytest 195 passed, 76% cov.
 `human_review_candles.py` — single `draw_review_candles` / `review_mpf_style` for
 PNG (`human_review_charts`) and `level_event_review_tool` (dark theme). Same up/down
 colors; fib overlays unchanged. Tests: `test_human_review_candles.py`.
+
+## [2026-06-08] chore | Categorize loose docs/ markdown files
+
+Moved 22 top-level `docs/*.md` into `agent/`, `labeling/`, `research/`,
+`validate/`, `tooling/` with per-folder README indexes; kept `CONTRIBUTING.md` and
+`TRACKS.md` at `docs/` root. Updated cross-links repo-wide.
 
 ## [2026-06-08] release | Merge PR #27 to main
 

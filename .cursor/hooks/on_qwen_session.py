@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-POLICY = REPO_ROOT / "docs/MODEL_COLLABORATION.md"
+POLICY = REPO_ROOT / "docs/agent/MODEL_COLLABORATION.md"
 
 
 def _is_qwen_model(model: str) -> bool:

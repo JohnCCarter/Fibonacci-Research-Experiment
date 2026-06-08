@@ -11,7 +11,7 @@
 | [skills/](skills/) | Optional deep dives (backtest, labeling, etc.) |
 | [../AGENTS.md](../AGENTS.md) | Commands, product scope, gotchas |
 | [../docs/research_wiki/](../docs/research_wiki/) | **Read first** — index, handoff, log |
-| [../docs/CURSOR_WORKSPACE_AGENT.md](../docs/CURSOR_WORKSPACE_AGENT.md) | **Setup checklist** (BYOK Qwen + rules) |
+| [../docs/agent/CURSOR_WORKSPACE_AGENT.md](../docs/agent/CURSOR_WORKSPACE_AGENT.md) | **Setup checklist** (BYOK Qwen + rules) |
 | [hooks.json](hooks.json) | **GLM lead** / **Qwen implement** context on `sessionStart`; Qwen send gate |
 | [commands/glm-plan.md](commands/glm-plan.md) | GLM: plan + handoff |
 | [commands/qwen-implement.md](commands/qwen-implement.md) | Qwen: implement handoff only |
@@ -34,7 +34,7 @@ BYOK once in Settings: NVIDIA URL + both model ids. Subagent `model:` field targ
 
 ## One-time setup (human)
 
-Follow [docs/CURSOR_WORKSPACE_AGENT.md](../docs/CURSOR_WORKSPACE_AGENT.md).
+Follow [docs/agent/CURSOR_WORKSPACE_AGENT.md](../docs/agent/CURSOR_WORKSPACE_AGENT.md).
 
 ## Every session (Qwen in Chat)
 

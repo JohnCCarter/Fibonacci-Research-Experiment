@@ -45,7 +45,7 @@ Valfritt YAML-frontmatter överst (rekommenderat när mappen växer):
 ---
 type: run | decision | learning | premortem
 topics: [labeling, validate, backtest]
-related: [docs/MACHINE_LABELING.md]
+related: [docs/labeling/MACHINE_LABELING.md]
 supersedes: 2026-05-28-earlier-decision   # om denna ersätter äldre slutsats
 status: active | historical
 ---
@@ -60,7 +60,7 @@ status: active | historical
 | Validate-körning med beslut | Ny matris, pivot_recall-runda |
 | Policy/arbetsätt ändras | Ändra researchflöde, inför maskin-labeling |
 | Facit eller promotion | Godkänd BTC 1w, merge till `settings.yaml` |
-| Överraskning / missförstånd | Chartfönster vs motor-swing → `docs/MACHINE_LABELING.md` |
+| Överraskning / missförstånd | Chartfönster vs motor-swing → `docs/labeling/MACHINE_LABELING.md` |
 
 **Skippa** triviala commits (typo, ren format) utan beteendeförändring.
 
@@ -79,7 +79,7 @@ Reflektioner är **anteckningar**, inte rapporter. Gräns (kontrolleras av `repo
 
 - **Observationer:** 3–7 punkter, nyckeltal (t.ex. `flip_rate`, `gate_passed`) — inte hela tabeller.
 - **Data:** peka på `experiments/results/<ledger>.jsonl` + `run_id` / `config_hash`.
-- **Lång förklaring:** ny eller utökad fil under `docs/` (t.ex. `docs/MACHINE_LABELING.md`), en rad i reflektionen som länkar dit.
+- **Lång förklaring:** ny eller utökad fil under `docs/` (t.ex. `docs/labeling/MACHINE_LABELING.md`), en rad i reflektionen som länkar dit.
 - **Rå JSON/CSV:** lägg i `experiments/`, aldrig klistra in i reflektionen.
 
 **Om gränsen inte räcker:** dela upp — en reflektion = ett beslut; skapa `docs/…` för bakgrund.
@@ -120,6 +120,6 @@ Reflektioner är **anteckningar**, inte rapporter. Gräns (kontrolleras av `repo
 | Behov | Var |
 |-------|-----|
 | Övergripande risker | [../PREMORTEM.md](../PREMORTEM.md) |
-| Backtest-faser | [docs/FIB_BACKTEST_PLAN.md](../../docs/FIB_BACKTEST_PLAN.md) |
-| Maskin-labeling A/B | [docs/MACHINE_LABELING.md](../../docs/MACHINE_LABELING.md) |
+| Backtest-faser | [docs/validate/FIB_BACKTEST_PLAN.md](../../docs/validate/FIB_BACKTEST_PLAN.md) |
+| Maskin-labeling A/B | [docs/labeling/MACHINE_LABELING.md](../../docs/labeling/MACHINE_LABELING.md) |
 | Repo-regler | [repository-layout-policy.md](../../repository-layout-policy.md) §11 |

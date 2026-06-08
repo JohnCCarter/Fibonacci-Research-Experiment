@@ -20,14 +20,14 @@ Kurerad översikt. Nya reflektioner: `YYYY-MM-DD-<kort-beskrivning>.md` (se [REA
 
 **Djupare guider:**
 
-- **[docs/RESEARCH_HANDOFF.md](../../docs/RESEARCH_HANDOFF.md)** — scope + Hypothesis A ([GitHub #12](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/12))
-- [docs/MACHINE_LABELING.md](../../docs/MACHINE_LABELING.md) (fråga A vs chartfönster)
-- [docs/MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md) (MTF-lager, multi-leg, roadmap steg 1–4)
+- **[docs/research/RESEARCH_HANDOFF.md](../../docs/research/RESEARCH_HANDOFF.md)** — scope + Hypothesis A ([GitHub #12](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/12))
+- [docs/labeling/MACHINE_LABELING.md](../../docs/labeling/MACHINE_LABELING.md) (fråga A vs chartfönster)
+- [docs/research/MTF_DAILY_RESEARCH.md](../../docs/research/MTF_DAILY_RESEARCH.md) (MTF-lager, multi-leg, roadmap steg 1–4)
 
 ## Ämnesindex (snabbnavigering)
 
-- **labeling:** worklist, machine-labeling, btc-1w-machine-approved, mtf-daily-fib-research → [MACHINE_LABELING.md](../../docs/MACHINE_LABELING.md), [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md)
-- **MTF / 1w / 1d:** mtf-origin-1w-to-1d, mtf-daily-fib-research, fib-multi-behavior-per-level → [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md) §0, [BEHAVIOR_FACIT.md](../../docs/BEHAVIOR_FACIT.md)
-- **behavior / events:** fib-multi-behavior-per-level, human-fib-annotation-layer → [HUMAN_FIB_ANNOTATION.md](../../docs/HUMAN_FIB_ANNOTATION.md)
+- **labeling:** worklist, machine-labeling, btc-1w-machine-approved, mtf-daily-fib-research → [MACHINE_LABELING.md](../../docs/labeling/MACHINE_LABELING.md), [MTF_DAILY_RESEARCH.md](../../docs/research/MTF_DAILY_RESEARCH.md)
+- **MTF / 1w / 1d:** mtf-origin-1w-to-1d, mtf-daily-fib-research, fib-multi-behavior-per-level → [MTF_DAILY_RESEARCH.md](../../docs/research/MTF_DAILY_RESEARCH.md) §0, [BEHAVIOR_FACIT.md](../../docs/labeling/BEHAVIOR_FACIT.md)
+- **behavior / events:** fib-multi-behavior-per-level, human-fib-annotation-layer → [HUMAN_FIB_ANNOTATION.md](../../docs/labeling/HUMAN_FIB_ANNOTATION.md)
 - **validate / backtest:** real-data-matrix, premortem-mitigations
 - **process / risk:** branch-premortem

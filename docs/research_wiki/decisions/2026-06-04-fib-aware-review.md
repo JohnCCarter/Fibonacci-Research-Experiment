@@ -29,6 +29,6 @@ the labeling tool or building a full platform.
 
 ## Source Links
 
-- [Fib-aware tooling spike](../../FIB_AWARE_TOOLING_SPIKE.md)
-- [Level event human review](../../LEVEL_EVENT_HUMAN_REVIEW.md)
+- [Fib-aware tooling spike](../../research/FIB_AWARE_TOOLING_SPIKE.md)
+- [Level event human review](../../research/LEVEL_EVENT_HUMAN_REVIEW.md)
 - [Relation vs candidate](../concepts/relation-vs-candidate.md)

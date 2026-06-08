@@ -60,5 +60,5 @@ Always include enough detail for **safety and correctness**:
 
 ## Related docs
 
-- [`AGENTS.md`](../AGENTS.md) — agent entry (product, CLI, gotchas)
+- [`AGENTS.md`](../../AGENTS.md) — agent entry (product, CLI, gotchas)
 - [`RESEARCH_HANDOFF.md`](RESEARCH_HANDOFF.md) — research scope (not response length)

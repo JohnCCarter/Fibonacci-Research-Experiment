@@ -1,7 +1,7 @@
 # Checkpoint — MTF fib level projection (1W → 1D slice)
 
 Date: 2026-06-05 · Run: `mtf_proj_20260605T122401Z` ·
-Runner: [`fibengine.research.mtf_fib_level_projection`](../../MTF_FIB_LEVEL_PROJECTION.md)
+Runner: [`fibengine.research.mtf_fib_level_projection`](../../research/MTF_FIB_LEVEL_PROJECTION.md)
 
 > Research checkpoint + light triage. Descriptive only. Not an edge, not a signal,
 > not a strategy. Human fib stays the locked source-of-truth.
@@ -191,6 +191,6 @@ clean-forward 1D fibs: BTC 6 (all 2026), SOL 0. cross-era is dominated by SOL/ET
 
 ## Related
 
-- [MTF_FIB_LEVEL_PROJECTION.md](../../MTF_FIB_LEVEL_PROJECTION.md) — design + run
+- [MTF_FIB_LEVEL_PROJECTION.md](../../research/MTF_FIB_LEVEL_PROJECTION.md) — design + run
 - [2026-06-05 fingerprint/outcome checkpoint](2026-06-05-fib-fingerprint-outcome-checkpoint.md)
 - [2026-06-05 n≥20 bucket review](2026-06-05-fib-n20-bucket-review.md) (1D-only track)

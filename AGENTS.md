@@ -6,15 +6,15 @@
 
 **Expand** when the user opts in (e.g. “förklara mer”, “det är ok att förklara”, “full rapport”) or when safety/correctness requires detail.
 
-Full spec: [docs/AGENT_RESPONSE_STYLE.md](docs/AGENT_RESPONSE_STYLE.md) · Cursor rule: `.cursor/rules/agent-response-style.mdc`
+Full spec: [docs/agent/AGENT_RESPONSE_STYLE.md](docs/agent/AGENT_RESPONSE_STYLE.md) · Cursor rule: `.cursor/rules/agent-response-style.mdc`
 
 ## Repo-aware agent (all models, including BYOK Qwen in Chat)
 
 **Policy:** Inspect the repo before implementation answers; separate facts from assumptions; minimal diffs; ask before edit when scope is unclear. Not a memory-only chatbot.
 
 - Rule: `.cursor/rules/repo-aware-coding-agent.mdc` (`alwaysApply: true`)
-- **Model collaboration (GLM lead + Qwen implement):** [docs/MODEL_COLLABORATION.md](docs/MODEL_COLLABORATION.md) · `/glm-plan` · `/qwen-implement`
-- **Cursor workspace setup:** [docs/CURSOR_WORKSPACE_AGENT.md](docs/CURSOR_WORKSPACE_AGENT.md) · [.cursor/README.md](.cursor/README.md)
+- **Model collaboration (GLM lead + Qwen implement):** [docs/agent/MODEL_COLLABORATION.md](docs/agent/MODEL_COLLABORATION.md) · `/glm-plan` · `/qwen-implement`
+- **Cursor workspace setup:** [docs/agent/CURSOR_WORKSPACE_AGENT.md](docs/agent/CURSOR_WORKSPACE_AGENT.md) · [.cursor/README.md](.cursor/README.md)
 - Research context: `docs/research_wiki/index.md`, `handoff.md`
 
 ---

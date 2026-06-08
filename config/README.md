@@ -15,7 +15,7 @@ Baseline:
 Bitfinex / Genesis validate:
 
 - `settings.bitfinex.yaml` — samma som baseline (explicit profil för Genesis-dok).
-- Körordning och symbol-mappning: [`docs/GENESIS_BITFINEX_VALIDATE.md`](../docs/GENESIS_BITFINEX_VALIDATE.md).
+- Körordning och symbol-mappning: [`docs/validate/GENESIS_BITFINEX_VALIDATE.md`](../docs/validate/GENESIS_BITFINEX_VALIDATE.md).
 
 Spårkoppling:
 

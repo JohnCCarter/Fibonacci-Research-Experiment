@@ -88,5 +88,5 @@ rates revert to coin-flip, and magnitudes are tiny. Nothing here is an edge.
 ## Related
 
 - [MTF projection checkpoint](2026-06-05-mtf-fib-projection-checkpoint.md) (cohort split + 4H runs)
-- [MTF_FIB_LEVEL_PROJECTION.md](../../MTF_FIB_LEVEL_PROJECTION.md)
+- [MTF_FIB_LEVEL_PROJECTION.md](../../research/MTF_FIB_LEVEL_PROJECTION.md)
 - Cross-era cohort is tracked separately (historical level revisit), not mixed in here.

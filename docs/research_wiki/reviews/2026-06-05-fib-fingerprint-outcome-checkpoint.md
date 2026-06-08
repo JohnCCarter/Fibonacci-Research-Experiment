@@ -52,6 +52,6 @@ data-expansion run. This is a status snapshot, not a conclusion about edge.
 - Expanded run: `experiments/runs/fib_fingerprint_outcomes/2026-06-05/fp_outcomes_20260605T115819Z/`
   - `MULTIRUN_NOTES.md`, `sample_inventory.csv`, `toplist.csv`, `TOPLIST_NOTES.md`
 - Baseline run: `…/fp_outcomes_20260605T114206Z/`
-- Docs: [FIB_FINGERPRINT_OUTCOMES.md](../../FIB_FINGERPRINT_OUTCOMES.md),
-  [FIB_CANDIDATE_OUTCOMES.md](../../FIB_CANDIDATE_OUTCOMES.md),
-  [FIB_LEVEL_FINGERPRINTS.md](../../FIB_LEVEL_FINGERPRINTS.md)
+- Docs: [FIB_FINGERPRINT_OUTCOMES.md](../../research/FIB_FINGERPRINT_OUTCOMES.md),
+  [FIB_CANDIDATE_OUTCOMES.md](../../research/FIB_CANDIDATE_OUTCOMES.md),
+  [FIB_LEVEL_FINGERPRINTS.md](../../research/FIB_LEVEL_FINGERPRINTS.md)

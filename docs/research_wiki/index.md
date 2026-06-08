@@ -17,15 +17,15 @@ wiki pages are the map and synthesis.
   experiment path shapes.
 - [CLI commands](reference/cli-commands.md) — common commands for fetch,
   experiment, review, tests, and build.
-- [Model collaboration (GLM + Qwen)](../MODEL_COLLABORATION.md) — GLM-5.1 lead,
+- [Model collaboration (GLM + Qwen)](../agent/MODEL_COLLABORATION.md) — GLM-5.1 lead,
   Qwen3-Coder implement (NVIDIA NIM, not fibengine runtime).
 - [NVIDIA GLM-5.1 API](reference/nvidia-glm-api.md) — lead agent (plan/review).
 - [NVIDIA Qwen API](reference/nvidia-qwen-api.md) — implementation specialist.
-- [Cursor workspace agent setup](../CURSOR_WORKSPACE_AGENT.md) — configure
+- [Cursor workspace agent setup](../agent/CURSOR_WORKSPACE_AGENT.md) — configure
   Cursor shell + BYOK Qwen (`/repo-agent`, rules, wiki bootstrap).
-- [VS Code Copilot NVIDIA models](../VSCODE_COPILOT_NVIDIA_MODELS.md) — BYOK
+- [VS Code Copilot NVIDIA models](../agent/VSCODE_COPILOT_NVIDIA_MODELS.md) — BYOK
   Custom Endpoint for GLM + Qwen (parity with Cursor NIM setup).
-- [Repo-aware agent (short)](../REPO_AWARE_AGENT.md) — companion notes.
+- [Repo-aware agent (short)](../agent/REPO_AWARE_AGENT.md) — companion notes.
 - [Guardrails](concepts/guardrails.md) — research-only invariants and promotion
   boundaries.
 - [Atomic runnable artifacts](concepts/atomic-runnable-artifacts.md) — small,
@@ -74,13 +74,13 @@ wiki pages are the map and synthesis.
 
 ## Canonical Source Docs
 
-- [Research handoff](../RESEARCH_HANDOFF.md) — current hypothesis and boundaries.
+- [Research handoff](../research/RESEARCH_HANDOFF.md) — current hypothesis and boundaries.
 - [Repo tracks](../TRACKS.md) — Research, Validate, and Promotion separation.
-- [Human fib annotation](../HUMAN_FIB_ANNOTATION.md) — manual fib source of truth.
-- [Level events](../LEVEL_EVENTS.md) — candidate detector and taxonomy.
-- [Level event review](../LEVEL_EVENT_HUMAN_REVIEW.md) — review package workflow.
-- [Fib candidate outcomes](../FIB_CANDIDATE_OUTCOMES.md) — forward outcome backtest (#22).
-- [Fib level fingerprints](../FIB_LEVEL_FINGERPRINTS.md) — pre/at/post interaction features (#23).
-- [Fib fingerprint × outcome join](../FIB_FINGERPRINT_OUTCOMES.md) — #22 + #23 combined table.
-- [MTF fib level projection](../MTF_FIB_LEVEL_PROJECTION.md) — HTF fib → LTF candle behavior (design + inspection).
-- [Fib-aware tooling spike](../FIB_AWARE_TOOLING_SPIKE.md) — tooling direction.
+- [Human fib annotation](../labeling/HUMAN_FIB_ANNOTATION.md) — manual fib source of truth.
+- [Level events](../research/LEVEL_EVENTS.md) — candidate detector and taxonomy.
+- [Level event review](../research/LEVEL_EVENT_HUMAN_REVIEW.md) — review package workflow.
+- [Fib candidate outcomes](../research/FIB_CANDIDATE_OUTCOMES.md) — forward outcome backtest (#22).
+- [Fib level fingerprints](../research/FIB_LEVEL_FINGERPRINTS.md) — pre/at/post interaction features (#23).
+- [Fib fingerprint × outcome join](../research/FIB_FINGERPRINT_OUTCOMES.md) — #22 + #23 combined table.
+- [MTF fib level projection](../research/MTF_FIB_LEVEL_PROJECTION.md) — HTF fib → LTF candle behavior (design + inspection).
+- [Fib-aware tooling spike](../research/FIB_AWARE_TOOLING_SPIKE.md) — tooling direction.

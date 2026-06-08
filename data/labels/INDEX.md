@@ -14,5 +14,5 @@ Oversikt over golden set (data/labels/).
 Legacy Bitfinex labels are archived under `archive/data_labels_Bitfinex/labels/`.
 
 Human-fib ground-truth files are stored under `human_fib/bitfinex/` and documented in
-`docs/HUMAN_FIB_ANNOTATION.md`.
+`docs/labeling/HUMAN_FIB_ANNOTATION.md`.
 

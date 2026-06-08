@@ -98,9 +98,9 @@ uv run python -m fibengine.labeling.worklist
 
 ## Reference Files
 
-- `docs/HUMAN_FIB_ANNOTATION.md` - Human annotation guidelines
-- `docs/LEVEL_EVENTS.md` - Level event definitions
-- `docs/GENESIS_BITFINEX_VALIDATE.md` - Validation procedures
+- `docs/labeling/HUMAN_FIB_ANNOTATION.md` - Human annotation guidelines
+- `docs/research/LEVEL_EVENTS.md` - Level event definitions
+- `docs/validate/GENESIS_BITFINEX_VALIDATE.md` - Validation procedures
 
 ## External Documentation
 

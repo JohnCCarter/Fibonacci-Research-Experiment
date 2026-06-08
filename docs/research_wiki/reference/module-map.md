@@ -37,5 +37,5 @@ High-level map of `src/fibengine`. This is navigation, not an API contract.
 ## Source Links
 
 - [Repository layout policy](../../../repository-layout-policy.md)
-- [Research handoff](../../RESEARCH_HANDOFF.md)
+- [Research handoff](../../research/RESEARCH_HANDOFF.md)
 - [Repo tracks](../../TRACKS.md)

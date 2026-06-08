@@ -1,6 +1,6 @@
 # NVIDIA GLM-5.1 API (lead agent)
 
-External **lead** model: plan, review, verify. Implementation is **Qwen3-Coder** — see [MODEL_COLLABORATION.md](../../MODEL_COLLABORATION.md).
+External **lead** model: plan, review, verify. Implementation is **Qwen3-Coder** — see [MODEL_COLLABORATION.md](../../agent/MODEL_COLLABORATION.md).
 
 ## Endpoint
 

@@ -40,7 +40,7 @@ If repository reality changes, update this policy first, then move files.
 | `experiments/results/` | Append-only ledgers | Yes |
 | `experiments/runs/` | Per-run audit folders | Selective |
 | `experiments/label_review/` | Review checkpoints | Yes |
-| `docs/` | Long-lived documentation | Yes |
+| `docs/` | Long-lived documentation (`agent/`, `labeling/`, `research/`, `validate/`, `tooling/`, `research_wiki/`) | Yes |
 | `premortem/` | Premortem and reflections | Yes |
 | `archive/` | Historical/legacy material | Yes |
 | `tmp/` | Temporary work | Optional |
