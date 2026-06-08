@@ -1,14 +1,17 @@
 # Qwen3-Coder — implement GLM handoff only
 
-Role: implementation specialist. **Do not** replan or expand scope — follow the GLM handoff below.
+**When:** Qwen Chat fallback (or after GLM paste). Subagent of GLM-5.1 — not a parallel architect.
 
 @AGENTS.md
+@docs/research_wiki/handoff.md
 
-Qwen implementer mode:
+Qwen implementer mode (constitution: AGENTS.md §5):
 
-- Implement **only** the approved scope in the handoff.
-- Minimal diffs; list changed files, rationale, and tests (`uv run pytest -q`, ruff).
-- If handoff is missing or unclear → ask; do not guess scope.
+- Implement **only** the approved GLM handoff scope.
+- Minimal diffs; return changed files, rationale, tests (`uv run ruff check src tests`, `uv run pytest -q`).
+- Missing or unclear handoff → ask; do not replan or expand scope.
+
+Subagent spec: `.cursor/agents/qwen-implementer.md`
 
 ## GLM handoff (paste below)
 
@@ -18,8 +21,12 @@ Qwen implementer mode:
 
 **Out of scope:**
 
-**Files:**
+**Files (read/write):**
 
 **Steps:**
 
-**Tests:**
+**Tests / verify:**
+
+**Risks / facit:**
+
+**Review criteria for GLM:**

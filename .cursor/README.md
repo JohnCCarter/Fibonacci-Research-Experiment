@@ -7,7 +7,7 @@
 | Path | Role |
 |------|------|
 | [rules/](rules/) | Always-on agent policy (`alwaysApply: true` on core rules) |
-| [commands/](commands/) | Slash commands in Chat/Agent — prefill wiki `@` + repo-aware prompt |
+| [commands/](commands/) | Slash commands — `/glm-plan`, `/qwen-implement`, `/repo-agent` (prefill `@` + role prompt) |
 | [skills/](skills/) | Optional deep dives (backtest, labeling, etc.) |
 | [../AGENTS.md](../AGENTS.md) | **CONSTITUTION FOR AGENTS AND SUBAGENTS** |
 | [../docs/agent/INDEX.md](../docs/agent/INDEX.md) | Full agent/subagent doc map |
