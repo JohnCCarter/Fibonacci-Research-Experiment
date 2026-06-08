@@ -12,5 +12,6 @@
   "git.showCursorWorktrees": true,
   "terminal.sourceControlRepositoriesKind": "integrated",
   "python.terminal.activateEnvInCurrentTerminal": true,
-  "python.terminal.useEnvFile": true
+  "python.terminal.useEnvFile": true,
+  "claudeCode.initialPermissionMode": "plan"
 }

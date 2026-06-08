@@ -13,6 +13,6 @@ GLM-5.1 lead mode:
 2. **Observed** / **Assumptions** — separate facts from guesses.
 3. **Implementation handoff** — use template sections:
    - Goal, In scope, Out of scope, Files, Steps, Tests, Risks, Review criteria
-4. Tell user to open a **new Qwen chat**, run `/qwen-implement`, and paste the handoff.
+4. **Delegate** to subagent `qwen-implementer`: `Use the qwen-implementer subagent to implement this GLM handoff:` + handoff block. (Fallback: new Qwen chat + `/qwen-implement` if subagent unavailable.)
 
 **Task:** 

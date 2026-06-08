@@ -15,6 +15,22 @@
 | [hooks.json](hooks.json) | **GLM lead** / **Qwen implement** context on `sessionStart`; Qwen send gate |
 | [commands/glm-plan.md](commands/glm-plan.md) | GLM: plan + handoff |
 | [commands/qwen-implement.md](commands/qwen-implement.md) | Qwen: implement handoff only |
+| [agents/glm-lead.md](agents/glm-lead.md) | **Subagent** — GLM lead (plan, review, delegate) |
+| [agents/qwen-implementer.md](agents/qwen-implementer.md) | **Subagent** — GLM's Qwen implementer (`model:` in frontmatter) |
+
+## Subagents: GLM delegates to Qwen
+
+- **GLM** (`glm-lead`) plans and reviews.
+- **Qwen** (`qwen-implementer`) is GLM's implementation subagent — not a separate peer unless fallback.
+
+GLM delegates:
+
+```text
+Use the qwen-implementer subagent to implement this GLM handoff:
+(paste handoff)
+```
+
+BYOK once in Settings: NVIDIA URL + both model ids. Subagent `model:` field targets Qwen when delegated.
 
 ## One-time setup (human)
 

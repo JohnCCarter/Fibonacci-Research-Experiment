@@ -83,6 +83,30 @@ uv run python scripts/qwen_repo_agent_check.py
 
 ---
 
+## Subagents (GLM → Qwen)
+
+| Subagent | Model | Role |
+|----------|-------|------|
+| [`glm-lead`](../.cursor/agents/glm-lead.md) | `z-ai/glm-5.1` | Plan, handoff, review, delegate |
+| [`qwen-implementer`](../.cursor/agents/qwen-implementer.md) | `qwen/qwen3-coder-480b-a35b-instruct` | **GLM's implementation subagent** |
+
+**Qwen is GLM's subagent** — not a peer workflow you switch to manually unless subagent delegation fails.
+
+GLM delegates after handoff:
+
+```text
+Use the qwen-implementer subagent to implement this GLM handoff:
+
+## GLM handoff
+**Goal:** ...
+**In scope:** ...
+...
+```
+
+Subagent frontmatter sets `model:`; BYOK must still be configured once in Cursor Settings (NVIDIA base URL + `nvapi-...` key).
+
+**Fallback:** separate Qwen chat + `/qwen-implement` + paste handoff.
+
 ## Related
 
 - [CURSOR_WORKSPACE_AGENT.md](CURSOR_WORKSPACE_AGENT.md)
