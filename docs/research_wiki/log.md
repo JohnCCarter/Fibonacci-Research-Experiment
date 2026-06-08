@@ -437,3 +437,10 @@ Verification: ruff OK; pytest 195 passed, 76% cov.
 `human_review_candles.py` — single `draw_review_candles` / `review_mpf_style` for
 PNG (`human_review_charts`) and `level_event_review_tool` (dark theme). Same up/down
 colors; fib overlays unchanged. Tests: `test_human_review_candles.py`.
+
+## [2026-06-08] chore | Close #25; remove scratch scripts
+
+Closed **#25** on GitHub after tooling A–F landed on `feature/research-spot-check`
+(3 commits: feat/docs/chore). Deleted one-off `_scratch_*.py` scripts — findings
+already in wiki reviews (`fib-n20-bucket`, `mtf-clean-forward-n20`, MTF checkpoint).
+Repo bounds tiers raised for `research/*.py` (750 lines).

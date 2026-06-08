@@ -30,16 +30,18 @@ level projection** (HTF human fib -> LTF candle behavior), see
 - IDE lints reported no markdown diagnostics on the wiki files during setup.
 - The wiki maintenance rule was added as an always-applied Cursor project rule.
 - NVIDIA smoke: `scripts/nvidia_qwen_smoke.py` OK (~28s streaming, key in `.env`).
-- Fib-aware review: `ruff check` OK; 12 research tests passed (2026-06-05).
+- Tooling stack: `ruff check` OK; pytest 198 passed, ~76% cov (2026-06-08);
+  pushed `feature/research-spot-check` (`20565ef`..`a096a3f`).
 - Human-fib smoke pack `human_fib_review_20260605T064610Z` — #15 acceptance criteria met on PNG inspection.
 
 ## Open GitHub issues (not yet done)
 
-- **#25** — docs on `main`; **A–F tooling implemented** (validation, DuckDB, review split,
-  mplfinance, hypothesis, fetch manifest). PR #26 still separate. Close #25 after review.
+None blocking research tooling. PR #26 remains a separate agent/CI supplement (not merged).
 
-Closed 2026-06-08: #14 (minimal close — 1w→1d facit done; 4h/1h facit deferred;
-MTF projection = active LTF path), #15–#19, #21–#23.
+Closed 2026-06-08: **#25** (tooling report + A–F on `feature/research-spot-check`:
+validation, DuckDB, review split, mplfinance, hypothesis, fetch manifest).
+Also: #14 (minimal close — 1w→1d facit done; 4h/1h facit deferred; MTF projection =
+active LTF path), #15–#19, #21–#23.
 
 ## Open Questions
 - Should atomic artifact notes live only in the wiki, or should selected ones get
