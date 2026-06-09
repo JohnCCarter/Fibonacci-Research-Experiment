@@ -233,8 +233,11 @@ data/screenshots/**
 # Human fib facit = base JSON only; regenerate with human_fib_events / --classify.
 data/labels/human_fib/**/*_events.json
 data/labels/human_fib/**/*_interactions.csv
-# Superseded research archive: review chart PNGs are local/regenerable blobs.
-archive/research_superseded/**/charts/
+# Superseded research reset: local blobs only; MANIFEST.md documents what moved.
+archive/research_superseded/**
+!archive/research_superseded/**/MANIFEST.md
+archive/**/**/*_events.json
+archive/**/**/*_interactions.csv
 # Per-körning audit-mappar versioneras inte (artefakter, inte källa).
 # experiments/results/*.jsonl och experiments/label_review/ versioneras (default).
 # Timestamped per-run snapshots (not append-only ledgers):

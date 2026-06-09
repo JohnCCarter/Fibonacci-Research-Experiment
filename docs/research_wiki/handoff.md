@@ -33,7 +33,7 @@ results; start fresh on BTC/USD only.
 - `experiments/runs/`, `experiments/results/`, `experiments/review/` — **empty**
   (README stubs only); fresh ledgers start on next runner use.
 - `data/labels/`, `data/raw/`, `data/screenshots/` — **empty** (prior facit in archive).
-- Pre-reset archive manifest:
+- Pre-reset archive (local disk; git tracks manifest only):
   [MANIFEST.md](../../archive/research_superseded/2026-06-08_pre_btc_monthly_reset/MANIFEST.md)
 
 ## Open Questions

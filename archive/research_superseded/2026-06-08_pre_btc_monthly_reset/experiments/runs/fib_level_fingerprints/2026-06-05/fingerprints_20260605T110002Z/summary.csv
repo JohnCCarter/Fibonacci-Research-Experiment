@@ -1,2 +1,0 @@
-auto_candidate,relation,fib_level,timeframe,n_events,mean_pre_bars_approaching_level,mean_pre_distance_atr_norm,mean_at_close_distance_atr_norm,mean_post_bars_on_break_side,mean_post_retest_count,mean_post_max_extension_away
-rejection_candidate,cross,0.236,1d,1,2,4.470837,0.053304,0,2,496.488

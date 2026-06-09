@@ -96,6 +96,12 @@ Per fresh-start for BTC monthly-first protocol: moved 279 files from
 `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/data/`. Active
 paths empty; updated INDEX, MANIFEST, DATA_CLASSIFICATION, handoff, protocol.
 
+## [2026-06-09] chore | Untrack superseded research archive blobs
+
+Commit 3 had ~557 files under `archive/research_superseded/` in git. `.gitignore`
+now ignores that tree except each reset's `MANIFEST.md` (same pattern as `data/raw/`).
+Archive stays on disk locally; active facit remains 76 BTC `fib_*.json`.
+
 ## [2026-06-08] release | Merge PR #27 to main
 
 Merged `feature/research-spot-check` â†’ `main` (`bd22e87`): tooling Aâ€“F, fib/MTF

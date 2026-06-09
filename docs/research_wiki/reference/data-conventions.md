@@ -43,6 +43,15 @@ experiments/review/fib_level_events/{run_id}/
 Review packs contain `review_sample.csv`, `review_sample.jsonl`,
 `REVIEW_INDEX.md`, and chart PNGs.
 
+## Superseded research archive
+
+```text
+archive/research_superseded/{reset_id}/
+```
+
+Pre-reset experiments, labels, caches, and review packs live here **on disk**.
+Git tracks only each reset's `MANIFEST.md` (see `archive/INDEX.md`).
+
 ## Source Links
 
 - [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)
