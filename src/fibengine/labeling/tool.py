@@ -11,7 +11,7 @@ Controls:
 - h / l: next click sets high / low
 - u/backspace: undo latest high/low edit
 - r: clear current picks
-- f: toggle fib levels
+- f: toggle fib levels (includes read-only HTF human-fib overlays on lower TFs)
 - g: toggle high-low range shading
 - w: write active fib as a human ground-truth annotation (data/labels/human_fib/...)
 - s: save label (all legs) for the active symbol/timeframe
@@ -38,12 +38,12 @@ from dataclasses import dataclass, field
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib.patches import Rectangle
 
 from fibengine.core.config import DataConfig, Settings, load_settings
 from fibengine.core.fib import fib_from_prices
 from fibengine.data.loader import load_candles
 from fibengine.labeling.hover import HoverReadout
+from fibengine.labeling.htf_fib_overlay import draw_htf_overlays, load_htf_overlays
 from fibengine.labeling.human_fib import (
     anchors_from_picks,
     make_annotation,
@@ -63,6 +63,7 @@ from fibengine.labeling.store import (
     save_label,
     set_labels_dir,
 )
+from fibengine.research.human_review_candles import draw_review_candles
 
 DEFAULT_FIB_LEVELS = [0.236, 0.382, 0.5, 0.618, 0.786]
 LEG_FIB_COLORS = ["#6ea8ff", "#ffb86b", "#bd93f9", "#8be9fd", "#ff79c6"]
@@ -219,6 +220,12 @@ def _parse_args() -> argparse.Namespace:
         default="",
         help="Label JSON root (default data/labels). Use data/labels/tmp for a clean sandbox.",
     )
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="",
+        help="Settings file (default: config/settings.yaml).",
+    )
     return parser.parse_args()
 
 
@@ -236,21 +243,44 @@ class LabelWorkspace:
     show_range: bool = False
 
     def __post_init__(self):
-        self.df = load_candles(self.settings.data)
+        self.df = self._load_chart_candles()
 
     @property
     def data(self) -> DataConfig:
         return self.settings.data
 
+    def _load_chart_candles(self) -> pd.DataFrame:
+        """Load candles from local cache only (no exchange fetch on TF switch)."""
+        try:
+            return load_candles(self.settings.data, fetch_if_missing=False)
+        except FileNotFoundError as exc:
+            raise SystemExit(
+                f"{exc}\n"
+                "Labeling tool does not auto-fetch. Run preflight first:\n"
+                "  uv run python -m fibengine.labeling.preflight "
+                f"--symbol {self.data.symbol} --config <settings.yaml>"
+            ) from exc
+
     def set_market(self, symbol: str | None = None, timeframe: str | None = None) -> None:
-        self.settings.data = self.settings.data.model_copy(
+        next_data = self.settings.data.model_copy(
             update={
                 key: value
                 for key, value in {"symbol": symbol, "timeframe": timeframe}.items()
                 if value is not None
             }
         )
-        self.df = load_candles(self.settings.data)
+        try:
+            df = load_candles(next_data, fetch_if_missing=False)
+        except FileNotFoundError as exc:
+            print(
+                f"Cannot switch to {next_data.symbol} {next_data.timeframe}: {exc}\n"
+                "Prefetch cache (tool does not auto-fetch). Example:\n"
+                "  uv run python -m fibengine.labeling.preflight "
+                f"--symbol {next_data.symbol} --timeframes {next_data.timeframe}"
+            )
+            return
+        self.settings.data = next_data
+        self.df = df
         self.picks.clear()
         self.history.clear()
         self.legs.clear()
@@ -516,18 +546,16 @@ def run_label_tool(args: argparse.Namespace | None = None):
     if args and getattr(args, "labels_dir", ""):
         set_labels_dir(args.labels_dir)
         print(f"Labels dir: {args.labels_dir}")
-    settings = _apply_cli_overrides(
-        load_settings(),
-        args
-        or argparse.Namespace(
-            exchange=None,
-            symbol=None,
-            timeframe=None,
-            limit=None,
-            symbols=None,
-            timeframes=None,
-        ),
+    cli = args or argparse.Namespace(
+        exchange=None,
+        symbol=None,
+        timeframe=None,
+        limit=None,
+        symbols=None,
+        timeframes=None,
+        config="",
     )
+    settings = _apply_cli_overrides(load_settings(cli.config or None), cli)
     args = args or argparse.Namespace(symbols=None, timeframes=None)
     symbols = _csv_values(args.symbols, DEFAULT_CYCLE_SYMBOLS)
     timeframes = _csv_values(args.timeframes, _default_timeframes(settings.data.timeframe))
@@ -624,43 +652,17 @@ def run_label_tool(args: argparse.Namespace | None = None):
         ax.set_facecolor("#0f1117")
         df = workspace.df
         x = range(len(df))
-        opens = df["open"].to_numpy()
-        highs = df["high"].to_numpy()
         lows = df["low"].to_numpy()
-        closes = df["close"].to_numpy()
+        highs = df["high"].to_numpy()
 
-        up_color = "#26a69a"
-        down_color = "#ef5350"
-        wick_color = "#c7cedb"
-        candle_width = 0.62
+        draw_review_candles(ax, df, candlestick=True, dark_theme=True)
 
-        # Candlesticks for a more standard trading-chart look.
-        for i, (o, h, low, c) in enumerate(zip(opens, highs, lows, closes, strict=False)):
-            color = up_color if c >= o else down_color
-            ax.vlines(i, low, h, color=wick_color, linewidth=0.8, alpha=0.9, zorder=2)
-            body_bottom = min(o, c)
-            body_height = abs(c - o)
-            if body_height <= 1e-12:
-                ax.hlines(
-                    c,
-                    i - candle_width / 2,
-                    i + candle_width / 2,
-                    color=color,
-                    linewidth=1.2,
-                    zorder=3,
-                )
-            else:
-                ax.add_patch(
-                    Rectangle(
-                        (i - candle_width / 2, body_bottom),
-                        candle_width,
-                        body_height,
-                        facecolor=color,
-                        edgecolor=color,
-                        linewidth=0.8,
-                        zorder=3,
-                    )
-                )
+        htf_overlays = load_htf_overlays(
+            workspace.data.exchange,
+            workspace.data.symbol,
+            workspace.data.timeframe,
+        )
+        draw_htf_overlays(ax, df, htf_overlays, show=workspace.show_fib)
 
         if workspace.show_range:
             ax.fill_between(

@@ -46,7 +46,7 @@ def test_fib_prices_from_picks_handles_up_and_down_legs():
 def test_workspace_cycles_market_without_mutating_other_fields(monkeypatch, synthetic_df):
     seen: list[DataConfig] = []
 
-    def fake_load_candles(cfg):
+    def fake_load_candles(cfg, fetch_if_missing=True):
         seen.append(cfg)
         return synthetic_df
 
@@ -113,7 +113,7 @@ def test_save_auto_appends_second_leg(monkeypatch, synthetic_df, tmp_path):
     monkeypatch.setattr(store, "LABELS_DIR", tmp_path)
     monkeypatch.setattr(tool, "save_label", capture)
     monkeypatch.setattr(tool, "find_label", lambda *_a: None)
-    monkeypatch.setattr(tool, "load_candles", lambda _cfg: synthetic_df)
+    monkeypatch.setattr(tool, "load_candles", lambda _cfg, fetch_if_missing=True: synthetic_df)
 
     workspace = LabelWorkspace(
         settings=Settings(),
