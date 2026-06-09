@@ -233,9 +233,14 @@ data/screenshots/**
 # Human fib facit = base JSON only; regenerate with human_fib_events / --classify.
 data/labels/human_fib/**/*_events.json
 data/labels/human_fib/**/*_interactions.csv
-# Superseded research reset: local blobs only; MANIFEST.md documents what moved.
+# Archive trees: local blobs only; stubs/manifests document layout.
 archive/research_superseded/**
 !archive/research_superseded/**/MANIFEST.md
+archive/experiments/**
+!archive/experiments/**/README.md
+!archive/experiments/**/INDEX.md
+archive/tests/**
+!archive/tests/README.md
 archive/**/**/*_events.json
 archive/**/**/*_interactions.csv
 # Per-körning audit-mappar versioneras inte (artefakter, inte källa).

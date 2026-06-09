@@ -96,6 +96,11 @@ Per fresh-start for BTC monthly-first protocol: moved 279 files from
 `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/data/`. Active
 paths empty; updated INDEX, MANIFEST, DATA_CLASSIFICATION, handoff, protocol.
 
+## [2026-06-09] chore | Untrack legacy archive/experiments blobs
+
+Gitignored `archive/experiments/**` (May 2026 spot-check runs/reviews); ~314 files
+removed from index. README/INDEX stubs remain tracked. On-disk paths unchanged.
+
 ## [2026-06-09] chore | Untrack superseded research archive blobs
 
 Commit 3 had ~557 files under `archive/research_superseded/` in git. `.gitignore`
