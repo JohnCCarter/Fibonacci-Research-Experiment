@@ -1,0 +1,73 @@
+{
+  "fib_id": "fib_SOL-USD_1d_20211227T000000",
+  "symbol": "SOL/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "direction": "down",
+  "anchor_a": {
+    "time": "2021-12-27T00:00:00+00:00",
+    "price": 204.75
+  },
+  "anchor_b": {
+    "time": "2021-12-31T00:00:00+00:00",
+    "price": 167.61
+  },
+  "source": "human_fib_events",
+  "created_at": "2026-06-02T12:04:54.947714+00:00",
+  "config": {
+    "levels": [],
+    "touch_tolerance_atr": 0.1,
+    "forward_window": 5,
+    "acceptance_closes": 2,
+    "immediate_rejection_bars": 2,
+    "debounce_bars": 3
+  },
+  "n_events": 1,
+  "levels": [
+    {
+      "level": "0.236",
+      "price": 176.375,
+      "events": [
+        {
+          "event_bar": "2022-01-01T00:00:00+00:00",
+          "bar_index": 310,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "failure_candidate",
+          "note": "Accepted beyond level then reversed back across it",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 4,
+            "max_penetration_atr": 0.1964
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.382",
+      "price": 181.7975,
+      "events": []
+    },
+    {
+      "level": "0.5",
+      "price": 186.18,
+      "events": []
+    },
+    {
+      "level": "0.618",
+      "price": 190.5625,
+      "events": []
+    },
+    {
+      "level": "0.786",
+      "price": 196.802,
+      "events": []
+    },
+    {
+      "level": "1",
+      "price": 204.75,
+      "events": []
+    }
+  ]
+}

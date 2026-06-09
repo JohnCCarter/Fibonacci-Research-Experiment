@@ -1,0 +1,14 @@
+{
+  "run_id": "outcomes_20260605T102124Z",
+  "horizons": [
+    5,
+    10,
+    20,
+    50
+  ],
+  "seed": null,
+  "event_files": [
+    "data\\labels\\human_fib\\bitfinex\\BTC-USD\\1d\\fib_BTC-USD_1d_20260526T000000_events.json"
+  ],
+  "created_at": "2026-06-05T10:21:24.116475+00:00"
+}

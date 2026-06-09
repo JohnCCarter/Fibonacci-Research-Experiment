@@ -1,0 +1,5 @@
+auto_candidate,relation,fib_level,symbol,timeframe,horizon,n_events,mean_forward_return,mean_mfe,mean_mae,rate_close_on_approach_side,rate_crossed_back
+rejection_candidate,cross,0.236,BTC/USD,1d,5,1,-0.136401,0.170599,0.005316,1.0,0.0
+rejection_candidate,cross,0.236,BTC/USD,1d,10,1,-0.15051,0.173507,0.005316,1.0,0.0
+rejection_candidate,cross,0.236,BTC/USD,1d,20,1,-0.15051,0.173507,0.005316,1.0,0.0
+rejection_candidate,cross,0.236,BTC/USD,1d,50,1,-0.15051,0.173507,0.005316,1.0,0.0

@@ -1,0 +1,167 @@
+{
+  "aggregate": {
+    "n": 3,
+    "excluded_out_of_window": 0,
+    "excluded_mtf_unresolved": 0,
+    "no_in_window_samples": false,
+    "mean_agreement": 0.0,
+    "mean_fib_err_frac": 0.606,
+    "mean_high_price_err_atr": 17.9144,
+    "mean_low_price_err_atr": 6.1522
+  },
+  "results": [
+    {
+      "label": "bitfinex_BTC-USD_1d",
+      "metrics": {
+        "high_price_err_atr": 18.6921,
+        "low_price_err_atr": 4.6604,
+        "high_time_err_bars": 89,
+        "low_time_err_bars": 744,
+        "mean_fib_err_frac": 0.4469,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0,
+        "out_of_window": false,
+        "mtf_status": "not_applicable",
+        "mtf_order": "high_then_low",
+        "mtf_resolution_kind": null,
+        "same_htf_candle": false,
+        "skipped_mtf": false
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 337,
+          "timestamp": "2014-03-03T00:00:00+00:00",
+          "price": 719.25,
+          "kind": "high",
+          "prominence": 2.4582
+        },
+        "end": {
+          "index": 995,
+          "timestamp": "2015-12-21T00:00:00+00:00",
+          "price": 424.37,
+          "kind": "low",
+          "prominence": 1.7484
+        },
+        "direction": "down",
+        "price_range": 294.88,
+        "bars": 658,
+        "features": {
+          "magnitude": 0.8365,
+          "recency": 0.996,
+          "prominence": 0.7825,
+          "cleanliness": 0.0425,
+          "round_number": 0.488,
+          "duration": 31.9,
+          "structure_alignment": 0.0,
+          "scale_confluence": 0.5
+        },
+        "score": -10.3661,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "bitfinex_ETH-USD_1d",
+      "metrics": {
+        "high_price_err_atr": 8.1345,
+        "low_price_err_atr": 5.6178,
+        "high_time_err_bars": 563,
+        "low_time_err_bars": 85,
+        "mean_fib_err_frac": 0.7158,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0,
+        "out_of_window": false,
+        "mtf_status": "not_applicable",
+        "mtf_order": "low_then_high",
+        "mtf_resolution_kind": null,
+        "same_htf_candle": false,
+        "skipped_mtf": false
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 342,
+          "timestamp": "2017-02-21T00:00:00+00:00",
+          "price": 12.25,
+          "kind": "low",
+          "prominence": 2.2294
+        },
+        "end": {
+          "index": 998,
+          "timestamp": "2018-12-09T00:00:00+00:00",
+          "price": 102.5,
+          "kind": "high",
+          "prominence": 1.5317
+        },
+        "direction": "up",
+        "price_range": 90.25,
+        "bars": 656,
+        "features": {
+          "magnitude": 0.61,
+          "recency": 0.999,
+          "prominence": 0.7353,
+          "cleanliness": 0.0071,
+          "round_number": 0.5,
+          "duration": 31.8,
+          "structure_alignment": 0.25,
+          "scale_confluence": 0.25
+        },
+        "score": -10.5085,
+        "status": "confirmed"
+      }
+    },
+    {
+      "label": "bitfinex_SOL-USD_1d",
+      "metrics": {
+        "high_price_err_atr": 26.9167,
+        "low_price_err_atr": 8.1783,
+        "high_time_err_bars": 801,
+        "low_time_err_bars": 72,
+        "mean_fib_err_frac": 0.6554,
+        "price_agree": 0.0,
+        "time_agree": 0.0,
+        "fib_agree": 0.0,
+        "agreement": 0.0,
+        "out_of_window": false,
+        "mtf_status": "not_applicable",
+        "mtf_order": "high_then_low",
+        "mtf_resolution_kind": null,
+        "same_htf_candle": false,
+        "skipped_mtf": false
+      },
+      "predicted_swing": {
+        "start": {
+          "index": 276,
+          "timestamp": "2021-11-28T00:00:00+00:00",
+          "price": 181.11,
+          "kind": "low",
+          "prominence": 2.7052
+        },
+        "end": {
+          "index": 997,
+          "timestamp": "2023-11-19T00:00:00+00:00",
+          "price": 62.081,
+          "kind": "high",
+          "prominence": 1.8829
+        },
+        "direction": "down",
+        "price_range": 119.029,
+        "bars": 721,
+        "features": {
+          "magnitude": 0.9693,
+          "recency": 0.998,
+          "prominence": 0.8168,
+          "cleanliness": 0.0963,
+          "round_number": 0.808,
+          "duration": 35.05,
+          "structure_alignment": 0.25,
+          "scale_confluence": 0.5
+        },
+        "score": -11.0392,
+        "status": "provisional"
+      }
+    }
+  ]
+}

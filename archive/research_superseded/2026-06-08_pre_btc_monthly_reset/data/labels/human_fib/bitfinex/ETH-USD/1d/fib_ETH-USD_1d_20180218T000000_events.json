@@ -1,0 +1,131 @@
+{
+  "fib_id": "fib_ETH-USD_1d_20180218T000000",
+  "symbol": "ETH/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "direction": "down",
+  "anchor_a": {
+    "time": "2018-02-18T00:00:00+00:00",
+    "price": 979.0
+  },
+  "anchor_b": {
+    "time": "2018-02-22T00:00:00+00:00",
+    "price": 788.0
+  },
+  "source": "human_fib_events",
+  "created_at": "2026-06-02T12:04:54.538622+00:00",
+  "config": {
+    "levels": [],
+    "touch_tolerance_atr": 0.1,
+    "forward_window": 5,
+    "acceptance_closes": 2,
+    "immediate_rejection_bars": 2,
+    "debounce_bars": 3
+  },
+  "n_events": 5,
+  "levels": [
+    {
+      "level": "0.236",
+      "price": 833.076,
+      "events": [
+        {
+          "event_bar": "2018-02-23T00:00:00+00:00",
+          "bar_index": 709,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 0,
+            "max_penetration_atr": 0.3879
+          }
+        },
+        {
+          "event_bar": "2018-03-04T00:00:00+00:00",
+          "bar_index": 718,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 2,
+            "max_penetration_atr": 1.9722
+          }
+        },
+        {
+          "event_bar": "2018-05-05T00:00:00+00:00",
+          "bar_index": 780,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.382",
+      "price": 860.962,
+      "events": [
+        {
+          "event_bar": "2018-02-23T00:00:00+00:00",
+          "bar_index": 709,
+          "touch_type": "wick_above",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 3,
+            "max_penetration_atr": 0.1081
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.5",
+      "price": 883.5,
+      "events": [
+        {
+          "event_bar": "2018-02-23T00:00:00+00:00",
+          "bar_index": 709,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.618",
+      "price": 906.038,
+      "events": []
+    },
+    {
+      "level": "0.786",
+      "price": 938.126,
+      "events": []
+    },
+    {
+      "level": "1",
+      "price": 979.0,
+      "events": []
+    }
+  ]
+}

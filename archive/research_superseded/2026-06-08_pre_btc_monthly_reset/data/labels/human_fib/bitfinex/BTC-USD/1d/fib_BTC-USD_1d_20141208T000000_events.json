@@ -1,0 +1,358 @@
+{
+  "fib_id": "fib_BTC-USD_1d_20141208T000000",
+  "symbol": "BTC/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "direction": "down",
+  "anchor_a": {
+    "time": "2014-12-08T00:00:00+00:00",
+    "price": 378.34
+  },
+  "anchor_b": {
+    "time": "2014-12-11T00:00:00+00:00",
+    "price": 335.7
+  },
+  "source": "human_fib_events",
+  "created_at": "2026-06-02T12:04:54.009140+00:00",
+  "config": {
+    "levels": [],
+    "touch_tolerance_atr": 0.1,
+    "forward_window": 5,
+    "acceptance_closes": 2,
+    "immediate_rejection_bars": 2,
+    "debounce_bars": 3
+  },
+  "n_events": 21,
+  "levels": [
+    {
+      "level": "0.236",
+      "price": 345.763,
+      "events": [
+        {
+          "event_bar": "2014-12-12T00:00:00+00:00",
+          "bar_index": 621,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 2,
+            "closes_back": 2,
+            "max_penetration_atr": 1.53
+          }
+        },
+        {
+          "event_bar": "2015-11-02T00:00:00+00:00",
+          "bar_index": 946,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 4.3893
+          }
+        },
+        {
+          "event_bar": "2015-11-10T00:00:00+00:00",
+          "bar_index": 954,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 0.979
+          }
+        },
+        {
+          "event_bar": "2015-11-26T00:00:00+00:00",
+          "bar_index": 970,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 1.4295
+          }
+        },
+        {
+          "event_bar": "2015-12-02T00:00:00+00:00",
+          "bar_index": 976,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.382",
+      "price": 351.9885,
+      "events": [
+        {
+          "event_bar": "2014-12-12T00:00:00+00:00",
+          "bar_index": 621,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 4,
+            "max_penetration_atr": 0.0945
+          }
+        },
+        {
+          "event_bar": "2015-11-02T00:00:00+00:00",
+          "bar_index": 946,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 3.9589
+          }
+        },
+        {
+          "event_bar": "2015-11-06T00:00:00+00:00",
+          "bar_index": 950,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 2,
+            "closes_back": 4,
+            "max_penetration_atr": 1.1971
+          }
+        },
+        {
+          "event_bar": "2015-11-10T00:00:00+00:00",
+          "bar_index": 954,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 1.1736
+          }
+        },
+        {
+          "event_bar": "2015-11-26T00:00:00+00:00",
+          "bar_index": 970,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 0,
+            "max_penetration_atr": 1.1435
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.5",
+      "price": 357.02,
+      "events": [
+        {
+          "event_bar": "2014-12-14T00:00:00+00:00",
+          "bar_index": 623,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2015-11-02T00:00:00+00:00",
+          "bar_index": 946,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 3.6109
+          }
+        },
+        {
+          "event_bar": "2015-11-06T00:00:00+00:00",
+          "bar_index": 950,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 2,
+            "closes_back": 4,
+            "max_penetration_atr": 1.3575
+          }
+        },
+        {
+          "event_bar": "2015-11-26T00:00:00+00:00",
+          "bar_index": 970,
+          "touch_type": "wick_above",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 3,
+            "closes_back": 1,
+            "max_penetration_atr": 0.9123
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.618",
+      "price": 362.0515,
+      "events": [
+        {
+          "event_bar": "2015-11-02T00:00:00+00:00",
+          "bar_index": 946,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 3.263
+          }
+        },
+        {
+          "event_bar": "2015-11-26T00:00:00+00:00",
+          "bar_index": 970,
+          "touch_type": "wick_above",
+          "approach_side": "below",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 2,
+            "closes_back": 3,
+            "max_penetration_atr": 0.6812
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.786",
+      "price": 369.215,
+      "events": [
+        {
+          "event_bar": "2015-11-02T00:00:00+00:00",
+          "bar_index": 946,
+          "touch_type": "wick_above",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 1,
+            "max_penetration_atr": 2.7677
+          }
+        },
+        {
+          "event_bar": "2015-11-26T00:00:00+00:00",
+          "bar_index": 970,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "failure_candidate",
+          "note": "Accepted beyond level then reversed back across it",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 2,
+            "closes_back": 4,
+            "max_penetration_atr": 0.3521
+          }
+        }
+      ]
+    },
+    {
+      "level": "1",
+      "price": 378.34,
+      "events": [
+        {
+          "event_bar": "2015-11-03T00:00:00+00:00",
+          "bar_index": 947,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "failure_candidate",
+          "note": "Accepted beyond level then reversed back across it",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 1,
+            "max_penetration_atr": 1.7251
+          }
+        },
+        {
+          "event_bar": "2015-11-30T00:00:00+00:00",
+          "bar_index": 974,
+          "touch_type": "wick_above",
+          "approach_side": "below",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 4,
+            "max_penetration_atr": 0.5571
+          }
+        },
+        {
+          "event_bar": "2015-12-05T00:00:00+00:00",
+          "bar_index": 979,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 2.099
+          }
+        }
+      ]
+    }
+  ]
+}

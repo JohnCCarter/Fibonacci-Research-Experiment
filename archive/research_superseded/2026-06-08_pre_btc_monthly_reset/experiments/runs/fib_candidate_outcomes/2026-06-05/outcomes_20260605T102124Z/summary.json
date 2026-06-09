@@ -1,0 +1,58 @@
+[
+  {
+    "auto_candidate": "rejection_candidate",
+    "relation": "cross",
+    "fib_level": "0.236",
+    "symbol": "BTC/USD",
+    "timeframe": "1d",
+    "horizon": 5,
+    "n_events": 1,
+    "mean_forward_return": -0.136401,
+    "mean_mfe": 0.170599,
+    "mean_mae": 0.005316,
+    "rate_close_on_approach_side": 1.0,
+    "rate_crossed_back": 0.0
+  },
+  {
+    "auto_candidate": "rejection_candidate",
+    "relation": "cross",
+    "fib_level": "0.236",
+    "symbol": "BTC/USD",
+    "timeframe": "1d",
+    "horizon": 10,
+    "n_events": 1,
+    "mean_forward_return": -0.15051,
+    "mean_mfe": 0.173507,
+    "mean_mae": 0.005316,
+    "rate_close_on_approach_side": 1.0,
+    "rate_crossed_back": 0.0
+  },
+  {
+    "auto_candidate": "rejection_candidate",
+    "relation": "cross",
+    "fib_level": "0.236",
+    "symbol": "BTC/USD",
+    "timeframe": "1d",
+    "horizon": 20,
+    "n_events": 1,
+    "mean_forward_return": -0.15051,
+    "mean_mfe": 0.173507,
+    "mean_mae": 0.005316,
+    "rate_close_on_approach_side": 1.0,
+    "rate_crossed_back": 0.0
+  },
+  {
+    "auto_candidate": "rejection_candidate",
+    "relation": "cross",
+    "fib_level": "0.236",
+    "symbol": "BTC/USD",
+    "timeframe": "1d",
+    "horizon": 50,
+    "n_events": 1,
+    "mean_forward_return": -0.15051,
+    "mean_mfe": 0.173507,
+    "mean_mae": 0.005316,
+    "rate_close_on_approach_side": 1.0,
+    "rate_crossed_back": 0.0
+  }
+]

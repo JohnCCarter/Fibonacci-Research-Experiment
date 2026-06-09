@@ -64,20 +64,14 @@ wiki pages are the map and synthesis.
 
 ## Reviews
 
-- [2026-06-05 ETH 1d human-fib smoke](reviews/2026-06-05-eth-1d-human-fib-smoke.md) —
-  issue #15 acceptance smoke; #16 tooling gate.
-- [2026-06-05 fib fingerprint × outcome checkpoint](reviews/2026-06-05-fib-fingerprint-outcome-checkpoint.md) —
-  #22/#23 done, expanded run, no stable signal yet (working pipeline, no evidence).
-- [2026-06-05 n≥20 bucket review](reviews/2026-06-05-fib-n20-bucket-review.md) —
-  descriptive read of the 80 n≥20 buckets; only mechanical/definitional structure.
-- [2026-06-05 MTF fib projection checkpoint](reviews/2026-06-05-mtf-fib-projection-checkpoint.md) —
-  1W→1D slice works (42 interactions, 168 joined); all LOW SAMPLE, no claims yet.
-- [2026-06-05 MTF clean-forward n≥20 review](reviews/2026-06-05-mtf-clean-forward-n20-review.md) —
-  32 n≥20 buckets; horizon-consistency mechanical, BTC≠SOL; no stable evidence yet.
+- [Reviews (superseded)](reviews/README.md) — pre-reset descriptive reads archived
+  2026-06-08; not current evidence.
 
 ## Canonical Source Docs
 
-- [Research handoff](../research/RESEARCH_HANDOFF.md) — current hypothesis and boundaries.
+- [**BTC-first top-down protocol**](../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md) — active
+  research direction (BTC/USD, 1M → 1W → 1D → 4H).
+- [Research handoff](../research/RESEARCH_HANDOFF.md) — hypothesis and boundaries (update when aligned).
 - [Repo tracks](../TRACKS.md) — Research, Validate, and Promotion separation.
 - [Human fib annotation](../labeling/HUMAN_FIB_ANNOTATION.md) — manual fib source of truth.
 - [Level events](../research/LEVEL_EVENTS.md) — candidate detector and taxonomy.
@@ -85,5 +79,5 @@ wiki pages are the map and synthesis.
 - [Fib candidate outcomes](../research/FIB_CANDIDATE_OUTCOMES.md) — forward outcome backtest (#22).
 - [Fib level fingerprints](../research/FIB_LEVEL_FINGERPRINTS.md) — pre/at/post interaction features (#23).
 - [Fib fingerprint × outcome join](../research/FIB_FINGERPRINT_OUTCOMES.md) — #22 + #23 combined table.
-- [MTF fib level projection](../research/MTF_FIB_LEVEL_PROJECTION.md) — HTF fib → LTF candle behavior (design + inspection).
+- [MTF fib level projection](../research/MTF_FIB_LEVEL_PROJECTION.md) — runner design (tooling); pre-reset results archived.
 - [Fib-aware tooling spike](../research/FIB_AWARE_TOOLING_SPIKE.md) — tooling direction.

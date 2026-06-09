@@ -1,0 +1,46 @@
+{
+  "run_id": "mtf_proj_20260605T123957Z",
+  "lower_timeframes": [
+    "4h"
+  ],
+  "horizons": [
+    5,
+    10,
+    20,
+    50
+  ],
+  "pre_bars": 20,
+  "post_bars": 50,
+  "atr_period": 14,
+  "near_level_atr": 0.25,
+  "touch_tolerance_atr": 0.1,
+  "forward_window": 5,
+  "debounce_bars": 3,
+  "human_fib_files": [
+    "data\\labels\\human_fib\\bitfinex\\ETH-USD\\1w\\fib_ETH-USD_1w_20170420T000000.json",
+    "data\\labels\\human_fib\\bitfinex\\ETH-USD\\1w\\fib_ETH-USD_1w_20170720T000000.json",
+    "data\\labels\\human_fib\\bitfinex\\ETH-USD\\1w\\fib_ETH-USD_1w_20180104T000000.json",
+    "data\\labels\\human_fib\\bitfinex\\ETH-USD\\1w\\fib_ETH-USD_1w_20180503T000000.json",
+    "data\\labels\\human_fib\\bitfinex\\ETH-USD\\1w\\fib_ETH-USD_1w_20211104T000000.json",
+    "data\\labels\\human_fib\\bitfinex\\ETH-USD\\1w\\fib_ETH-USD_1w_20211125T000000.json",
+    "data\\labels\\human_fib\\bitfinex\\ETH-USD\\1w\\fib_ETH-USD_1w_20220324T000000.json"
+  ],
+  "created_at": "2026-06-05T12:40:01.226210+00:00",
+  "human_fibs": 7,
+  "projected_from_timeframes": [
+    "1w"
+  ],
+  "projected_levels": 42,
+  "ltf_interactions": 667,
+  "joined_rows": 2668,
+  "joined_events": 667,
+  "unmatched": 0,
+  "unmatched_reasons": {},
+  "fingerprint_skipped": 0,
+  "outcome_skipped": 0,
+  "skipped": 0,
+  "skipped_reasons": {},
+  "ltf_timeframes_seen": [
+    "4h"
+  ]
+}

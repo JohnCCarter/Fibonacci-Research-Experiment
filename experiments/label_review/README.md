@@ -11,9 +11,10 @@ label_review/
   packs/            # PNG review-paket (review_pack)
 ```
 
-Äldre batchar ligger i `archive/experiments/label_review/`.
-Äldre review-exporter ligger i `archive/experiments/review/`.
-Aktiv checkpoint just nu: `batches/2026-06-01_hypothesis-a-btc-1d/`.
+**Reset 2026-06-08:** `batches/2026-06-01_hypothesis-a-btc-1d` archived to
+`archive/research_superseded/2026-06-08_pre_btc_monthly_reset/`.
+Older material: `archive/experiments/label_review/`.
+No active batch until BTC monthly-first labeling checkpoint.
 
 ## Skapa ny batch
 

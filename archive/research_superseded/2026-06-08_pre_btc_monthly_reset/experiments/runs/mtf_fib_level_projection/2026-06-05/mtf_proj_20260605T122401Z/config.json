@@ -1,0 +1,23 @@
+{
+  "run_id": "mtf_proj_20260605T122401Z",
+  "lower_timeframes": [
+    "1d"
+  ],
+  "horizons": [
+    5,
+    10,
+    20,
+    50
+  ],
+  "pre_bars": 50,
+  "post_bars": 100,
+  "atr_period": 14,
+  "near_level_atr": 0.25,
+  "touch_tolerance_atr": 0.1,
+  "forward_window": 5,
+  "debounce_bars": 3,
+  "human_fib_files": [
+    "data\\labels\\human_fib\\bitfinex\\BTC-USD\\1w\\fib_BTC-USD_1w_20250116T000000.json"
+  ],
+  "created_at": "2026-06-05T12:24:01.994880+00:00"
+}

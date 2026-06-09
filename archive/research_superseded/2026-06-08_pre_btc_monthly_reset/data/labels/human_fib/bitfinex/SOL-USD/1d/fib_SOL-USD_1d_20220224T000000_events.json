@@ -1,0 +1,344 @@
+{
+  "fib_id": "fib_SOL-USD_1d_20220224T000000",
+  "symbol": "SOL/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "direction": "up",
+  "anchor_a": {
+    "time": "2022-02-24T00:00:00+00:00",
+    "price": 75.621
+  },
+  "anchor_b": {
+    "time": "2022-03-02T00:00:00+00:00",
+    "price": 106.42
+  },
+  "source": "human_fib_events",
+  "created_at": "2026-06-02T12:04:55.002271+00:00",
+  "config": {
+    "levels": [],
+    "touch_tolerance_atr": 0.1,
+    "forward_window": 5,
+    "acceptance_closes": 2,
+    "immediate_rejection_bars": 2,
+    "debounce_bars": 3
+  },
+  "n_events": 20,
+  "levels": [
+    {
+      "level": "0.236",
+      "price": 99.1514,
+      "events": [
+        {
+          "event_bar": "2022-03-03T00:00:00+00:00",
+          "bar_index": 371,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 1.7935
+          }
+        },
+        {
+          "event_bar": "2022-03-24T00:00:00+00:00",
+          "bar_index": 392,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 0,
+            "max_penetration_atr": 1.8229
+          }
+        },
+        {
+          "event_bar": "2022-04-11T00:00:00+00:00",
+          "bar_index": 410,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 5,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2022-04-22T00:00:00+00:00",
+          "bar_index": 421,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 2,
+            "closes_back": 3,
+            "max_penetration_atr": 0.4128
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.382",
+      "price": 94.6548,
+      "events": [
+        {
+          "event_bar": "2022-03-03T00:00:00+00:00",
+          "bar_index": 371,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 0,
+            "max_penetration_atr": 1.3317
+          }
+        },
+        {
+          "event_bar": "2022-03-19T00:00:00+00:00",
+          "bar_index": 387,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 4,
+            "max_penetration_atr": 1.1026
+          }
+        },
+        {
+          "event_bar": "2022-03-23T00:00:00+00:00",
+          "bar_index": 391,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 0,
+            "max_penetration_atr": 1.863
+          }
+        },
+        {
+          "event_bar": "2022-04-18T00:00:00+00:00",
+          "bar_index": 417,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2022-04-25T00:00:00+00:00",
+          "bar_index": 424,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 4,
+            "max_penetration_atr": 1.3087
+          }
+        },
+        {
+          "event_bar": "2022-05-05T00:00:00+00:00",
+          "bar_index": 434,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "rejection_candidate",
+          "note": "Touched level and rejected back to the approach side",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.5",
+      "price": 91.0205,
+      "events": [
+        {
+          "event_bar": "2022-03-04T00:00:00+00:00",
+          "bar_index": 372,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 6,
+            "closes_back": 0,
+            "max_penetration_atr": 0.964
+          }
+        },
+        {
+          "event_bar": "2022-03-17T00:00:00+00:00",
+          "bar_index": 385,
+          "touch_type": "close_below",
+          "approach_side": "below",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 4,
+            "max_penetration_atr": 0.1905
+          }
+        },
+        {
+          "event_bar": "2022-04-30T00:00:00+00:00",
+          "bar_index": 429,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 1,
+            "max_penetration_atr": 0.8639
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.618",
+      "price": 87.3862,
+      "events": [
+        {
+          "event_bar": "2022-03-04T00:00:00+00:00",
+          "bar_index": 372,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 3,
+            "closes_back": 1,
+            "max_penetration_atr": 0.5887
+          }
+        },
+        {
+          "event_bar": "2022-03-16T00:00:00+00:00",
+          "bar_index": 384,
+          "touch_type": "wick_below",
+          "approach_side": "below",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 0,
+            "max_penetration_atr": 0.6851
+          }
+        },
+        {
+          "event_bar": "2022-04-30T00:00:00+00:00",
+          "bar_index": 429,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 3,
+            "closes_back": 2,
+            "max_penetration_atr": 0.3827
+          }
+        }
+      ]
+    },
+    {
+      "level": "0.786",
+      "price": 82.212,
+      "events": [
+        {
+          "event_bar": "2022-03-07T00:00:00+00:00",
+          "bar_index": 375,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 1,
+            "closes_back": 1,
+            "max_penetration_atr": 0.1686
+          }
+        },
+        {
+          "event_bar": "2022-04-30T00:00:00+00:00",
+          "bar_index": 429,
+          "touch_type": "close_above",
+          "approach_side": "above",
+          "auto_candidate": "reaction_candidate",
+          "note": "Reacted at level without a clear breakout or rejection",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 0,
+            "closes_back": 6,
+            "max_penetration_atr": 0.0
+          }
+        },
+        {
+          "event_bar": "2022-05-05T00:00:00+00:00",
+          "bar_index": 434,
+          "touch_type": "wick_below",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 4,
+            "closes_back": 1,
+            "max_penetration_atr": 2.5578
+          }
+        }
+      ]
+    },
+    {
+      "level": "1",
+      "price": 75.621,
+      "events": [
+        {
+          "event_bar": "2022-05-08T00:00:00+00:00",
+          "bar_index": 437,
+          "touch_type": "wick_above",
+          "approach_side": "above",
+          "auto_candidate": "continuation_candidate",
+          "note": "Broke through level and continued",
+          "evidence": {
+            "forward_bars": 5,
+            "closes_beyond": 5,
+            "closes_back": 0,
+            "max_penetration_atr": 4.263
+          }
+        }
+      ]
+    }
+  ]
+}

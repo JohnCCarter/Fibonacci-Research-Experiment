@@ -1,0 +1,180 @@
+﻿{
+  "reports": [
+    {
+      "label_id": "Bitfinex_BTC-USD_1w",
+      "htf_timeframe": "1w",
+      "ltf_timeframe": "1d",
+      "mtf_status": "resolved",
+      "resolution_kind": "fractal_endpoints",
+      "order": "high_then_low",
+      "htf_high_price": 97924.49,
+      "htf_low_price": 60000.0,
+      "fib_start_price": 97924.49,
+      "fib_end_price": 60000.0,
+      "ltf_high_timestamp": "2026-01-14T00:00:00+00:00",
+      "ltf_low_timestamp": "2026-02-06T00:00:00+00:00",
+      "fib_levels": {
+        "0.382": 74487.16,
+        "0.5": 78962.24,
+        "0.618": 83437.33,
+        "0.786": 89808.65
+      },
+      "impulse": {
+        "name": "impulse_down",
+        "start": "2026-01-14T00:00:00+00:00",
+        "end": "2026-02-06T00:00:00+00:00",
+        "bar_count": 24,
+        "events": [
+          {
+            "level": 0.786,
+            "price": 89808.65,
+            "event": "low_touch",
+            "timestamp": "2026-01-20T00:00:00+00:00"
+          },
+          {
+            "level": 0.618,
+            "price": 83437.33,
+            "event": "low_touch",
+            "timestamp": "2026-01-29T00:00:00+00:00"
+          },
+          {
+            "level": 0.5,
+            "price": 78962.24,
+            "event": "low_touch",
+            "timestamp": "2026-01-31T00:00:00+00:00"
+          },
+          {
+            "level": 0.382,
+            "price": 74487.16,
+            "event": "low_touch",
+            "timestamp": "2026-02-03T00:00:00+00:00"
+          }
+        ]
+      },
+      "retrace": {
+        "name": "retrace_up",
+        "start": "2026-02-06T00:00:00+00:00",
+        "end": "2026-05-29T00:00:00+00:00",
+        "bar_count": 113,
+        "events": [
+          {
+            "level": 0.382,
+            "price": 74487.16,
+            "event": "rejection",
+            "timestamp": "2026-03-17T00:00:00+00:00"
+          },
+          {
+            "level": 0.5,
+            "price": 78962.24,
+            "event": "rejection",
+            "timestamp": "2026-04-22T00:00:00+00:00"
+          }
+        ]
+      },
+      "skip_reason": ""
+    },
+    {
+      "label_id": "Bitfinex_ETH-USD_1w",
+      "htf_timeframe": "1w",
+      "ltf_timeframe": "1d",
+      "mtf_status": "unresolved",
+      "resolution_kind": null,
+      "order": null,
+      "htf_high_price": 3970.0,
+      "htf_low_price": 2652.0,
+      "fib_start_price": 2652.0,
+      "fib_end_price": 3970.0,
+      "ltf_high_timestamp": "2021-09-06T00:00:00+00:00",
+      "ltf_low_timestamp": "2021-09-20T00:00:00+00:00",
+      "fib_levels": {},
+      "impulse": null,
+      "retrace": null,
+      "skip_reason": "no high LTF bars in week index 212"
+    },
+    {
+      "label_id": "Bitfinex_SOL-USD_1w",
+      "htf_timeframe": "1w",
+      "ltf_timeframe": "1d",
+      "mtf_status": "resolved",
+      "resolution_kind": "fractal_endpoints",
+      "order": "high_then_low",
+      "htf_high_price": 126.36,
+      "htf_low_price": 79.0,
+      "fib_start_price": 126.36,
+      "fib_end_price": 79.0,
+      "ltf_high_timestamp": "2023-12-25T00:00:00+00:00",
+      "ltf_low_timestamp": "2024-01-23T00:00:00+00:00",
+      "fib_levels": {
+        "0.382": 97.09,
+        "0.5": 102.68,
+        "0.618": 108.27,
+        "0.786": 116.22
+      },
+      "impulse": {
+        "name": "impulse_down",
+        "start": "2023-12-25T00:00:00+00:00",
+        "end": "2024-01-23T00:00:00+00:00",
+        "bar_count": 30,
+        "events": [
+          {
+            "level": 0.786,
+            "price": 116.22,
+            "event": "low_touch",
+            "timestamp": "2023-12-25T00:00:00+00:00"
+          },
+          {
+            "level": 0.618,
+            "price": 108.27,
+            "event": "low_touch",
+            "timestamp": "2023-12-25T00:00:00+00:00"
+          },
+          {
+            "level": 0.5,
+            "price": 102.68,
+            "event": "low_touch",
+            "timestamp": "2023-12-26T00:00:00+00:00"
+          },
+          {
+            "level": 0.382,
+            "price": 97.09,
+            "event": "low_touch",
+            "timestamp": "2024-01-03T00:00:00+00:00"
+          }
+        ]
+      },
+      "retrace": {
+        "name": "retrace_up",
+        "start": "2024-01-23T00:00:00+00:00",
+        "end": "2026-05-29T00:00:00+00:00",
+        "bar_count": 858,
+        "events": [
+          {
+            "level": 0.382,
+            "price": 97.09,
+            "event": "rejection",
+            "timestamp": "2024-01-28T00:00:00+00:00"
+          },
+          {
+            "level": 0.5,
+            "price": 102.68,
+            "event": "rejection",
+            "timestamp": "2024-01-30T00:00:00+00:00"
+          },
+          {
+            "level": 0.618,
+            "price": 108.27,
+            "event": "rejection",
+            "timestamp": "2024-02-09T00:00:00+00:00"
+          },
+          {
+            "level": 0.786,
+            "price": 116.22,
+            "event": "rejection",
+            "timestamp": "2024-02-15T00:00:00+00:00"
+          }
+        ]
+      },
+      "skip_reason": ""
+    }
+  ]
+}

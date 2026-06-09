@@ -1,0 +1,44 @@
+{
+  "fib_id": "fib_BTC-USD_1d_20240917T000000",
+  "symbol": "BTC/USD",
+  "timeframe": "1d",
+  "exchange": "bitfinex",
+  "created_by": "human",
+  "source": "manual_labeling_tool",
+  "anchor_a": {
+    "time": "2024-09-17T00:00:00+00:00",
+    "price": 57773.0
+  },
+  "anchor_b": {
+    "time": "2024-09-27T00:00:00+00:00",
+    "price": 66587.0
+  },
+  "direction": "up",
+  "created_at": "2026-06-08T14:03:02.548982+00:00",
+  "levels": [
+    {
+      "ratio": 0.236,
+      "price": 64506.896
+    },
+    {
+      "ratio": 0.382,
+      "price": 63220.052
+    },
+    {
+      "ratio": 0.5,
+      "price": 62180.0
+    },
+    {
+      "ratio": 0.618,
+      "price": 61139.948
+    },
+    {
+      "ratio": 0.786,
+      "price": 59659.196
+    },
+    {
+      "ratio": 1.0,
+      "price": 57773.0
+    }
+  ]
+}
