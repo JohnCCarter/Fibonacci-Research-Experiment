@@ -31,6 +31,7 @@ Missing handoff → **stop and ask** for Goal, In scope, Out of scope, Files, St
 - No invented fib facit, trading signals, or `*_candidate` promotion.
 - Verify: `uv run ruff check src tests` and `uv run pytest -q` (paths from handoff).
 - Do not commit/push unless user explicitly asks.
+- Do not `git add` archive blob trees unless user explicitly asks (stubs/manifests only — `repository-layout-policy.md` §7).
 
 ## Return to GLM
 

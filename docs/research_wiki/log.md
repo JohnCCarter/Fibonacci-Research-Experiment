@@ -96,6 +96,11 @@ Per fresh-start for BTC monthly-first protocol: moved 279 files from
 `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/data/`. Active
 paths empty; updated INDEX, MANIFEST, DATA_CLASSIFICATION, handoff, protocol.
 
+## [2026-06-09] policy | Archive blobs — no git commit unless user asks
+
+`repository-layout-policy.md` §7, `archive/README.md`, `AGENTS.md`, repo-aware rule,
+Copilot instructions: archive data stays local; agents commit stubs/manifests only.
+
 ## [2026-06-09] chore | Untrack legacy archive/experiments blobs
 
 Gitignored `archive/experiments/**` (May 2026 spot-check runs/reviews); ~314 files

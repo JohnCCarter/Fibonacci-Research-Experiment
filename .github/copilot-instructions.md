@@ -29,6 +29,8 @@ GLM = plan/review; Qwen = scoped implement — [MODEL_COLLABORATION.md](../docs/
 3. Prefer small, reviewable diffs; ask when scope is unclear.
 4. Do not invent human fib facit or optimize weights against labels.
 5. After code changes, suggest `uv run ruff check src tests` and `uv run pytest -q`.
+6. Do not `git add` or commit `archive/` blob trees unless the user explicitly asks
+   (stubs/manifests only — [repository-layout-policy.md](../repository-layout-policy.md) §7).
 
 ## Domain guardrails
 

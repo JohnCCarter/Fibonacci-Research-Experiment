@@ -55,6 +55,9 @@ Git tracks only each reset's `MANIFEST.md` (see `archive/INDEX.md`).
 Legacy May 2026 runs under `archive/experiments/` follow the same rule: local
 blobs only; `README.md` / `INDEX.md` stubs stay in git.
 
+**Agent rule:** do not commit archive blobs unless the user explicitly asks —
+[repository-layout-policy.md](../../../repository-layout-policy.md) §7.
+
 ## Source Links
 
 - [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)

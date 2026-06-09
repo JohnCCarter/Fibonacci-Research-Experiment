@@ -119,6 +119,7 @@ These apply to **all** agents and subagents:
 | No auto-fib as truth | Do not promote automated fib selection to facit |
 | No trading signals | Research engine only — no signal/edge claims in agent output |
 | Tracks | Research → Validate → Promotion — see [TRACKS.md](docs/TRACKS.md) |
+| Archive blobs | Local disk only; git tracks `archive/` stubs and `MANIFEST.md` — **never commit archive data unless the user explicitly asks** ([repository-layout-policy.md](repository-layout-policy.md) §7) |
 
 ---
 

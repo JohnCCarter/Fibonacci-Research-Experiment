@@ -42,7 +42,7 @@ If repository reality changes, update this policy first, then move files.
 | `experiments/label_review/` | Review checkpoints | Yes |
 | `docs/` | Long-lived documentation (`agent/`, `labeling/`, `research/`, `validate/`, `tooling/`, `research_wiki/`) | Yes |
 | `premortem/` | Premortem and reflections | Yes |
-| `archive/` | Historical/legacy material | Yes |
+| `archive/` | Historical/legacy material (local blobs) | Stubs/manifests only (§7) |
 | `tmp/` | Temporary work | Optional |
 
 ---
@@ -141,6 +141,31 @@ monoliths only; they should not grow without a split plan.
 - Historical or replaced data/docs belong in `archive/`.
 - Archive moves must preserve context in the path (source surface, domain).
 - After moving to archive, update references/indexes on active surfaces.
+
+### Git policy for `archive/` (MUST)
+
+**Do not commit archive blob trees unless the user explicitly asks.**
+
+Archive data stays on disk for traceability; git tracks only navigation stubs so the
+repo stays small and reviewable. Same pattern as `data/raw/` and `data/screenshots/`.
+
+| Path | Versioned in git |
+|---|---|
+| `archive/README.md`, `archive/INDEX.md` | Yes |
+| `archive/**/README.md`, `archive/**/INDEX.md` | Yes (layout stubs) |
+| `archive/research_superseded/**/MANIFEST.md` | Yes (reset inventory) |
+| `archive/experiments/**` (runs, reviews, ledgers, PNG/JSON/JSONL) | **No** (gitignored) |
+| `archive/research_superseded/**` except `MANIFEST.md` | **No** (gitignored) |
+
+When moving material to archive:
+
+1. Move on disk under `archive/…` (prefer `git mv` only for paths that were already tracked).
+2. Update `archive/INDEX.md` and affected active README/INDEX stubs.
+3. **Do not** `git add` or commit archive blobs unless the user explicitly requests it.
+4. Agents may commit policy, `.gitignore`, and stub/manifest updates without a special ask.
+
+Enforced by `.gitignore` (see repo root). If a reset needs sharing, prefer documenting
+the manifest and asking the user before bulk-adding archive files.
 
 ---
 

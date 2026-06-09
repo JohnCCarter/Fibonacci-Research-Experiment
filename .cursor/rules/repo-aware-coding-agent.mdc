@@ -37,4 +37,7 @@ No evidence → do not guess. State what file/command would resolve it.
 
 ## Out of scope (autonomous)
 
-Inventing fib anchors, trading signals, human labels · promoting `*_candidate` to facit · commit/push unless user asks.
+Inventing fib anchors, trading signals, human labels · promoting `*_candidate` to facit ·
+commit/push unless user asks · **`git add` / commit under `archive/` blob trees** (runs,
+reviews, superseded data) unless user explicitly asks — stubs/manifests only per
+[repository-layout-policy.md](../../repository-layout-policy.md) §7.
