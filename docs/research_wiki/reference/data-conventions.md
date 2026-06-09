@@ -19,8 +19,9 @@ data/labels/human_fib/{exchange}/{symbol}/{timeframe}/{fib_id}_events.json
 data/labels/human_fib/{exchange}/{symbol}/{timeframe}/{fib_id}_interactions.csv
 ```
 
-The annotation JSON stores anchors and levels. The events JSON stores
-`*_candidate` streams. The interactions CSV stores per-candle raw relations.
+The annotation JSON stores anchors and levels (versioned facit). The events
+JSON and interactions CSV are regenerable (`human_fib_events` / `--classify`) and
+are gitignored under `data/labels/human_fib/`.
 
 ## Research Behavior Facit
 

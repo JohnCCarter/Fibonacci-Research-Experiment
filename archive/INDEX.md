@@ -9,3 +9,4 @@
 | 2026-06-02 | `archive/experiments/label_review/2026-05-28_*` | `experiments/label_review/batches/` | Äldre batch-checkpoints arkiverade; aktiv checkpoint kvar i `2026-06-01_hypothesis-a-btc-1d/` |
 | 2026-06-02 | `archive/experiments/review/fib_level_events/` | `experiments/review/` | Review-exporter arkiverade; aktiv checkpoint finns under `experiments/label_review/batches/2026-06-01_hypothesis-a-btc-1d/` |
 | 2026-06-02 | — | legacy tuning-artefakter under runs/archive/premortem | Raderat permanent; auto-tuning används inte i repot |
+| 2026-06-08 | `research_superseded/2026-06-08_pre_btc_monthly_reset/` | `experiments/`, `data/labels/`, `docs/research_wiki/reviews/` | BTC monthly-first reset; see `MANIFEST.md` (review `charts/` PNGs gitignored) |

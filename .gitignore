@@ -221,9 +221,20 @@ __marimo__/
 # Ephemeral markdown for `gh issue create` / `gh pr edit --body-file` (not project docs)
 .gh-*.md
 tmp/
-# Cachad marknadsdata och referensbilder versioneras inte.
-data/raw/
-data/screenshots/
+# One-off local scratch scripts (findings belong in wiki/docs, not repo root)
+_scratch_*.py
+# Cachad marknadsdata och referensbilder versioneras inte (README/INDEX stubs do).
+data/raw/**
+!data/raw/README.md
+!data/raw/INDEX.md
+data/screenshots/**
+!data/screenshots/README.md
+!data/screenshots/INDEX.md
+# Human fib facit = base JSON only; regenerate with human_fib_events / --classify.
+data/labels/human_fib/**/*_events.json
+data/labels/human_fib/**/*_interactions.csv
+# Superseded research archive: review chart PNGs are local/regenerable blobs.
+archive/research_superseded/**/charts/
 # Per-körning audit-mappar versioneras inte (artefakter, inte källa).
 # experiments/results/*.jsonl och experiments/label_review/ versioneras (default).
 # Timestamped per-run snapshots (not append-only ledgers):
