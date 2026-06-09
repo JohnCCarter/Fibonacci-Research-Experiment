@@ -127,6 +127,7 @@ These apply to **all** agents and subagents:
 
 | Need | Go to |
 |------|--------|
+| **Claude quick start** | [CLAUDE.md](CLAUDE.md) — orientation + `.rgignore` token budget |
 | **All agent/subagent docs (map)** | [docs/agent/INDEX.md](docs/agent/INDEX.md) |
 | Current focus / next step | [research_wiki/handoff.md](docs/research_wiki/handoff.md) |
 | Doc categories | [docs/README.md](docs/README.md) |

@@ -6,8 +6,10 @@ Long-lived documentation. Start here, then open a category folder.
 
 | Doc | Purpose |
 |-----|---------|
+| [../CLAUDE.md](../CLAUDE.md) | **Claude:** kort repo-orientering + token-budget (läs `AGENTS.md` först) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Lint, test, pre-commit, CI before commit/push |
 | [TRACKS.md](TRACKS.md) | Research / Validate / Promotion separation |
+| [BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md](BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md) | Aktiv research: BTC, 1M→1w→1d→… |
 
 ## Categories
 

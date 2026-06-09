@@ -96,6 +96,12 @@ Per fresh-start for BTC monthly-first protocol: moved 279 files from
 `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/data/`. Active
 paths empty; updated INDEX, MANIFEST, DATA_CLASSIFICATION, handoff, protocol.
 
+## [2026-06-09] docs | CLAUDE.md + .rgignore for Claude onboarding
+
+Cherry-picked intent from `claude/repo-audit-token-plan-65k9up`, updated for
+BTC-first protocol, wiki handoff, labeling preflight, and archive §7. `.rgignore`
+excludes archive/results/sidecars — not active `fib_*.json` facit.
+
 ## [2026-06-09] policy | Archive blobs — no git commit unless user asks
 
 `repository-layout-policy.md` §7, `archive/README.md`, `AGENTS.md`, repo-aware rule,

@@ -1,0 +1,14 @@
+# ripgrep-avgränsning för agentisk sökning (`rg`).
+# Tunga ytor kan vara versionerade eller lokala — exkluderas här för att spara tokens.
+# Åsidosätt: `rg --no-ignore` eller `rg -u`.
+# Se CLAUDE.md och repository-layout-policy.md §7.
+
+# Superseded + legacy archive (local blobs; stubs/manifests only in git)
+archive/
+
+# Append-only ledgers
+experiments/results/
+
+# Regenererbara human-fib sidecars (facit = fib_*.json without suffix)
+data/labels/**/*_events.json
+data/labels/**/*_interactions.csv
