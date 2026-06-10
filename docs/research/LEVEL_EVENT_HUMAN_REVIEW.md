@@ -55,7 +55,7 @@ load fast and read well on a small screen.
 uv run python -m fibengine.research.human_review_level_events \
   --symbol BTC/USD --timeframe 1d --max-events 40 --seed 7 --line
 
-# Default config TF (often 1h): balanced sample across candidate types & levels.
+# Default config TF (often 1h): sample biased to the golden zone (see note below).
 uv run python -m fibengine.research.human_review_level_events --max-events 40 --seed 7
 
 # Single currently-selected swing instead of all walk-forward legs:
@@ -90,6 +90,12 @@ Flags:
 | `--line` | Close-line instead of candlesticks | off |
 | `--context-before` / `--context-after` | Bars shown around the event | `30` / `15` |
 | `--human-fib-events` | Review saved human-fib event JSON files (repeatable) | off |
+| `--config` | Settings file (drives `scale_mode`, candle limits) | `settings.yaml` |
+
+**Equal sampling (no level bias).** All configured levels are sampled equally (round-robin
+across candidate × level); no level is prioritized (issue #30, Addendum 2 —
+`primary_active_levels` retired). An explicit `--level` filter narrows the pack to chosen
+levels. With `scale_mode: log` charts use a log price axis.
 
 ## Artifact structure
 
@@ -139,10 +145,10 @@ PNG charts from `human_review_level_events` use fib-context by default. Override
 
 - **VIEW badge** (bottom-left) — `fib-context` or `event-zoom`.
 - **Fib leg overlay** (purple) — arrow/line `H → L` or `L → H` with `direction: down/up`.
-- **ACTIVE badge** (top-left) — the fib level under review, e.g. `ACTIVE: 0.236 @ 346.46`.
+- **ACTIVE badge** (top-left) — the fib level under review, e.g. `ACTIVE: 0.618 @ 20911.74`.
 - **Fib horizontals** — active level solid/bright; inactive levels subdued (no edge clutter).
 - **Orange marker / vertical line** — the event bar (the touch being judged).
-- **Event callout** — arrow to candle/level: `0.236 touch → rejection_candidate`.
+- **Event callout** — arrow to candle/level: `0.618 touch → rejection_candidate`.
 - **Purple H/L markers** — only when anchors are inside the zoom window.
 - **Review panel** (right) — fib ladder with `ACTIVE`, H/L prices, relation + candidate.
 - **Title / suptitle** — multi-line: symbol/TF, fib_id, event, human label/confidence.

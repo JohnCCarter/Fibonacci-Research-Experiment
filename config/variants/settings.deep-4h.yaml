@@ -1,18 +1,29 @@
-﻿seed: 42
+# settings.deep-4h.yaml
+#
+# Research config extending settings.expansion.yaml with deep 4H history.
+# Use this (instead of settings.expansion.yaml) when running human_fib_events,
+# review packs, or the review tool on 4H fibs that predate 2022-10-31.
+#
+# Requires: data/raw/bitfinex/BTC-USD/4h/limit_20000.csv
+# Fetch:    uv run python -m fibengine.data.fetch \
+#               --symbols BTC/USD --timeframes 4h --refresh \
+#               --config config/variants/settings.deep-4h-fetch.yaml
+#
+# All other settings are identical to settings.expansion.yaml.
+
+seed: 42
 
 data:
   exchange: bitfinex
   symbol: BTC/USD
   timeframe: 1h
   limit: 500
-  # Research/labeling candle window: inclusive start through latest fetch (UTC).
-  history_start: "2022-10-31"
+  history_start: "2017-01-01"
   timeframe_limits:
-    4h: 8000
-    # ~1313 1d bars from 2022-10-31 to mid-2026; buffer for growth.
-    1d: 1400
-    1w: 220
-    1M: 48
+    4h: 20000
+    1d: 3500
+    1w: 1000
+    1M: 500
 
 pivots:
   lookback: 3

@@ -13,6 +13,32 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-10] decision | Addendum 2 — retire golden-zone review sampling
+
+Issue #30 (Addendum 2): the machine must not bias any level. Removed
+`primary_active_levels` and golden-zone review-sampling from configs (`settings.yaml`,
+`settings.expansion.yaml`, `settings.deep-4h.yaml`), `core/config.py` (`FibConfig`), and the
+review path (`human_review_pack._with_primary_levels`, `HumanReviewConfig.primary_levels`,
+the `sample_candidates` golden-zone branch). All levels are now sampled equally (round-robin
+via `_balanced_fill`). Added `human_highlights` (presentation/review-only) to
+`HumanFibAnnotation` (round-trips; old JSON loads as `[]`). Docs updated. The prior
+golden-zone pack `human_fib_review_20260609T135548Z` is superseded by an unbiased
+regenerated pack. Two-phase work; Phase 2 (source-fib projection review view) pending.
+
+## [2026-06-09] decision | Log-scale + golden-zone fib profile
+
+Fib levels now log-interpolated (`scale_mode: log`, profile `tradingview_log_chamoun`,
+`[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236). Golden zone
+`primary_active_levels: [0.5, 0.618]` leads review sampling; full ladder stays context,
+context capped so it never dominates. Charts render a log price axis (labeling tool +
+both review tools) — saved level prices were already log; the fix was the linear y-axis.
+Prior linear/0.236 labels+events+packs archived to
+`archive/research_superseded/2026-06-09_pre_log_fib_profile_reset/`. 1M re-drawn (9 fibs).
+Follow-up: `detect_level_events` was still pricing levels linearly — threaded `scale_mode`
+through `human_fib_events` so emitted level prices match the log facit (e.g. 0.5 =
+25 954.54, not 37 610). Events + pack regenerated; active pack
+`human_fib_review_20260609T135548Z`. 225 tests pass.
+
 ## [2026-06-08] decision | Research reset â€” BTC monthly-first protocol
 
 Archived 480 generated files to
@@ -95,6 +121,17 @@ Per fresh-start for BTC monthly-first protocol: moved 279 files from
 `data/screenshots/` into
 `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/data/`. Active
 paths empty; updated INDEX, MANIFEST, DATA_CLASSIFICATION, handoff, protocol.
+
+## [2026-06-09] docs | Agent skills — pandera.pandas import convention
+
+validation + data-analysis skills and module-map: agents must use
+`import pandera.pandas as pa`, not top-level `import pandera as pa`.
+
+## [2026-06-09] progress | BTC human fib facit counts synced to wiki
+
+Labeling progress on disk: 1M=6, 1w=10, 1d=60, 4h=75 (151 total); 1h deferred.
+Updated handoff, `data/labels/INDEX.md`, BTC protocol snapshot. Prior handoff
+still said "start 1M" and empty `data/` — corrected.
 
 ## [2026-06-09] docs | CLAUDE.md + .rgignore for Claude onboarding
 

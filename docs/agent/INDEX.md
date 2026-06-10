@@ -97,7 +97,6 @@ second source of roles or authority.
 | Path | Role |
 |------|------|
 | [.github/copilot-instructions.md](../../.github/copilot-instructions.md) | GitHub Copilot — same constitution |
-| [docs/CONTRIBUTING.md](../CONTRIBUTING.md) | CI gate (agents run same checks) |
 
 ---
 

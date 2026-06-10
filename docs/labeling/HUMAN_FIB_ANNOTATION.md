@@ -55,25 +55,36 @@ uv run python -m fibengine.labeling.human_fib \
   "exchange": "bitfinex",
   "created_by": "human",
   "source": "manual_labeling_tool",
+  "scale_mode": "log",
+  "levels_profile": "tradingview_log_chamoun",
+  "human_highlights": [],
   "anchor_a": { "time": "2026-01-14T00:00:00Z", "price": 97924.0 },
   "anchor_b": { "time": "2026-02-06T00:00:00Z", "price": 60000.0 },
   "direction": "down",
   "levels": [
-    { "ratio": 0.236, "price": 68950.064 },
-    { "ratio": 0.382, "price": 74486.968 },
-    { "ratio": 0.5,   "price": 78962.0 },
-    { "ratio": 0.618, "price": 83437.032 },
-    { "ratio": 0.786, "price": 89808.264 },
+    { "ratio": 0.0,   "price": 60000.0 },
+    { "ratio": 0.382, "price": 72346.43 },
+    { "ratio": 0.5,   "price": 76651.42 },
+    { "ratio": 0.618, "price": 81212.57 },
+    { "ratio": 0.786, "price": 88178.61 },
     { "ratio": 1.0,   "price": 97924.0 }
   ]
 }
 ```
 
-- **`anchor_b` är ratio 0.0, `anchor_a` är ratio 1.0:**
-  `price(r) = b.price + r · (a.price − b.price)`.
+- **`anchor_b` är ratio 0.0, `anchor_a` är ratio 1.0.**
+- **`scale_mode`:** `log` (aktiv BTC-profil) → `price(r) = b^(1−r) · a^r`
+  (geometrisk interpolation, matchar TradingView "Fib levels based on log scale").
+  `linear` → `price(r) = b + r·(a − b)`. Saknas fältet i en gammal fil → läses som
+  `linear` (bakåtkompatibel).
+- **`levels_profile`:** `tradingview_log_chamoun` = `[0, 0.382, 0.5, 0.618, 0.786, 1]`
+  (**inget 0.236**). Alla nivåer är likvärdiga; ingen golden-zone-bias i sampling
+  (Addendum 2 — `primary_active_levels` borttaget).
+- **`human_highlights`:** valfria presentations-/review-annoteringar (t.ex. en zon
+  0.5–0.618). Påverkar **bara** visning/filtrering, aldrig event-detektion, outcome,
+  sampling eller nivå-vikt. Saknas → `[]` (bakåtkompatibel).
 - **`direction`:** `down` om `anchor_a.price ≥ anchor_b.price`, annars `up`.
   Kan överskridas explicit (`--direction`).
-- Standard-ratios: `0.236 0.382 0.5 0.618 0.786 1.0`.
 
 ---
 

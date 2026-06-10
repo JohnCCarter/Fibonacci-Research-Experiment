@@ -59,6 +59,5 @@ uv run python -m fibengine.research.level_event_review_tool \
 
 ## Source Links
 
-- [Contributing](../../CONTRIBUTING.md)
 - [Level event human review](../../research/LEVEL_EVENT_HUMAN_REVIEW.md)
 - [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)

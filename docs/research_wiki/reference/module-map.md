@@ -6,6 +6,7 @@ High-level map of `src/fibengine`. This is navigation, not an API contract.
 
 - `core/` — shared domain types, fib math, config, scoring, structure, scale.
 - `data/` — OHLCV fetch/cache/load helpers.
+- `validation/` — OHLCV pandera schemas + pydantic manifests (`import pandera.pandas as pa`).
 - `pivots/` — pivot detection.
 - `evaluation/` — compare predictions and labels.
 - `backtest/` — walk-forward selection, matrices, and trade experiments.
