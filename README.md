@@ -44,7 +44,7 @@ uv run pre-commit install                     # git hooks (en gång)
 uv run pre-commit run --all-files             # lint + format + test före push
 ```
 
-Kvalitetsgate: se [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) och CI i `.github/workflows/ci.yml`.
+Kvalitetsgate: CI i `.github/workflows/ci.yml` (ruff + pytest på push/PR mot `main`).
 
 Använd `--config` för en principmotiverad variant under `config/variants/` utan att ändra baseline:
 

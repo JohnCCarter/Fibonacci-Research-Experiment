@@ -13,5 +13,9 @@
   "terminal.sourceControlRepositoriesKind": "integrated",
   "python.terminal.activateEnvInCurrentTerminal": true,
   "python.terminal.useEnvFile": true,
-  "claudeCode.initialPermissionMode": "plan"
+  "claudeCode.initialPermissionMode": "plan",
+  "workbench.editor.tabActionLocation": "right",
+  "workbench.editor.openPositioning": "right",
+  "workbench.editor.openSideBySideDirection": "right",
+  "claudeCode.preferredLocation": "sidebar"
 }

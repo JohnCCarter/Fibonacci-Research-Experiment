@@ -55,6 +55,24 @@ The test suite is organized to mirror the source code structure:
 - `tests/pivots/` - Pivot detection tests
 - `tests/sizing/` - Sizing calculation tests
 - `tests/viz/` - Visualization tests
+- `tests/validation/` - OHLCV pandera schemas + pydantic manifests
+
+## OHLCV schema (`fibengine.validation`)
+
+Canonical module: `src/fibengine/validation/schemas.py` (used from `data/loader.py`).
+
+**Pandera import (required for agents):** use the pandas backend explicitly — do
+**not** copy `import pandera as pa` from older docs or the library warning text.
+
+```python
+import pandas as pd
+import pandera.pandas as pa  # not: import pandera as pa
+
+from fibengine.validation.schemas import OHLCV_SCHEMA, validate_ohlcv_df
+```
+
+Tests: `tests/validation/test_schemas.py`. Optional silence for upstream shim noise:
+`DISABLE_PANDERA_IMPORT_WARNING=True` (env only; fix imports in code first).
 
 ## Key Validation Patterns
 
@@ -104,5 +122,4 @@ uv run python -m fibengine.labeling.worklist
 
 ## External Documentation
 
-- Testing documentation in `docs/CONTRIBUTING.md`
 - Quality gates in `pyproject.toml`

@@ -56,7 +56,7 @@ cache → felmeddelande (kör fetch).
 
 ## Konventioner
 
-- `uv run …` (inte bart `python`/`pip`)
+- `uv run …` (inte bart `python`/`pip`); Windows + Symantec → `uv run --no-sync` (se Gotchas)
 - Variant-config: `--config config/variants/…` eller `settings.expansion.yaml` — ändra
   inte baseline `config/settings.yaml` i onödan
 - Minimala diffs; fråga vid oklar facit/promotion
@@ -82,3 +82,5 @@ Avgränsat i [`.rgignore`](.rgignore) (filer kan finnas i git men ska inte grep:
 - Bitfinex/CCXT kräver egress; annars fyll `data/raw/` manuellt
 - `labeling/tool.py` kräver GUI-backend
 - Byt inte namn på kritiska moduler utan policy-uppdatering (§8 i layout-policy)
+- Windows + Symantec (SEP): plain `uv run` bygger om varje gång → SONAR/Auto-Protect skannar
+  `.venv` → hög CPU. Kör `uv run --no-sync` + sätt `PYTHONDONTWRITEBYTECODE=1` (user-scope)

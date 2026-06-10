@@ -27,7 +27,11 @@ Ensure you have the proper environment set up:
 ## Choosing the Right Data Processing Path
 
 ### Path 1: Standard pandas (CPU-based)
-Use for small datasets (< 100K rows) or when GPU is not available:
+Use for small datasets (< 100K rows) or when GPU is not available.
+
+**Not the same as pandera:** `import pandas as pd` is for DataFrames. Schema
+validation uses `import pandera.pandas as pa` — see
+`.cursor/skills/validation/SKILL.md` and `fibengine/validation/schemas.py`.
 
 ```python
 import pandas as pd
