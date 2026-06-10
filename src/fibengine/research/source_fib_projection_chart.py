@@ -77,16 +77,20 @@ _RELATION_FILTERS: dict[str, set[str] | None] = {
     "above_below": {"above", "below"},
 }
 
-# Per-TF clustering: (gap_bars, pad_bars, max_window_bars).
+# Per-TF clustering: (gap_bars, pad_bars, max_window_bars, min_events).
 #   gap_bars        — consecutive events farther apart than this start a new cluster
 #   pad_bars        — context bars added on each side of a cluster window
 #   max_window_bars — a window wider than this is split into segments (4H safety)
-_CLUSTER_CONFIG: dict[str, tuple[int, int, int]] = {
-    "1w": (6, 4, 80),
-    "1d": (10, 6, 120),
-    "4h": (12, 8, 150),
+#   min_events      — only *dense* clusters (>= this many events) get a zoom window;
+#                     isolated singletons stay visible on the overview chart
+# Gap thresholds are ~14 days across TFs (events here span ~5 years with long quiet
+# stretches, so a tighter gap over-fragments 4H into dozens of single-event windows).
+_CLUSTER_CONFIG: dict[str, tuple[int, int, int, int]] = {
+    "1w": (3, 4, 80, 2),  # gap ~21d (3 weekly bars)
+    "1d": (14, 6, 120, 2),  # gap 14d
+    "4h": (84, 8, 150, 2),  # gap 14d (84 four-hour bars)
 }
-_CLUSTER_CONFIG_DEFAULT = (10, 6, 120)
+_CLUSTER_CONFIG_DEFAULT = (14, 6, 120, 2)
 
 # Per-TF anchor-zoom width (bars after anchor_b, clamped to cache length).
 _ANCHOR_WINDOW_BARS: dict[str, int] = {"1w": 40, "1d": 60, "4h": 90}
@@ -172,6 +176,13 @@ def render_projection_chart(
     overview_dir.mkdir(parents=True, exist_ok=True)
     zoom_dir.mkdir(parents=True, exist_ok=True)
 
+    # Drop stale zoom PNGs for this TF so a re-run with fewer windows leaves no
+    # orphan cluster files to mislead the reviewer.
+    for old in zoom_dir.glob(f"{chart_tf}_anchor.png"):
+        old.unlink()
+    for old in zoom_dir.glob(f"{chart_tf}_cluster_*.png"):
+        old.unlink()
+
     suffix = "" if relation_filter == "all" else f"  |  filter={relation_filter}"
     n = len(df)
 
@@ -212,12 +223,16 @@ def render_projection_chart(
     zoom_paths.append(anchor_path)
 
     # --- Event-cluster zooms ----------------------------------------------
-    gap_bars, pad_bars, max_window_bars = _CLUSTER_CONFIG.get(chart_tf, _CLUSTER_CONFIG_DEFAULT)
+    gap_bars, pad_bars, max_window_bars, min_events = _CLUSTER_CONFIG.get(
+        chart_tf, _CLUSTER_CONFIG_DEFAULT
+    )
     if not tf_events.empty:
         event_times = list(pd.to_datetime(tf_events["event_time"], utc=True, errors="coerce"))
     else:
         event_times = []
-    windows = _cluster_windows(df, event_times, gap_bars, pad_bars, max_window_bars)
+    windows = _cluster_windows(
+        df, event_times, gap_bars, pad_bars, max_window_bars, min_events=min_events
+    )
     for i, (a, b) in enumerate(windows, start=1):
         wdf = df.iloc[a : b + 1]
         cpath = zoom_dir / f"{chart_tf}_cluster_{i:03d}.png"
@@ -259,31 +274,39 @@ def _cluster_windows(
     gap_bars: int,
     pad_bars: int,
     max_window_bars: int,
+    min_events: int = 1,
 ) -> list[tuple[int, int]]:
     """Group event times into padded bar windows.
 
-    Consecutive events within ``gap_bars`` belong to the same cluster. Each
-    cluster is padded by ``pad_bars`` on both sides and clamped to the cache.
-    A padded window wider than ``max_window_bars`` is split into contiguous
-    segments so dense 4H clusters stay reviewable.
+    Consecutive events within ``gap_bars`` belong to the same cluster. Only
+    clusters holding at least ``min_events`` events yield windows — isolated
+    singletons are left to the overview chart. Each kept cluster is padded by
+    ``pad_bars`` on both sides and clamped to the cache; a padded window wider
+    than ``max_window_bars`` is split into contiguous segments so dense 4H
+    clusters stay reviewable.
     """
-    positions = sorted({p for t in event_times if (p := _nearest_pos(df, t)) is not None})
+    positions = sorted(p for t in event_times if (p := _nearest_pos(df, t)) is not None)
     if not positions:
         return []
 
-    clusters: list[tuple[int, int]] = []
+    clusters: list[tuple[int, int, int]] = []  # (lo, hi, event_count)
     lo = prev = positions[0]
+    count = 1
     for p in positions[1:]:
         if p - prev <= gap_bars:
             prev = p
+            count += 1
         else:
-            clusters.append((lo, prev))
+            clusters.append((lo, prev, count))
             lo = prev = p
-    clusters.append((lo, prev))
+            count = 1
+    clusters.append((lo, prev, count))
 
     n = len(df)
     windows: list[tuple[int, int]] = []
-    for clo, chi in clusters:
+    for clo, chi, cnt in clusters:
+        if cnt < min_events:
+            continue
         a = max(0, clo - pad_bars)
         b = min(n - 1, chi + pad_bars)
         if b - a <= max_window_bars:
