@@ -1,5 +1,5 @@
 {
-  "fib_id": "fib_BTC-USD_1M_20260101T000000",
+  "fib_id": "fib_BTC-USD_1M_20250401T000000",
   "symbol": "BTC/USD",
   "timeframe": "1M",
   "exchange": "bitfinex",
@@ -8,39 +8,39 @@
   "scale_mode": "log",
   "levels_profile": "tradingview_log_chamoun",
   "anchor_a": {
-    "time": "2026-01-01T00:00:00+00:00",
-    "price": 97850.0
+    "time": "2025-04-01T00:00:00+00:00",
+    "price": 74501.0
   },
   "anchor_b": {
-    "time": "2026-02-01T00:00:00+00:00",
-    "price": 60100.0
+    "time": "2025-08-01T00:00:00+00:00",
+    "price": 123640.0
   },
-  "direction": "down",
-  "created_at": "2026-06-09T13:13:24.323787+00:00",
+  "direction": "up",
+  "created_at": "2026-06-09T13:12:45.763535+00:00",
   "levels": [
     {
       "ratio": 0.0,
-      "price": 60100.0
+      "price": 123640.0
     },
     {
       "ratio": 0.382,
-      "price": 72400.01576354
+      "price": 101887.33029919
     },
     {
       "ratio": 0.5,
-      "price": 76686.27647761
+      "price": 95975.53667472
     },
     {
       "ratio": 0.618,
-      "price": 81226.29446942
+      "price": 90406.76218477
     },
     {
       "ratio": 0.786,
-      "price": 88157.63875816
+      "price": 83031.22350906
     },
     {
       "ratio": 1.0,
-      "price": 97850.0
+      "price": 74501.0
     }
   ]
 }

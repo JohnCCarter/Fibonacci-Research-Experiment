@@ -13,6 +13,7 @@ Prior mixed-symbol facit archived under
 | BTC/USD | 1M | 6 | monthly anchors (facit) |
 | BTC/USD | 1w | 10 | weekly facit |
 | BTC/USD | 1d | 60 | daily facit |
+| BTC/USD | 4h | 75 | 4h facit (in progress / review) |
 
 Base files: `human_fib/bitfinex/BTC-USD/{timeframe}/fib_*.json`  
 Regenerable sidecars (not versioned): `*_events.json`, `*_interactions.csv`
