@@ -168,6 +168,12 @@ def _parse_args() -> argparse.Namespace:
         default=[],
         help="Review saved <fib_id>_events.json files from human_fib_events (repeatable).",
     )
+    p.add_argument(
+        "--config",
+        type=str,
+        default="",
+        help="Settings file (e.g. config/settings.expansion.yaml).",
+    )
     return p.parse_args()
 
 
@@ -175,7 +181,7 @@ if __name__ == "__main__":
     args = _parse_args()
     before = args.context if args.context is not None else args.context_before
     after = args.context if args.context is not None else args.context_after
-    settings = load_settings()
+    settings = load_settings(args.config or None)
     if args.exchange:
         settings.data.exchange = args.exchange
     if args.symbol:

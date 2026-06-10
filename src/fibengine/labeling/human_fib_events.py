@@ -89,11 +89,15 @@ def detect_candidates(
     cfg: LevelEventConfig | None = None,
     atr_period: int = 14,
 ) -> list[LevelInteractionStream]:
-    """Emit per-level ``*_candidate`` streams for a human fib (thin wrapper)."""
+    """Emit per-level ``*_candidate`` streams for a human fib (thin wrapper).
+
+    Level prices honour the annotation's ``scale_mode`` (log for the active BTC
+    profile), so the emitted levels match the human-drawn fib, not a linear recompute.
+    """
     cfg = cfg or LevelEventConfig()
     swing = swing_from_annotation(df, ann)
     ratios = [lvl.ratio for lvl in ann.levels]
-    return detect_level_events(df, swing, cfg, ratios, atr_period)
+    return detect_level_events(df, swing, cfg, ratios, atr_period, scale_mode=ann.scale_mode)
 
 
 def summarize(streams: list[LevelInteractionStream]) -> dict[str, dict[str, int]]:
@@ -139,13 +143,19 @@ def _parse_args() -> argparse.Namespace:
         )
     )
     p.add_argument("--fib", type=Path, required=True, help="Path to a human fib annotation JSON.")
+    p.add_argument(
+        "--config",
+        type=str,
+        default="",
+        help="Settings file (e.g. config/settings.expansion.yaml).",
+    )
     return p.parse_args()
 
 
 def main() -> None:
     args = _parse_args()
     ann = load_annotation(args.fib)
-    settings = load_settings()
+    settings = load_settings(args.config or None)
     data_cfg = settings.data.model_copy(
         update={"exchange": ann.exchange, "symbol": ann.symbol, "timeframe": ann.timeframe}
     )

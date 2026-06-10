@@ -43,9 +43,13 @@ def _df(closes: list[float]) -> pd.DataFrame:
 
 def _up_annotation(df: pd.DataFrame):
     # anchor_a (ratio 1.0) = low@0, anchor_b (ratio 0.0) = high@10 -> direction "up".
+    # scale_mode="linear" keeps level prices at the arithmetic midpoints expected by
+    # the event-detection fixtures (e.g. 0.5 level = 110.0 on the RISE series).
     a = FibAnchor(df.index[0].isoformat(), float(df["low"].iloc[0]))
     b = FibAnchor(df.index[10].isoformat(), float(df["high"].iloc[10]))
-    return make_annotation(symbol="BTC/USD", timeframe="1h", anchor_a=a, anchor_b=b)
+    return make_annotation(
+        symbol="BTC/USD", timeframe="1h", anchor_a=a, anchor_b=b, scale_mode="linear"
+    )
 
 
 def _stream_for_half(closes: list[float]):
@@ -64,9 +68,27 @@ def test_swing_reproduces_human_levels():
     ann = _up_annotation(df)
     assert ann.direction == "up"
     swing = swing_from_annotation(df, ann)
-    derived = fib_levels(swing, list(DEFAULT_FIB_RATIOS))
+    derived = fib_levels(swing, list(DEFAULT_FIB_RATIOS), scale_mode=ann.scale_mode)
     for lvl in ann.levels:
         assert derived[lvl.ratio] == pytest.approx(lvl.price)
+
+
+def test_log_annotation_emits_log_level_prices():
+    """Regression: events must use the annotation's log level prices, not a linear recompute."""
+    df = _df([10000 + i * 100 for i in range(20)])
+    a = FibAnchor(df.index[0].isoformat(), 10000.0)  # ratio 1.0 (low)
+    b = FibAnchor(df.index[10].isoformat(), 40000.0)  # ratio 0.0 (high)
+    ann = make_annotation(
+        symbol="BTC/USD", timeframe="1h", anchor_a=a, anchor_b=b, scale_mode="log"
+    )
+    streams = detect_candidates(df, ann, LevelEventConfig(levels=[0.5]))
+    assert len(streams) == 1
+    # log 0.5 = geometric mean = sqrt(10000*40000) = 20000; linear would be 25000.
+    assert streams[0].price == pytest.approx(20000.0, rel=1e-6)
+    assert streams[0].price != pytest.approx(25000.0, rel=1e-3)
+    # And it matches the annotation's stored 0.5 price.
+    ann_half = next(lvl.price for lvl in ann.levels if lvl.ratio == 0.5)
+    assert streams[0].price == pytest.approx(ann_half, rel=1e-6)
 
 
 def test_raises_on_reversed_anchor_time_order():

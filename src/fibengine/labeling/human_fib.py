@@ -26,7 +26,8 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-from dataclasses import asdict, dataclass
+import math
+from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -36,8 +37,9 @@ from fibengine.core.config import load_settings
 from fibengine.data.loader import load_candles
 from fibengine.labeling.store import get_labels_dir
 
-# Standard fib ratios for manual annotation. Includes 1.000 (the start anchor).
-DEFAULT_FIB_RATIOS: tuple[float, ...] = (0.236, 0.382, 0.5, 0.618, 0.786, 1.0)
+# Active fib profile for BTC monthly-first protocol (TradingView log-scale).
+# 0.0 = recent extreme (anchor_b), 1.0 = swing origin (anchor_a). No 0.236.
+DEFAULT_FIB_RATIOS: tuple[float, ...] = (0.0, 0.382, 0.5, 0.618, 0.786, 1.0)
 
 # Round derived level prices to clean up float noise (e.g. 426.17895999999996).
 # 8 decimals keeps satoshi-level precision for any asset.
@@ -87,6 +89,12 @@ class HumanFibAnnotation:
     created_by: str = "human"
     source: str = "manual_labeling_tool"
     created_at: str = ""
+    scale_mode: str = "log"
+    levels_profile: str = "tradingview_log_chamoun"
+    # Presentation/review-only annotations (e.g. a zone from 0.5 to 0.618). They may
+    # drive filtering/visual focus in review tools but must never affect event
+    # detection, outcome logic, sampling, or level importance (issue #30, Addendum 2).
+    human_highlights: list[dict] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if isinstance(self.anchor_a, dict):
@@ -107,6 +115,9 @@ class HumanFibAnnotation:
             "exchange": self.exchange,
             "created_by": self.created_by,
             "source": self.source,
+            "scale_mode": self.scale_mode,
+            "levels_profile": self.levels_profile,
+            "human_highlights": self.human_highlights,
             "anchor_a": asdict(self.anchor_a),
             "anchor_b": asdict(self.anchor_b),
             "direction": self.direction,
@@ -130,12 +141,22 @@ def compute_levels(
     anchor_b: FibAnchor,
     ratios: tuple[float, ...] = DEFAULT_FIB_RATIOS,
     decimals: int = PRICE_DECIMALS,
+    scale_mode: str = "linear",
 ) -> list[FibLevel]:
     """Derive fib level prices from two human anchors.
 
-    ``anchor_b`` is ratio 0.0, ``anchor_a`` is ratio 1.0:
-    ``price(r) = b.price + r * (a.price - b.price)``, rounded to ``decimals``.
+    ``anchor_b`` is ratio 0.0, ``anchor_a`` is ratio 1.0.
+
+    Linear: ``price(r) = b + r * (a - b)``
+    Log:    ``price(r) = exp(log(b) + r * (log(a) - log(b)))``
     """
+    if scale_mode == "log":
+        log_b = math.log(anchor_b.price)
+        log_a = math.log(anchor_a.price)
+        return [
+            FibLevel(ratio=r, price=round(math.exp(log_b + r * (log_a - log_b)), decimals))
+            for r in ratios
+        ]
     span = anchor_a.price - anchor_b.price
     return [FibLevel(ratio=r, price=round(anchor_b.price + r * span, decimals)) for r in ratios]
 
@@ -152,6 +173,8 @@ def make_annotation(
     ratios: tuple[float, ...] = DEFAULT_FIB_RATIOS,
     decimals: int = PRICE_DECIMALS,
     created_at: str = "",
+    scale_mode: str = "log",
+    levels_profile: str = "tradingview_log_chamoun",
 ) -> HumanFibAnnotation:
     """Build an annotation from explicit human anchors (never auto-detected)."""
     return HumanFibAnnotation(
@@ -160,10 +183,12 @@ def make_annotation(
         anchor_a=anchor_a,
         anchor_b=anchor_b,
         direction=direction or infer_direction(anchor_a, anchor_b),
-        levels=compute_levels(anchor_a, anchor_b, ratios, decimals),
+        levels=compute_levels(anchor_a, anchor_b, ratios, decimals, scale_mode=scale_mode),
         exchange=exchange,
         fib_id=fib_id,
         created_at=created_at,
+        scale_mode=scale_mode,
+        levels_profile=levels_profile,
     )
 
 
@@ -278,6 +303,9 @@ def load_annotation(path: str | Path) -> HumanFibAnnotation:
         created_by=data.get("created_by", "human"),
         source=data.get("source", "manual_labeling_tool"),
         created_at=data.get("created_at", ""),
+        scale_mode=data.get("scale_mode", "linear"),
+        levels_profile=data.get("levels_profile", ""),
+        human_highlights=data.get("human_highlights", []),
     )
 
 

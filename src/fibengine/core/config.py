@@ -52,7 +52,9 @@ class ScoringConfig(BaseModel):
 
 
 class FibConfig(BaseModel):
-    levels: list[float] = Field(default_factory=lambda: [0.236, 0.382, 0.5, 0.618, 0.786])
+    levels: list[float] = Field(default_factory=lambda: [0.0, 0.382, 0.5, 0.618, 0.786, 1.0])
+    scale_mode: str = "log"
+    levels_profile: str = "tradingview_log_chamoun"
 
 
 class EvaluationConfig(BaseModel):

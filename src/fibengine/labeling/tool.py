@@ -65,7 +65,7 @@ from fibengine.labeling.store import (
 )
 from fibengine.research.human_review_candles import draw_review_candles
 
-DEFAULT_FIB_LEVELS = [0.236, 0.382, 0.5, 0.618, 0.786]
+DEFAULT_FIB_LEVELS = [0.0, 0.382, 0.5, 0.618, 0.786, 1.0]
 LEG_FIB_COLORS = ["#6ea8ff", "#ffb86b", "#bd93f9", "#8be9fd", "#ff79c6"]
 LEG_MARKER_ALPHA_INACTIVE = 0.45
 DEFAULT_LABEL_TIMEFRAMES = ["15m", "30m", "1h", "4h", "daily", "weekly", "monthly"]
@@ -191,14 +191,15 @@ def _cycle(values: list[str], current: str, delta: int) -> str:
 def _fib_prices_from_picks(
     picks: dict[str, tuple[int, float]],
     levels: list[float],
+    scale_mode: str = "log",
 ) -> dict[float, float]:
     if "high" not in picks or "low" not in picks:
         return {}
     high_idx, high_price = picks["high"]
     low_idx, low_price = picks["low"]
     if low_idx <= high_idx:
-        return fib_from_prices(low_price, high_price, levels)
-    return fib_from_prices(high_price, low_price, levels)
+        return fib_from_prices(low_price, high_price, levels, scale_mode=scale_mode)
+    return fib_from_prices(high_price, low_price, levels, scale_mode=scale_mode)
 
 
 def _parse_args() -> argparse.Namespace:
@@ -520,6 +521,8 @@ class LabelWorkspace:
             exchange=self.data.exchange,
             anchor_a=anchor_a,
             anchor_b=anchor_b,
+            scale_mode=self.settings.fib.scale_mode,
+            levels_profile=self.settings.fib.levels_profile,
         )
         path = save_annotation(annotation)
         print(f"Saved human fib annotation ({annotation.direction}) -> {path}")
@@ -650,6 +653,8 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
         ax.clear()
         ax.set_facecolor("#0f1117")
+        # Log price axis so log-scale fib levels render evenly spaced (TradingView-style).
+        ax.set_yscale("log" if workspace.settings.fib.scale_mode == "log" else "linear")
         df = workspace.df
         x = range(len(df))
         lows = df["low"].to_numpy()
@@ -702,7 +707,9 @@ def run_label_tool(args: argparse.Namespace | None = None):
             draw_fib = workspace.show_fib and picks and (active or len(workspace.legs) <= 1)
             if draw_fib:
                 for level, price in _fib_prices_from_picks(
-                    picks, workspace.settings.fib.levels or DEFAULT_FIB_LEVELS
+                    picks,
+                    workspace.settings.fib.levels or DEFAULT_FIB_LEVELS,
+                    scale_mode=workspace.settings.fib.scale_mode,
                 ).items():
                     ax.axhline(
                         price,

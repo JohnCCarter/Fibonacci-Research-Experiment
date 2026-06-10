@@ -152,7 +152,9 @@ def run_human_review(
     run_dir = hr.REVIEW_ROOT / run_id
     charts_dir = run_dir / "charts"
     for r in sampled:
-        render_chart(df, r, charts_dir / f"{r['review_id']}.png", cfg)
+        render_chart(
+            df, r, charts_dir / f"{r['review_id']}.png", cfg, scale_mode=settings.fib.scale_mode
+        )
     write_review_sheets(sampled, run_dir)
     summary = _summary(len(candidates), sampled, run_dir)
     write_index(sampled, summary, run_dir)
@@ -189,7 +191,13 @@ def run_human_fib_review(
                 update={"exchange": key[0], "symbol": key[1], "timeframe": key[2]}
             )
             df_cache[key] = hr.load_candles(data_cfg, fetch_if_missing=False)
-        render_chart(df_cache[key], r, charts_dir / f"{r['review_id']}.png", cfg)
+        render_chart(
+            df_cache[key],
+            r,
+            charts_dir / f"{r['review_id']}.png",
+            cfg,
+            scale_mode=settings.fib.scale_mode,
+        )
     write_review_sheets(sampled, run_dir)
     summary = _summary(len(candidates), sampled, run_dir)
     write_index(sampled, summary, run_dir)

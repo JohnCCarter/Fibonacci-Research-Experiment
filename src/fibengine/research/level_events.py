@@ -161,10 +161,11 @@ def detect_level_events(
     cfg: LevelEventConfig,
     fib_ratios: list[float],
     atr_period: int = 14,
+    scale_mode: str = "linear",
 ) -> list[LevelInteractionStream]:
     """Detektera interaktioner mellan pris och fib-nivåer som en ström per nivå."""
     ratios = cfg.levels or fib_ratios
-    prices = fib_levels(swing, ratios)
+    prices = fib_levels(swing, ratios, scale_mode=scale_mode)
     n = len(df)
     highs = df["high"].to_numpy()
     lows = df["low"].to_numpy()

@@ -581,7 +581,14 @@ def _draw_event_label(ax, row: dict, *, dark_theme: bool = False, x_shift: int =
     )
 
 
-def render_chart(df: pd.DataFrame, row: dict, out_path: Path, cfg: HumanReviewConfig) -> Path:
+def render_chart(
+    df: pd.DataFrame,
+    row: dict,
+    out_path: Path,
+    cfg: HumanReviewConfig,
+    *,
+    scale_mode: str = "linear",
+) -> Path:
     eb = int(row["event_bar"])
     view_mode = cfg.default_view_mode
     lo, hi = window_for_view(row, df, cfg, view_mode)
@@ -590,6 +597,9 @@ def render_chart(df: pd.DataFrame, row: dict, out_path: Path, cfg: HumanReviewCo
 
     fig, ax = plt.subplots(figsize=(9, 5.5))
     fig.subplots_adjust(right=0.72)
+    # Log price axis so log-scale fib levels render evenly spaced (TradingView-style).
+    if scale_mode == "log":
+        ax.set_yscale("log")
     draw_review_candles(ax, sub, candlestick=cfg.candlestick, dark_theme=False)
 
     _draw_fib_leg_overlay(ax, row, lo, hi, dark_theme=False, x_shift=x_shift)

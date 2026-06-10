@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 import pandas as pd
 import pytest
 
@@ -42,27 +44,73 @@ def _ohlc(n: int) -> pd.DataFrame:
     )
 
 
-# 1. Fib levels are calculated correctly from anchors.
-def test_levels_match_spec_example():
+# 1. Active profile: no 0.236, includes 0.0 and 1.0.
+def test_default_profile_excludes_0236():
+    assert 0.236 not in DEFAULT_FIB_RATIOS
+
+
+def test_default_profile_includes_endpoints():
+    assert 0.0 in DEFAULT_FIB_RATIOS
+    assert 1.0 in DEFAULT_FIB_RATIOS
+
+
+# 2. Linear levels still work correctly (scale_mode="linear" explicit).
+def test_linear_levels_match_spec_example():
     a = FibAnchor(time="2026-01-14T00:00:00Z", price=97924.0)
     b = FibAnchor(time="2026-02-06T00:00:00Z", price=60000.0)
-    levels = {lvl.ratio: lvl.price for lvl in compute_levels(a, b)}
+    levels = {lvl.ratio: lvl.price for lvl in compute_levels(a, b, scale_mode="linear")}
+    assert levels[0.0] == pytest.approx(60000.0)
     assert levels[1.0] == pytest.approx(97924.0)
     assert levels[0.5] == pytest.approx(78962.0)
-    assert levels[0.236] == pytest.approx(68950.064)
     assert levels[0.382] == pytest.approx(74486.968)
     assert levels[0.618] == pytest.approx(83437.032)
     assert levels[0.786] == pytest.approx(89808.264)
-    assert tuple(lvl.ratio for lvl in compute_levels(a, b)) == DEFAULT_FIB_RATIOS
+    assert (
+        tuple(lvl.ratio for lvl in compute_levels(a, b, scale_mode="linear")) == DEFAULT_FIB_RATIOS
+    )
 
 
 def test_levels_are_rounded_no_float_noise():
     a = FibAnchor("2015-11-04T00:00:00Z", 504.0)
     b = FibAnchor("2015-11-11T00:00:00Z", 300.28)
-    levels = {lvl.ratio: lvl.price for lvl in compute_levels(a, b)}
+    levels = {lvl.ratio: lvl.price for lvl in compute_levels(a, b, scale_mode="linear")}
     # 0.618 would be 426.17895999999996 without rounding.
     assert levels[0.618] == 426.17896
     assert all(round(price, 8) == price for price in levels.values())
+
+
+# 3. Log-scale levels differ from linear and match the expected formula.
+def test_log_and_linear_levels_differ():
+    """Log-scale and linear prices must differ on a realistic BTC range."""
+    a = FibAnchor("2020-10-01T00:00:00Z", price=10391.0)
+    b = FibAnchor("2021-04-01T00:00:00Z", price=64829.0)
+    linear = {lvl.ratio: lvl.price for lvl in compute_levels(a, b, scale_mode="linear")}
+    log_ = {lvl.ratio: lvl.price for lvl in compute_levels(a, b, scale_mode="log")}
+    # Interior levels (not 0.0 or 1.0) must differ noticeably.
+    for ratio in (0.382, 0.5, 0.618, 0.786):
+        assert abs(linear[ratio] - log_[ratio]) > 100, (
+            f"ratio={ratio}: linear={linear[ratio]}, log={log_[ratio]} — expected to differ"
+        )
+
+
+def test_log_levels_match_formula():
+    """Log price = geometric interpolation: exp(log(b) + r*(log(a)-log(b)))."""
+    a = FibAnchor("2020-10-01T00:00:00Z", price=10391.0)
+    b = FibAnchor("2021-04-01T00:00:00Z", price=64829.0)
+    levels = {lvl.ratio: lvl.price for lvl in compute_levels(a, b, scale_mode="log")}
+    for ratio in DEFAULT_FIB_RATIOS:
+        expected = round(
+            math.exp(math.log(b.price) + ratio * (math.log(a.price) - math.log(b.price))), 8
+        )
+        assert levels[ratio] == pytest.approx(expected, rel=1e-7)
+
+
+def test_log_level_endpoints_equal_anchor_prices():
+    a = FibAnchor("2020-10-01T00:00:00Z", price=10391.0)
+    b = FibAnchor("2021-04-01T00:00:00Z", price=64829.0)
+    levels = {lvl.ratio: lvl.price for lvl in compute_levels(a, b, scale_mode="log")}
+    assert levels[0.0] == pytest.approx(b.price, rel=1e-7)
+    assert levels[1.0] == pytest.approx(a.price, rel=1e-7)
 
 
 def test_direction_inference():
@@ -98,9 +146,10 @@ def test_classify_candles_one_row_per_candle_and_level():
     assert len(rows) == 3 * len(annotation.levels)
     assert all(r["relation"] in RELATIONS for r in rows)
     assert {r["ratio"] for r in rows} == set(DEFAULT_FIB_RATIOS)
+    assert 0.236 not in {r["ratio"] for r in rows}
 
 
-# 3. Saved annotations reload correctly.
+# 4. Saved annotations reload correctly.
 def test_save_and_reload(labels_tmp):
     a = FibAnchor("2026-01-14T00:00:00Z", 97924.0)
     b = FibAnchor("2026-02-06T00:00:00Z", 60000.0)
@@ -116,10 +165,59 @@ def test_save_and_reload(labels_tmp):
     assert reloaded.direction == "down"
     assert reloaded.created_by == "human"
     assert reloaded.source == "manual_labeling_tool"
+    assert reloaded.scale_mode == "log"
+    assert reloaded.levels_profile == "tradingview_log_chamoun"
     assert reloaded.anchor_a.price == pytest.approx(97924.0)
     assert reloaded.anchor_b.price == pytest.approx(60000.0)
     assert [lvl.ratio for lvl in reloaded.levels] == list(DEFAULT_FIB_RATIOS)
-    assert reloaded.levels[2].price == pytest.approx(78962.0)
+    # 0.5 level with log scale = geometric mean of the two anchor prices
+    expected_half = round(math.sqrt(a.price * b.price), 8)
+    assert reloaded.levels[2].price == pytest.approx(expected_half, rel=1e-6)
+
+
+def test_load_old_annotation_without_scale_mode_defaults_to_linear(labels_tmp, tmp_path):
+    """Old JSON files without scale_mode field must load as 'linear' (backward compat)."""
+    import json
+
+    raw = {
+        "fib_id": "fib_BTC-USD_1d_20260101T000000",
+        "symbol": "BTC/USD",
+        "timeframe": "1d",
+        "exchange": "bitfinex",
+        "created_by": "human",
+        "source": "manual_labeling_tool",
+        "anchor_a": {"time": "2026-01-01T00:00:00+00:00", "price": 100000.0},
+        "anchor_b": {"time": "2026-02-01T00:00:00+00:00", "price": 60000.0},
+        "direction": "down",
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "levels": [{"ratio": 0.382, "price": 74720.0}],
+    }
+    p = tmp_path / "fib_test.json"
+    p.write_text(json.dumps(raw), encoding="utf-8")
+    ann = load_annotation(p)
+    assert ann.scale_mode == "linear"
+    assert ann.levels_profile == ""
+    assert ann.human_highlights == []  # absent in old JSON -> empty, never None
+
+
+# human_highlights: presentation/review-only annotations (issue #30, Addendum 2).
+def test_human_highlights_default_empty(labels_tmp):
+    a = FibAnchor("2026-01-14T00:00:00Z", 97924.0)
+    b = FibAnchor("2026-02-06T00:00:00Z", 60000.0)
+    ann = make_annotation(symbol="BTC/USD", timeframe="1M", anchor_a=a, anchor_b=b)
+    assert ann.human_highlights == []
+    assert load_annotation(save_annotation(ann)).human_highlights == []
+
+
+def test_human_highlights_round_trip(labels_tmp):
+    a = FibAnchor("2026-01-14T00:00:00Z", 97924.0)
+    b = FibAnchor("2026-02-06T00:00:00Z", 60000.0)
+    ann = make_annotation(symbol="BTC/USD", timeframe="1M", anchor_a=a, anchor_b=b)
+    ann.human_highlights = [
+        {"kind": "zone", "from": 0.5, "to": 0.618, "note": "visual review focus only"}
+    ]
+    reloaded = load_annotation(save_annotation(ann))
+    assert reloaded.human_highlights == ann.human_highlights
 
 
 # 4. No auto-fib detection is introduced.

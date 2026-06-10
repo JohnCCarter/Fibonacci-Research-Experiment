@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
-import pandera as pa
+import pandera.pandas as pa
 from pydantic import BaseModel, Field
 
 OHLCV_COLUMNS = ("open", "high", "low", "close", "volume")
