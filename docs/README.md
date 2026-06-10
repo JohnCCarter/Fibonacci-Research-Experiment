@@ -14,13 +14,12 @@ Long-lived documentation. Start here, then open a category folder.
 
 | Folder | Contents |
 |--------|----------|
-| [agent/](agent/) | **Constitution** → [AGENTS.md](../AGENTS.md); [INDEX.md](agent/INDEX.md) maps all agent/subagent docs |
+| [agent/](agent/) | **Constitution** → [AGENTS.md](../AGENTS.md); [AGENT_RESPONSE_STYLE.md](agent/AGENT_RESPONSE_STYLE.md) response style |
 | [labeling/](labeling/) | Human fib, machine labels, GUI, behavior facit |
 | [research/](research/) | MTF, level events, fib pipelines, handoff |
 | [validate/](validate/) | Backtest plan, Genesis/Bitfinex validate |
 | [tooling/](tooling/) | Tooling recommendation report (#25) |
 | [research_wiki/](research_wiki/) | LLM-maintained wiki (index, log, handoff, reviews) |
-| [prompts/](prompts/) | Chat starter prompts |
 
 ## Active label surfaces
 

@@ -1,34 +1,26 @@
 # Research Wiki Index
 
-Start here when looking for accumulated repo context. Source docs are the truth;
-wiki pages are the map and synthesis.
+Start here when looking for accumulated repo context. Source evidence is the
+truth; wiki pages are the map and synthesis. When they disagree, the source wins
+— see [source-authority.md](reference/source-authority.md).
 
 ## Wiki Operations
 
 - [README](README.md) — rules, page types, and maintenance loop.
+- [**Source authority**](reference/source-authority.md) — which layer wins when
+  evidence and wiki disagree.
 - [Log](log.md) — append-only trail of ingests, decisions, reviews, questions.
 - [Current handoff](handoff.md) — current working context and next action.
 - [Glossary](glossary.md) — compact definitions and links.
 
-## Architecture And Governance
+## Schema And Concepts
 
-- [**CONSTITUTION FOR AGENTS AND SUBAGENTS**](../../AGENTS.md) — roles, workflow, guardrails (canonical).
-- [Agent doc map](../agent/INDEX.md) — all agent/subagent MD by layer (rules, hooks, commands, subagents).
-- [Cursor workspace setup](../agent/CURSOR_WORKSPACE_AGENT.md) — BYOK, hooks (model-gated), slash commands.
+- [**CONSTITUTION FOR AGENTS**](../../AGENTS.md) — duties, guardrails, source authority (canonical).
 - [Module map](reference/module-map.md) — `src/fibengine` packages and roles.
 - [Data conventions](reference/data-conventions.md) — label, human-fib, and
   experiment path shapes.
 - [CLI commands](reference/cli-commands.md) — common commands for fetch,
   experiment, review, tests, and build.
-- [Model collaboration (GLM + Qwen)](../agent/MODEL_COLLABORATION.md) — GLM-5.1 lead,
-  Qwen3-Coder implement (NVIDIA NIM, not fibengine runtime).
-- [NVIDIA GLM-5.1 API](reference/nvidia-glm-api.md) — lead agent (plan/review).
-- [NVIDIA Qwen API](reference/nvidia-qwen-api.md) — implementation specialist.
-- [Cursor workspace agent setup](../agent/CURSOR_WORKSPACE_AGENT.md) — configure
-  Cursor shell + BYOK Qwen (`/repo-agent`, rules, wiki bootstrap).
-- [VS Code Copilot NVIDIA models](../agent/VSCODE_COPILOT_NVIDIA_MODELS.md) — BYOK
-  Custom Endpoint for GLM + Qwen (parity with Cursor NIM setup).
-- [Repo-aware agent (short)](../agent/REPO_AWARE_AGENT.md) — companion notes.
 - [Guardrails](concepts/guardrails.md) — research-only invariants and promotion
   boundaries.
 - [Atomic runnable artifacts](concepts/atomic-runnable-artifacts.md) — small,
@@ -50,7 +42,6 @@ wiki pages are the map and synthesis.
   runnable research notes.
 - [Handoff entry template](templates/handoff-entry.md) — skeleton for handoff
   sections and session notes.
-- [Model handoff template](templates/model-handoff.md) — GLM plan → Qwen implement.
 
 ## Decisions
 

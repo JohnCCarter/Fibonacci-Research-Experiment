@@ -1,51 +1,14 @@
-# Cursor workspace — agent shell for this repo
+# Cursor workspace
 
-**Qwen (or any BYOK model) is only the LLM.** Cursor provides the **agent shell**: project rules, `@` context, indexing, and tools (mode-dependent).
-
-## What the repo configures (version-controlled)
+Version-controlled Cursor shell for this repo. The LLM is just the model; this
+directory provides the always-on rules and skills.
 
 | Path | Role |
 |------|------|
-| [rules/](rules/) | Always-on agent policy (`alwaysApply: true` on core rules) |
-| [commands/](commands/) | Slash commands — `/glm-plan`, `/qwen-implement`, `/repo-agent` (prefill `@` + role prompt) |
-| [skills/](skills/) | Optional deep dives (backtest, labeling, etc.) |
-| [../AGENTS.md](../AGENTS.md) | **CONSTITUTION FOR AGENTS AND SUBAGENTS** |
-| [../docs/agent/INDEX.md](../docs/agent/INDEX.md) | Full agent/subagent doc map |
-| [../docs/research_wiki/](../docs/research_wiki/) | **Read first** — index, handoff, log |
-| [../docs/agent/CURSOR_WORKSPACE_AGENT.md](../docs/agent/CURSOR_WORKSPACE_AGENT.md) | **Setup checklist** (BYOK Qwen + rules) |
-| [hooks.json](hooks.json) | **GLM lead** / **Qwen implement** context on `sessionStart`; Qwen send gate |
-| [commands/glm-plan.md](commands/glm-plan.md) | GLM: plan + handoff |
-| [commands/qwen-implement.md](commands/qwen-implement.md) | Qwen: implement handoff only |
-| [agents/glm-lead.md](agents/glm-lead.md) | **Subagent** — GLM lead (plan, review, delegate) |
-| [agents/qwen-implementer.md](agents/qwen-implementer.md) | **Subagent** — GLM's Qwen implementer (`model:` in frontmatter) |
+| [rules/](rules/) | Always-on agent rules: repo-aware coding, response style, research-wiki maintenance |
+| [skills/](skills/) | Portable skill instruction sets (data-analysis, optimization, backtesting, validation, research) |
+| [settings.json](settings.json) | Local Cursor settings |
 
-## Subagents: GLM delegates to Qwen
-
-- **GLM** (`glm-lead`) plans and reviews.
-- **Qwen** (`qwen-implementer`) is GLM's implementation subagent — not a separate peer unless fallback.
-
-GLM delegates:
-
-```text
-Use the qwen-implementer subagent to implement this GLM handoff:
-(paste handoff)
-```
-
-BYOK once in Settings: NVIDIA URL + both model ids. Subagent `model:` field targets Qwen when delegated.
-
-## One-time setup (human)
-
-Follow [docs/agent/CURSOR_WORKSPACE_AGENT.md](../docs/agent/CURSOR_WORKSPACE_AGENT.md).
-
-## Every session (Qwen in Chat)
-
-1. **Cursor Settings → Rules** — project rules from this folder enabled.
-2. **New Chat** → model `qwen/qwen3-coder-480b-a35b-instruct` (NVIDIA BYOK).
-3. Run slash command **`/repo-agent`** (or paste from [docs/prompts/qwen-chat-starter.md](../docs/prompts/qwen-chat-starter.md)).
-4. Add task-specific `@src/...` or `@docs/...` from wiki links.
-
-## Verify
-
-```bash
-uv run python scripts/qwen_repo_agent_check.py
-```
+Constitution: [AGENTS.md](../AGENTS.md) · Read first:
+[docs/research_wiki/](../docs/research_wiki/) (index, handoff, log) · Source authority:
+[docs/research_wiki/reference/source-authority.md](../docs/research_wiki/reference/source-authority.md)

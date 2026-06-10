@@ -13,7 +13,9 @@ Kort orientering för Claude (och andra agenter). **Konstitution och guardrails:
 5. [`docs/research_wiki/reference/module-map.md`](docs/research_wiki/reference/module-map.md) —
    paketkarta
 
-Wiki = navigation; **kod och käll-docs** = beteendes sanning.
+Wiki = navigation; **kod och käll-docs** = beteendes sanning. När wiki och
+käll-evidens säger emot varandra **vinner källan** — fixa eller flagga wikin
+([`source-authority.md`](docs/research_wiki/reference/source-authority.md)).
 
 ## Projektöversikt
 
@@ -28,6 +30,9 @@ CLI-moduler + valfri Matplotlib-labeling-GUI. Ingen webbserver/databas. Mer i
 - Äldre mixed-symbol/MTF-resultat ligger i `archive/` — **inte** aktuell evidens
 - **Arkiv:** lokalt på disk; committa **inte** arkivblobs om inte användaren ber om det
   ([`repository-layout-policy.md`](repository-layout-policy.md) §7)
+- **Lokal config ≠ källa:** `CLAUDE.md`/`AGENTS.md` är versionerad schema; `.claude/`,
+  `.env`, cache, `data/raw/`, temp-charts/loggar är lokala och får aldrig bli
+  wiki-minne eller källsanning (`scripts/check_repo_bounds.py` vaktar detta)
 
 ## Paket (`src/fibengine/`)
 
@@ -61,8 +66,6 @@ cache → felmeddelande (kör fetch).
   inte baseline `config/settings.yaml` i onödan
 - Minimala diffs; fråga vid oklar facit/promotion
 - Kompakta svar: [`docs/agent/AGENT_RESPONSE_STYLE.md`](docs/agent/AGENT_RESPONSE_STYLE.md)
-- GLM planerar/reviewar, Qwen implementerar inom handoff —
-  [`docs/agent/MODEL_COLLABORATION.md`](docs/agent/MODEL_COLLABORATION.md)
 
 ## Token-budget — sök/läs inte brett här
 

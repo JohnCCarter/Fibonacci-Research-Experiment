@@ -4,6 +4,11 @@ En research-/prototyp-engine som försöker välja swing high/low på ett chart
 **som en teknisk analytiker** — inte en vanlig Fib-indikator och inte standard
 ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativt.
 
+> **Agenter, börja här:**
+> [`docs/research_wiki/handoff.md`](docs/research_wiki/handoff.md) (aktuellt fokus) ·
+> [`docs/research_wiki/reference/source-authority.md`](docs/research_wiki/reference/source-authority.md) (källa slår wiki) ·
+> [`docs/BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md`](docs/BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md) (aktivt protokoll: BTC/USD, 1M → 1w → 1d → 4h → 1h)
+
 > Status: MVP / prototyp / premortem. Lättviktig disciplin (logging, audits,
 > reflektion) — ingen tung governance. Kan ev. portas in i Genesis-Core senare.
 

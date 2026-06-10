@@ -13,6 +13,37 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-10] maintenance | Remove GLM/Qwen/NVIDIA model-collaboration material
+
+Correction to the entry below: the multi-model operating model is **not** active.
+Deleted all GLM/Qwen/NVIDIA-NIM/BYOK material (26 files): `docs/agent/{MODEL_COLLABORATION,
+CURSOR_WORKSPACE_AGENT,VSCODE_COPILOT_NVIDIA_MODELS,REPO_AWARE_AGENT,INDEX,README}.md`,
+`docs/research_wiki/reference/nvidia-{glm,qwen}-api.md`, `templates/model-handoff.md`,
+`docs/prompts/qwen-chat-starter.md`, `.cursor/{agents,commands,hooks}/*`, `.cursor/hooks.json`,
+`.cursor/rules/model-collaboration-policy.mdc`, `scripts/nvidia_*`/`qwen_repo_agent_check.py`,
+and `.env.example`. Rewrote `AGENTS.md` to a lean constitution (duties, source
+authority, wiki maintenance, quality gate). Stripped model-collab references from
+`CLAUDE.md`, `.github/copilot-instructions.md`, `.cursor/README.md`,
+`.cursor/rules/repo-aware-coding-agent.mdc`, `.cursor/skills/README.md`, `glossary.md`,
+`index.md`, `reference/cli-commands.md`, `docs/README.md`. Schema now describes only:
+evidence handling, wiki maintenance, source authority, stale-memory prevention, and
+verification via tests/checks. Historical entries below are kept as append-only record.
+
+## [2026-06-10] maintenance | Align repo with Karpathy LLM Wiki pattern
+
+Made source authority explicit and minimal. Added
+[reference/source-authority.md](reference/source-authority.md) (layer model +
+conflict rule: source evidence beats wiki synthesis). Clarified the wiki's role
+in [README.md](README.md) and [index.md](index.md) (memory/synthesis, not
+evidence or executable truth); moved multi-model/BYOK tooling links to an
+"out of scope for the LLM Wiki pattern" section. Added a short source-authority +
+local-config rule to `AGENTS.md` §6, `CLAUDE.md`, `.github/copilot-instructions.md`,
+and the Cursor wiki rule. Expanded `scripts/check_repo_bounds.py` to fail when a
+required wiki/schema file is missing or a local/private artifact (`.claude/`,
+`.env`, caches, `dist/`, `._*.png`, logs) is tracked; wired it into CI. Reconciled
+[data/labels/INDEX.md](../../data/labels/INDEX.md) with disk (1M=9; 1w/1d/4h dirs
+absent — prior counts archived, not current). Gitignored `.claude/` and `._*.png`.
+
 ## [2026-06-10] decision | Addendum 2 — retire golden-zone review sampling
 
 Issue #30 (Addendum 2): the machine must not bias any level. Removed

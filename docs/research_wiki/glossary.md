@@ -16,11 +16,9 @@ details.
 - **HUR** — how price behaves around a fib range at a lower timeframe, especially
   daily candles after a weekly range is selected.
 - **Handoff** — current working context for future agents and humans
-  ([handoff.md](handoff.md)); GLM→Qwen code handoffs use
-  [model-handoff.md](templates/model-handoff.md).
-- **Agent constitution** — [AGENTS.md](../../AGENTS.md): canonical roles (GLM lead,
-  Qwen implementer subagent, Auto guardrails). Cursor enforcement in `.cursor/rules`,
-  `hooks`, `commands`, `agents` — see [agent INDEX](../agent/INDEX.md).
+  ([handoff.md](handoff.md)).
+- **Agent constitution** — [AGENTS.md](../../AGENTS.md): duties, guardrails, and
+  source authority. Cursor enforcement in `.cursor/rules`.
 - **Human fib** — manually drawn anchors plus derived levels saved under
   `data/labels/human_fib/`.
 - **Layer A** — swing selection and fib research, the core project surface.

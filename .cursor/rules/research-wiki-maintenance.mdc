@@ -15,7 +15,9 @@ Research, labeling, review tooling, or non-trivial implementation:
 - `docs/research_wiki/handoff.md`
 - `docs/research_wiki/log.md` (tail)
 
-Truth: source docs, code, labels, experiment outputs, GitHub issues.
+Truth: source docs, code, labels, experiment outputs, GitHub issues. When wiki and
+evidence disagree, **source wins** — fix or flag the wiki
+([source-authority.md](../../docs/research_wiki/reference/source-authority.md)).
 
 ## Update after meaningful work
 

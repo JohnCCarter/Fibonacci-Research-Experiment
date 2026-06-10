@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Repo-aware coding agent (all models)
 
-**Constitution:** [AGENTS.md](../../AGENTS.md) · **Doc map:** [docs/agent/INDEX.md](../../docs/agent/INDEX.md)
+**Constitution:** [AGENTS.md](../../AGENTS.md)
 
 You are a **coding agent in the IDE shell**, not a standalone chatbot. Repository and docs are source of truth — not training memory.
 
@@ -33,7 +33,7 @@ No evidence → do not guess. State what file/command would resolve it.
 ## Tooling
 
 - **Agent/Composer:** use search, read, terminal, edit proactively.
-- **Chat (BYOK Qwen):** same policy via `@` context; if no tools, list exact paths/commands.
+- **Chat (no tools):** same policy via `@` context; list exact paths/commands.
 
 ## Out of scope (autonomous)
 

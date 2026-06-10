@@ -1,16 +1,25 @@
 # Research Wiki
 
-This directory is the persistent LLM-maintained wiki for the Fibonacci
-experiment. It is the navigation layer between raw sources and future work:
-source docs, code, labels, experiment outputs, and issues remain the truth; wiki
-pages summarize, connect, and preserve decisions.
+This directory is the persistent **LLM-maintained wiki** for the Fibonacci
+experiment ([Karpathy LLM wiki](sources/karpathy-llm-wiki.md) pattern). It exists
+for navigation, synthesis, decisions, concepts, handoff, and links between raw
+sources and future work.
+
+**This layer is:** memory and synthesis for agents and humans.
+**This layer is not:** raw evidence, and not executable truth.
+
+Every page must be grounded in a source: human fib labels, the active protocol
+docs, code, tests, GitHub issues, or generated artifacts. When the wiki conflicts
+with that evidence, **fix the wiki or flag the conflict** — the source wins. See
+[reference/source-authority.md](reference/source-authority.md) for the full rule.
 
 ## Read First
 
 1. Start with [index.md](index.md).
 2. Check [log.md](log.md) for recent ingests, decisions, and reviews.
 3. Check [handoff.md](handoff.md) for current working context.
-4. Use source docs for authority; use wiki pages for synthesis.
+4. Use [source-authority.md](reference/source-authority.md) to resolve any
+   evidence-vs-wiki conflict; use wiki pages for synthesis only.
 
 ## Rules
 
