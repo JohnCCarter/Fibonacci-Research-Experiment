@@ -72,6 +72,130 @@ append-only trail lives in [log.md](log.md).
 - No ETH/SOL analysis until BTC protocol sign-off.
 - No auto-fib or trading signals.
 
+## Startup on another machine
+
+Use this checklist when resuming from a home computer or any machine that does
+not have the current working tree.
+
+### Before leaving the current machine
+
+- All code, tests, wiki, and data changes committed and pushed (`git status` clean).
+- Gitignored review artifacts (`experiments/review/`) copied as a ZIP if wanted
+  (optional — see restore step below).
+- No required local-only state remains: committed facit (`fib_*.json`,
+  `review_windows.yaml`) and wiki docs are the source of truth.
+
+### On the new machine
+
+**Bash:**
+```bash
+git pull
+uv sync --extra dev
+uv run pytest -q
+uv run python scripts/check_repo_bounds.py
+```
+
+**PowerShell:**
+```powershell
+git pull
+uv sync --extra dev
+uv run pytest -q
+uv run python scripts/check_repo_bounds.py
+```
+
+### BTC/USD candle-cache setup
+
+`data/raw/` is gitignored — fetch it fresh:
+
+**Bash:**
+```bash
+uv run --no-sync python -m fibengine.data.fetch \
+  --symbols BTC/USD \
+  --timeframes "1M,1w,1d,4h" \
+  --refresh \
+  --config config/settings.expansion.yaml
+```
+
+**PowerShell:**
+```powershell
+uv run --no-sync python -m fibengine.data.fetch `
+  --symbols BTC/USD `
+  --timeframes "1M,1w,1d,4h" `
+  --refresh `
+  --config config/settings.expansion.yaml
+```
+
+### Labeling preflight
+
+Confirms cache is complete for all active TFs before opening the labeling tool:
+
+**Bash:**
+```bash
+uv run --no-sync python -m fibengine.labeling.preflight \
+  --symbol BTC/USD \
+  --timeframes "1M,1w,1d,4h,1h" \
+  --config config/settings.expansion.yaml
+```
+
+**PowerShell:**
+```powershell
+uv run --no-sync python -m fibengine.labeling.preflight `
+  --symbol BTC/USD `
+  --timeframes "1M,1w,1d,4h,1h" `
+  --config config/settings.expansion.yaml
+```
+
+Expected: 1M/1w/1d/4h pass; 1h FAIL (cache not fetched yet — deferred).
+
+### Optional: restore local review artifacts
+
+`experiments/review/` is gitignored. The completed 1M review packages can be
+restored from the ZIP if you want the charts and CSV files locally:
+
+**Bash:**
+```bash
+unzip btc-1m-reaction-review-artifacts-20260611.zip -d .
+```
+
+**PowerShell:**
+```powershell
+Expand-Archive -Path btc-1m-reaction-review-artifacts-20260611.zip -DestinationPath .
+```
+
+This is **optional**. The committed repo files (`fib_*.json`, `review_windows.yaml`,
+`btc-1m-reaction-review-cycle-20260611.md`) remain the source of truth.
+Artifacts under `experiments/review/` are local convenience files only.
+
+### Windows / Symantec SEP note
+
+Plain `uv run` triggers a full `.venv` rebuild scan on each invocation when
+Symantec Auto-Protect is active. Mitigate:
+
+- Prefer `uv run --no-sync` for all run commands after the initial `uv sync`.
+- Set `PYTHONDONTWRITEBYTECODE=1` (user-scope env var) to suppress `.pyc`
+  generation and reduce scan surface.
+
+**PowerShell — set env var for current session:**
+```powershell
+$env:PYTHONDONTWRITEBYTECODE = "1"
+```
+
+**PowerShell — set permanently (user scope):**
+```powershell
+[System.Environment]::SetEnvironmentVariable("PYTHONDONTWRITEBYTECODE", "1", "User")
+```
+
+### Resume point
+
+- **BTC/USD 1M phase is complete.** 9 source fibs, 1D + 4H reaction review
+  approved 2026-06-11. Do not resume 1M reaction review unless an explicit
+  bug or gap is discovered.
+- **Next phase: manual BTC/USD 1W source fibs** — draw in the labeling tool
+  (log scale, `tradingview_log_chamoun`), then run `weekly_projection_map`
+  for visual confirmation.
+- Do not auto-fib. Do not infer 1W anchors. Do not treat 1M projected levels
+  as 1W source fibs.
+
 ## Links
 
 - [BTC-first protocol](../../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md)
