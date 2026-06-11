@@ -16,10 +16,6 @@ from fibengine.research.source_fib_projection_chart import (
     render_projection_chart,
 )
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 
 def _df(closes: list[float], *, start: str = "2024-01-01") -> pd.DataFrame:
     idx = pd.date_range(start, periods=len(closes), freq="D", tz="UTC")
@@ -133,13 +129,8 @@ def _write_review_csv(review_dir: Path) -> None:
     _write_csv(review_dir, rows)
 
 
-# ---------------------------------------------------------------------------
-# Rendering tests
-# ---------------------------------------------------------------------------
-
-
-def test_render_creates_overview_and_zoom(tmp_path, monkeypatch):
-    """render_projection_chart returns a ChartSet with overview + zoom PNGs."""
+def test_render_creates_human_fib_events_and_zoom(tmp_path, monkeypatch):
+    """render_projection_chart returns a ChartSet with human_fib + events + zoom."""
     fib_path = _write_fib_json(tmp_path)
     df = _df(list(range(7000, 7025)), start="2024-01-01")
     monkeypatch.setattr(mod, "load_candles", lambda cfg, **kw: df)
@@ -156,10 +147,16 @@ def test_render_creates_overview_and_zoom(tmp_path, monkeypatch):
         review_dir=review_dir,
     )
 
-    assert cs.overview.exists(), f"overview not created at {cs.overview}"
-    assert cs.overview.name == "1d_projection.png"
-    assert cs.overview.parent.name == "overview"
-    assert cs.overview.stat().st_size > 1000
+    # Clean human-fib view (no markers) comes first.
+    assert cs.human_fib.exists(), f"human_fib not created at {cs.human_fib}"
+    assert cs.human_fib.name == "1d_human_fib.png"
+    assert cs.human_fib.parent.name == "human_fib"
+    assert cs.human_fib.stat().st_size > 1000
+    # Event overlay view is separate.
+    assert cs.events.exists(), f"events not created at {cs.events}"
+    assert cs.events.name == "1d_events.png"
+    assert cs.events.parent.name == "events"
+    assert cs.events.stat().st_size > 1000
     # Anchor zoom is always produced; clustered events add at least one more.
     assert cs.zoom, "no zoom charts produced"
     assert any(p.name == "1d_anchor.png" for p in cs.zoom)
@@ -188,13 +185,15 @@ def test_render_all_charts_produces_chartset_per_tf(tmp_path, monkeypatch):
 
     assert set(results.keys()) == {"1d", "1w"}
     for tf, cs in results.items():
-        assert cs.overview.exists(), f"overview missing for {tf}"
-        assert cs.overview.name == f"{tf}_projection.png"
+        assert cs.human_fib.exists(), f"human_fib missing for {tf}"
+        assert cs.human_fib.name == f"{tf}_human_fib.png"
+        assert cs.events.exists(), f"events missing for {tf}"
+        assert cs.events.name == f"{tf}_events.png"
         assert cs.zoom and all(p.exists() for p in cs.zoom)
 
 
-def test_render_no_events_still_produces_overview_and_anchor(tmp_path, monkeypatch):
-    """A TF with no matching rows still gets an overview and an anchor zoom."""
+def test_render_no_events_still_produces_human_fib_and_anchor(tmp_path, monkeypatch):
+    """A TF with no matching rows still gets human_fib + events + an anchor zoom."""
     fib_path = _write_fib_json(tmp_path)
     df = _df(list(range(7000, 7025)), start="2024-01-01")
     monkeypatch.setattr(mod, "load_candles", lambda cfg, **kw: df)
@@ -211,8 +210,9 @@ def test_render_no_events_still_produces_overview_and_anchor(tmp_path, monkeypat
         review_dir=review_dir,
     )
 
-    assert cs.overview.exists()
-    assert cs.overview.stat().st_size > 1000
+    assert cs.human_fib.exists()
+    assert cs.human_fib.stat().st_size > 1000
+    assert cs.events.exists()
     # No events → no cluster windows, but the anchor zoom is still rendered.
     assert [p.name for p in cs.zoom] == ["4h_anchor.png"]
 
@@ -235,7 +235,7 @@ def test_relation_filter_touch_only_runs(tmp_path, monkeypatch):
         review_dir=review_dir,
         relation_filter="touch",
     )
-    assert cs.overview.exists()
+    assert cs.events.exists()
     assert any(p.name == "1d_anchor.png" for p in cs.zoom)
 
 
@@ -259,11 +259,6 @@ def test_invalid_relation_filter_raises(tmp_path, monkeypatch):
         assert "relation_filter" in str(exc)
     else:
         raise AssertionError("expected ValueError for unknown relation_filter")
-
-
-# ---------------------------------------------------------------------------
-# Clustering unit tests (no rendering)
-# ---------------------------------------------------------------------------
 
 
 def test_cluster_windows_separates_distant_events():

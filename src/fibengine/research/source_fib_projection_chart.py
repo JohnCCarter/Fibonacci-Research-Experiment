@@ -3,19 +3,22 @@
 Renders existing projection-review data as PNG charts:
 
     experiments/review/source_fib_projection/<fib_id>/charts/
-        overview/
-            1w_projection.png
-            1d_projection.png
-            4h_projection.png
+        human_fib/
+            1d_human_fib.png        # clean: candles + fib leg + levels, no markers
+        events/
+            1d_events.png           # same view, event markers overlaid
         zoom/
-            1w_anchor.png
-            1w_cluster_001.png
-            4h_cluster_001.png
+            1d_anchor.png
+            1d_cluster_001.png
             ...
 
-Overview charts render the full candle cache (good for 1W/1D context). Zoom
-charts render windows around the source-fib anchor period and around each dense
-event cluster — required for 4H, where the full cache is unreadable in one frame.
+The human_fib and events views span anchor_a−pad → review_end so the human-drawn
+source move is visible, the diagonal anchor-A→anchor-B leg is drawn, and the
+y-axis is log to match the TradingView log fib (the fib *math* is unchanged —
+level prices come straight from the annotation). The reviewer recognizes the fib
+in human_fib first, then reviews markers in events. Zoom charts render windows
+around the anchor period and each dense event cluster — required for 4H, where
+the full window is unreadable in one frame.
 
 Reads review_sample.csv produced by source_fib_projection_review; does NOT
 re-run detection. All projected levels stay visible and event-capable; there is
@@ -34,6 +37,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -43,6 +47,7 @@ matplotlib.use("Agg")
 
 import matplotlib.patches as mpatches  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.ticker as mticker  # noqa: E402
 import mplfinance as mpf  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
@@ -50,7 +55,10 @@ import pandas as pd  # noqa: E402
 from fibengine.core.config import Settings, load_settings  # noqa: E402
 from fibengine.data.loader import load_candles  # noqa: E402
 from fibengine.labeling.human_fib import load_annotation  # noqa: E402
-from fibengine.research.source_fib_projection_review import PROJECTION_ROOT  # noqa: E402
+from fibengine.research.source_fib_projection_review import (  # noqa: E402
+    PROJECTION_ROOT,
+    load_review_windows,
+)
 
 _RELATION_COLORS: dict[str, str] = {
     "touch": "#2196F3",
@@ -96,13 +104,27 @@ _CLUSTER_CONFIG_DEFAULT = (14, 6, 120, 2)
 _ANCHOR_WINDOW_BARS: dict[str, int] = {"1w": 40, "1d": 60, "4h": 90}
 _ANCHOR_WINDOW_DEFAULT = 60
 
+# Per-TF context pad (bars rendered before anchor_a) so the source move sits
+# inside the human-fib view rather than starting at the left edge.
+_CONTEXT_PAD_BARS: dict[str, int] = {"1w": 8, "1d": 30, "4h": 120}
+_CONTEXT_PAD_DEFAULT = 20
+
+# Fib-leg / anchor styling.
+_LEG_COLOR = "#5E35B1"
+_ANCHOR_DOT_COLOR = "#212121"
+
 
 @dataclass
 class ChartSet:
-    """Charts rendered for one chart timeframe."""
+    """Charts rendered for one chart timeframe.
+
+    ``human_fib`` is the clean view (recognize the drawn fib); ``events`` is the
+    same view with event markers; ``zoom`` holds anchor/cluster detail windows.
+    """
 
     timeframe: str
-    overview: Path
+    human_fib: Path
+    events: Path
     zoom: list[Path] = field(default_factory=list)
 
 
@@ -113,6 +135,7 @@ def render_projection_chart(
     out_root: Path | None = None,
     review_dir: Path | None = None,
     relation_filter: str = "all",
+    full_history: bool = False,
 ) -> ChartSet:
     """Render overview + zoom charts for one chart timeframe.
 
@@ -147,6 +170,10 @@ def render_projection_chart(
 
     ann = load_annotation(source_fib_path)
 
+    windows = {} if full_history else load_review_windows(source_fib_path)
+    win = windows.get(ann.fib_id, {})
+    review_end_time: str | None = win.get("review_end_time")
+
     rdir = Path(review_dir) if review_dir else PROJECTION_ROOT / ann.fib_id
     review_csv = rdir / "review_sample.csv"
     if not review_csv.exists():
@@ -160,46 +187,114 @@ def render_projection_chart(
     if allowed is not None and not tf_events.empty:
         tf_events = tf_events[tf_events["relation"].isin(allowed)].copy()
 
+    # Clip events to review window so markers stay consistent with chart scope.
+    if review_end_time and not tf_events.empty:
+        end_ts = pd.to_datetime(review_end_time, utc=True)
+        ev_times = pd.to_datetime(tf_events["event_time"], utc=True, errors="coerce")
+        tf_events = tf_events[ev_times <= end_ts].copy()
+
     data_cfg = settings.data.model_copy(
         update={"symbol": ann.symbol, "timeframe": chart_tf, "exchange": ann.exchange}
     )
-    df = load_candles(data_cfg, fetch_if_missing=False)
-    start_time = pd.to_datetime(ann.anchor_b.time, utc=True)
-    df = df[df.index >= start_time]
+    df_full = load_candles(data_cfg, fetch_if_missing=False)
 
-    if df.empty:
-        raise ValueError(f"No candles for {ann.symbol} {chart_tf} at or after {start_time}")
+    anchor_a_time = pd.to_datetime(ann.anchor_a.time, utc=True)
+    anchor_b_time = pd.to_datetime(ann.anchor_b.time, utc=True)
+    end_ts = pd.to_datetime(review_end_time, utc=True) if review_end_time else None
+
+    # Context view spans anchor_a (minus a pad) → review_end so the human-drawn
+    # source move is visible. This only adds candle *context*; event markers come
+    # from the already-gated review_sample.csv, so detection/windows are untouched.
+    pad = _CONTEXT_PAD_BARS.get(chart_tf, _CONTEXT_PAD_DEFAULT)
+    pos_a_full = _nearest_pos(df_full, anchor_a_time)
+    lo = max(0, (pos_a_full if pos_a_full is not None else 0) - pad)
+    if end_ts is not None:
+        hi = int(df_full.index.searchsorted(end_ts, side="right"))
+    else:
+        hi = len(df_full)
+    df_ctx = df_full.iloc[lo:hi]
+    if df_ctx.empty:
+        raise ValueError(f"No candles for {ann.symbol} {chart_tf} around anchor_a {anchor_a_time}")
+
+    # Events view (zoom basis): anchor_b → review_end, as before.
+    df_evt = df_full[df_full.index >= anchor_b_time]
+    if end_ts is not None:
+        df_evt = df_evt[df_evt.index <= end_ts]
 
     charts_dir = Path(out_root) if out_root else rdir / "charts"
-    overview_dir = charts_dir / "overview"
+    human_fib_dir = charts_dir / "human_fib"
+    events_dir = charts_dir / "events"
     zoom_dir = charts_dir / "zoom"
-    overview_dir.mkdir(parents=True, exist_ok=True)
+    human_fib_dir.mkdir(parents=True, exist_ok=True)
+    events_dir.mkdir(parents=True, exist_ok=True)
     zoom_dir.mkdir(parents=True, exist_ok=True)
 
-    # Drop stale zoom PNGs for this TF so a re-run with fewer windows leaves no
-    # orphan cluster files to mislead the reviewer.
+    # Drop stale PNGs for this TF so a re-run with fewer windows leaves no orphans.
+    for old in human_fib_dir.glob(f"{chart_tf}_human_fib.png"):
+        old.unlink()
+    for old in events_dir.glob(f"{chart_tf}_events.png"):
+        old.unlink()
     for old in zoom_dir.glob(f"{chart_tf}_anchor.png"):
         old.unlink()
     for old in zoom_dir.glob(f"{chart_tf}_cluster_*.png"):
         old.unlink()
 
     suffix = "" if relation_filter == "all" else f"  |  filter={relation_filter}"
-    n = len(df)
+    # The context view spans anchor_a−pad → review_end; label it "view=" (not
+    # "window=") so it isn't mistaken for the review window the human confirms.
+    if review_end_time:
+        win_label = f"  |  view={df_ctx.index[0]:%Y-%m-%d}→{end_ts:%Y-%m-%d}"
+    else:
+        win_label = "  |  full-history"
 
-    # --- Overview (full cache) --------------------------------------------
-    overview_path = overview_dir / f"{chart_tf}_projection.png"
+    # Anchor positions inside the context df (drive the diagonal leg + dots).
+    fib_leg = (
+        _nearest_pos(df_ctx, anchor_a_time),
+        float(ann.anchor_a.price),
+        _nearest_pos(df_ctx, anchor_b_time),
+        float(ann.anchor_b.price),
+    )
+    n_ctx = len(df_ctx)
+
+    # --- Human-fib view (clean — recognize the drawn fib first) -----------
+    human_fib_path = human_fib_dir / f"{chart_tf}_human_fib.png"
     _draw_chart(
         ann,
-        df,
+        df_ctx,
         tf_events,
         chart_tf,
-        overview_path,
+        human_fib_path,
         title=(
-            f"{ann.fib_id}  |  {chart_tf}  |  OVERVIEW  |  "
-            f"{ann.timeframe} fib → {chart_tf} candles{suffix}"
+            f"{ann.fib_id}  |  {chart_tf}  |  HUMAN FIB  |  "
+            f"{ann.timeframe} fib (log) → {chart_tf} candles{win_label}"
         ),
-        fig_w=max(24, min(n // 12, 60)),
+        fig_w=max(24, min(n_ctx // 12, 60)),
+        show_events=False,
+        fib_leg=fib_leg,
     )
+
+    # --- Event overlay view (same picture, markers added) -----------------
+    events_path = events_dir / f"{chart_tf}_events.png"
+    _draw_chart(
+        ann,
+        df_ctx,
+        tf_events,
+        chart_tf,
+        events_path,
+        title=(
+            f"{ann.fib_id}  |  {chart_tf}  |  EVENTS  |  "
+            f"{ann.timeframe} fib (log) → {chart_tf} candles{win_label}{suffix}"
+        ),
+        fig_w=max(24, min(n_ctx // 12, 60)),
+        show_events=True,
+        fib_leg=fib_leg,
+    )
+
+    # Zoom charts operate on the events window (anchor_b → review_end).
+    df = df_evt
+    n = len(df)
+    if df.empty:
+        return ChartSet(timeframe=chart_tf, human_fib=human_fib_path, events=events_path, zoom=[])
 
     zoom_paths: list[Path] = []
 
@@ -250,7 +345,9 @@ def render_projection_chart(
         )
         zoom_paths.append(cpath)
 
-    return ChartSet(timeframe=chart_tf, overview=overview_path, zoom=zoom_paths)
+    return ChartSet(
+        timeframe=chart_tf, human_fib=human_fib_path, events=events_path, zoom=zoom_paths
+    )
 
 
 def _zoom_width(n_bars: int) -> int:
@@ -320,6 +417,22 @@ def _cluster_windows(
     return windows
 
 
+def _annotate_anchor(ax, x: int, price: float, text: str, *, below: bool) -> None:
+    """Label an anchor dot with a boxed time/price tag, offset clear of the dot."""
+    dy = -16 if below else 12
+    ax.annotate(
+        text,
+        xy=(x, price),
+        xytext=(6, dy),
+        textcoords="offset points",
+        fontsize=8,
+        fontweight="bold",
+        color=_ANCHOR_DOT_COLOR,
+        bbox=dict(boxstyle="round,pad=0.25", fc="white", ec=_ANCHOR_DOT_COLOR, alpha=0.85),
+        zorder=5,
+    )
+
+
 def _draw_chart(
     ann,
     df,
@@ -329,11 +442,21 @@ def _draw_chart(
     *,
     title: str | None = None,
     fig_w: int | None = None,
+    show_events: bool = True,
+    fib_leg: tuple[int | None, float, int | None, float] | None = None,
+    log_scale: bool = True,
 ):
-    """Render candles + fib level lines + event scatter markers to a PNG file.
+    """Render candles + fib level segments (+ optional event markers) to a PNG.
+
+    ``show_events=False`` produces the clean human-fib view (no markers) so the
+    reviewer can recognize the drawn fib first. ``fib_leg`` is
+    ``(pos_a, price_a, pos_b, price_b)`` in df bar positions; when both positions
+    are in range the diagonal anchor-A→anchor-B leg and labelled anchor dots are
+    drawn. ``log_scale`` renders the y-axis in log to match the TradingView log
+    fib (the fib *math* is unchanged — prices come straight from the annotation).
 
     Only events whose time falls within ``df``'s range are marked and counted,
-    so the same ``tf_events`` frame yields full counts for the overview and
+    so the same ``tf_events`` frame yields full counts for the context view and
     window-local counts for each zoom.
     """
     levels = ann.levels
@@ -347,31 +470,32 @@ def _draw_chart(
         lo, hi = df.index[0], df.index[-1]
         ev = ev[(ev["_t"] >= lo) & (ev["_t"] <= hi)]
 
-    # One scatter series per relation type.
+    # One scatter series per relation type (suppressed in the clean human-fib view).
     addplots = []
-    for relation, color in _RELATION_COLORS.items():
-        rel_rows = ev[ev["relation"] == relation] if not ev.empty else ev
-        if rel_rows.empty:
-            continue
-        marker_series = pd.Series(np.nan, index=df.index, dtype=float)
-        for _, erow in rel_rows.iterrows():
-            event_time = erow["_t"]
-            nearest_pos = _nearest_pos(df, event_time)
-            if nearest_pos is None:
+    if show_events:
+        for relation, color in _RELATION_COLORS.items():
+            rel_rows = ev[ev["relation"] == relation] if not ev.empty else ev
+            if rel_rows.empty:
                 continue
-            nearest = df.index[nearest_pos]
-            # Place marker 0.5% above the bar high so it doesn't overlap the wick.
-            marker_series.loc[nearest] = float(df.loc[nearest, "high"]) * 1.005
-        if marker_series.notna().any():
-            addplots.append(
-                mpf.make_addplot(
-                    marker_series,
-                    type="scatter",
-                    markersize=35,
-                    marker=_RELATION_MARKERS[relation],
-                    color=color,
+            marker_series = pd.Series(np.nan, index=df.index, dtype=float)
+            for _, erow in rel_rows.iterrows():
+                event_time = erow["_t"]
+                nearest_pos = _nearest_pos(df, event_time)
+                if nearest_pos is None:
+                    continue
+                nearest = df.index[nearest_pos]
+                # Place marker 0.5% above the bar high so it doesn't overlap the wick.
+                marker_series.loc[nearest] = float(df.loc[nearest, "high"]) * 1.005
+            if marker_series.notna().any():
+                addplots.append(
+                    mpf.make_addplot(
+                        marker_series,
+                        type="scatter",
+                        markersize=35,
+                        marker=_RELATION_MARKERS[relation],
+                        color=color,
+                    )
                 )
-            )
 
     n = len(df)
     if fig_w is None:
@@ -403,36 +527,90 @@ def _draw_chart(
     fig, axes = mpf.plot(df, **plot_kwargs)
     ax = axes[0]
 
-    # Fib level lines — added post-plot for reliable per-line styling.
-    for lv in boundary:
-        ax.axhline(lv.price, color=_BOUNDARY_COLOR, lw=_BOUNDARY_LW, ls="--", alpha=0.9, zorder=2)
-    for lv in retrace:
-        ax.axhline(lv.price, color=_RETRACE_COLOR, lw=_RETRACE_LW, ls="--", alpha=0.75, zorder=2)
+    # Log y-axis to match the TradingView log fib (math unchanged — see docstring).
+    if log_scale:
+        ax.set_yscale("log")
+        ax.yaxis.set_major_formatter(mticker.ScalarFormatter())
+        ax.yaxis.set_minor_formatter(mticker.ScalarFormatter())
+        ax.tick_params(axis="y", which="minor", labelsize=6)
 
-    # Ratio labels on right edge.
     x_right = len(df) - 1
+    # Level lines are bounded segments (TradingView "extend right" from the fib),
+    # not full-width axhlines. They start at anchor_a when it is in view, else at
+    # the left edge.
+    pos_a = fib_leg[0] if fib_leg else None
+    seg_x0 = pos_a if pos_a is not None else 0
+    for lv in boundary:
+        ax.plot(
+            [seg_x0, x_right],
+            [lv.price, lv.price],
+            color=_BOUNDARY_COLOR,
+            lw=_BOUNDARY_LW,
+            ls="--",
+            alpha=0.9,
+            zorder=2,
+        )
+    for lv in retrace:
+        ax.plot(
+            [seg_x0, x_right],
+            [lv.price, lv.price],
+            color=_RETRACE_COLOR,
+            lw=_RETRACE_LW,
+            ls="--",
+            alpha=0.75,
+            zorder=2,
+        )
+
+    # Ratio + price labels on right edge.
     for lv in sorted(levels, key=lambda x: x.ratio):
         is_boundary = lv.ratio in (0.0, 1.0)
         color = _BOUNDARY_COLOR if is_boundary else _RETRACE_COLOR
         ax.text(
             x_right,
             lv.price,
-            f"  {lv.ratio}",
+            f"  {lv.ratio}  ${lv.price:,.0f}",
             color=color,
             va="center",
             fontsize=7,
             fontweight="bold" if is_boundary else "normal",
         )
 
-    # Legend — per-relation counts reflect events within this window.
+    # Diagonal fib leg + labelled anchor dots (when both anchors are in view).
+    if fib_leg is not None:
+        pos_a, price_a, pos_b, price_b = fib_leg
+        if pos_a is not None and pos_b is not None:
+            ax.plot(
+                [pos_a, pos_b],
+                [price_a, price_b],
+                color=_LEG_COLOR,
+                lw=2.0,
+                ls="-",
+                alpha=0.9,
+                zorder=3,
+            )
+            ax.scatter(
+                [pos_a, pos_b],
+                [price_a, price_b],
+                color=_ANCHOR_DOT_COLOR,
+                s=40,
+                zorder=4,
+            )
+            a_date = pd.to_datetime(ann.anchor_a.time, utc=True).strftime("%Y-%m-%d")
+            b_date = pd.to_datetime(ann.anchor_b.time, utc=True).strftime("%Y-%m-%d")
+            _annotate_anchor(ax, pos_a, price_a, f"A  {a_date}  ${price_a:,.0f}", below=True)
+            _annotate_anchor(ax, pos_b, price_b, f"B  {b_date}  ${price_b:,.0f}", below=False)
+
+    # Legend. Relation counts only on the events view — the clean human-fib view
+    # must not leak event info (recognize the fib first, review markers after).
     legend_handles: list[mpatches.Patch] = [
         mpatches.Patch(color=_BOUNDARY_COLOR, label=f"boundary [{ann.timeframe}]"),
         mpatches.Patch(color=_RETRACE_COLOR, label=f"retracement [{ann.timeframe}]"),
     ]
-    for rel, color in _RELATION_COLORS.items():
-        count = int((ev["relation"] == rel).sum()) if not ev.empty else 0
-        if count:
-            legend_handles.append(mpatches.Patch(color=color, label=f"{rel} ({count})"))
+    if show_events:
+        for rel, color in _RELATION_COLORS.items():
+            count = int((ev["relation"] == rel).sum()) if not ev.empty else 0
+            if count:
+                legend_handles.append(mpatches.Patch(color=color, label=f"{rel} ({count})"))
     ax.legend(handles=legend_handles, loc="upper left", fontsize=7, framealpha=0.85)
 
     fig.savefig(out_path, dpi=110, bbox_inches="tight")
@@ -446,8 +624,19 @@ def render_all_charts(
     out_root: Path | None = None,
     review_dir: Path | None = None,
     relation_filter: str = "all",
+    full_history: bool = False,
 ) -> dict[str, ChartSet]:
-    """Render overview + zoom charts for all requested timeframes."""
+    """Render overview + zoom charts for all requested timeframes.
+
+    Clears the charts directory before writing so stale TF artifacts from a
+    previous run never appear in the output package.
+    """
+    ann = load_annotation(source_fib_path)
+    rdir = Path(review_dir) if review_dir else PROJECTION_ROOT / ann.fib_id
+    charts_dir = Path(out_root) if out_root else rdir / "charts"
+    if charts_dir.exists():
+        shutil.rmtree(charts_dir)
+
     results: dict[str, ChartSet] = {}
     for tf in chart_timeframes:
         results[tf] = render_projection_chart(
@@ -457,6 +646,7 @@ def render_all_charts(
             out_root=out_root,
             review_dir=review_dir,
             relation_filter=relation_filter,
+            full_history=full_history,
         )
     return results
 
@@ -479,6 +669,11 @@ def _parse_args() -> argparse.Namespace:
     )
     p.add_argument("--config", default=None, help="Path to settings YAML")
     p.add_argument("--out-dir", default=None, help="Override charts output directory")
+    p.add_argument(
+        "--full-history",
+        action="store_true",
+        help="Ignore review_windows.yaml and render the full candle cache (debug only)",
+    )
     return p.parse_args()
 
 
@@ -492,8 +687,10 @@ if __name__ == "__main__":
         settings=settings,
         out_root=Path(args.out_dir) if args.out_dir else None,
         relation_filter=args.relation_filter,
+        full_history=getattr(args, "full_history", False),
     )
     for tf, cs in results.items():
-        print(f"  {tf}: overview={cs.overview}  zoom={len(cs.zoom)} window(s)")
+        print(f"  {tf}: human_fib={cs.human_fib}")
+        print(f"      events={cs.events}  zoom={len(cs.zoom)} window(s)")
         for zp in cs.zoom:
             print(f"      {zp.name}")
