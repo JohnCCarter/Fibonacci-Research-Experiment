@@ -13,6 +13,17 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-11] review | BTC/USD 1D source-fib labeling complete (source-facit) — 67 fibs
+
+67 manual 1D source fibs drawn and verified: timeframe `1d`, log scale,
+`tradingview_log_chamoun`, levels `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236,
+endpoint mapping (ratio 0.0=anchor_b / 1.0=anchor_a), anchor direction, log-spacing,
+human/manual only. Coverage **2017-01-05 → 2024-12-20**; **34 down / 33 up**. This is
+**source-labeling completion, not reaction-review** — reaction-review / visual
+confirmation is a later, separate phase (not required for source completion). No
+auto-fib, no trading conclusions. Separation preserved across 1M source / 1M→1W
+projection / true 1W source / true 1D source fibs.
+
 ## [2026-06-11] review | BTC/USD 1W source-fib phase complete — 21 fibs, map + per-fib 4H zoom
 
 21/21 manual 1W source fibs drawn (log scale, `tradingview_log_chamoun`) and verified
