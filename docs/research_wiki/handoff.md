@@ -12,16 +12,20 @@ append-only trail lives in [log.md](log.md).
 
 | Step | Timeframe | Status |
 |------|-----------|--------|
-| 1 | **1M** | **Re-drawn** — 9× `fib_*.json` (log scale, golden zone); review in progress |
-| 2 | 1W | Blocked until 1M signed off — re-draw required |
-| 3 | 1D | Blocked — re-draw required |
-| 4 | 4H | Blocked — re-draw required |
+| 1 | **1M** | **Complete** — 9× source fibs, 1D + 4H reaction review approved (2026-06-11) |
+| 2 | 1W | Pending — re-draw required (log scale) |
+| 3 | 1D | Pending — re-draw required |
+| 4 | 4H | Pending — re-draw required |
 | 5 | 1H | Deferred — 1h cache not fetched yet |
 
 **ETH/USD:** blocked until BTC protocol approved.
 
 ## Recent Changes
 
+- **2026-06-11 1M reaction-review cycle complete** — all 9 BTC/USD 1M source fibs
+  reviewed through 1D + 4H. Review windows confirmed in `review_windows.yaml`.
+  62 1D events, 127 4H events. Summary:
+  [reviews/btc-1m-reaction-review-cycle-20260611.md](reviews/btc-1m-reaction-review-cycle-20260611.md).
 - **2026-06-10 Addendum 2 — retire golden-zone sampling** — issue #30: removed
   `primary_active_levels` / golden-zone review-sampling from configs, `core/config.py`,
   `human_review_pack`/`rows`/`constants`, and docs. All levels are event-capable and
@@ -57,10 +61,9 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. Sign off **1M** review pack `human_fib_review_20260609T135548Z`
-   (`level_event_review_tool --config config/settings.expansion.yaml`).
-2. After 1M approval: re-draw **1W** (log scale), then 1D, 4H.
-3. When ready for 1h: fetch 1h cache, then label (preflight currently FAIL on 1h).
+1. Re-draw **1W** source fibs (log scale, `tradingview_log_chamoun`) — then run weekly
+   source-segment map (`weekly_projection_map`) for visual confirmation before LTF review.
+2. When ready for 1h: fetch 1h cache, then label (preflight currently FAIL on 1h).
 
 ## Guardrails
 

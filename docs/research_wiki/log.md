@@ -13,6 +13,15 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-11] review | BTC/USD 1M reaction-review cycle complete — all 9 source fibs
+
+All 9 human-drawn 1M source fibs reviewed through 1D + 4H using
+`source_fib_projection_review` + `source_fib_projection_chart` (log scale,
+`tradingview_log_chamoun`). Review windows confirmed in `review_windows.yaml`
+(anchor_b → next macro boundary; 20260101 window extends to latest cache 2026-06-08).
+Total: 62 1D events, 127 4H events across the full set.
+Summary artifact: [reviews/btc-1m-reaction-review-cycle-20260611.md](reviews/btc-1m-reaction-review-cycle-20260611.md).
+
 ## [2026-06-10] maintenance | Remove GLM/Qwen/NVIDIA model-collaboration material
 
 Correction to the entry below: the multi-model operating model is **not** active.
