@@ -274,9 +274,7 @@ def _write_index(
     chart_tfs: tuple[str, ...],
 ) -> None:
     """Write the combined per-fib zoom index (one row per fib × timeframe)."""
-    rendered = sum(
-        1 for f in results for z in f.per_tf.values() if z.skipped is None
-    )
+    rendered = sum(1 for f in results for z in f.per_tf.values() if z.skipped is None)
     skips = [
         (f.short_id, tf, z.skipped)
         for f in results

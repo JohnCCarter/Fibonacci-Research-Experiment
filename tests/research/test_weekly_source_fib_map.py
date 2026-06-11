@@ -22,10 +22,6 @@ from fibengine.research.weekly_source_fib_map import (
     render_weekly_source_fib_map,
 )
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 _FREQ = {"1w": "W-THU", "1d": "D", "4h": "4h"}
 _PERIODS = {"1w": 30, "1d": 160, "4h": 660}
 _START = {"1w": "2020-11-05", "1d": "2020-12-01", "4h": "2020-12-15"}
@@ -53,12 +49,12 @@ def _fake_load_candles(cfg, **_kw) -> pd.DataFrame:
 
 def _write_fib(
     fib_dir: Path,
-    sid: str,
-    a_time: str,
-    a_price: float,
-    b_time: str,
-    b_price: float,
     *,
+    sid: str = "20210104T000000",
+    a_time: str = "2021-01-04T00:00:00Z",
+    a_price: float = 10000.0,
+    b_time: str = "2021-02-15T00:00:00Z",
+    b_price: float = 20000.0,
     timeframe: str = "1w",
     profile: str = "tradingview_log_chamoun",
     scale: str = "log",
@@ -67,6 +63,7 @@ def _write_fib(
     ratios: tuple[float, ...] = (0.0, 0.382, 0.5, 0.618, 0.786, 1.0),
     fib_id: str | None = None,
 ) -> Path:
+    """Write one valid 1W source fib; override any field for the guard tests."""
     fib_dir.mkdir(parents=True, exist_ok=True)
     direction = "up" if b_price > a_price else "down"
     lo, hi = min(a_price, b_price), max(a_price, b_price)
@@ -92,16 +89,16 @@ def _write_fib(
 
 def _seed_valid(fib_dir: Path) -> None:
     """Two valid 1W source fibs + an events sidecar that must be ignored."""
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0)  # up
-    _write_fib(fib_dir, "20210215T000000", "2021-02-15T00:00:00Z", 20000.0,
-               "2021-03-15T00:00:00Z", 14000.0)  # down
+    _write_fib(fib_dir)  # up @ 20210104
+    _write_fib(
+        fib_dir,
+        sid="20210215T000000",
+        a_time="2021-02-15T00:00:00Z",
+        a_price=20000.0,
+        b_time="2021-03-15T00:00:00Z",
+        b_price=14000.0,
+    )  # down
     (fib_dir / "fib_BTC-USD_1w_20210104T000000_events.json").write_text("{}", encoding="utf-8")
-
-
-# ---------------------------------------------------------------------------
-# Rendering
-# ---------------------------------------------------------------------------
 
 
 def test_render_creates_clean_levels_per_tf_and_shared_index(tmp_path, monkeypatch):
@@ -109,8 +106,7 @@ def test_render_creates_clean_levels_per_tf_and_shared_index(tmp_path, monkeypat
     _seed_valid(fib_dir)
     monkeypatch.setattr(mod, "load_candles", _fake_load_candles)
 
-    out_dir = tmp_path / "map"
-    result = render_weekly_source_fib_map(fib_dir=fib_dir, out_root=out_dir)
+    result = render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
 
     assert result.fib_count == 2
     assert set(result.per_tf) == {"1w", "1d", "4h"}
@@ -128,8 +124,7 @@ def test_render_creates_clean_levels_per_tf_and_shared_index(tmp_path, monkeypat
     assert "Weekly source fib map" in index_text
     assert "1W source fibs" in index_text
     assert "20210104" in index_text and "20210215" in index_text
-    # Self-contained level table + per-timeframe sections.
-    assert "## Levels" in index_text
+    assert "## Levels" in index_text  # self-contained level table
     for tf in ("1w", "1d", "4h"):
         assert f"### {tf}" in index_text
     # Strict separation: the index states it is not the 1M→1W projection artifact.
@@ -165,8 +160,14 @@ def test_label_levels_emits_labeled_png_per_tf(tmp_path, monkeypatch):
 def test_out_of_range_anchor_surfaced_not_hidden(tmp_path, monkeypatch):
     fib_dir = tmp_path / "fibs"
     _seed_valid(fib_dir)
-    _write_fib(fib_dir, "20991201T000000", "2099-12-01T00:00:00Z", 100000.0,
-               "2100-06-01T00:00:00Z", 50000.0)
+    _write_fib(
+        fib_dir,
+        sid="20991201T000000",
+        a_time="2099-12-01T00:00:00Z",
+        a_price=100000.0,
+        b_time="2100-06-01T00:00:00Z",
+        b_price=50000.0,
+    )
     monkeypatch.setattr(mod, "load_candles", _fake_load_candles)
 
     result = render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
@@ -178,11 +179,6 @@ def test_out_of_range_anchor_surfaced_not_hidden(tmp_path, monkeypatch):
     assert "20991201" in result.index.read_text(encoding="utf-8")
 
 
-# ---------------------------------------------------------------------------
-# Fail-closed guards
-# ---------------------------------------------------------------------------
-
-
 def test_empty_fib_dir_fails(tmp_path, monkeypatch):
     fib_dir = tmp_path / "empty"
     fib_dir.mkdir()
@@ -191,71 +187,30 @@ def test_empty_fib_dir_fails(tmp_path, monkeypatch):
         render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
 
 
-def test_non_1w_timeframe_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0, timeframe="1M")
-    with pytest.raises(ValueError, match="timeframe"):
-        render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
-
-
 def test_pointing_at_1m_dir_fails(tmp_path):
     """A directory of 1M fibs (timeframe '1M') is refused — structural separation."""
     fib_dir = tmp_path / "1M"
-    _write_fib(fib_dir, "20201001T000000", "2020-10-01T00:00:00Z", 10000.0,
-               "2021-04-01T00:00:00Z", 64000.0, timeframe="1M")
-    _write_fib(fib_dir, "20210401T000000", "2021-04-01T00:00:00Z", 64000.0,
-               "2021-07-01T00:00:00Z", 30000.0, timeframe="1M")
+    _write_fib(fib_dir, sid="20201001T000000", timeframe="1M")
     with pytest.raises(ValueError, match="not a 1W fib"):
         render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
 
 
-def test_wrong_profile_fails(tmp_path):
+@pytest.mark.parametrize(
+    ("over", "match"),
+    [
+        ({"timeframe": "1M"}, "timeframe"),
+        ({"profile": "some_linear_profile"}, "levels_profile"),
+        ({"scale": "linear"}, "scale_mode"),
+        ({"ratios": (0.0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0)}, "0.236"),
+        ({"created_by": "machine", "source": "auto_fib_detector"}, "non-manual origin"),
+        ({"fib_id": "fib_BTC-USD_1w_candidate_20210104"}, "candidate"),
+    ],
+)
+def test_fail_closed_guard_rejects(tmp_path, over, match):
     fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0, profile="some_linear_profile")
-    with pytest.raises(ValueError, match="levels_profile"):
+    _write_fib(fib_dir, **over)
+    with pytest.raises(ValueError, match=match):
         render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
-
-
-def test_wrong_scale_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0, scale="linear")
-    with pytest.raises(ValueError, match="scale_mode"):
-        render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
-
-
-def test_forbidden_ratio_0236_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0,
-               ratios=(0.0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0))
-    with pytest.raises(ValueError, match="0.236"):
-        render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
-
-
-def test_non_human_source_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0,
-               created_by="machine", source="auto_fib_detector")
-    with pytest.raises(ValueError, match="non-manual origin"):
-        render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
-
-
-def test_candidate_fib_id_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0,
-               fib_id="fib_BTC-USD_1w_candidate_20210104")
-    with pytest.raises(ValueError, match="candidate"):
-        render_weekly_source_fib_map(fib_dir=fib_dir, out_root=tmp_path / "map")
-
-
-# ---------------------------------------------------------------------------
-# Snap dispatch
-# ---------------------------------------------------------------------------
 
 
 def _spiky_df():
@@ -265,8 +220,13 @@ def _spiky_df():
     lows = [90.0] * 8
     highs[5] = 200.0
     return pd.DataFrame(
-        {"open": [100.0] * 8, "high": highs, "low": lows, "close": [100.0] * 8,
-         "volume": [1.0] * 8},
+        {
+            "open": [100.0] * 8,
+            "high": highs,
+            "low": lows,
+            "close": [100.0] * 8,
+            "volume": [1.0] * 8,
+        },
         index=idx,
     )
 

@@ -48,12 +48,12 @@ def _fake_load_candles(cfg, **_kw) -> pd.DataFrame:
 
 def _write_fib(
     fib_dir: Path,
-    sid: str,
-    a_time: str,
-    a_price: float,
-    b_time: str,
-    b_price: float,
     *,
+    sid: str = "20210104T000000",
+    a_time: str = "2021-01-04T00:00:00Z",
+    a_price: float = 10000.0,
+    b_time: str = "2021-02-15T00:00:00Z",
+    b_price: float = 20000.0,
     timeframe: str = "1w",
     profile: str = "tradingview_log_chamoun",
     scale: str = "log",
@@ -62,6 +62,7 @@ def _write_fib(
     ratios: tuple[float, ...] = (0.0, 0.382, 0.5, 0.618, 0.786, 1.0),
     fib_id: str | None = None,
 ) -> Path:
+    """Write one valid 1W source fib; override any field for the guard tests."""
     fib_dir.mkdir(parents=True, exist_ok=True)
     direction = "up" if b_price > a_price else "down"
     lo, hi = min(a_price, b_price), max(a_price, b_price)
@@ -87,10 +88,15 @@ def _write_fib(
 
 def _seed_valid(fib_dir: Path) -> None:
     # Anchors land on the 4H grid (start 2020-11-01) at bars 384 and 636.
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0)  # up
-    _write_fib(fib_dir, "20210215T000000", "2021-02-15T00:00:00Z", 20000.0,
-               "2021-03-15T00:00:00Z", 14000.0)  # down
+    _write_fib(fib_dir)  # up @ 20210104
+    _write_fib(
+        fib_dir,
+        sid="20210215T000000",
+        a_time="2021-02-15T00:00:00Z",
+        a_price=20000.0,
+        b_time="2021-03-15T00:00:00Z",
+        b_price=14000.0,
+    )  # down
     (fib_dir / "fib_BTC-USD_1w_20210104T000000_events.json").write_text("{}", encoding="utf-8")
 
 
@@ -99,16 +105,14 @@ def test_render_creates_per_fib_clean_levels_and_index(tmp_path, monkeypatch):
     _seed_valid(fib_dir)
     monkeypatch.setattr(mod, "load_candles", _fake_load_candles)
 
-    out_dir = tmp_path / "zoom"
-    result = render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=out_dir)
+    result = render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
 
     assert result.fib_count == 2
     for f in result.fibs:
         z = f.per_tf["4h"]
         assert z.skipped is None
         assert z.clean.name == "4h_clean.png" and z.levels.name == "4h_levels.png"
-        # Per-fib subdirectory keyed by fib_id.
-        assert z.clean.parent.name == f.fib_id
+        assert z.clean.parent.name == f.fib_id  # per-fib subdirectory keyed by fib_id
         assert z.clean.exists() and z.clean.stat().st_size > 1000
         assert z.levels.exists() and z.levels.stat().st_size > 1000
 
@@ -116,8 +120,7 @@ def test_render_creates_per_fib_clean_levels_and_index(tmp_path, monkeypatch):
     assert result.index.name == "weekly_source_fib_zoom_index.md"
     assert "Weekly source fib zoom" in index_text
     assert "20210104" in index_text and "20210215" in index_text
-    # Strict separation messaging.
-    assert "No events" in index_text or "no events" in index_text
+    assert "no events" in index_text.lower()  # strict separation messaging
 
 
 def test_label_levels_emits_labeled_png(tmp_path, monkeypatch):
@@ -137,13 +140,11 @@ def test_window_is_bounded_not_full_era(tmp_path, monkeypatch):
     fib_dir = tmp_path / "fibs"
     _seed_valid(fib_dir)
     monkeypatch.setattr(mod, "load_candles", _fake_load_candles)
-    # Pin snap to exact-nearest so the window math is deterministic.
-    monkeypatch.setattr(mod, "_SNAP_WINDOW", {"4h": 0})
+    monkeypatch.setattr(mod, "_SNAP_WINDOW", {"4h": 0})  # exact-nearest → deterministic window
 
     full_len = len(_df("4h"))
     res = render_weekly_source_fib_zoom(
-        fib_dir=fib_dir, out_root=tmp_path / "z1", fib_id="20210104",
-        context_bars=10, post_bars=10,
+        fib_dir=fib_dir, out_root=tmp_path / "z1", fib_id="20210104", context_bars=10, post_bars=10
     )
     bars = res.fibs[0].per_tf["4h"].bars
     # Anchors at bars 384/636 → span 252, +10 pre +10 post +1 = 273, well under 900.
@@ -152,8 +153,11 @@ def test_window_is_bounded_not_full_era(tmp_path, monkeypatch):
 
     # Wider context → strictly more bars (window is context-driven, not full era).
     res2 = render_weekly_source_fib_zoom(
-        fib_dir=fib_dir, out_root=tmp_path / "z2", fib_id="20210104",
-        context_bars=100, post_bars=100,
+        fib_dir=fib_dir,
+        out_root=tmp_path / "z2",
+        fib_id="20210104",
+        context_bars=100,
+        post_bars=100,
     )
     assert res2.fibs[0].per_tf["4h"].bars > bars
 
@@ -161,8 +165,14 @@ def test_window_is_bounded_not_full_era(tmp_path, monkeypatch):
 def test_out_of_range_anchor_skipped_and_reported(tmp_path, monkeypatch):
     fib_dir = tmp_path / "fibs"
     _seed_valid(fib_dir)
-    _write_fib(fib_dir, "20991201T000000", "2099-12-01T00:00:00Z", 100000.0,
-               "2100-06-01T00:00:00Z", 50000.0)
+    _write_fib(
+        fib_dir,
+        sid="20991201T000000",
+        a_time="2099-12-01T00:00:00Z",
+        a_price=100000.0,
+        b_time="2100-06-01T00:00:00Z",
+        b_price=50000.0,
+    )
     monkeypatch.setattr(mod, "load_candles", _fake_load_candles)
 
     result = render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
@@ -212,62 +222,29 @@ def test_empty_fib_dir_fails(tmp_path, monkeypatch):
         render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
 
 
-def test_non_1w_timeframe_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0, timeframe="1M")
-    with pytest.raises(ValueError, match="timeframe"):
-        render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
-
-
 def test_pointing_at_1m_dir_fails(tmp_path):
+    """A directory of 1M fibs (timeframe '1M') is refused — structural separation."""
     fib_dir = tmp_path / "1M"
-    _write_fib(fib_dir, "20201001T000000", "2020-10-01T00:00:00Z", 10000.0,
-               "2021-04-01T00:00:00Z", 64000.0, timeframe="1M")
+    _write_fib(fib_dir, sid="20201001T000000", timeframe="1M")
     with pytest.raises(ValueError, match="not a 1W fib"):
         render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
 
 
-def test_wrong_profile_fails(tmp_path):
+@pytest.mark.parametrize(
+    ("over", "match"),
+    [
+        ({"timeframe": "1M"}, "timeframe"),
+        ({"profile": "some_linear_profile"}, "levels_profile"),
+        ({"scale": "linear"}, "scale_mode"),
+        ({"ratios": (0.0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0)}, "0.236"),
+        ({"created_by": "machine", "source": "auto_fib_detector"}, "non-manual origin"),
+        ({"fib_id": "fib_BTC-USD_1w_candidate_20210104"}, "candidate"),
+    ],
+)
+def test_fail_closed_guard_rejects(tmp_path, over, match):
     fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0, profile="some_linear_profile")
-    with pytest.raises(ValueError, match="levels_profile"):
-        render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
-
-
-def test_wrong_scale_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0, scale="linear")
-    with pytest.raises(ValueError, match="scale_mode"):
-        render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
-
-
-def test_forbidden_ratio_0236_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0,
-               ratios=(0.0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0))
-    with pytest.raises(ValueError, match="0.236"):
-        render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
-
-
-def test_non_human_source_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0,
-               created_by="machine", source="auto_fib_detector")
-    with pytest.raises(ValueError, match="non-manual origin"):
-        render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
-
-
-def test_candidate_fib_id_fails(tmp_path):
-    fib_dir = tmp_path / "fibs"
-    _write_fib(fib_dir, "20210104T000000", "2021-01-04T00:00:00Z", 10000.0,
-               "2021-02-15T00:00:00Z", 20000.0,
-               fib_id="fib_BTC-USD_1w_candidate_20210104")
-    with pytest.raises(ValueError, match="candidate"):
+    _write_fib(fib_dir, **over)
+    with pytest.raises(ValueError, match=match):
         render_weekly_source_fib_zoom(fib_dir=fib_dir, out_root=tmp_path / "zoom")
 
 
@@ -281,8 +258,13 @@ def test_bounded_snap_lands_on_price_matching_bar():
     lows = [90.0] * 8
     highs[5] = 200.0
     df = pd.DataFrame(
-        {"open": [100.0] * 8, "high": highs, "low": lows, "close": [100.0] * 8,
-         "volume": [1.0] * 8},
+        {
+            "open": [100.0] * 8,
+            "high": highs,
+            "low": lows,
+            "close": [100.0] * 8,
+            "volume": [1.0] * 8,
+        },
         index=idx,
     )
     # window>0 snaps to the price-matching bar; window=0 stays time-nearest.
