@@ -13,7 +13,7 @@ append-only trail lives in [log.md](log.md).
 | Step | Timeframe | Status |
 |------|-----------|--------|
 | 1 | **1M** | **Complete** — 9× source fibs, 1D + 4H reaction review approved (2026-06-11) |
-| 2 | 1W | Pending — re-draw required (log scale) |
+| 2 | **1W** | **Complete** — 21× source fibs verified; combined map + per-fib 4H zoom (2026-06-11) |
 | 3 | 1D | Pending — re-draw required |
 | 4 | 4H | Pending — re-draw required |
 | 5 | 1H | Deferred — 1h cache not fetched yet |
@@ -22,6 +22,19 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-11 1W source-fib phase complete** — **21/21** BTC/USD manual 1W source
+  fibs drawn (log scale, `tradingview_log_chamoun`) and verified (profile, scale,
+  levels `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, anchor direction,
+  human/manual only). Two new research modules:
+  - `research/weekly_source_fib_map` — combined 1W/1D/4H map (all fibs per TF).
+    **1W/1D usable; combined 4H too compressed** for candle-level confirmation.
+  - `research/weekly_source_fib_zoom` — per-fib windowed 4H confirmation
+    (one chart per fib, A→B + bounded context). **Per-fib 4H usable.**
+  Strict separation kept: **1M source**, **1M→1W projection** (`weekly_projection_map`),
+  and **true 1W source** fibs are distinct flows; fail-closed guards reject any
+  non-1W / non-log / wrong-profile / 0.236 / non-human fib. No auto-fib, no
+  trading conclusions. Commits `4eb2f4b` (map + facit), `939de97` (zoom),
+  `e379fae` (CI: format + bounds fix).
 - **2026-06-11 1M reaction-review cycle complete** — all 9 BTC/USD 1M source fibs
   reviewed through 1D + 4H. Review windows confirmed in `review_windows.yaml`.
   62 1D events, 127 4H events. Summary:
@@ -47,8 +60,11 @@ append-only trail lives in [log.md](log.md).
 
 ## Verification Snapshot
 
-- `data/labels/human_fib/bitfinex/BTC-USD/1M/` — **9** base `fib_*.json` (log scale);
-  1w/1d/4h empty pending re-draw.
+- `data/labels/human_fib/bitfinex/BTC-USD/1M/` — **9** base `fib_*.json` (log scale).
+- `data/labels/human_fib/bitfinex/BTC-USD/1w/` — **21** base `fib_*.json` (log scale);
+  1d/4h empty pending re-draw.
+- `experiments/review/weekly_source_fib_map/` and `…/weekly_source_fib_zoom/` —
+  generated charts (gitignored; regenerate via the two new CLIs).
 - `data/raw/bitfinex/BTC-USD/1M/limit_500.csv` — 115 bars (2016-12 .. 2026-06),
   fetched with `--config config/settings.expansion.yaml` to cover old anchors.
 - `experiments/review/fib_level_events/` — active 1M pack `human_fib_review_20260609T135548Z`.
@@ -61,8 +77,8 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. Re-draw **1W** source fibs (log scale, `tradingview_log_chamoun`) — then run weekly
-   source-segment map (`weekly_projection_map`) for visual confirmation before LTF review.
+1. Re-draw **1D** source fibs (log scale, `tradingview_log_chamoun`). 1W is complete —
+   confirm via `weekly_source_fib_map` (combined) + `weekly_source_fib_zoom` (per-fib 4H).
 2. When ready for 1h: fetch 1h cache, then label (preflight currently FAIL on 1h).
 
 ## Guardrails
@@ -188,13 +204,15 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
 ### Resume point
 
 - **BTC/USD 1M phase is complete.** 9 source fibs, 1D + 4H reaction review
-  approved 2026-06-11. Do not resume 1M reaction review unless an explicit
-  bug or gap is discovered.
-- **Next phase: manual BTC/USD 1W source fibs** — draw in the labeling tool
-  (log scale, `tradingview_log_chamoun`), then run `weekly_projection_map`
-  for visual confirmation.
-- Do not auto-fib. Do not infer 1W anchors. Do not treat 1M projected levels
-  as 1W source fibs.
+  approved 2026-06-11. Do not resume unless an explicit bug or gap is found.
+- **BTC/USD 1W source-fib phase is complete.** 21 source fibs verified;
+  visual confirmation via `weekly_source_fib_map` (combined 1W/1D/4H) and
+  `weekly_source_fib_zoom` (per-fib 4H). Combined 4H is too compressed — use
+  the per-fib zoom for 4H. Do not resume unless a bug or gap is found.
+- **Next phase: manual BTC/USD 1D source fibs** — draw in the labeling tool
+  (log scale, `tradingview_log_chamoun`).
+- Do not auto-fib. Do not infer anchors. Do not treat 1M projected levels as
+  1W source fibs, nor 1W source fibs as the 1M→1W projection map.
 
 ## Links
 

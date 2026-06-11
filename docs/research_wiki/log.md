@@ -13,6 +13,17 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-11] review | BTC/USD 1W source-fib phase complete — 21 fibs, map + per-fib 4H zoom
+
+21/21 manual 1W source fibs drawn (log scale, `tradingview_log_chamoun`) and verified
+(profile, scale, levels `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, anchor direction,
+human/manual only). Added `research/weekly_source_fib_map` (combined 1W/1D/4H — 1W/1D
+usable, combined 4H too compressed) and `research/weekly_source_fib_zoom` (per-fib
+windowed 4H — usable). Strict separation kept between 1M source, 1M→1W projection
+(`weekly_projection_map`), and true 1W source fibs; fail-closed guards reject non-1W /
+non-log / wrong-profile / 0.236 / non-human fibs. No auto-fib, no trading conclusions.
+Commits `4eb2f4b`, `939de97`, `e379fae`.
+
 ## [2026-06-11] review | BTC/USD 1M reaction-review cycle complete — all 9 source fibs
 
 All 9 human-drawn 1M source fibs reviewed through 1D + 4H using
