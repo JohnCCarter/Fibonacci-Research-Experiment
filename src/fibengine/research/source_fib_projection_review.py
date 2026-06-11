@@ -26,6 +26,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from fibengine.core.config import REPO_ROOT, Settings, load_settings
 from fibengine.data.loader import load_candles
 from fibengine.labeling.human_fib import load_annotation
@@ -33,6 +35,22 @@ from fibengine.research.level_events import LevelEventConfig
 from fibengine.research.mtf_fib_level_projection import detect_ltf_level_interactions
 
 PROJECTION_ROOT = REPO_ROOT / "experiments" / "review" / "source_fib_projection"
+_REVIEW_WINDOWS_FILENAME = "review_windows.yaml"
+
+
+def load_review_windows(fib_path: Path | str) -> dict[str, dict[str, str]]:
+    """Load optional review windows from the sidecar YAML next to the fib JSON files.
+
+    Returns a dict keyed by fib_id. Missing file or unknown fib_id → empty dict,
+    which preserves default behavior (anchor_b.time → end of cache).
+    """
+    yaml_path = Path(fib_path).parent / _REVIEW_WINDOWS_FILENAME
+    if not yaml_path.exists():
+        return {}
+    with yaml_path.open(encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    return {k: v for k, v in data.items() if isinstance(v, dict)}
+
 
 PROJECTION_COLUMNS = [
     "event_id",
@@ -166,6 +184,7 @@ def run_source_fib_projection_review(
     level_cfg: LevelEventConfig | None = None,
     out_root: Path | None = None,
     seed: int | None = None,
+    full_history: bool = False,
 ) -> dict[str, Any]:
     """Project one HTF human fib onto LTF candles and write a review artifact.
 
@@ -181,9 +200,12 @@ def run_source_fib_projection_review(
     level_cfg:
         Controls debounce and touch-tolerance. Defaults to ``LevelEventConfig()``.
     out_root:
-        Override output directory. Defaults to ``PROJECTION_ROOT / run_id``.
+        Override output directory. Defaults to ``PROJECTION_ROOT / fib_id``.
     seed:
         Unused — kept for API parity; projection is deterministic.
+    full_history:
+        If True, ignore review_windows.yaml and scan the full candle cache. For
+        debugging only — not for normal review use.
     """
     if settings is None:
         settings = load_settings()
@@ -192,6 +214,10 @@ def run_source_fib_projection_review(
     run_id = _run_id()
     out_dir = Path(out_root) if out_root else PROJECTION_ROOT / ann.fib_id
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    windows = {} if full_history else load_review_windows(source_fib_path)
+    win = windows.get(ann.fib_id, {})
+    review_end_time: str | None = win.get("review_end_time")
 
     ann_meta: dict[str, Any] = {
         "fib_id": ann.fib_id,
@@ -231,6 +257,7 @@ def run_source_fib_projection_review(
             direction=ann.direction,
             projected_from_timeframe=ann.timeframe,
             level_cfg=level_cfg,
+            end_time=review_end_time,
         )
 
         if skip_reason:
@@ -263,6 +290,8 @@ def run_source_fib_projection_review(
         "fib_id": ann.fib_id,
         "source_tf": ann.timeframe,
         "chart_timeframes": chart_timeframes,
+        "review_end_time": review_end_time,
+        "full_history": full_history,
         "total_interactions": len(all_rows),
         "interactions_by_tf": interactions_by_tf,
         "skipped": skipped,
@@ -283,6 +312,11 @@ def _parse_args() -> argparse.Namespace:
     )
     p.add_argument("--config", default=None, help="Path to settings YAML")
     p.add_argument("--out-dir", default=None, help="Override output directory")
+    p.add_argument(
+        "--full-history",
+        action="store_true",
+        help="Ignore review_windows.yaml and scan the full candle cache (debug only)",
+    )
     return p.parse_args()
 
 
@@ -295,6 +329,7 @@ if __name__ == "__main__":
         chart_timeframes=tfs,
         settings=settings,
         out_root=Path(args.out_dir) if args.out_dir else None,
+        full_history=getattr(args, "full_history", False),
     )
     print(f"run_id: {summary['run_id']}")
     print(f"output: {summary['output_dir']}")

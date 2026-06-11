@@ -12,6 +12,7 @@ from fibengine.research.source_fib_projection_review import (
     PROJECTION_COLUMNS,
     _event_label,
     _level_role,
+    load_review_windows,
     run_source_fib_projection_review,
 )
 
@@ -213,3 +214,71 @@ def test_review_index_smoke(tmp_path, monkeypatch):
     with (out_dir / "review_sample.csv").open(encoding="utf-8") as f:
         header = next(_csv.reader(f))
     assert header == PROJECTION_COLUMNS
+
+
+# ---------------------------------------------------------------------------
+# Review-window tests — end_time gates event detection
+# ---------------------------------------------------------------------------
+
+
+def test_review_window_excludes_events_after_end_time(tmp_path, monkeypatch):
+    """Events after review_end_time must not appear in review_sample."""
+    fib_path = _write_fib_json(tmp_path)
+
+    # Two price touches: one early (2020-04-10), one late (2020-07-01).
+    # The 0.5 level is at 7071; the touch occurs when the close crosses it.
+    closes = (
+        [8000.0] * 9  # 2020-04-01 to 2020-04-09
+        + [7072.0]  # 2020-04-10 — early touch (within window)
+        + [8000.0] * 81  # gap
+        + [7072.0]  # 2020-07-01 — late touch (outside window)
+        + [8000.0] * 5
+    )
+    df = _df(closes, start="2020-04-01")
+
+    import fibengine.research.source_fib_projection_review as mod
+
+    monkeypatch.setattr(mod, "load_candles", lambda cfg, **kw: df)
+
+    # Write a review_windows.yaml that ends before the late touch.
+    review_windows_yaml = tmp_path / "review_windows.yaml"
+    review_windows_yaml.write_text(
+        "fib_BTC-USD_1M_test:\n"
+        "  review_start_time: '2020-04-01T00:00:00Z'\n"
+        "  review_end_time:   '2020-06-01T00:00:00Z'\n",
+        encoding="utf-8",
+    )
+
+    summary = run_source_fib_projection_review(
+        source_fib_path=fib_path,
+        chart_timeframes=["1d"],
+        out_root=tmp_path / "out_window",
+    )
+
+    csv_path = Path(summary["output_dir"]) / "review_sample.csv"
+    import csv as _csv
+
+    with csv_path.open(encoding="utf-8") as f:
+        rows = list(_csv.DictReader(f))
+
+    # All event_time values must be <= review_end_time
+    end_ts = pd.Timestamp("2020-06-01T00:00:00Z", tz="UTC")
+    for row in rows:
+        t = pd.to_datetime(row["event_time"], utc=True)
+        assert t <= end_ts, f"Event at {t} is outside review window (end={end_ts})"
+
+
+def test_load_review_windows_missing_file(tmp_path):
+    """load_review_windows returns empty dict when no sidecar YAML exists."""
+    fake_fib = tmp_path / "fib_test.json"
+    assert load_review_windows(fake_fib) == {}
+
+
+def test_load_review_windows_parses_correctly(tmp_path):
+    """load_review_windows returns the expected dict from a valid YAML."""
+    (tmp_path / "review_windows.yaml").write_text(
+        "fib_A:\n  review_end_time: '2022-01-01T00:00:00Z'\n",
+        encoding="utf-8",
+    )
+    result = load_review_windows(tmp_path / "fib_A.json")
+    assert result == {"fib_A": {"review_end_time": "2022-01-01T00:00:00Z"}}
