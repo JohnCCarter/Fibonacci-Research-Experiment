@@ -22,6 +22,16 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-12 4H visual confirmation Tier 1 built** — `research/fourh_source_fib_map.py`
+  renders **annual combined 4H source-fib maps** (fibs grouped by `anchor_a` year; dense
+  years >60 fibs split into calendar half-years). Reuses `monthly_fib_map` primitives
+  unchanged; no snap (source TF == chart TF == 4h); each group windowed by its fib span.
+  Real run (facit + expansion cache): **366/366 fibs drawn, 0 skipped, 11 groups** —
+  2017=13h1/**103h2**, 2018=33, 2019=26, 2020=31, 2021=55, 2022=24, 2023=17, 2024=22,
+  2025=34, 2026=8. Mid-density maps scan cleanly. **2017_h2 (~103 fibs, Sep–Dec parabola)
+  exceeds map-reviewable density → flags 2017 for Tier 2 zoom.** 14 tests pass; ruff +
+  repo-bounds + full suite green. Output gitignored under
+  `experiments/review/fourh_source_fib_map/`. No reaction-review, no events, no auto-fib.
 - **2026-06-12 4H source-fib phase complete** — **366** manual BTC/USD 4H source fibs
   drawn and verified (timeframe `4h`, log scale, `tradingview_log_chamoun`, levels
   `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, endpoint mapping ratio 0.0=anchor_b /
@@ -99,14 +109,16 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. **4H visual confirmation — Tier 1 (next safe step)** — implement
-   `fourh_source_fib_map.py` (annual combined 4H source-fib maps, fibs grouped by
-   `anchor_a` year, ~10 charts). Design locked 2026-06-12. Full design:
-   [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
-   Do **not** start with 1H. Do **not** start with reaction-review.
-2. **4H visual confirmation — Tier 2 (on-demand, after Tier 1)** — `fourh_source_fib_zoom.py`
-   (per-fib windowed 4H charts, ~366 × 2 PNGs). Build only if Tier 1 maps show per-fib
-   zoom is needed.
+1. **Human review of the Tier-1 4H maps** — open
+   `experiments/review/fourh_source_fib_map/` (regenerate via the CLI below) and scan the
+   per-year clean/levels PNGs to confirm 4H anchor pins sit on the correct structural
+   swings. Tier 1 is **built** (2026-06-12): 366/366 drawn, 11 groups; most years scan
+   cleanly. Regenerate:
+   `uv run --no-sync python -m fibengine.research.fourh_source_fib_map --fib-dir data/labels/human_fib/bitfinex/BTC-USD/4h --config config/settings.expansion.yaml`
+2. **4H visual confirmation — Tier 2 (on-demand)** — `fourh_source_fib_zoom.py` (per-fib
+   windowed 4H charts). Tier 1 already flagged **2017_h2 (~103 fibs, Sep–Dec parabola)**
+   as too dense to source-review as a map — start Tier 2 there if/when per-fib zoom is
+   wanted. Design: [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
 3. **1H source labeling** — deferred. 4H is the current lowest active timeframe. Fetch
    1H cache first (`data.fetch --timeframes 1h`). Separate decision before starting.
 
@@ -245,11 +257,12 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
 - **BTC/USD 4H source-fib phase is complete.** 366 source fibs (2017-01-05 → 2026-06-05),
   up=169 / down=197, 366/366 schema PASS (2026-06-12). Do not resume unless a bug or gap
   is found. 4H is the current lowest active timeframe (1H paused).
-- **Next phase: 4H visual confirmation — Tier 1.** Implement `fourh_source_fib_map.py`
-  (annual combined 4H maps). Design locked 2026-06-12. See
+- **4H visual confirmation Tier 1 is built** (`research/fourh_source_fib_map.py`,
+  2026-06-12). Annual combined 4H maps, 366/366 drawn across 11 groups. Next is **human
+  review of the generated maps**, then Tier 2 (`fourh_source_fib_zoom.py`) on-demand —
+  2017_h2 (~103 fibs) is already flagged as needing per-fib zoom. Do not start with 1H.
+  Do not start with reaction-review. Design:
   [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
-  Do not start with 1H. Do not start with reaction-review. Tier 2
-  (`fourh_source_fib_zoom.py`) only after Tier 1 shows per-fib zoom is needed.
 - Do not auto-fib. Do not infer anchors. Keep the four flows distinct: 1M source /
   1M→1W projection / true 1W source / true 1D source fibs.
 

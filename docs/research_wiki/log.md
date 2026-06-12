@@ -13,6 +13,28 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-12] review | BTC/USD 4H visual confirmation Tier 1 — annual source-fib maps built
+
+Implemented `research/fourh_source_fib_map.py` (Tier 1 of the locked design): annual
+combined 4H source-fib maps, fibs grouped by `anchor_a` year, dense years (>60 fibs)
+split into calendar half-years. Reuses `_draw_map` / `_load_fibs` / `_nearest_pos` /
+`_short_id` from `monthly_fib_map` unchanged; no snap (source TF == chart TF == 4h);
+each group windowed by its fib span `[min(anchor_a) − pad, max(anchor_b) + pad]` (not
+calendar boundaries, so a December fib whose anchor_b crosses into the next year still
+renders). Fail-closed guard adapted to `SOURCE_TF="4h"` (timeframe/profile/scale/0.236/
+human-manual/no candidate-auto-inferred). 14 tests in `tests/research/test_fourh_source_fib_map.py`;
+ruff + repo-bounds + full suite pass (one pre-existing flaky `test_synthetic_ohlcv_high_ge_low`,
+untouched).
+
+**Run finding (real facit + cache, expansion config):** all **366/366 fibs drawn, 0
+skipped**, across **11 groups** — 2017 split 13 (h1) / **103 (h2)**, 2018=33, 2019=26,
+2020=31, 2021=55, 2022=24, 2023=17, 2024=22, 2025=34, 2026=8. Mid-density maps (e.g.
+2022, 2019) are cleanly scannable. **2017_h2 (~103 fibs, the Sep–Dec parabolic run)
+exceeds map-reviewable density → flags 2017 for Tier 2 `fourh_source_fib_zoom`.** That
+is the Tier-1 deliverable's signal (per design: build Tier 2 only where Tier 1 shows
+per-fib zoom is needed). No reaction-review, no events, no trading conclusions. Output
+under `experiments/review/fourh_source_fib_map/` (gitignored).
+
 ## [2026-06-12] decision | BTC/USD 4H visual confirmation / source-quality review — design locked
 
 4H is the lowest active timeframe (1H paused). 4H source-facit locked (366 fibs,
