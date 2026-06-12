@@ -99,9 +99,16 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. **1H source labeling** — fetch 1H cache first: `data.fetch --timeframes 1h --config config/settings.expansion.yaml`, then label. Separate decision required before starting.
-2. **4H visual/reaction-review** — review 4H source fibs against price, analogous to 1D reaction-review. Separate decision; not required for source-facit lock.
-3. Optional: generate per-fib 4H charts via `source_fib_projection_chart` for the 67 1D fibs.
+1. **4H visual confirmation — Tier 1 (next safe step)** — implement
+   `fourh_source_fib_map.py` (annual combined 4H source-fib maps, fibs grouped by
+   `anchor_a` year, ~10 charts). Design locked 2026-06-12. Full design:
+   [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
+   Do **not** start with 1H. Do **not** start with reaction-review.
+2. **4H visual confirmation — Tier 2 (on-demand, after Tier 1)** — `fourh_source_fib_zoom.py`
+   (per-fib windowed 4H charts, ~366 × 2 PNGs). Build only if Tier 1 maps show per-fib
+   zoom is needed.
+3. **1H source labeling** — deferred. 4H is the current lowest active timeframe. Fetch
+   1H cache first (`data.fetch --timeframes 1h`). Separate decision before starting.
 
 ## Guardrails
 
@@ -237,8 +244,12 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
   Do not resume unless a bug or gap is found.
 - **BTC/USD 4H source-fib phase is complete.** 366 source fibs (2017-01-05 → 2026-06-05),
   up=169 / down=197, 366/366 schema PASS (2026-06-12). Do not resume unless a bug or gap
-  is found. Reaction-review / visual confirmation is a separate, later decision.
-- **Next phase: 1H source labeling** (fetch 1H cache first) or **4H reaction-review** — separate decision required.
+  is found. 4H is the current lowest active timeframe (1H paused).
+- **Next phase: 4H visual confirmation — Tier 1.** Implement `fourh_source_fib_map.py`
+  (annual combined 4H maps). Design locked 2026-06-12. See
+  [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
+  Do not start with 1H. Do not start with reaction-review. Tier 2
+  (`fourh_source_fib_zoom.py`) only after Tier 1 shows per-fib zoom is needed.
 - Do not auto-fib. Do not infer anchors. Keep the four flows distinct: 1M source /
   1M→1W projection / true 1W source / true 1D source fibs.
 

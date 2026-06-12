@@ -13,6 +13,25 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-12] decision | BTC/USD 4H visual confirmation / source-quality review — design locked
+
+4H is the lowest active timeframe (1H paused). 4H source-facit locked (366 fibs,
+2017-01-05 → 2026-06-05, up=169/down=197, log scale, `tradingview_log_chamoun`,
+`[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, human/manual). Next phase: **4H visual
+confirmation / source-quality review** — not reaction-review, not 1H.
+
+**Tier 1 (first implementation):** `fourh_source_fib_map.py` — annual combined 4H candle
+maps, fibs grouped by `anchor_a` year; ~10 charts (~20 PNGs); fast source-quality scan
+over 366 fibs without per-fib overhead. Fail-closed: `timeframe==4h`, log,
+`tradingview_log_chamoun`, no 0.236, human/manual, no candidate/auto/inferred.
+**Tier 2 (on-demand, after Tier 1):** `fourh_source_fib_zoom.py` — per-fib windowed 4H
+charts. Build only if Tier 1 shows per-fib zoom is needed.
+
+Reactive modules (`source_fib_projection_review`, `source_fib_projection_chart`) are NOT
+used — no events, no `review_sample.csv`, no interactions, no trading conclusions. Full
+design:
+[btc-4h-visual-confirmation-design-20260612.md](reviews/btc-4h-visual-confirmation-design-20260612.md).
+
 ## [2026-06-12] review | BTC/USD 4H source-fib phase complete — 366 fibs
 
 366 manual 4H source fibs drawn and verified: timeframe `4h`, log scale,
