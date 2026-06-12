@@ -227,7 +227,75 @@ def _parse_args() -> argparse.Namespace:
         default="",
         help="Settings file (default: config/settings.yaml).",
     )
+    parser.add_argument(
+        "--window-start",
+        default=None,
+        help=(
+            "ISO date to restrict displayed candles from (e.g. 2019-01-01). "
+            "Windowing is display-only; save paths are unchanged. "
+            "Mutually exclusive with --label-year."
+        ),
+    )
+    parser.add_argument(
+        "--window-end",
+        default=None,
+        help=(
+            "ISO date to restrict displayed candles to (e.g. 2019-12-31). "
+            "Mutually exclusive with --label-year."
+        ),
+    )
+    parser.add_argument(
+        "--label-year",
+        type=int,
+        default=None,
+        help=(
+            "Display only candles for YEAR (±--buffer-months context on each side). "
+            "Convenience wrapper for --window-start/--window-end. "
+            "Buffer zone is context only — label swings whose anchors lie within the year. "
+            "Mutually exclusive with --window-start/--window-end."
+        ),
+    )
+    parser.add_argument(
+        "--buffer-months",
+        type=int,
+        default=3,
+        help="Context months prepended/appended when using --label-year (default: 3).",
+    )
     return parser.parse_args()
+
+
+def _resolve_window(
+    args: argparse.Namespace,
+) -> tuple[pd.Timestamp | None, pd.Timestamp | None]:
+    """Return (window_start, window_end) from CLI args.
+
+    --label-year and --window-start/--window-end are mutually exclusive.
+    Returns (None, None) when no window args are given — no filtering applied.
+    """
+    has_explicit = bool(getattr(args, "window_start", None) or getattr(args, "window_end", None))
+    has_year = getattr(args, "label_year", None) is not None
+    if has_explicit and has_year:
+        raise SystemExit(
+            "Error: --label-year and --window-start/--window-end are mutually exclusive. "
+            "Use one or the other."
+        )
+    if has_year:
+        buf: int = getattr(args, "buffer_months", 3)
+        year: int = args.label_year
+        start = pd.Timestamp(f"{year}-01-01", tz="UTC") - pd.DateOffset(months=buf)
+        end = pd.Timestamp(f"{year + 1}-01-01", tz="UTC") + pd.DateOffset(months=buf)
+        return pd.Timestamp(start), pd.Timestamp(end)
+    ws = (
+        pd.to_datetime(getattr(args, "window_start", None), utc=True)
+        if getattr(args, "window_start", None)
+        else None
+    )
+    we = (
+        pd.to_datetime(getattr(args, "window_end", None), utc=True)
+        if getattr(args, "window_end", None)
+        else None
+    )
+    return ws, we
 
 
 @dataclass
@@ -242,6 +310,9 @@ class LabelWorkspace:
     active_leg_index: int = 0
     show_fib: bool = True
     show_range: bool = False
+    window_start: pd.Timestamp | None = None
+    window_end: pd.Timestamp | None = None
+    _htf_overlays: list | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
         self.df = self._load_chart_candles()
@@ -253,7 +324,7 @@ class LabelWorkspace:
     def _load_chart_candles(self) -> pd.DataFrame:
         """Load candles from local cache only (no exchange fetch on TF switch)."""
         try:
-            return load_candles(self.settings.data, fetch_if_missing=False)
+            df = load_candles(self.settings.data, fetch_if_missing=False)
         except FileNotFoundError as exc:
             raise SystemExit(
                 f"{exc}\n"
@@ -261,6 +332,43 @@ class LabelWorkspace:
                 "  uv run python -m fibengine.labeling.preflight "
                 f"--symbol {self.data.symbol} --config <settings.yaml>"
             ) from exc
+        df = self._apply_window(df)
+        if df.empty and (self.window_start is not None or self.window_end is not None):
+            raise SystemExit(
+                f"Window filter produced an empty chart for "
+                f"{self.data.symbol} {self.data.timeframe}. "
+                "Check --window-start/--window-end or --label-year vs available cache range."
+            )
+        return df
+
+    def _apply_window(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Return a date-filtered slice of df. Timestamps preserved; save semantics unchanged."""
+        if self.window_start is None and self.window_end is None:
+            return df
+        mask = pd.Series(True, index=df.index)
+        if self.window_start is not None:
+            mask &= df.index >= self.window_start
+        if self.window_end is not None:
+            mask &= df.index <= self.window_end
+        return df[mask]
+
+    def _in_display_window(self, ts_str: str) -> bool:
+        ts = pd.to_datetime(ts_str, utc=True)
+        if self.window_start is not None and ts < self.window_start:
+            return False
+        if self.window_end is not None and ts > self.window_end:
+            return False
+        return True
+
+    def get_htf_overlays(self) -> list:
+        """Return HTF fib overlays; loaded once per market, cached until market switch."""
+        if self._htf_overlays is None:
+            self._htf_overlays = load_htf_overlays(
+                self.data.exchange,
+                self.data.symbol,
+                self.data.timeframe,
+            )
+        return self._htf_overlays
 
     def set_market(self, symbol: str | None = None, timeframe: str | None = None) -> None:
         next_data = self.settings.data.model_copy(
@@ -280,8 +388,16 @@ class LabelWorkspace:
                 f"--symbol {next_data.symbol} --timeframes {next_data.timeframe}"
             )
             return
+        display_df = self._apply_window(df)
+        if display_df.empty and (self.window_start is not None or self.window_end is not None):
+            print(
+                f"Window filter returned empty chart for {next_data.symbol} {next_data.timeframe}. "
+                "Cache may not cover this window range."
+            )
+            return
         self.settings.data = next_data
-        self.df = df
+        self.df = display_df
+        self._htf_overlays = None
         self.picks.clear()
         self.history.clear()
         self.legs.clear()
@@ -306,7 +422,21 @@ class LabelWorkspace:
         existing = find_label(self.data.exchange, self.data.symbol, self.data.timeframe)
         if existing is None:
             return
-        self.legs = list(existing.all_legs())
+        all_legs = list(existing.all_legs())
+        if self.window_start is not None or self.window_end is not None:
+            before = len(all_legs)
+            all_legs = [
+                leg
+                for leg in all_legs
+                if self._in_display_window(leg.high.timestamp)
+                and self._in_display_window(leg.low.timestamp)
+            ]
+            dropped = before - len(all_legs)
+            if dropped:
+                print(f"Skipped {dropped} saved leg(s) outside display window.")
+        if not all_legs:
+            return
+        self.legs = all_legs
         self.active_leg_index = 0
         self._load_picks_from_active_leg()
         n = len(self.legs)
@@ -557,8 +687,13 @@ def run_label_tool(args: argparse.Namespace | None = None):
         symbols=None,
         timeframes=None,
         config="",
+        window_start=None,
+        window_end=None,
+        label_year=None,
+        buffer_months=3,
     )
     settings = _apply_cli_overrides(load_settings(cli.config or None), cli)
+    window_start, window_end = _resolve_window(cli)
     args = args or argparse.Namespace(symbols=None, timeframes=None)
     symbols = _csv_values(args.symbols, DEFAULT_CYCLE_SYMBOLS)
     timeframes = _csv_values(args.timeframes, _default_timeframes(settings.data.timeframe))
@@ -569,8 +704,26 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
     queue = [(sym, tf) for sym in symbols for tf in timeframes]
 
-    workspace = LabelWorkspace(settings, symbols, timeframes)
+    workspace = LabelWorkspace(
+        settings,
+        symbols,
+        timeframes,
+        window_start=window_start,
+        window_end=window_end,
+    )
     workspace.load_existing_label()
+
+    if window_start is not None or window_end is not None:
+        if getattr(cli, "label_year", None) is not None:
+            print(
+                f"Year window: {cli.label_year} ±{cli.buffer_months}m  "
+                f"({window_start.strftime('%Y-%m-%d')} -> {window_end.strftime('%Y-%m-%d')})"
+                "  [save paths unchanged]"
+            )
+        else:
+            ws_str = window_start.strftime("%Y-%m-%d") if window_start else "start"
+            we_str = window_end.strftime("%Y-%m-%d") if window_end else "end"
+            print(f"Display window: {ws_str} -> {we_str}  [save paths unchanged]")
 
     print(
         f"Symbol cycle ({len(symbols)}): {', '.join(symbols)}  "
@@ -644,7 +797,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
             color="#d6d9e0",
         )
 
-    def redraw(*, reset_view: bool = False) -> None:
+    def redraw(*, reset_view: bool = False, lightweight: bool = False) -> None:
         nonlocal view_limits, chart_drawn
         if reset_view:
             view_limits = None
@@ -662,12 +815,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
         draw_review_candles(ax, df, candlestick=True, dark_theme=True)
 
-        htf_overlays = load_htf_overlays(
-            workspace.data.exchange,
-            workspace.data.symbol,
-            workspace.data.timeframe,
-        )
-        draw_htf_overlays(ax, df, htf_overlays, show=workspace.show_fib)
+        draw_htf_overlays(ax, df, workspace.get_htf_overlays(), show=workspace.show_fib)
 
         if workspace.show_range:
             ax.fill_between(
@@ -764,7 +912,8 @@ def run_label_tool(args: argparse.Namespace | None = None):
             ax.set_ylim(*view_limits[1])
 
         update_title()
-        fig.tight_layout()
+        if not lightweight:
+            fig.tight_layout()
         hover.reattach(ax, fig)
         chart_drawn = True
         fig.canvas.draw_idle()
@@ -808,7 +957,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
                 workspace.move_pick(kind, min(max(base_idx + delta, 0), n))
             mark_dirty(True)
             click_moved = True
-            redraw()
+            redraw(lightweight=True)
             return
 
         if drag_kind is not None:
@@ -819,7 +968,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
             workspace.move_pick(drag_kind, idx)
             mark_dirty(True)
             click_moved = True
-            redraw()
+            redraw(lightweight=True)
             return
 
         hover.update(event, workspace.df)
