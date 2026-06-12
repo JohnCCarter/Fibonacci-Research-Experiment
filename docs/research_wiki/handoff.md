@@ -14,7 +14,7 @@ append-only trail lives in [log.md](log.md).
 |------|-----------|--------|
 | 1 | **1M** | **Complete** — 9× source fibs, 1D + 4H reaction review approved (2026-06-11) |
 | 2 | **1W** | **Complete** — 21× source fibs verified; combined map + per-fib 4H zoom (2026-06-11) |
-| 3 | **1D** | **Source-facit complete** — 67× source fibs verified (2026-06-11); reaction-review is a later separate phase |
+| 3 | **1D** | **Complete** — 67× source fibs + 4H reaction-review (2026-06-12); 1816 events, 90-day window |
 | 4 | 4H | Pending — re-draw required |
 | 5 | 1H | Deferred — 1h cache not fetched yet |
 
@@ -22,15 +22,18 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-12 1D reaction-review complete** — all **67** BTC/USD 1D source fibs
+  reviewed on **4H** (expansion config, 4H history to 2017-01-01). Review window:
+  anchor_b + 90 days (fixed horizon). **1 816** total 4H interactions.
+  `review_windows.yaml` written; artifacts in `experiments/review/source_fib_projection/`.
+  Summary: [`reviews/btc-1d-reaction-review-cycle-20260612.md`](reviews/btc-1d-reaction-review-cycle-20260612.md).
+  Outliers: Jan–Feb 2022 cluster (52–65 events); Dec 2020 breakout (2 events).
+  Batch script: `scripts/run_btc_1d_reaction_review.py`. 1H deferred (cache missing).
 - **2026-06-11 1D source-fib labeling complete (source-facit only)** — **67** manual
   BTC/USD 1D source fibs drawn and verified (timeframe `1d`, log scale,
   `tradingview_log_chamoun`, levels `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236,
   endpoint mapping ratio 0.0=anchor_b / 1.0=anchor_a, anchor direction, log-spacing,
   human/manual only). Coverage **2017-01-05 → 2024-12-20**; **34 down / 33 up**.
-  This is **source-labeling completion, not reaction-review** — reaction-review /
-  visual confirmation is a later, separate phase. No auto-fib, no trading conclusions.
-  Separation preserved: **1M source** / **1M→1W projection** / **true 1W source** /
-  **true 1D source** fibs are distinct flows.
 - **2026-06-11 1W source-fib phase complete** — **21/21** BTC/USD manual 1W source
   fibs drawn (log scale, `tradingview_log_chamoun`) and verified (profile, scale,
   levels `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, anchor direction,
@@ -87,11 +90,9 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. **1D source-facit is complete (67 fibs).** Next possible phase is **separate**: 1D
-   visual confirmation / reaction-review — NOT required for source-labeling completion.
-   Decide whether to build it before re-drawing 4H.
-2. Re-draw **4H** source fibs (log scale, `tradingview_log_chamoun`) when ready.
-3. When ready for 1h: fetch 1h cache, then label (preflight currently FAIL on 1h).
+1. Re-draw **4H** source fibs (log scale, `tradingview_log_chamoun`) — next protocol step.
+2. When ready for 1H: fetch 1H cache (`data.fetch --timeframes 1h`), then label.
+3. Optional: generate per-fib 4H charts via `source_fib_projection_chart` for the 67 1D fibs.
 
 ## Guardrails
 
@@ -221,13 +222,11 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
   visual confirmation via `weekly_source_fib_map` (combined 1W/1D/4H) and
   `weekly_source_fib_zoom` (per-fib 4H). Combined 4H is too compressed — use
   the per-fib zoom for 4H. Do not resume unless a bug or gap is found.
-- **BTC/USD 1D source-fib labeling is complete (source-facit).** 67 source fibs
-  verified 2026-06-11 (coverage 2017-01-05 → 2024-12-20, 34 down / 33 up). This is
-  source-labeling completion — **reaction-review / visual confirmation is a later,
-  separate phase** and is NOT required for source completion. Do not resume 1D
-  labeling unless a bug or gap is found.
-- **Next phase (separate): 1D visual confirmation / reaction-review**, or re-draw
-  manual BTC/USD 4H source fibs (log scale, `tradingview_log_chamoun`).
+- **BTC/USD 1D phase is complete.** 67 source fibs (2017-01-05 → 2024-12-20) and
+  4H reaction-review (2026-06-12). 1816 4H interactions, 90-day windows.
+  Summary: `docs/research_wiki/reviews/btc-1d-reaction-review-cycle-20260612.md`.
+  Do not resume unless a bug or gap is found.
+- **Next phase: re-draw manual BTC/USD 4H source fibs** (log scale, `tradingview_log_chamoun`).
 - Do not auto-fib. Do not infer anchors. Keep the four flows distinct: 1M source /
   1M→1W projection / true 1W source / true 1D source fibs.
 
