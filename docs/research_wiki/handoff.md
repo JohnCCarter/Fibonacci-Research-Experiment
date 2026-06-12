@@ -15,13 +15,20 @@ append-only trail lives in [log.md](log.md).
 | 1 | **1M** | **Complete** — 9× source fibs, 1D + 4H reaction review approved (2026-06-11) |
 | 2 | **1W** | **Complete** — 21× source fibs verified; combined map + per-fib 4H zoom (2026-06-11) |
 | 3 | **1D** | **Complete** — 67× source fibs + 4H reaction-review (2026-06-12); 1816 events, 90-day window |
-| 4 | 4H | Pending — re-draw required |
+| 4 | **4H** | **Complete** — 366× source fibs, 2017-01-05 → 2026-06-05 (2026-06-12) |
 | 5 | 1H | Deferred — 1h cache not fetched yet |
 
 **ETH/USD:** blocked until BTC protocol approved.
 
 ## Recent Changes
 
+- **2026-06-12 4H source-fib phase complete** — **366** manual BTC/USD 4H source fibs
+  drawn and verified (timeframe `4h`, log scale, `tradingview_log_chamoun`, levels
+  `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, endpoint mapping ratio 0.0=anchor_b /
+  1.0=anchor_a, anchor direction, log-spacing, human/manual only). Coverage
+  **2017-01-05 → 2026-06-05**; **up=169 / down=197**. This is **source-labeling
+  completion, not reaction-review** — visual confirmation / reaction-review is a later,
+  separate decision. No auto-fib, no trading conclusions. 366/366 schema verification PASS.
 - **2026-06-12 1D reaction-review complete** — all **67** BTC/USD 1D source fibs
   reviewed on **4H** (expansion config, 4H history to 2017-01-01). Review window:
   anchor_b + 90 days (fixed horizon). **1 816** total 4H interactions.
@@ -75,7 +82,9 @@ append-only trail lives in [log.md](log.md).
 - `data/labels/human_fib/bitfinex/BTC-USD/1M/` — **9** base `fib_*.json` (log scale).
 - `data/labels/human_fib/bitfinex/BTC-USD/1w/` — **21** base `fib_*.json` (log scale).
 - `data/labels/human_fib/bitfinex/BTC-USD/1d/` — **67** base `fib_*.json` (log scale);
-  source-facit complete, verified 2026-06-11. 4h empty pending re-draw.
+  source-facit complete, verified 2026-06-11.
+- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **366** base `fib_*.json` (log scale);
+  source-facit complete, verified 2026-06-12. Coverage 2017-01-05 → 2026-06-05; up=169 / down=197.
 - `experiments/review/weekly_source_fib_map/` and `…/weekly_source_fib_zoom/` —
   generated charts (gitignored; regenerate via the two new CLIs).
 - `data/raw/bitfinex/BTC-USD/1M/limit_500.csv` — 115 bars (2016-12 .. 2026-06),
@@ -90,8 +99,8 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. Re-draw **4H** source fibs (log scale, `tradingview_log_chamoun`) — next protocol step.
-2. When ready for 1H: fetch 1H cache (`data.fetch --timeframes 1h`), then label.
+1. **1H source labeling** — fetch 1H cache first: `data.fetch --timeframes 1h --config config/settings.expansion.yaml`, then label. Separate decision required before starting.
+2. **4H visual/reaction-review** — review 4H source fibs against price, analogous to 1D reaction-review. Separate decision; not required for source-facit lock.
 3. Optional: generate per-fib 4H charts via `source_fib_projection_chart` for the 67 1D fibs.
 
 ## Guardrails
@@ -226,7 +235,10 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
   4H reaction-review (2026-06-12). 1816 4H interactions, 90-day windows.
   Summary: `docs/research_wiki/reviews/btc-1d-reaction-review-cycle-20260612.md`.
   Do not resume unless a bug or gap is found.
-- **Next phase: re-draw manual BTC/USD 4H source fibs** (log scale, `tradingview_log_chamoun`).
+- **BTC/USD 4H source-fib phase is complete.** 366 source fibs (2017-01-05 → 2026-06-05),
+  up=169 / down=197, 366/366 schema PASS (2026-06-12). Do not resume unless a bug or gap
+  is found. Reaction-review / visual confirmation is a separate, later decision.
+- **Next phase: 1H source labeling** (fetch 1H cache first) or **4H reaction-review** — separate decision required.
 - Do not auto-fib. Do not infer anchors. Keep the four flows distinct: 1M source /
   1M→1W projection / true 1W source / true 1D source fibs.
 
