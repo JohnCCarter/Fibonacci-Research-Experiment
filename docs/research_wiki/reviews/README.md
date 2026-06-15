@@ -28,3 +28,4 @@ on 2026-06-08. They are **not** current evidence.
 | [btc-4h-fib-20250506-dedup-20260615.md](btc-4h-fib-20250506-dedup-20260615.md) | 20250506 dedup — fib A superseded, fib B retained (active 4H 366→365) |
 | [btc-source-fib-next-research-plan-20260615.md](btc-source-fib-next-research-plan-20260615.md) | Next research-pass design (read-only) — recommends corpus integrity report (#2) now, MTF confluence atlas (#1) next |
 | [btc-source-fib-corpus-integrity-20260615.md](btc-source-fib-corpus-integrity-20260615.md) | Corpus integrity capstone (read-only) — counts 9/21/67/365, conventions, source-quality state, known caveats; corpus declared clean. Next: MTF confluence atlas |
+| [btc-mtf-confluence-table-20260615.md](btc-mtf-confluence-table-20260615.md) | MTF confluence atlas CP1 (read-only) — 222 cross-TF level clusters at epsilon_log=0.005 (2×4-TF); GO to CP2 sensitivity. `research/mtf_confluence.py` (stdlib) + CSV |

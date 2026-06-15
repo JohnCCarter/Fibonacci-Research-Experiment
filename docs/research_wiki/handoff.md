@@ -138,9 +138,11 @@ JSON unchanged, no new deps, no artifacts committed.
 No open implementation items remain in the #32 tooling track. **Corpus declared clean and
 locked** (integrity capstone 2026-06-15:
 [`reviews/btc-source-fib-corpus-integrity-20260615.md`](reviews/btc-source-fib-corpus-integrity-20260615.md)).
-**Next analytical pass: #1 MTF confluence atlas** — first slice a read-only confluence
-table (no chart, no trading conclusions). Design:
-[`reviews/btc-source-fib-next-research-plan-20260615.md`](reviews/btc-source-fib-next-research-plan-20260615.md).
+**MTF confluence atlas in progress.** CP1 (confluence table) DONE — `research/mtf_confluence.py`
+(stdlib): 222 cross-TF clusters at epsilon_log=0.005 (2×4-TF); GO to CP2.
+[CP1 report](reviews/btc-mtf-confluence-table-20260615.md). **Next: CP2** —
+sensitivity/robustness (multi-epsilon + complete-linkage), read-only, no tuning-to-fit.
+Design: [`reviews/btc-source-fib-next-research-plan-20260615.md`](reviews/btc-source-fib-next-research-plan-20260615.md).
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.

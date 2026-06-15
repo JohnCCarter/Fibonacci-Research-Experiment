@@ -14,6 +14,17 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] review | MTF confluence atlas CP1 — confluence table
+
+First analytical slice on the locked corpus. New stdlib module `research/mtf_confluence.py`
+(10 tests): flattens 462 fibs → 2772 level rows, clusters by log-price proximity
+(epsilon_log=0.005, chosen before results) + overlapping anchor windows, requires ≥2 TFs.
+Result: **222 clusters** (2×4-TF, 24×3-TF; 1d,4h dominates 143). Chaining visible
+(30/222 span>eps, reported). **Stop/go: GO** to CP2 (sensitivity/robustness, multi-eps +
+complete-linkage). No chart, no trading conclusions, no tuning. Committed CSV under docs;
+large levels CSV gitignored.
+[Report](reviews/btc-mtf-confluence-table-20260615.md).
+
 ## [2026-06-15] review | BTC source-fib corpus integrity report (capstone)
 
 Read-only capstone locking the corpus before the MTF analytical pass. Re-derived on disk:
