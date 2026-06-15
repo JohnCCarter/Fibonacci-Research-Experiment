@@ -284,6 +284,37 @@ def _annotate_metadata(ax, card_meta: dict) -> None:
     )
 
 
+def _short_fib(fib_id: str) -> str:
+    """Compact member id: drop the ``fib_BTC-USD_<tf>_`` prefix, keep the timestamp tail."""
+    return fib_id.split("_")[-1]
+
+
+def _annotate_member_table(ax, band: list[LevelRow]) -> None:
+    """Top-left member table (TF / ratio / price / short fib id) — replaces stacked labels.
+
+    Because the four members sit within ~$36 their per-line labels would overlap and hide
+    each other; a compact table keeps every member individually source-traceable while the
+    level lines stay clean.
+    """
+    lines = ["member levels (fixed-band)", "TF  ratio  price    fib"]
+    for r in band:
+        lines.append(
+            f"{r.timeframe:<3} {r.ratio:<5g} {r.level_price:>7,.0f}  {_short_fib(r.fib_id)}"
+        )
+    ax.text(
+        0.012,
+        0.985,
+        "\n".join(lines),
+        transform=ax.transAxes,
+        fontsize=8,
+        family="monospace",
+        va="top",
+        ha="left",
+        bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="#888888", alpha=0.9),
+        zorder=7,
+    )
+
+
 def _draw_card(
     df: pd.DataFrame,
     band: list[LevelRow],
@@ -299,7 +330,9 @@ def _draw_card(
 
     ``show_members=False`` (clean): candle backdrop + shaded ``[min,max]`` confluence band
     + representative-price line + metadata box. ``show_members=True`` (levels): adds one
-    horizontal line per member level, coloured by timeframe, labelled ``TF ratio price id``.
+    horizontal line per member level, coloured by timeframe, plus a top-left member table
+    (TF / ratio / price / short fib id) so every member stays source-traceable without the
+    near-coincident per-line labels overlapping.
     """
     fig, ax = _candle_backdrop(df, title, fig_w)
 
@@ -314,38 +347,19 @@ def _draw_card(
         ls="-",
         alpha=0.85,
         zorder=3,
-        label=f"repr {cluster.representative_price:,.0f}",
     )
 
     if show_members:
-        x_right = len(df) - 1
-        seen_tf: set[str] = set()
         for r in band:
-            color = _TF_COLORS.get(r.timeframe, "#555555")
             ax.axhline(
                 r.level_price,
-                color=color,
+                color=_TF_COLORS.get(r.timeframe, "#555555"),
                 lw=1.2,
                 ls="--",
                 alpha=0.9,
                 zorder=4,
-                label=r.timeframe if r.timeframe not in seen_tf else None,
             )
-            seen_tf.add(r.timeframe)
-            ax.annotate(
-                f"{r.timeframe} {r.ratio:g} @ {r.level_price:,.0f}  {r.fib_id}",
-                xy=(x_right, r.level_price),
-                xytext=(-4, 3),
-                textcoords="offset points",
-                fontsize=7,
-                fontweight="bold",
-                color=color,
-                va="bottom",
-                ha="right",
-                bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=color, alpha=0.85),
-                zorder=6,
-            )
-        ax.legend(loc="upper left", fontsize=7, framealpha=0.85, title="member TF")
+        _annotate_member_table(ax, band)
 
     _annotate_metadata(ax, card_meta)
     fig.savefig(out_path, dpi=120, bbox_inches="tight")
@@ -419,8 +433,15 @@ def render_confluence_card(
     fig_w = max(16, min(n // 2, 36))
     a_str = f"{df.index[0]:%Y-%m-%d}"
     b_str = f"{df.index[-1]:%Y-%m-%d}"
+    # Show the cluster id once; only append the resolved id when it differs from the
+    # signature label (avoids the "c001 (c001)" duplication when they coincide).
+    id_part = (
+        signature.label
+        if signature.label == cluster.cluster_id
+        else f"{signature.label} ({cluster.cluster_id})"
+    )
     base_title = (
-        f"{symbol} MTF confluence {signature.label} ({cluster.cluster_id})  |  "
+        f"{symbol} MTF confluence {id_part}  |  "
         f"{','.join(cluster.timeframes)}  {backdrop_tf} backdrop  {a_str} → {b_str}  (log)"
     )
     _draw_card(
