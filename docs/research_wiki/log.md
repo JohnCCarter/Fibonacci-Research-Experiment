@@ -14,6 +14,25 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] feat | MTF confluence atlas CP3 slice 3 — zero-span 3-TF cards (generated)
+
+c002 contrast card **human-approved**. Slice 3 adds three **zero-span** (exact-price) 3-TF
+cards under **fixed-band**: `c004`/`c006`/`c007` at ~$64829/$13764/$9085, where
+`price_span_log == 0` — several human-drawn fib levels from three timeframes on the
+*identical* price (immune to epsilon and chaining; the structural opposite of c002). **Label
+discipline:** c004/c006/c007 are CP2's stable labels; cluster ids are positional and have
+since shifted (they resolve to c002/c003/c004 under the current corpus), so resolution is by
+structural signature (`tf_count==3`, exact TF set, `repr ± 50`, `price_span_log == 0`,
+window-year range) — each matches exactly one fixed-band cluster. Output dir is now keyed on
+the **stable signature label** (not the positional id); titles show `label (cluster_id)`.
+The degenerate `[min,max]` band (min==max) renders as the single exact-price line; metadata
+says *zero-span (exact-price coincidence) / N levels share one price across M TFs*. Fail-closed
+`len(band)==level_count` cross-check passed (5/4/4). c001 re-renders identically (label==id).
+406 tests green (+2 zero-span resolution tests in a new file to respect the 300-line bound; no
+golden snapshots for the three cards — synthetic zero-span corpus would exceed it). PNGs
+gitignored, none committed. **Pending human inspection.**
+[Report](reviews/btc-mtf-confluence-atlas-cp3-zero-span-20260615.md).
+
 ## [2026-06-15] feat | MTF confluence atlas CP3 slice 2 — c002 contrast card (generated)
 
 c001 card **human-approved** (title dedup + member-table polish). Slice 2 adds the

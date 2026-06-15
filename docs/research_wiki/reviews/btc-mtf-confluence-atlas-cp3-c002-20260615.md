@@ -6,8 +6,8 @@ cluster (c002, ~21167, 2022-12 → 2023-07) under the **single-linkage** method 
 its `price_span_log` exceeds epsilon, so it holds together purely by chaining and **dissolves
 entirely under fixed-band**. The card is the deliberate counterpoint to the tight c001 card.
 
-**Status: generated — pending human visual inspection.** This page does **not** assert the
-card is approved.
+**Status: human-approved (2026-06-15).** Contrast card approved after visual inspection.
+Slice 3 (zero-span 3-TF cards) now follows.
 
 **Headline discipline:** c002 is **never** presented as a tight 4-TF confluence. The chart
 title reads *"chaining-dependent 4-TF (single-linkage, span>ε)"* and the metadata box states

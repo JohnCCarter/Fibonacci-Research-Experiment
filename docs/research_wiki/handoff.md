@@ -22,11 +22,11 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
-- **2026-06-15 MTF confluence atlas CP3 (c001 approved + c002 contrast)** — `research/mtf_confluence_atlas.py`
-  now method-aware (`--cluster c001|c002`). c001 (fixed-band, tight 4-TF) **human-approved**.
-  c002 (single-linkage, span 0.00627 > ε → **chaining-dependent**, dissolves under fixed-band;
-  never labelled tight). Member-reconstruction tolerance fix + fail-closed count check (c001
-  unchanged). 404 tests green. c002 **pending human inspection.** [Report](reviews/btc-mtf-confluence-atlas-cp3-c002-20260615.md).
+- **2026-06-15 MTF confluence atlas CP3 (c001+c002 approved; zero-span c004/c006/c007)** —
+  `research/mtf_confluence_atlas.py` method-aware (`--cluster c001|c002|c004|c006|c007`). c001
+  (tight) + c002 (chaining contrast) **human-approved**. Slice 3 = three **zero-span** 3-TF
+  exact-price cards (fixed-band, span=0, ~$64829/$13764/$9085); CP2 labels → shifting ids →
+  signature-resolved, out_dir on stable label. 406 green. **Pending inspection.** [Report](reviews/btc-mtf-confluence-atlas-cp3-zero-span-20260615.md).
 - **2026-06-15 Structural chart-contract snapshots (#F)** — `research/render_summary.py`
   (stdlib): stable text summaries of map/zoom/gallery renders + golden JSON under
   `tests/research/snapshots/`. Automatic structural regression; no PNG baselines/deps.

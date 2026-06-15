@@ -7,7 +7,7 @@ coincide in log-price — drawn on a candle backdrop. This is *not* the per-fib 
 ``A→B`` view of ``monthly_fib_map`` / ``fourh_source_fib_map``; the levels are drawn as
 horizontal lines **across the whole window**, because that is what a confluence is.
 
-**Scope (two slices, both deliberately minimal):**
+**Scope (three slices, each deliberately minimal):**
 
 - *Slice 1 — c001:* the single robust 4-TF cluster (~29274, 2021 cycle) under the
   **fixed-band** method at ``epsilon_log = 0.005``. The CP2-corrected, method-stable
@@ -18,6 +18,11 @@ horizontal lines **across the whole window**, because that is what a confluence 
   holds together only by chaining and dissolves entirely under fixed-band. It is rendered as
   an explicit **contrast** — never labelled a tight 4-TF, support/resistance, or robust
   confluence; the headline + metadata say "chaining-dependent / span > epsilon".
+- *Slice 3 — c004/c006/c007 zero-span:* the exact-price 3-TF confluences (~64829, ~13764,
+  ~9085) under **fixed-band** where ``price_span_log == 0`` — several human-drawn levels from
+  three timeframes landing on the *identical* price (immune to epsilon and chaining). Labels
+  are CP2's stable labels; the positional ids shift with the corpus, hence signature
+  resolution. The headline + metadata say "zero-span / exact-price".
 
 The target cluster is resolved by **structural signature**, never by a hard-coded
 ``cluster_id`` (ids are positional and method-dependent — ``order_clusters`` re-numbers).
@@ -150,11 +155,51 @@ C002_SIGNATURE = ClusterSignature(
     label="c002",
 )
 
+# Slice 3 targets: the zero-span (exact-price) 3-TF confluences — several human-drawn levels
+# from three timeframes landing on the *identical* price. ``min_span_log == max_span_log == 0``
+# requires an exact coincidence (immune to epsilon and chaining). Labels are CP2's stable
+# labels (c004/c006/c007 at ~$64829/$13764/$9085); they resolve to shifting positional ids
+# under the current corpus, so resolution is by structural signature, never by id.
+C004_SIGNATURE = ClusterSignature(
+    tf_count=3,
+    timeframes=frozenset({"1M", "1w", "1d"}),
+    price_approx=64829.0,
+    price_tol=50.0,
+    max_span_log=0.0,
+    window_year=2020,
+    window_year_end=2021,
+    label="c004",
+)
+
+C006_SIGNATURE = ClusterSignature(
+    tf_count=3,
+    timeframes=frozenset({"1w", "1d", "4h"}),
+    price_approx=13764.0,
+    price_tol=50.0,
+    max_span_log=0.0,
+    window_year=2019,
+    window_year_end=2020,
+    label="c006",
+)
+
+C007_SIGNATURE = ClusterSignature(
+    tf_count=3,
+    timeframes=frozenset({"1w", "1d", "4h"}),
+    price_approx=9084.7,
+    price_tol=50.0,
+    max_span_log=0.0,
+    window_year=2019,
+    label="c007",
+)
+
 # Coherent (signature, method) pairs — the CLI selects a card by name so an incoherent
 # signature/method combination cannot be requested.
 CLUSTER_CARDS: dict[str, tuple[ClusterSignature, str]] = {
     "c001": (C001_SIGNATURE, "fixed_band"),
     "c002": (C002_SIGNATURE, "single_linkage"),
+    "c004": (C004_SIGNATURE, "fixed_band"),
+    "c006": (C006_SIGNATURE, "fixed_band"),
+    "c007": (C007_SIGNATURE, "fixed_band"),
 }
 
 
@@ -472,15 +517,31 @@ def render_confluence_card(
     df = df_full.iloc[lo : hi + 1]
 
     atlas_root = Path(out_root) if out_root else MTF_CONFLUENCE_ATLAS_ROOT
-    out_dir = atlas_root / method / cluster.cluster_id
+    # Key the output dir on the stable signature label, not the positional cluster_id: ids are
+    # re-numbered by order_clusters as the corpus changes, so c004/c006/c007 (CP2 labels) would
+    # land in shifting dirs. For c001/c002 the label equals the id, so their dirs are unchanged.
+    out_dir = atlas_root / method / signature.label
     out_dir.mkdir(parents=True, exist_ok=True)
     clean_path = out_dir / "clean.png"
     levels_path = out_dir / "levels.png"
 
-    # A cluster whose price_span_log exceeds epsilon only holds together by chaining (only
-    # possible under single-linkage) — it is NOT a tight fixed-band confluence.
+    # Headline class by span: chaining (span > epsilon, single-linkage only — NOT a tight
+    # fixed-band confluence) / zero-span (exact-price coincidence) / tight (the c001 default).
+    tfc = cluster.timeframe_count
     chaining = cluster.price_span_log > epsilon_log
-    notes = ["chaining-dependent (span > epsilon)", "NOT tight fixed-band 4-TF"] if chaining else []
+    zero_span = cluster.price_span_log == 0.0
+    if chaining:
+        notes = ["chaining-dependent (span > epsilon)", f"NOT tight fixed-band {tfc}-TF"]
+        descriptor = f"chaining-dependent {tfc}-TF (single-linkage, span>ε)"
+    elif zero_span:
+        notes = [
+            "zero-span (exact-price coincidence)",
+            f"{cluster.level_count} levels share one price across {tfc} TFs",
+        ]
+        descriptor = f"zero-span {tfc}-TF (fixed-band, exact-price)"
+    else:
+        notes = []
+        descriptor = ""
     card_meta = {
         "method": method,
         "epsilon_log": epsilon_log,
@@ -502,14 +563,9 @@ def render_confluence_card(
         if signature.label == cluster.cluster_id
         else f"{signature.label} ({cluster.cluster_id})"
     )
-    # Method-aware descriptor: empty for the tight fixed-band card (c001 stays identical);
-    # the chaining-dependent contrast card states its nature in the headline so it can never
-    # be misread as a tight 4-TF confluence.
-    descriptor = (
-        f"chaining-dependent {cluster.timeframe_count}-TF (single-linkage, span>ε)"
-        if chaining
-        else ""
-    )
+    # descriptor (set above by span class) is empty for the tight c001 card — its headline
+    # stays identical; the chaining / zero-span cards state their nature so neither can be
+    # misread as a tight 4-TF confluence.
     head = f"{symbol} MTF confluence {id_part}"
     if descriptor:
         head = f"{head}  |  {descriptor}"
