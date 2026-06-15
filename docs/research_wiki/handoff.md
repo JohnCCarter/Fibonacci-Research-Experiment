@@ -22,6 +22,13 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 Overlap/dedup detector + anchor convention** — `research/overlap_detector.py`
+  (stdlib-only, report-only): boxes fibs in (time, log-price), flags near-duplicate/overlap
+  candidates (box IoU + shared-anchor) for human review; never edits labels. Real run on
+  366 4H fibs → 22 candidates (all shared anchor_b). Report + CSV under
+  `docs/research_wiki/reviews/btc-4h-overlap-candidates-20260615.*`. Body/close-vs-wick
+  anchor convention (observed, not absolute) noted in `labeling/HUMAN_FIB_ANNOTATION.md`.
+  Implements Issue #32 top-ROI #3 — completes the #32 top-3.
 - **2026-06-15 Source-quality review ledger** — `research/review_ledger.py` (stdlib-only,
   no new deps): flat CSV making review verdicts machine-trackable, controlled vocab +
   deterministic `source_hash` tying each verdict to the exact facit version. First ledger

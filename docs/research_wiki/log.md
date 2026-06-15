@@ -13,6 +13,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] feat | Overlap/dedup detector + anchor convention (Issue #32 top-ROI #3)
+
+Added `research/overlap_detector.py` — stdlib-only, report-only detector. Each fib is a
+box in (time, log-price) space; per pair it computes time/price/box IoU + shared-anchor.
+Flags candidates (box_iou≥0.5 or shared anchor) for human review — never edits labels,
+never says "wrong". Fail-closed timeframe guard. Real run on 366 4H fibs: **22 candidate
+pairs, all sharing anchor_b** (no pure-geometric overlap ≥0.5) → dominant signal is
+sub-legs ending on the same swing, not duplicates. 20210110 pair confirmed (box_iou 0.51);
+2017_h2 cluster present; strongest near-dup 20250506 pair (box_iou 0.70); `20171228`
+correctly absent (anchor-quality issue, not duplication). Report:
+[`reviews/btc-4h-overlap-candidates-20260615.md`](reviews/btc-4h-overlap-candidates-20260615.md)
++ CSV. Anchor convention (body/close vs wick, observed not absolute) documented in
+[`labeling/HUMAN_FIB_ANNOTATION.md`](../labeling/HUMAN_FIB_ANNOTATION.md). 9 tests; ruff +
+full suite green (361 passed, 75.07% cov). No source labels changed; no new deps.
+
 ## [2026-06-15] feat | Source-quality review ledger (Issue #32 top-ROI #2)
 
 Added `research/review_ledger.py` — stdlib-only helper (csv/hashlib/json; no new deps)

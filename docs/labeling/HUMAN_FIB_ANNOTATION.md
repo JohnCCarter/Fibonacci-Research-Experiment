@@ -45,6 +45,24 @@ uv run python -m fibengine.labeling.human_fib \
 
 ---
 
+## Ankar-konvention (observerad review-praxis, 2026-06-15)
+
+Inte en absolut global regel — en **observerad current review-konvention** från BTC/USD
+4H-granskningen (Tier 2). Dokumenterad så att wick/body-frågor hanteras konsekvent:
+
+- Vissa 4H crash-/impuls-ben ankras vid en **body/close-liknande nivå** snarare än den
+  exakta **wick-extremen**. Exempel: Jan 2021-paret (`20210110T080000` /
+  `20210110T200000`) delar `anchor_b` vid body/close (~30 635) i stället för wick-lowen.
+- Detta ska **inte** automatiskt klassas som fel — wick-vs-body är en bedömningsfråga.
+- En wick/body-avvikelse kan bli **watchlist** eller **correction-candidate** i
+  review-ledgern, **inte** auto-fail.
+- Ankaret bedöms mot det **strukturella benet och den lokala swingen**, inte enbart mot
+  den extrema wicken.
+
+Spårning: verdicts i [review-ledgern](../research_wiki/reviews/ledgers/README.md);
+near-duplicate/overlap-kandidater via `research/overlap_detector.py`
+([rapport](../research_wiki/reviews/btc-4h-overlap-candidates-20260615.md)).
+
 ## Datamodell
 
 ```json
