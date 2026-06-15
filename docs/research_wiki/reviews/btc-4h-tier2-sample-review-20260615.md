@@ -20,13 +20,15 @@ micro-bounce, dense cluster center, paired anchors sharing the same candle).
 | fib_BTC-USD_4h_20170702T040000 | 2017_h2 | **OK** | Tidig juli 2017, lokal low, ren struktur |
 | fib_BTC-USD_4h_20171025T120000 | 2017_h2 | **OK** | Lokal low okt 2017, korrektions-bottom, clean anchor |
 | fib_BTC-USD_4h_20171219T160000 | 2017_h2 | **OK** | Post-ATH sub-krasch-ben, ~$2,200 span, levels synliga |
-| fib_BTC-USD_4h_20171228T200000 | 2017_h2 | **watchlist** | Micro-bounce ~$1,100 span; levels komprimerade till osynliga; anchor ej misstänkt |
+| fib_BTC-USD_4h_20171228T200000 | 2017_h2 | **suspicious / correction-candidate** | Span $1,329, ankare 1 bar isär; visuell review 2026-06-15 fann en candle bredvid leg A som passar bättre som anchor_a |
 | fib_BTC-USD_4h_20210105T040000 | 2021_dec2020_mar2021 | **OK** | Jan 5 dipp → Jan 8, ~$12,000 span, levels utmärkta |
 | fib_BTC-USD_4h_20210110T080000 | 2021_dec2020_mar2021 | **OK** | Jan 10 initial breakdown, ~$10,500 span, tydlig anchor_a |
 | fib_BTC-USD_4h_20210110T200000 | 2021_dec2020_mar2021 | **OK-with-note** | Anchor_b body/close ~$30,500 (ej wick ~$28,500); konsistens bekräftad mot 08:00-fibet |
 | fib_BTC-USD_4h_20210225T120000 | 2021_dec2020_mar2021 | **OK** | Feb-krasch sub-leg, ~$8,000 span, levels klara |
 
-7 of 8 samples: **OK** or **OK-with-note**. 1 sample: **watchlist** (short-span, not suspicious).
+7 of 8 samples: **OK** or **OK-with-note**. 1 sample (`20171228T200000`) reclassified
+to **suspicious / correction-candidate** after visual review 2026-06-15 (see
+[Correction Candidates](#correction-candidates)).
 
 ---
 
@@ -34,10 +36,15 @@ micro-bounce, dense cluster center, paired anchors sharing the same candle).
 
 ### Short-span micro-bounce (watchlist)
 
-`20171228T200000` is a micro-bounce with A→B span ~$1,100. At this span, fib levels
-compress to nearly invisible hairlines in the zoom window — the artifact renders correctly
-but is not practically reviewable at the current chart scale. The anchor placement itself
-does not look suspicious; the issue is purely geometric.
+`20171228T200000` is a one-bar up-leg (anchor_a 2017-12-28 20:00 @ 13,611 → anchor_b
+2017-12-29 00:00 @ 14,940, span $1,329, anchors exactly one 4H bar apart). At this span,
+fib levels compress to nearly invisible hairlines in the zoom window — the artifact
+renders correctly but is not practically reviewable at the current chart scale.
+
+**Update 2026-06-15 (visual review in labeling tool):** the geometric-only verdict no
+longer holds. A candle adjacent to leg A looks like a better structural anchor_a. This
+fib is reclassified from watchlist to **suspicious / correction-candidate** — see
+[Correction Candidates](#correction-candidates).
 
 This is an isolated instance in the sample. `20171219T160000` (~$2,200 span) renders
 cleanly — the threshold is span-size-dependent, not a sene-2017 systemic issue.
@@ -85,25 +92,51 @@ more variable spans; short micro-bounces in the parabolens slutfas are more comm
 
 | Item | Scope | Type | Recommended action |
 |---|---|---|---|
-| `fib_BTC-USD_4h_20171228T200000` | 2017_h2 | Short-span micro-bounce; levels unreadable | Keep as-is. Open in labeling tool if anchor clarity needed. Do not delete. |
+| `fib_BTC-USD_4h_20171228T200000` | 2017_h2 | **Reclassified → suspicious** | See [Correction Candidates](#correction-candidates) |
 | Body/close vs wick convention | Both | Undocumented labeling rule for crash-leg anchor_b | Add one sentence to labeling docs. No label changes until verified in labeling tool. |
+
+---
+
+## Correction Candidates
+
+Fibs flagged for a future correction-pass (or direct manual correction by decision).
+**No labels changed yet** — these are records, not edits.
+
+### fib_BTC-USD_4h_20171228T200000
+
+- **Current anchors (facit):** anchor_a 2017-12-28 20:00 @ 13,611 (low) → anchor_b
+  2017-12-29 00:00 @ 14,940 (high), direction up, span $1,329, anchors one 4H bar apart.
+- **Finding (user visual review 2026-06-15):** a candle adjacent to leg A appears to be a
+  better structural anchor_a than the current pin. The exact replacement candle
+  (time/price) is not captured yet.
+- **Verdict:** suspicious / correction-candidate.
+- **Status:** **deferred to a future correction-pass.** Direct manual correction was
+  attempted but the current GUI view is too cluttered with fib levels to locate and move
+  anchor_a safely/exactly. Source JSON remains unchanged.
+- **How to correct later:** only with an isolated/single-fib view (e.g. hide HTF overlays,
+  narrow the window) **or** with the exact target candle timestamp known in advance.
+- **Constraint:** when corrected, change **anchor_a only**, leave anchor_b, and respect the
+  body/close convention (do not re-pin to a wick extreme).
 
 ---
 
 ## Conclusion
 
-No suspicious fibs found in this sample. The Tier 2 zoom artifacts function as intended —
-per-fib windowed charts resolve the Tier 1 map readability problem for both scopes.
+The Tier 2 zoom artifacts function as intended — per-fib windowed charts resolve the
+Tier 1 map readability problem for both scopes. Of 8 sampled fibs, **1 is a
+correction-candidate** (`20171228T200000`, found on visual review 2026-06-15); the other
+7 are OK / OK-with-note.
 
-The two watchlist items are documentation/precision gaps, not labeling errors:
+Open items:
 
-1. Some micro-bounce fibs have spans too short for levels to be visually useful in the
-   zoom window — geometric limitation, not a structural error.
+1. `20171228T200000` — suspicious anchor_a; see
+   [Correction Candidates](#correction-candidates). Awaiting decision (future pass vs.
+   direct correction). No label changed yet.
 2. Body/close vs wick appears to be a consistent local convention in crash-leg anchors —
    not yet in the labeling docs.
 
-**No source labels should be changed based on this sample-pass.** Any future changes
-require explicit review in the labeling tool with the specific fib open.
+**No source labels have been changed by this sample-pass.** Any correction requires an
+explicit decision and is performed in the labeling tool with the specific fib open.
 
 ---
 

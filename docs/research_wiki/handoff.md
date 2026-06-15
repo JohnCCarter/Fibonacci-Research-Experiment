@@ -22,10 +22,12 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
-- **2026-06-15 4H Tier 2 first manual sample-pass complete** — 8 fibs inspected across
-  both scopes (4 per scope). No suspicious fibs. Zoom resolves Tier 1 readability in all
-  reviewed samples. Watchlist: `20171228T200000` (short-span micro-bounce) and body/close
-  vs wick convention (undocumented). No label changes.
+- **2026-06-15 4H Tier 2 first manual sample-pass + first correction-candidate** — 8 fibs
+  inspected (4 per scope). Zoom resolves Tier 1 readability. **1 correction-candidate:**
+  `20171228T200000` — visual review found a better anchor_a candle adjacent to leg A →
+  suspicious; **deferred to a future correction-pass** (GUI too cluttered for safe manual
+  edit; needs isolated single-fib view or exact target candle timestamp). No label changed.
+  Watchlist: body/close vs wick convention (undocumented).
   Full review: [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
 - **2026-06-15 4H Tier 1 map review complete** — all 11 annual groups inspected.
   9/11 map-OK. Two groups need Tier 2: **2017_h2** (103 fibs, Sep–Dec 2017 parabola —
@@ -122,8 +124,10 @@ append-only trail lives in [log.md](log.md).
 
 1. **4H visual confirmation — Tier 2 sample-pass complete.** 103/103 (2017_h2) +
    37/37 (2021_dec2020_mar2021) rendered; first manual sample-pass (8 fibs) shows no
-   suspicious labels. Two watchlist items remain:
-   - `fib_BTC-USD_4h_20171228T200000` — short-span micro-bounce; inspect in labeling tool
+   suspicious labels. Open items:
+   - `fib_BTC-USD_4h_20171228T200000` — **correction-candidate**, deferred. Better anchor_a
+     adjacent to leg A; correct later only with isolated single-fib view or exact target
+     candle timestamp. Source JSON unchanged.
    - Body/close vs wick convention — add one sentence to labeling docs (no label changes)
 
    Sample review:

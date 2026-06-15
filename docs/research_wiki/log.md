@@ -19,16 +19,22 @@ First manual sample-pass of `fourh_source_fib_zoom.py` zoom artifacts. Artifacts
 103/103 rendered (2017_h2), 37/37 rendered (2021_dec2020_mar2021), 0 skipped.
 Full review: [btc-4h-tier2-sample-review-20260615.md](reviews/btc-4h-tier2-sample-review-20260615.md).
 
-**Sample set:** 8 fibs (4 per scope). **Result:** no suspicious fibs.
+**Sample set:** 8 fibs (4 per scope). **Result:** 7 OK / OK-with-note, **1 correction-candidate**.
 
-**Watchlist:**
-- `fib_BTC-USD_4h_20171228T200000` — short-span micro-bounce (~$1,100 span); levels
-  unreadable in zoom window. Anchor not suspicious. Open in labeling tool if needed.
+**Correction candidate (visual review 2026-06-15):**
+- `fib_BTC-USD_4h_20171228T200000` — initially watchlist (short-span, span $1,329, ankare
+  1 bar isär). Visual review in labeling tool found a candle adjacent to leg A that fits
+  better as anchor_a → reclassified **suspicious / correction-candidate**. Deferred to a
+  future correction-pass: direct manual correction attempted but the GUI view is too
+  cluttered with fib levels to move anchor_a safely; needs an isolated single-fib view or
+  the exact target candle timestamp. **No label changed; source JSON unchanged.**
+
+**Watchlist (unchanged):**
 - Body/close vs wick convention — Jan 10 2021 pair (`20210110T080000` and
   `20210110T200000`) share identical anchor_b at ~$30,500 (body/close, not wick extreme
   ~$28,500). Consistent local convention, not documented globally. Add note to labeling docs.
 
-**No label changes recommended** based on this sample-pass.
+**No label changes made** by this sample-pass.
 
 ## [2026-06-15] review | BTC/USD 4H visual confirmation Tier 1 — map review complete
 
