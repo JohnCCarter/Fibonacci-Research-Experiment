@@ -22,6 +22,11 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 4H Tier 2 first manual sample-pass complete** — 8 fibs inspected across
+  both scopes (4 per scope). No suspicious fibs. Zoom resolves Tier 1 readability in all
+  reviewed samples. Watchlist: `20171228T200000` (short-span micro-bounce) and body/close
+  vs wick convention (undocumented). No label changes.
+  Full review: [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
 - **2026-06-15 4H Tier 1 map review complete** — all 11 annual groups inspected.
   9/11 map-OK. Two groups need Tier 2: **2017_h2** (103 fibs, Sep–Dec 2017 parabola —
   full Tier 2) and **2021** (partial — Dec 2020 → Mar 2021 cluster only, anchor_a
@@ -115,12 +120,14 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. **4H visual confirmation — Tier 2** — implement `fourh_source_fib_zoom.py` (per-fib
-   windowed 4H charts). Tier 1 review (2026-06-15) confirmed two scopes:
-   - `2017_h2`: all 103 fibs (Sep–Dec 2017 parabola — globally unreadable on map)
-   - `2021_dec2020_mar2021`: anchor_a in [2021-01-01, 2021-04-01), ~37 fibs
-   Design: [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
-   Review: [`reviews/btc-4h-tier1-map-review-20260615.md`](reviews/btc-4h-tier1-map-review-20260615.md).
+1. **4H visual confirmation — Tier 2 sample-pass complete.** 103/103 (2017_h2) +
+   37/37 (2021_dec2020_mar2021) rendered; first manual sample-pass (8 fibs) shows no
+   suspicious labels. Two watchlist items remain:
+   - `fib_BTC-USD_4h_20171228T200000` — short-span micro-bounce; inspect in labeling tool
+   - Body/close vs wick convention — add one sentence to labeling docs (no label changes)
+
+   Sample review:
+   [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
 2. **1H source labeling** — deferred. 4H is the current lowest active timeframe. Fetch
    1H cache first (`data.fetch --timeframes 1h`). Separate decision before starting.
 
@@ -259,12 +266,13 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
 - **BTC/USD 4H source-fib phase is complete.** 366 source fibs (2017-01-05 → 2026-06-05),
   up=169 / down=197, 366/366 schema PASS (2026-06-12). Do not resume unless a bug or gap
   is found. 4H is the current lowest active timeframe (1H paused).
-- **4H visual confirmation Tier 1 is built** (`research/fourh_source_fib_map.py`,
-  2026-06-12). Annual combined 4H maps, 366/366 drawn across 11 groups. Next is **human
-  review of the generated maps**, then Tier 2 (`fourh_source_fib_zoom.py`) on-demand —
-  2017_h2 (~103 fibs) is already flagged as needing per-fib zoom. Do not start with 1H.
-  Do not start with reaction-review. Design:
-  [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
+- **4H visual confirmation Tier 1 + Tier 2 sample-pass complete** (2026-06-15). Tier 1:
+  `research/fourh_source_fib_map.py`, 11 annual groups, 366/366 drawn. Tier 2:
+  `research/fourh_source_fib_zoom.py`, 103+37 fibs rendered; first manual sample-pass (8
+  fibs) shows no suspicious labels. Two watchlist items: `20171228` (short-span) and
+  body/close vs wick convention (undocumented). Do not start with 1H. Do not start with
+  reaction-review. Review:
+  [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
 - Do not auto-fib. Do not infer anchors. Keep the four flows distinct: 1M source /
   1M→1W projection / true 1W source / true 1D source fibs.
 
