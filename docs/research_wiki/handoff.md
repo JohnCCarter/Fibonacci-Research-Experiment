@@ -139,10 +139,10 @@ locked** (integrity capstone 2026-06-15:
 ([capstone](reviews/btc-mtf-confluence-atlas-cp3-20260615.md)) done — 5 cards, 3 archetypes,
 **all human-approved**. [Decision note](reviews/btc-mtf-confluence-interpretation-decision-20260615.md):
 confluence is **geometry, not edge proof** → **stop the MTF track**. **Fork written up
-(docs-only):** candidate next track pre-registered in [Phase 0 prereg](reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md)
-— one falsifiable behaviour question (causal confluence zones vs placebo/naïve levels, OOS),
-leakage manifest, baselines, time-split holdout, stop/go. **Not authorised** beyond the note;
-Phase 1 (feature-export spec) needs an explicit go.
+(docs-only):** [Phase 0 prereg](reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md) registers
+one falsifiable behaviour question (causal confluence zones vs placebo/naïve levels, OOS) +
+leakage manifest, baselines, time-split holdout, stop/go; [Phase 1 spec](reviews/btc-fib-to-genesis-v2-phase1-feature-export-spec-20260615.md)
+defines the causally-safe feature-export contract (zone+bar tables, `known_after_ts` rule). **Not authorised** beyond the notes; Phase 2 (dummy-file test) needs an explicit go.
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.
