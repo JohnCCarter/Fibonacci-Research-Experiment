@@ -26,3 +26,4 @@ on 2026-06-08. They are **not** current evidence.
 | [btc-4h-fib-20171228-correction-20260615.md](btc-4h-fib-20171228-correction-20260615.md) | 20171228 anchor_a correction (preview-first flow) — candidate_1 applied |
 | [chart-regression-strategy-20260615.md](chart-regression-strategy-20260615.md) | Chart regression strategy spike (#32 evaluate-later) — structural-first, defer pixel |
 | [btc-4h-fib-20250506-dedup-20260615.md](btc-4h-fib-20250506-dedup-20260615.md) | 20250506 dedup — fib A superseded, fib B retained (active 4H 366→365) |
+| [btc-source-fib-next-research-plan-20260615.md](btc-source-fib-next-research-plan-20260615.md) | Next research-pass design (read-only) — recommends corpus integrity report (#2) now, MTF confluence atlas (#1) next |
