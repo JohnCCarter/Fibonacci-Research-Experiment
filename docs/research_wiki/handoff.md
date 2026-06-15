@@ -15,7 +15,7 @@ append-only trail lives in [log.md](log.md).
 | 1 | **1M** | **Complete** — 9× source fibs, 1D + 4H reaction review approved (2026-06-11) |
 | 2 | **1W** | **Complete** — 21× source fibs verified; combined map + per-fib 4H zoom (2026-06-11) |
 | 3 | **1D** | **Complete** — 67× source fibs + 4H reaction-review (2026-06-12); 1816 events, 90-day window |
-| 4 | **4H** | **Complete** — 366× source fibs, 2017-01-05 → 2026-06-05 (2026-06-12) |
+| 4 | **4H** | **Complete** — 365 active source fibs (366 drawn; 1 superseded 20250506 dedup) |
 | 5 | 1H | Deferred — 1h cache not fetched yet |
 
 **ETH/USD:** blocked until BTC protocol approved.
@@ -110,8 +110,9 @@ append-only trail lives in [log.md](log.md).
 - `data/labels/human_fib/bitfinex/BTC-USD/1w/` — **21** base `fib_*.json` (log scale).
 - `data/labels/human_fib/bitfinex/BTC-USD/1d/` — **67** base `fib_*.json` (log scale);
   source-facit complete, verified 2026-06-11.
-- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **366** base `fib_*.json` (log scale);
-  source-facit complete, verified 2026-06-12. Coverage 2017-01-05 → 2026-06-05; up=169 / down=197.
+- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **365** active base `fib_*.json` (log scale;
+  366 drawn 2026-06-12, 1 superseded via 20250506 dedup 2026-06-15). Coverage 2017-01-05 →
+  2026-06-05.
 - `experiments/review/weekly_source_fib_map/` and `…/weekly_source_fib_zoom/` —
   generated charts (gitignored; regenerate via the two new CLIs).
 - `data/raw/bitfinex/BTC-USD/1M/limit_500.csv` — 115 bars (2016-12 .. 2026-06),

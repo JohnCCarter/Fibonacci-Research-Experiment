@@ -50,9 +50,19 @@ LEDGER_FIELDS: tuple[str, ...] = (
 
 # Review outcome.
 VERDICTS: frozenset[str] = frozenset({"ok", "ok-with-note", "watchlist", "suspicious"})
-# Lifecycle state of the reviewed fib.
+# Lifecycle state of the reviewed fib. ``superseded`` = retired from active facit (e.g. a
+# near-duplicate removed in favour of a better fib); its source_fib_path may no longer
+# exist on disk — the row is provenance for the dedup decision.
 STATUSES: frozenset[str] = frozenset(
-    {"accepted", "noted", "open", "correction-candidate", "deferred", "corrected"}
+    {
+        "accepted",
+        "noted",
+        "open",
+        "correction-candidate",
+        "deferred",
+        "corrected",
+        "superseded",
+    }
 )
 
 

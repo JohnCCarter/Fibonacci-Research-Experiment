@@ -72,6 +72,12 @@ def test_correction_candidate_is_representable():
     assert row.verdict == "suspicious" and row.status == "correction-candidate"
 
 
+def test_superseded_status_is_representable():
+    # A near-duplicate retired from active facit (dedup) — its file may be gone.
+    row = _row(status="superseded", source_fib_path="data/labels/.../removed.json").validate()
+    assert row.status == "superseded"
+
+
 @pytest.mark.parametrize("verdict", ["ok", "ok-with-note", "watchlist", "suspicious"])
 def test_all_verdicts_accepted(verdict):
     _row(verdict=verdict).validate()

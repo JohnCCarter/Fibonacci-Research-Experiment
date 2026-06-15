@@ -13,6 +13,20 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] fix | 20250506 dedup — fib A superseded, fib B retained
+
+Resolved the strongest overlap-detector near-duplicate. `fib_BTC-USD_4h_20250506T080000`
+and `…120000` are the same up-leg to the same high (shared anchor_b 97840; box_iou 0.70).
+Candle data: 05-06 12:00 low (93663) is the true bottom = B's anchor_a; A's anchor_a
+(08:00 @ 93988) is one bar early on a higher low — a redundant, worse version (not a
+complementary sub-leg). Decision: **supersede A, retain B.** No retired-label pattern
+exists, so A's `fib_*.json` was deleted from active facit and documented. Active 4H count
+**366 → 365** (current-state docs updated; dated historical 366 entries kept). Ledger gained
+a tested `superseded` status; both fibs now tracked (B ok/accepted, A suspicious/superseded
+with provenance hash). fib B unchanged (verified no diff); only A deleted; no other source
+JSON touched. Report:
+[`reviews/btc-4h-fib-20250506-dedup-20260615.md`](reviews/btc-4h-fib-20250506-dedup-20260615.md).
+
 ## [2026-06-15] feat | Structural chart-contract + metadata snapshots (Issue #F)
 
 Implemented the chart-regression spike's recommendation. Added `research/render_summary.py`

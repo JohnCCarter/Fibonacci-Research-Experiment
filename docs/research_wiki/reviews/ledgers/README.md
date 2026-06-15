@@ -35,7 +35,12 @@ labels, renders artifacts, or touches reaction-review / auto-fib.
 ### Controlled vocabulary
 
 - **verdict** ∈ `ok`, `ok-with-note`, `watchlist`, `suspicious`
-- **status** ∈ `accepted`, `noted`, `open`, `correction-candidate`, `deferred`, `corrected`
+- **status** ∈ `accepted`, `noted`, `open`, `correction-candidate`, `deferred`, `corrected`,
+  `superseded`
+
+`superseded` = the fib was retired from active facit (e.g. a near-duplicate removed in
+favour of a better fib); its `source_fib_path`/`source_hash` are provenance and the file
+may no longer exist on disk.
 
 `verdict` is the judgement; `status` is the lifecycle. A `suspicious` fib that we decided
 not to fix yet is `verdict=suspicious, status=correction-candidate` (e.g.
