@@ -13,6 +13,20 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] decision | Milestone — Issue #32 top-3 complete; next track locked
+
+Closing the Issue #32 tooling phase. Top-3 shipped and pushed on `feature/research-fib`:
+`8f1e7a8` static HTML artifact gallery · `d6ab9ec` source-quality review ledger ·
+`84b42db` overlap/dedup detector + anchor-convention doc. local == origin, working tree
+clean, source-fib JSON unchanged, no new dependencies, no artifacts committed.
+
+**Next active track (in order):** (1) single-fib declutter edit-mode in `labeling/tool.py`
+(evaluate-later from #32; motivated by `20171228` deferring on GUI clutter) → (2) isolated
+correction-pass on `fib_BTC-USD_4h_20171228T200000` (still correction-candidate in the
+ledger; anchor_a only, body/close convention) → (3) update ledger row candidate → corrected.
+**Also evaluate-later:** chart-regression strategy (structural/hash vs pytest-mpl,
+binary-baseline / anti-blob question). 1H source labeling remains deferred.
+
 ## [2026-06-15] feat | Overlap/dedup detector + anchor convention (Issue #32 top-ROI #3)
 
 Added `research/overlap_detector.py` — stdlib-only, report-only detector. Each fib is a

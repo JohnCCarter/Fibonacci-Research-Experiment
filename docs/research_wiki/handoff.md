@@ -97,17 +97,9 @@ append-only trail lives in [log.md](log.md).
   non-1W / non-log / wrong-profile / 0.236 / non-human fib. No auto-fib, no
   trading conclusions. Commits `4eb2f4b` (map + facit), `939de97` (zoom),
   `e379fae` (CI: format + bounds fix).
-- **2026-06-11 1M reaction-review cycle complete** — all 9 BTC/USD 1M source fibs
-  reviewed through 1D + 4H. Review windows confirmed in `review_windows.yaml`.
-  62 1D events, 127 4H events. Summary:
-  [reviews/btc-1m-reaction-review-cycle-20260611.md](reviews/btc-1m-reaction-review-cycle-20260611.md).
-- **2026-06-10 Addendum 2 — retire golden-zone sampling** — issue #30: removed
-  `primary_active_levels` / golden-zone review-sampling from configs, `core/config.py`,
-  `human_review_pack`/`rows`/`constants`, and docs. All levels are event-capable and
-  sampled equally (round-robin). Added `human_highlights` (presentation-only) to
-  `HumanFibAnnotation`. Prior golden-zone 1M pack superseded by an unbiased regenerated pack.
-- **2026-06-08…10 (earlier resets/fixes)** — log-scale + profile fix, 1M re-label,
-  events log-scale fix, golden-zone retirement, and the BTC monthly-first reset. Full
+- **2026-06-08…11 (earlier milestones)** — 1M reaction-review cycle (9 fibs, 1D+4H),
+  Addendum 2 golden-zone retirement (issue #30, added `human_highlights`), log-scale +
+  profile fix, 1M re-label, events log-scale fix, and the BTC monthly-first reset. Full
   detail in [log.md](log.md) (append-only trail).
 
 ## Verification Snapshot
@@ -132,18 +124,25 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. **4H visual confirmation — Tier 2 sample-pass complete.** 103/103 (2017_h2) +
-   37/37 (2021_dec2020_mar2021) rendered; first manual sample-pass (8 fibs) shows no
-   suspicious labels. Open items:
-   - `fib_BTC-USD_4h_20171228T200000` — **correction-candidate**, deferred. Better anchor_a
-     adjacent to leg A; correct later only with isolated single-fib view or exact target
-     candle timestamp. Source JSON unchanged.
-   - Body/close vs wick convention — add one sentence to labeling docs (no label changes)
+**Milestone:** Issue #32 top-3 complete + pushed (gallery `8f1e7a8`, ledger `d6ab9ec`,
+overlap detector + anchor convention `84b42db`). local == origin, tree clean, source-fib
+JSON unchanged, no new deps, no artifacts committed.
 
-   Sample review:
+**Next active track (recommended order):**
+
+1. **Single-fib declutter edit-mode** (`labeling/tool.py`) — evaluate-later from #32;
+   motivated by `20171228` deferring on GUI clutter. Code change → own approved task + tests.
+2. **`fib_BTC-USD_4h_20171228T200000` correction** — still `correction-candidate` in the
+   [ledger](reviews/ledgers/btc-4h-source-quality-ledger.csv). Do **not** correct in the
+   cluttered GUI; use the declutter mode (or exact target candle timestamp). Change
+   `anchor_a` only, keep anchor_b, body/close convention. Then update the ledger row
+   candidate → corrected. Context:
    [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
-2. **1H source labeling** — deferred. 4H is the current lowest active timeframe. Fetch
-   1H cache first (`data.fetch --timeframes 1h`). Separate decision before starting.
+3. **Chart-regression strategy** — evaluate-later from #32; spike structural/hash vs
+   `pytest-mpl`, resolving the binary-baseline / anti-blob question.
+
+**Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
+(`data.fetch --timeframes 1h`). Separate decision before starting.
 
 ## Guardrails
 
