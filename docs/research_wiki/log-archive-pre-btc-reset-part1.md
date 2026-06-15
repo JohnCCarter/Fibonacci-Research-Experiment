@@ -1,6 +1,6 @@
 # Archived wiki log (pre-BTC monthly reset, part 1)
 
-Moved from log.md on 2026-06-09. Part 1 of 2. Next: [part 2](log-archive-pre-btc-reset-part2.md).
+Moved from log.md on 2026-06-09. Part 1 of 3. Next: [part 2](log-archive-pre-btc-reset-part2.md).
 
 ## [2026-06-05] decision | MTF fib level projection — design + inspection
 

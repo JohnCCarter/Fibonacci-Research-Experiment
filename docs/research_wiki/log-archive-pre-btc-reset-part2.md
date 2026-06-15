@@ -1,6 +1,6 @@
 # Archived wiki log (pre-BTC monthly reset, part 2)
 
-Part 2 of 2. Previous: [part 1](log-archive-pre-btc-reset-part1.md).
+Part 2 of 3. Previous: [part 1](log-archive-pre-btc-reset-part1.md). Next: [part 3](log-archive-pre-btc-reset-part3.md).
 
 - `.cursor/rules/repo-aware-coding-agent.mdc` (always apply)
 - `docs/agent/REPO_AWARE_AGENT.md` — Cursor settings, `@` context, User Rules snippet
