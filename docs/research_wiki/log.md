@@ -14,6 +14,19 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] review | MTF confluence CP2 — sensitivity / robustness
+
+Robustness pass over CP1. Added stdlib `cluster_confluence_fixed_band` (complete-linkage in
+price + single-linkage in time) + `run_sensitivity` (9 new tests). Predeclared epsilons
+0.0025/0.005/0.01. Single-linkage total 173/222/266; chaining (span>ε) 12/30/70 = 7%/14%/26%.
+Fixed-band 144/188/242 (0 over-ε by construction). **c001 (~29274) robust 4-TF** across
+methods/epsilons (3-TF under fixed-band only at 0.01, a band-cut effect). **c002 (~21167)
+chaining-dependent** — 4-TF only under single-linkage at ε≥0.005 with span 0.00627>ε; dissolves
+to 2-TF fragments under fixed-band. Verdict: confluence is real but CP1 overstated c002.
+Conditional GO to CP3 visual atlas (render fixed-band + annotate span). No chart, no tuning,
+no source change. Full suite 394 passed, 75%. Report:
+[`reviews/btc-mtf-confluence-sensitivity-20260615.md`](reviews/btc-mtf-confluence-sensitivity-20260615.md).
+
 ## [2026-06-15] review | MTF confluence atlas CP1 — confluence table
 
 First analytical slice on the locked corpus. New stdlib module `research/mtf_confluence.py`
