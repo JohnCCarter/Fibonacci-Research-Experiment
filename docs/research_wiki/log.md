@@ -14,6 +14,23 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] question | Fib → Genesis V2 — Phase 0 pre-registration
+
+Docs-only pre-registration for a *possible* next track: locked BTC human-fib corpus as a
+**causal feature source**, tested in Genesis V2 as a behaviour harness. Registers, before any
+code: **one falsifiable question** (does price react measurably differently at causal robust
+fixed-band MTF confluence zones than at matched naïve/placebo levels, OOS?); **why not
+anchor-recognition first** (hindsight `anchor_b` + label-existence = selection leakage →
+descriptive, not causal); **causal feature rule** (both anchors confirmed + buffer before `t`,
+no future labels, no full-sample stats); **leakage manifest** (forbidden: pre-confirmation
+`anchor_b`, whole-corpus-in-backtest, CP1–CP3 zones as live features, tuning epsilon on holdout,
+full-sample normalisation, random split, leaking baseline); **≥3 baselines** (causal swing
+high/low + shuffled/placebo confluence = primary); **time-split + purge/embargo holdout**, BTC
+first; **neutral success metrics** (touch/rejection freq, ATR-normalised move, close-through vs
+bounce, time-to-reaction) vs baselines — not profit; **stop/go**. Authorises nothing beyond the
+note; Phase 1 (feature-export spec) needs an explicit go.
+[Note](reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md).
+
 ## [2026-06-15] decision | MTF confluence CP1–CP3 — interpretation & decision note
 
 Docs-only synthesis closing the MTF-confluence track. **Observed:** 222 single-linkage

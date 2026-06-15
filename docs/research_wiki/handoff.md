@@ -136,13 +136,13 @@ locked** (integrity capstone 2026-06-15:
 [`reviews/btc-source-fib-corpus-integrity-20260615.md`](reviews/btc-source-fib-corpus-integrity-20260615.md)).
 **MTF confluence track CP1–CP3 — CLOSED.** CP1 ([table](reviews/btc-mtf-confluence-table-20260615.md))
 + CP2 ([sensitivity](reviews/btc-mtf-confluence-sensitivity-20260615.md)) + CP3
-([capstone](reviews/btc-mtf-confluence-atlas-cp3-20260615.md)) done — `research/mtf_confluence.py`
-+ `mtf_confluence_atlas.py` (stdlib). 5 cards, 3 archetypes, **all human-approved**: c001 robust
-fixed-band 4-TF; c002 chaining-dependent (not tight); c004/c006/c007 zero-span exact-price 3-TF.
-[Decision note](reviews/btc-mtf-confluence-interpretation-decision-20260615.md): confluence is
-**geometry, not edge proof**. **Recommendation: stop the MTF track.** No more cards / no behaviour
-study yet. **Next active decision is a fork: pause Fib, or open a new track with one falsifiable
-question** (strongest candidate: behaviour study with a naïve-level baseline — only once written).
+([capstone](reviews/btc-mtf-confluence-atlas-cp3-20260615.md)) done — 5 cards, 3 archetypes,
+**all human-approved**. [Decision note](reviews/btc-mtf-confluence-interpretation-decision-20260615.md):
+confluence is **geometry, not edge proof** → **stop the MTF track**. **Fork written up
+(docs-only):** candidate next track pre-registered in [Phase 0 prereg](reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md)
+— one falsifiable behaviour question (causal confluence zones vs placebo/naïve levels, OOS),
+leakage manifest, baselines, time-split holdout, stop/go. **Not authorised** beyond the note;
+Phase 1 (feature-export spec) needs an explicit go.
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.
