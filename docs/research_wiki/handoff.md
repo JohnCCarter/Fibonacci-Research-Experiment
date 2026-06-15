@@ -22,6 +22,13 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 Source-quality review ledger** — `research/review_ledger.py` (stdlib-only,
+  no new deps): flat CSV making review verdicts machine-trackable, controlled vocab +
+  deterministic `source_hash` tying each verdict to the exact facit version. First ledger
+  for the 4H Tier 2 sample-pass (8 rows) at
+  `docs/research_wiki/reviews/ledgers/btc-4h-source-quality-ledger.csv`; `20171228T200000`
+  tracked as suspicious / correction-candidate. Implements Issue #32 top-ROI #2.
+  Validate: `python -m fibengine.research.review_ledger --validate <ledger.csv>`.
 - **2026-06-15 Static HTML artifact gallery** — `research/artifact_gallery.py` (stdlib-only,
   no new deps): scans a review PNG dir → self-contained `index.html` with relative links,
   clean+levels paired, auto-detecting map (flat) and zoom (nested) layouts. Standalone
@@ -92,19 +99,9 @@ append-only trail lives in [log.md](log.md).
   `human_review_pack`/`rows`/`constants`, and docs. All levels are event-capable and
   sampled equally (round-robin). Added `human_highlights` (presentation-only) to
   `HumanFibAnnotation`. Prior golden-zone 1M pack superseded by an unbiased regenerated pack.
-- **2026-06-09 log-scale + profile fix** — fib levels computed log-scale
-  (`scale_mode: log`); profile `tradingview_log_chamoun` `[0, 0.382, 0.5, 0.618,
-  0.786, 1]` (no 0.236). Charts render a log price axis (labeling tool + both review
-  tools). (Golden-zone `primary_active_levels` sampling was later retired — see 2026-06-10.)
-  Prior linear/0.236 labels, events, and review packs archived to
-  `archive/research_superseded/2026-06-09_pre_log_fib_profile_reset/`.
-- **2026-06-09 1M re-label** — 9 monthly fibs re-drawn; `human_fib_events` +
-  BTC-only review pack `human_fib_review_20260609T135548Z` (golden-zone biased).
-- **2026-06-09 events log-scale fix** — `detect_level_events` / `human_fib_events`
-  now compute level prices with the annotation's `scale_mode` (was always linear);
-  events + pack regenerated so review level prices match the log facit.
-- **2026-06-08 reset** — prior experiments + mixed-symbol data archived to
-  `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/`.
+- **2026-06-08…10 (earlier resets/fixes)** — log-scale + profile fix, 1M re-label,
+  events log-scale fix, golden-zone retirement, and the BTC monthly-first reset. Full
+  detail in [log.md](log.md) (append-only trail).
 
 ## Verification Snapshot
 

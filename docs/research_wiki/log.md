@@ -13,6 +13,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] feat | Source-quality review ledger (Issue #32 top-ROI #2)
+
+Added `research/review_ledger.py` — stdlib-only helper (csv/hashlib/json; no new deps)
+that makes source-fib review verdicts machine-trackable. Flat CSV, controlled vocab
+(verdict ∈ ok/ok-with-note/watchlist/suspicious; status ∈ accepted/noted/open/
+correction-candidate/deferred/corrected), with a deterministic `source_hash`
+(`sha256:<16 hex>` of the fib JSON bytes) tying each verdict to the exact facit version.
+Generated the first ledger for the 4H Tier 2 sample-pass (8 rows) at
+[`reviews/ledgers/btc-4h-source-quality-ledger.csv`](reviews/ledgers/btc-4h-source-quality-ledger.csv);
+`fib_BTC-USD_4h_20171228T200000` represented as suspicious / correction-candidate. Schema
+doc: [`reviews/ledgers/README.md`](reviews/ledgers/README.md). 12 tests
+(`tests/research/test_review_ledger.py`: hash determinism, vocab validation,
+correction-candidate representable, roundtrip, header check); ruff + full suite green
+(352 passed, 74.91% cov). No source labels changed; CSV is committed text under `docs/`.
+
 ## [2026-06-15] feat | Static HTML artifact gallery (Issue #32 top-ROI #1)
 
 Added `research/artifact_gallery.py` — stdlib-only helper (no new deps) that scans a
