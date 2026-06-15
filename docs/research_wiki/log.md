@@ -13,6 +13,30 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] review | BTC/USD 4H visual confirmation Tier 1 — map review complete
+
+Reviewed all 11 groups from `fourh_source_fib_map.py` (maps regenerated 2026-06-15).
+Full review: [btc-4h-tier1-map-review-20260615.md](reviews/btc-4h-tier1-map-review-20260615.md).
+
+**Result:** 9 of 11 groups map-OK. 2 groups need Tier 2:
+
+- **`2017_h2` (103 fibs) — full Tier 2:** Sep–Dec 2017 parabola; every zone globally
+  unreadable on the annual map. Per-fib zoom needed for all 103 fibs.
+- **`2021` (partial) — Tier 2 for Dec 2020 → Mar 2021 cluster:** Initial bull-leg
+  zone (anchor_a in Jan–Mar 2021, ~37 fibs) is unreadable. Apr–Dec 2021 is map-OK.
+  Scope: `anchor_a in [2021-01-01, 2021-04-01)`. Dec 2020 fibs are in the 2020 group
+  (map-OK) and do not need Tier 2.
+
+**Threshold rule confirmed:** local density per zone determines readability, not total
+fib count. A 55-fib group (2021) can be mostly map-OK; a 103-fib group (2017_h2) over
+4 months is globally unreadable.
+
+**Chart quality:** y-axis log confirmed (`ax.set_yscale("log")` line 246 of
+`monthly_fib_map.py`). X-axis label density is a display limitation of wide Tier 1
+maps; Tier 2 per-fib zoom windows will be narrower and more readable.
+
+**Next:** implement Tier 2 `fourh_source_fib_zoom.py`.
+
 ## [2026-06-12] review | BTC/USD 4H visual confirmation Tier 1 — annual source-fib maps built
 
 Implemented `research/fourh_source_fib_map.py` (Tier 1 of the locked design): annual

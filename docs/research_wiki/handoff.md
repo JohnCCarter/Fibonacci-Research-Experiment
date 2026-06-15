@@ -22,6 +22,12 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 4H Tier 1 map review complete** — all 11 annual groups inspected.
+  9/11 map-OK. Two groups need Tier 2: **2017_h2** (103 fibs, Sep–Dec 2017 parabola —
+  full Tier 2) and **2021** (partial — Dec 2020 → Mar 2021 cluster only, anchor_a
+  in [2021-01-01, 2021-04-01), ~37 fibs). Threshold rule confirmed: local density per
+  zone, not total fib count. Y-axis log confirmed (line 246 `monthly_fib_map.py`).
+  Full review: [`reviews/btc-4h-tier1-map-review-20260615.md`](reviews/btc-4h-tier1-map-review-20260615.md).
 - **2026-06-12 4H visual confirmation Tier 1 built** — `research/fourh_source_fib_map.py`
   renders **annual combined 4H source-fib maps** (fibs grouped by `anchor_a` year; dense
   years >60 fibs split into calendar half-years). Reuses `monthly_fib_map` primitives
@@ -109,17 +115,13 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. **Human review of the Tier-1 4H maps** — open
-   `experiments/review/fourh_source_fib_map/` (regenerate via the CLI below) and scan the
-   per-year clean/levels PNGs to confirm 4H anchor pins sit on the correct structural
-   swings. Tier 1 is **built** (2026-06-12): 366/366 drawn, 11 groups; most years scan
-   cleanly. Regenerate:
-   `uv run --no-sync python -m fibengine.research.fourh_source_fib_map --fib-dir data/labels/human_fib/bitfinex/BTC-USD/4h --config config/settings.expansion.yaml`
-2. **4H visual confirmation — Tier 2 (on-demand)** — `fourh_source_fib_zoom.py` (per-fib
-   windowed 4H charts). Tier 1 already flagged **2017_h2 (~103 fibs, Sep–Dec parabola)**
-   as too dense to source-review as a map — start Tier 2 there if/when per-fib zoom is
-   wanted. Design: [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
-3. **1H source labeling** — deferred. 4H is the current lowest active timeframe. Fetch
+1. **4H visual confirmation — Tier 2** — implement `fourh_source_fib_zoom.py` (per-fib
+   windowed 4H charts). Tier 1 review (2026-06-15) confirmed two scopes:
+   - `2017_h2`: all 103 fibs (Sep–Dec 2017 parabola — globally unreadable on map)
+   - `2021_dec2020_mar2021`: anchor_a in [2021-01-01, 2021-04-01), ~37 fibs
+   Design: [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
+   Review: [`reviews/btc-4h-tier1-map-review-20260615.md`](reviews/btc-4h-tier1-map-review-20260615.md).
+2. **1H source labeling** — deferred. 4H is the current lowest active timeframe. Fetch
    1H cache first (`data.fetch --timeframes 1h`). Separate decision before starting.
 
 ## Guardrails
