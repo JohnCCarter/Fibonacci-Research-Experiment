@@ -6,8 +6,8 @@ Third visual-atlas slice. Renders **three** *exact-price* confluence cards under
 timeframes landing on the *identical* price. Zero-span coincidences are immune to both epsilon
 and chaining and survive trivially — the structural opposite of the c002 chaining card.
 
-**Status: generated — pending human visual inspection.** This page does **not** assert the
-cards are approved.
+**Status: human-approved (2026-06-15).** All three zero-span cards approved after visual
+inspection. Pack closed in the [CP3 capstone](btc-mtf-confluence-atlas-cp3-20260615.md).
 
 ## Label ↔ id mapping (read this first)
 
@@ -74,5 +74,6 @@ nothing about price behaviour is asserted. Not human-approved yet. Not a full at
 
 ## Next step
 
-**Human visual inspection of the three zero-span cards** → approve or adjust. No further
-atlas slices started without approval.
+Approved. First CP3 atlas pack closed — see the
+[CP3 capstone](btc-mtf-confluence-atlas-cp3-20260615.md). No further atlas slices without an
+explicit go decision.

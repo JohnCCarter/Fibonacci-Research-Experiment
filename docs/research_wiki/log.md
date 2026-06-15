@@ -14,6 +14,18 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] decision | MTF confluence atlas CP3 — first pack closed (all cards approved)
+
+First CP3 visual-atlas pack **complete and human-approved (2026-06-15)**. Five cards across
+three structural archetypes: **c001** robust fixed-band 4-TF (span 0.00123 ≤ ε); **c002**
+chaining-dependent single-linkage contrast (span 0.00627 > ε, dissolves under fixed-band,
+never presented as tight 4-TF); **c004/c006/c007** zero-span exact-price 3-TF (span = 0 at
+~$64829/$13764/$9085). All resolved by structural signature (cluster ids are positional and
+unstable), out_dir keyed on stable label, charts assert geometry only — no edge/signal/
+support-resistance. PNGs gitignored, none committed. **Next decision (not started):** stop
+here as the first pack, or later expand with fixed-band clusters only on an explicit go.
+Docs-only close; gates green (406 passed). [Capstone](reviews/btc-mtf-confluence-atlas-cp3-20260615.md).
+
 ## [2026-06-15] feat | MTF confluence atlas CP3 slice 3 — zero-span 3-TF cards (generated)
 
 c002 contrast card **human-approved**. Slice 3 adds three **zero-span** (exact-price) 3-TF
