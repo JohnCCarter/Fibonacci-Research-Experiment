@@ -13,6 +13,12 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] maintenance | Reconcile data/labels/INDEX.md with current facit
+
+`data/labels/INDEX.md` was stale (2026-06-10: 1w/1d/4h listed absent/0). Reconciled to
+on-disk base counts (excl. sidecars): 1M=9, 1w=21, 1d=67, 4h=365; authority pointed to
+handoff.md. Docs-only. (Note: log.md near its size bound — archive old entries next.)
+
 ## [2026-06-15] fix | 20250506 dedup — fib A superseded, fib B retained
 
 Resolved the strongest overlap-detector near-duplicate. `fib_BTC-USD_4h_20250506T080000`
