@@ -27,9 +27,8 @@ append-only trail lives in [log.md](log.md).
   changed; anchor_b/fib_id unchanged; guard PASS; ledger candidate → corrected. Closes the
   declutter→correction→ledger track. [Report](reviews/btc-4h-fib-20171228-correction-20260615.md).
 - **2026-06-15 Single-fib declutter edit-mode** — `labeling/tool.py --edit-fib-id` opens
-  one saved human fib, hides HTF overlays, auto-fits window, preloads anchors (read-only on
-  load; fail-closed loader `human_fib.find_annotation`). Default unchanged. Tool support for
-  the deferred `20171228` correction (not corrected). 10 tests.
+  one saved human fib, hides HTF overlays, auto-fits window, preloads anchors (read-only;
+  fail-closed `human_fib.find_annotation`). Default unchanged. 10 tests.
 - **2026-06-15 Overlap/dedup detector + anchor convention** — `research/overlap_detector.py`
   (stdlib-only, report-only): boxes fibs in (time, log-price), flags near-duplicate/overlap
   candidates (box IoU + shared-anchor) for human review; never edits labels. Real run on
@@ -140,8 +139,10 @@ JSON unchanged, no new deps, no artifacts committed.
 2. **`fib_BTC-USD_4h_20171228T200000` correction — DONE.** anchor_a moved to 2017-12-28T08:00
    @ 13145 (candidate_1, preview-first flow); ledger updated candidate → corrected.
    Report: [`reviews/btc-4h-fib-20171228-correction-20260615.md`](reviews/btc-4h-fib-20171228-correction-20260615.md).
-3. **Chart-regression strategy** — evaluate-later from #32; spike structural/hash vs
-   `pytest-mpl`, resolving the binary-baseline / anti-blob question. (Next open item.)
+3. **Chart-regression strategy — SPIKE DONE.** Recommendation: structural contract tests
+   + text/metadata snapshots first; defer pixel/`pytest-mpl`; no binary baselines. Follow-up
+   #F (render_summary + golden snapshots, stdlib) is the optional next implementation.
+   Report: [`reviews/chart-regression-strategy-20260615.md`](reviews/chart-regression-strategy-20260615.md).
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.

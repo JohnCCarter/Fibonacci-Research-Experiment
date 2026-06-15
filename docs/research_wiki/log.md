@@ -13,6 +13,19 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] decision | Chart regression strategy — structural-first (spike)
+
+Design spike for Issue #32 evaluate-later. Recommendation: **structural chart-contract
+tests + text/metadata snapshots first; defer pixel regression.** Grounded in the repo's
+existing style (~170 structural assertions across 22 render test files) and the anti-blob
+policy. Adopt now: extend structural assertions on render dataclasses + committed golden
+JSON/markdown summaries (no blobs). Keep HTML gallery + ledger as the manual visual layer.
+Defer `pytest-mpl`/`matplotlib.testing.compare` (need committed PNG baselines, flaky across
+versions); reject image/perceptual hashing (new dep, version-sensitive). No binary
+baselines committed. Follow-up issue #F drafted (render_summary + golden snapshots, stdlib).
+Report: [`reviews/chart-regression-strategy-20260615.md`](reviews/chart-regression-strategy-20260615.md).
+Docs-only; no code/deps/artifacts.
+
 ## [2026-06-15] fix | 20171228 source fib corrected (preview-first flow)
 
 `fib_BTC-USD_4h_20171228T200000` corrected via preview-first flow: machine rendered 3

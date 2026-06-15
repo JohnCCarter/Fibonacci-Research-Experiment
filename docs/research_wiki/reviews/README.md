@@ -24,3 +24,4 @@ on 2026-06-08. They are **not** current evidence.
 | [ledgers/README.md](ledgers/README.md) | Source-quality review ledgers (machine-trackable verdicts) — Issue #32 top-ROI #2 |
 | [btc-4h-overlap-candidates-20260615.md](btc-4h-overlap-candidates-20260615.md) | 4H overlap/near-duplicate candidates (report-only) — Issue #32 top-ROI #3 |
 | [btc-4h-fib-20171228-correction-20260615.md](btc-4h-fib-20171228-correction-20260615.md) | 20171228 anchor_a correction (preview-first flow) — candidate_1 applied |
+| [chart-regression-strategy-20260615.md](chart-regression-strategy-20260615.md) | Chart regression strategy spike (#32 evaluate-later) — structural-first, defer pixel |
