@@ -14,6 +14,26 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] feat | MTF confluence atlas CP3 slice 1 — c001 card (generated)
+
+First visual-atlas slice. New `research/mtf_confluence_atlas.py` (stdlib + existing matplotlib
+stack) renders one confluence card for the robust 4-TF cluster **c001** under **fixed-band** at
+the primary `epsilon_log=0.005`, on a **1d** candle backdrop. Target resolved by **structural
+signature** (tf_count==4, exactly {1M,1w,1d,4h}, repr≈29274±200, span≤0.005, window year 2021),
+never a hard-coded id — exactly one fixed-band cluster matches. Fail-closed: zero/ambiguous
+signature match, superseded `20250506T080000` in any member, off-protocol timeframe (no 1H),
+and missing candle cache (no auto-fetch). Members reconstructed in-process from `LevelRow`
+(not the truncated CSV); 4 members (1M/1w/1d/4h) at 29247–29283, `price_span_log=0.00123`
+annotated in a metadata box (CP2-corrected headline). Card = candles + shaded [min,max] band +
+representative line + per-TF member lines (levels view). `render_summary` gained
+`cluster_atlas_summary` (includes the analytical numbers — `price_span_log` is the central CP2
+metric) + golden snapshot. PNGs under `experiments/review/mtf_confluence_atlas/fixed_band/c001/`
+(gitignored, none staged). 10 tests; no new deps; no source labels changed. **Generated,
+pending human visual inspection** — observed: the four members within $36 render as a near-single
+band (label stacking noted as a candidate adjustment). Next: approve card design or adjust, then
+c002 chaining-dependent contrast card. No chart-as-signal, no edge.
+[Report](reviews/btc-mtf-confluence-atlas-cp3-c001-20260615.md).
+
 ## [2026-06-15] review | MTF confluence CP2 — sensitivity / robustness
 
 Robustness pass over CP1. Added stdlib `cluster_confluence_fixed_band` (complete-linkage in

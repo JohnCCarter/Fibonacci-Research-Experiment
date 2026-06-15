@@ -70,6 +70,40 @@ def zoom_summary(result, root: Path | str) -> dict:
     }
 
 
+def cluster_atlas_summary(result, root: Path | str) -> dict:
+    """Structural summary of a ``ConfluenceCard`` (MTF confluence atlas).
+
+    Unlike ``map_summary`` / ``zoom_summary`` this **includes the analytical numbers**
+    (``representative_price``, ``price_min`` / ``price_max``, ``price_span_log``): those are
+    not source-JSON echoes but deterministic *derived* content, and ``price_span_log`` is the
+    central CP2 metric (it is what distinguishes a tight confluence from a chained one). The
+    "omit prices" convention of the source-fib summaries exists because fib *level* prices are
+    pure echoes of the source JSON; a cluster's band/span are computed, so they belong here.
+
+    Member fib ids are listed in full (sorted) so the snapshot also guards membership — e.g.
+    that the superseded fib never appears.
+    """
+    return {
+        "flow": "mtf_confluence_atlas",
+        "signature_label": result.signature_label,
+        "cluster_id": result.cluster_id,
+        "method": result.method,
+        "epsilon_log": result.epsilon_log,
+        "backdrop_tf": result.backdrop_tf,
+        "representative_price": result.representative_price,
+        "price_min": result.min_price,
+        "price_max": result.max_price,
+        "price_span_log": result.price_span_log,
+        "tf_count": result.timeframe_count,
+        "timeframes": list(result.timeframes),
+        "ratios": list(result.ratios),
+        "member_count": len(result.member_fib_ids),
+        "member_fib_ids": sorted(result.member_fib_ids),
+        "clean": _rel(result.clean, root),
+        "levels": _rel(result.levels, root),
+    }
+
+
 def gallery_summary(root: Path | str) -> dict:
     """Structural summary of an artifact-gallery output dir (groups/items/kinds + links)."""
     root = Path(root)

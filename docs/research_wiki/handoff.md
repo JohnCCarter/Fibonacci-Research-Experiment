@@ -22,6 +22,11 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 MTF confluence atlas CP3 slice 1 (c001 card)** — `research/mtf_confluence_atlas.py`
+  (stdlib + matplotlib): one confluence card for robust 4-TF c001 (fixed-band, ε=0.005, 1d
+  backdrop, `price_span_log` 0.00123 annotated). Signature-resolved, fail-closed; PNGs gitignored.
+  `render_summary.cluster_atlas_summary` + golden snapshot; 10 tests. **Generated, pending human
+  inspection.** [Report](reviews/btc-mtf-confluence-atlas-cp3-c001-20260615.md).
 - **2026-06-15 Structural chart-contract snapshots (#F)** — `research/render_summary.py`
   (stdlib): stable text summaries of map/zoom/gallery renders + golden JSON under
   `tests/research/snapshots/`. Automatic structural regression; no PNG baselines/deps.
@@ -124,25 +129,20 @@ append-only trail lives in [log.md](log.md).
 overlap detector + anchor convention `84b42db`). local == origin, tree clean, source-fib
 JSON unchanged, no new deps, no artifacts committed.
 
-**Next active track (recommended order):**
-
-1. **Single-fib declutter edit-mode — DONE.** `labeling/tool.py --edit-fib-id`.
-2. **`fib_BTC-USD_4h_20171228T200000` correction — DONE.** anchor_a moved to 2017-12-28T08:00
-   @ 13145 (candidate_1, preview-first flow); ledger updated candidate → corrected.
-   Report: [`reviews/btc-4h-fib-20171228-correction-20260615.md`](reviews/btc-4h-fib-20171228-correction-20260615.md).
-3. **Chart-regression — DONE (spike + #F).** `research/render_summary.py` + golden JSON
-   snapshots under `tests/research/snapshots/` (map/zoom/gallery; stdlib, no baselines).
-   Pixel/`pytest-mpl` still deferred. Spike:
-   [`reviews/chart-regression-strategy-20260615.md`](reviews/chart-regression-strategy-20260615.md).
-
-No open implementation items remain in the #32 tooling track. **Corpus declared clean and
+**#32 tooling track — all DONE** (single-fib declutter edit-mode, `20171228` correction,
+chart-regression spike + #F render_summary/golden snapshots; detail in [log.md](log.md)).
+**Corpus declared clean and
 locked** (integrity capstone 2026-06-15:
 [`reviews/btc-source-fib-corpus-integrity-20260615.md`](reviews/btc-source-fib-corpus-integrity-20260615.md)).
 **MTF confluence atlas in progress.** CP1 ([table](reviews/btc-mtf-confluence-table-20260615.md))
 + CP2 ([sensitivity](reviews/btc-mtf-confluence-sensitivity-20260615.md)) DONE —
 `research/mtf_confluence.py` (stdlib). CP2: c001 robust 4-TF; **c002 chaining-dependent** (not
-tight 4-TF); fixed-band 188 clusters @0.005; chaining 14% @0.005→26% @0.01. **Next: CP3 visual
-atlas (conditional)** — render fixed-band clusters + annotate `price_span_log`; no signal/edge.
+tight 4-TF); fixed-band 188 clusters @0.005; chaining 14% @0.005→26% @0.01. **CP3 slice 1 DONE
+(generated, pending human inspection)** — `research/mtf_confluence_atlas.py` renders the c001
+card (fixed-band, ε=0.005, 1d backdrop, `price_span_log` annotated; signature-resolved,
+fail-closed; PNGs gitignored). [CP3 report](reviews/btc-mtf-confluence-atlas-cp3-c001-20260615.md).
+**Next: human visual inspection of the c001 card** → approve card design or adjust; only after
+approval, c002 chaining-dependent contrast card. No signal/edge.
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.
