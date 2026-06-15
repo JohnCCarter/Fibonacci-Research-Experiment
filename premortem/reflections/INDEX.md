@@ -16,7 +16,9 @@ Kurerad översikt. Nya reflektioner: `YYYY-MM-DD-<kort-beskrivning>.md` (se [REA
 | 2026-05-29 | [fib-multi-behavior-per-level](2026-05-29-fib-multi-behavior-per-level.md) | **finding** | behavior, events, #12 | Samma nivå → flera events; v3; realign → Hypothesis A spot-check |
 | 2026-06-01 | [hypothesis-a-spot-check-pilot](2026-06-01-hypothesis-a-spot-check-pilot.md) | run | #12, level_events, review | BTC 1d review_20260601T152524Z (40 events); labels pending |
 | 2026-06-01 | [human-fib-annotation-layer](2026-06-01-human-fib-annotation-layer.md) | decision | labeling, fib, behavior | Human-fib ground truth + candidates (emit-only); atoms vs path |
-| 2026-06-02 | [mtf-origin-1w-to-1d](2026-06-02-mtf-origin-1w-to-1d.md) | **finding** | MTF, 1w, 1d, origin | Chart-ursprung: samma H/L på 1d → fler nivåträffar; VAD vs HUR |
+| 2026-06-02 | [mtf-origin-1w-to-1d](2026-06-02-mtf-origin-1w-to-1d.md) | finding · _historical_ | MTF, 1w, 1d, origin | Chart-ursprung: samma H/L på 1d → fler nivåträffar; VAD vs HUR — **superseded av reset 06-08** |
+| 2026-06-15 | [btc-monthly-first-reset](2026-06-15-btc-monthly-first-reset.md) | **decision** | reset, BTC, protocol, corpus | BTC monthly-first-reset (06-08), log-scale-profil (06-09), korpus låst 9/21/67/365=462 |
+| 2026-06-15 | [mtf-confluence-genesis-v2-gate](2026-06-15-mtf-confluence-genesis-v2-gate.md) | **decision** | MTF, confluence, genesis-v2, governance | MTF-confluence stängd (geometri ≠ edge); Phase 0 prereg + Phase 1 spec PASS; **Phase 2 kräver explicit GO** |
 
 **Djupare guider:**
 

@@ -1,4 +1,13 @@
+---
+status: historical
+superseded_by: 2026-06-15-btc-monthly-first-reset
+---
+
 # 2026-06-02 — MTF-ursprung: samma H/L på 1w och 1d
+
+> **Historical (superseded):** mixed-symbol/pre-monthly-spåret arkiverades vid BTC monthly-first-
+> reseten 2026-06-08. Behåll som kontext, **ej aktuell evidens** — se
+> [2026-06-15 reset](2026-06-15-btc-monthly-first-reset.md).
 
 **Typ:** finding (chart observation)  
 **Taggar:** MTF, 1w, 1d, labeling, fib, origin
