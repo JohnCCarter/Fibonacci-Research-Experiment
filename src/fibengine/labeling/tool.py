@@ -3,6 +3,9 @@
 Run:
     uv run python -m fibengine.labeling.tool
     uv run python -m fibengine.labeling.tool --symbols BTC/USD,ETH/USD --timeframes 1h,1w
+    # single-fib declutter mode (open one saved human fib, HTF overlays hidden):
+    uv run python -m fibengine.labeling.tool --symbol BTC/USD --timeframe 4h \
+        --edit-fib-id fib_BTC-USD_4h_20171228T200000 --config config/settings.expansion.yaml
 
 Controls:
 - Click sets the active point. It snaps to the nearest bar high/low.
@@ -45,7 +48,9 @@ from fibengine.data.loader import load_candles
 from fibengine.labeling.hover import HoverReadout
 from fibengine.labeling.htf_fib_overlay import draw_htf_overlays, load_htf_overlays
 from fibengine.labeling.human_fib import (
+    HumanFibAnnotation,
     anchors_from_picks,
+    find_annotation,
     make_annotation,
     save_annotation,
 )
@@ -261,7 +266,52 @@ def _parse_args() -> argparse.Namespace:
         default=3,
         help="Context months prepended/appended when using --label-year (default: 3).",
     )
+    parser.add_argument(
+        "--edit-fib-id",
+        dest="edit_fib_id",
+        default=None,
+        help=(
+            "Single-fib declutter mode: open exactly one saved human source fib by id "
+            "(e.g. fib_BTC-USD_4h_20171228T200000). HTF overlays are hidden, the window "
+            "auto-fits the fib's A→B span, and its anchors are preloaded for assessment. "
+            "Read-only on load — nothing is saved unless you press 'w'."
+        ),
+    )
     return parser.parse_args()
+
+
+def _window_from_anchors(
+    ann: HumanFibAnnotation, min_pad_days: int = 2
+) -> tuple[pd.Timestamp, pd.Timestamp]:
+    """Display window bracketing a fib's A→B span with symmetric context padding.
+
+    Pad each side by the larger of the leg span or ``min_pad_days`` so a one-bar leg
+    still gets readable context. Pure helper — no I/O.
+    """
+    ta = pd.to_datetime(ann.anchor_a.time, utc=True)
+    tb = pd.to_datetime(ann.anchor_b.time, utc=True)
+    lo, hi = min(ta, tb), max(ta, tb)
+    pad = max(hi - lo, pd.Timedelta(days=min_pad_days))
+    return lo - pad, hi + pad
+
+
+def _preload_fib_picks(workspace: LabelWorkspace, ann: HumanFibAnnotation) -> None:
+    """Load a fib's exact anchors as the active high/low picks (in-memory only).
+
+    Maps anchors to high/low by price so the existing redraw shows the selected fib's
+    markers and its level ladder. Mutates no label file.
+    """
+    points = [
+        (ann.anchor_a.time, float(ann.anchor_a.price)),
+        (ann.anchor_b.time, float(ann.anchor_b.price)),
+    ]
+    hi = max(points, key=lambda p: p[1])
+    lo = min(points, key=lambda p: p[1])
+    workspace.picks = {
+        "high": (_nearest_timestamp_bar(workspace.df, hi[0]), hi[1]),
+        "low": (_nearest_timestamp_bar(workspace.df, lo[0]), lo[1]),
+    }
+    workspace.active_kind = "high"
 
 
 def _resolve_window(
@@ -312,6 +362,7 @@ class LabelWorkspace:
     show_range: bool = False
     window_start: pd.Timestamp | None = None
     window_end: pd.Timestamp | None = None
+    single_fib_mode: bool = False
     _htf_overlays: list | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
@@ -361,7 +412,13 @@ class LabelWorkspace:
         return True
 
     def get_htf_overlays(self) -> list:
-        """Return HTF fib overlays; loaded once per market, cached until market switch."""
+        """Return HTF fib overlays; loaded once per market, cached until market switch.
+
+        In single-fib declutter mode the HTF overlays are suppressed (this is the main
+        source of chart clutter on lower timeframes), so only the selected fib shows.
+        """
+        if self.single_fib_mode:
+            return []
         if self._htf_overlays is None:
             self._htf_overlays = load_htf_overlays(
                 self.data.exchange,
@@ -691,9 +748,25 @@ def run_label_tool(args: argparse.Namespace | None = None):
         window_end=None,
         label_year=None,
         buffer_months=3,
+        edit_fib_id=None,
     )
     settings = _apply_cli_overrides(load_settings(cli.config or None), cli)
     window_start, window_end = _resolve_window(cli)
+
+    edit_fib_id = getattr(cli, "edit_fib_id", None)
+    selected_fib: HumanFibAnnotation | None = None
+    if edit_fib_id:
+        try:
+            selected_fib = find_annotation(
+                edit_fib_id,
+                exchange=settings.data.exchange,
+                symbol=settings.data.symbol,
+                timeframe=settings.data.timeframe,
+            )
+        except (FileNotFoundError, ValueError) as exc:
+            raise SystemExit(f"--edit-fib-id: {exc}") from exc
+        if window_start is None and window_end is None:
+            window_start, window_end = _window_from_anchors(selected_fib)
     args = args or argparse.Namespace(symbols=None, timeframes=None)
     symbols = _csv_values(args.symbols, DEFAULT_CYCLE_SYMBOLS)
     timeframes = _csv_values(args.timeframes, _default_timeframes(settings.data.timeframe))
@@ -710,8 +783,16 @@ def run_label_tool(args: argparse.Namespace | None = None):
         timeframes,
         window_start=window_start,
         window_end=window_end,
+        single_fib_mode=selected_fib is not None,
     )
-    workspace.load_existing_label()
+    if selected_fib is not None:
+        _preload_fib_picks(workspace, selected_fib)
+        print(
+            f"Single-fib edit mode: {selected_fib.fib_id} ({selected_fib.direction}) "
+            "— HTF overlays hidden, anchors preloaded. Nothing saved unless you press 'w'."
+        )
+    else:
+        workspace.load_existing_label()
 
     if window_start is not None or window_end is not None:
         if getattr(cli, "label_year", None) is not None:

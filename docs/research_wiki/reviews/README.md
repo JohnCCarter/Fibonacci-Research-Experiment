@@ -20,3 +20,13 @@ on 2026-06-08. They are **not** current evidence.
 | File | Description |
 |------|-------------|
 | [btc-1m-reaction-review-cycle-20260611.md](btc-1m-reaction-review-cycle-20260611.md) | All 9 BTC/USD 1M source fibs — 1D + 4H reaction review, approved 2026-06-11 |
+| [fib-tooling-ecosystem-scan-20260615.md](fib-tooling-ecosystem-scan-20260615.md) | Issue #32 tooling/ecosystem scan — inventory-only; top-3 ROI: HTML gallery, review ledger, overlap detector |
+| [ledgers/README.md](ledgers/README.md) | Source-quality review ledgers (machine-trackable verdicts) — Issue #32 top-ROI #2 |
+| [btc-4h-overlap-candidates-20260615.md](btc-4h-overlap-candidates-20260615.md) | 4H overlap/near-duplicate candidates (report-only) — Issue #32 top-ROI #3 |
+| [btc-4h-fib-20171228-correction-20260615.md](btc-4h-fib-20171228-correction-20260615.md) | 20171228 anchor_a correction (preview-first flow) — candidate_1 applied |
+| [chart-regression-strategy-20260615.md](chart-regression-strategy-20260615.md) | Chart regression strategy spike (#32 evaluate-later) — structural-first, defer pixel |
+| [btc-4h-fib-20250506-dedup-20260615.md](btc-4h-fib-20250506-dedup-20260615.md) | 20250506 dedup — fib A superseded, fib B retained (active 4H 366→365) |
+| [btc-source-fib-next-research-plan-20260615.md](btc-source-fib-next-research-plan-20260615.md) | Next research-pass design (read-only) — recommends corpus integrity report (#2) now, MTF confluence atlas (#1) next |
+| [btc-source-fib-corpus-integrity-20260615.md](btc-source-fib-corpus-integrity-20260615.md) | Corpus integrity capstone (read-only) — counts 9/21/67/365, conventions, source-quality state, known caveats; corpus declared clean. Next: MTF confluence atlas |
+| [btc-mtf-confluence-table-20260615.md](btc-mtf-confluence-table-20260615.md) | MTF confluence atlas CP1 (read-only) — 222 cross-TF level clusters at epsilon_log=0.005 (2×4-TF); GO to CP2 sensitivity. `research/mtf_confluence.py` (stdlib) + CSV |
+| [btc-mtf-confluence-sensitivity-20260615.md](btc-mtf-confluence-sensitivity-20260615.md) | MTF confluence CP2 (read-only) — epsilon sensitivity (0.0025/0.005/0.01) + fixed-band vs single-linkage. c001 robust 4-TF; c002 chaining-dependent; chaining 14%→26%. Conditional GO to CP3 visual atlas. Summary CSV |

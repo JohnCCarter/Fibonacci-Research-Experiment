@@ -15,23 +15,51 @@ append-only trail lives in [log.md](log.md).
 | 1 | **1M** | **Complete** — 9× source fibs, 1D + 4H reaction review approved (2026-06-11) |
 | 2 | **1W** | **Complete** — 21× source fibs verified; combined map + per-fib 4H zoom (2026-06-11) |
 | 3 | **1D** | **Complete** — 67× source fibs + 4H reaction-review (2026-06-12); 1816 events, 90-day window |
-| 4 | **4H** | **Complete** — 366× source fibs, 2017-01-05 → 2026-06-05 (2026-06-12) |
+| 4 | **4H** | **Complete** — 365 active source fibs (366 drawn; 1 superseded 20250506 dedup) |
 | 5 | 1H | Deferred — 1h cache not fetched yet |
 
 **ETH/USD:** blocked until BTC protocol approved.
 
 ## Recent Changes
 
+- **2026-06-15 Structural chart-contract snapshots (#F)** — `research/render_summary.py`
+  (stdlib): stable text summaries of map/zoom/gallery renders + golden JSON under
+  `tests/research/snapshots/`. Automatic structural regression; no PNG baselines/deps.
+- **2026-06-15 20171228 source fib corrected** — preview-first flow: anchor_a moved
+  2017-12-28T20:00 @ 13611 → 2017-12-28T08:00 @ 13145 (candidate_1). Only anchor_a + levels
+  changed; anchor_b/fib_id unchanged; guard PASS; ledger candidate → corrected. Closes the
+  declutter→correction→ledger track. [Report](reviews/btc-4h-fib-20171228-correction-20260615.md).
+- **2026-06-15 Single-fib declutter edit-mode** — `labeling/tool.py --edit-fib-id` opens
+  one saved human fib, hides HTF overlays, auto-fits window, preloads anchors (read-only;
+  fail-closed `human_fib.find_annotation`). Default unchanged. 10 tests.
+- **2026-06-15 Overlap/dedup detector + anchor convention** — `research/overlap_detector.py`
+  (stdlib, report-only): boxes fibs in (time, log-price), flags near-duplicate/overlap
+  candidates (box IoU + shared-anchor); never edits labels. Real run: 22 candidates (all
+  shared anchor_b). Body/close-vs-wick convention noted in `HUMAN_FIB_ANNOTATION.md`.
+  Issue #32 top-ROI #3. [Report](reviews/btc-4h-overlap-candidates-20260615.md).
+- **2026-06-15 Source-quality review ledger** — `research/review_ledger.py` (stdlib): flat
+  CSV making verdicts machine-trackable (controlled vocab + deterministic `source_hash`).
+  First ledger = 4H Tier 2 (8 rows). Issue #32 top-ROI #2.
+- **2026-06-15 Static HTML artifact gallery** — `research/artifact_gallery.py` (stdlib-only):
+  scans a review PNG dir → self-contained `index.html` (relative links, clean+levels paired,
+  auto-detects map/zoom layouts). Standalone; markdown index untouched; output gitignored.
+  Issue #32 top-ROI #1. `python -m fibengine.research.artifact_gallery --root <dir>`.
+- **2026-06-15 4H Tier 2 first manual sample-pass + first correction-candidate** — 8 fibs
+  inspected (4 per scope). Zoom resolves Tier 1 readability. **1 correction-candidate:**
+  `20171228T200000` — visual review found a better anchor_a candle adjacent to leg A →
+  suspicious; **deferred to a future correction-pass** (GUI too cluttered for safe manual
+  edit; needs isolated single-fib view or exact target candle timestamp). No label changed.
+  Watchlist: body/close vs wick convention (undocumented).
+  Full review: [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
+- **2026-06-15 4H Tier 1 map review complete** — all 11 annual groups inspected.
+  9/11 map-OK. Two groups need Tier 2: **2017_h2** (103 fibs, Sep–Dec 2017 parabola —
+  full Tier 2) and **2021** (partial — Dec 2020 → Mar 2021 cluster only, anchor_a
+  in [2021-01-01, 2021-04-01), ~37 fibs). Threshold rule confirmed: local density per
+  zone, not total fib count. Y-axis log confirmed (line 246 `monthly_fib_map.py`).
+  Full review: [`reviews/btc-4h-tier1-map-review-20260615.md`](reviews/btc-4h-tier1-map-review-20260615.md).
 - **2026-06-12 4H visual confirmation Tier 1 built** — `research/fourh_source_fib_map.py`
-  renders **annual combined 4H source-fib maps** (fibs grouped by `anchor_a` year; dense
-  years >60 fibs split into calendar half-years). Reuses `monthly_fib_map` primitives
-  unchanged; no snap (source TF == chart TF == 4h); each group windowed by its fib span.
-  Real run (facit + expansion cache): **366/366 fibs drawn, 0 skipped, 11 groups** —
-  2017=13h1/**103h2**, 2018=33, 2019=26, 2020=31, 2021=55, 2022=24, 2023=17, 2024=22,
-  2025=34, 2026=8. Mid-density maps scan cleanly. **2017_h2 (~103 fibs, Sep–Dec parabola)
-  exceeds map-reviewable density → flags 2017 for Tier 2 zoom.** 14 tests pass; ruff +
-  repo-bounds + full suite green. Output gitignored under
-  `experiments/review/fourh_source_fib_map/`. No reaction-review, no events, no auto-fib.
+  renders annual combined 4H maps (366/366 drawn, 11 groups; dense 2017_h2 flagged for
+  Tier 2). Reuses `monthly_fib_map` primitives; output gitignored. Full detail in log.md.
 - **2026-06-12 4H source-fib phase complete** — **366** manual BTC/USD 4H source fibs
   drawn and verified (timeframe `4h`, log scale, `tradingview_log_chamoun`, levels
   `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, endpoint mapping ratio 0.0=anchor_b /
@@ -64,28 +92,10 @@ append-only trail lives in [log.md](log.md).
   non-1W / non-log / wrong-profile / 0.236 / non-human fib. No auto-fib, no
   trading conclusions. Commits `4eb2f4b` (map + facit), `939de97` (zoom),
   `e379fae` (CI: format + bounds fix).
-- **2026-06-11 1M reaction-review cycle complete** — all 9 BTC/USD 1M source fibs
-  reviewed through 1D + 4H. Review windows confirmed in `review_windows.yaml`.
-  62 1D events, 127 4H events. Summary:
-  [reviews/btc-1m-reaction-review-cycle-20260611.md](reviews/btc-1m-reaction-review-cycle-20260611.md).
-- **2026-06-10 Addendum 2 — retire golden-zone sampling** — issue #30: removed
-  `primary_active_levels` / golden-zone review-sampling from configs, `core/config.py`,
-  `human_review_pack`/`rows`/`constants`, and docs. All levels are event-capable and
-  sampled equally (round-robin). Added `human_highlights` (presentation-only) to
-  `HumanFibAnnotation`. Prior golden-zone 1M pack superseded by an unbiased regenerated pack.
-- **2026-06-09 log-scale + profile fix** — fib levels computed log-scale
-  (`scale_mode: log`); profile `tradingview_log_chamoun` `[0, 0.382, 0.5, 0.618,
-  0.786, 1]` (no 0.236). Charts render a log price axis (labeling tool + both review
-  tools). (Golden-zone `primary_active_levels` sampling was later retired — see 2026-06-10.)
-  Prior linear/0.236 labels, events, and review packs archived to
-  `archive/research_superseded/2026-06-09_pre_log_fib_profile_reset/`.
-- **2026-06-09 1M re-label** — 9 monthly fibs re-drawn; `human_fib_events` +
-  BTC-only review pack `human_fib_review_20260609T135548Z` (golden-zone biased).
-- **2026-06-09 events log-scale fix** — `detect_level_events` / `human_fib_events`
-  now compute level prices with the annotation's `scale_mode` (was always linear);
-  events + pack regenerated so review level prices match the log facit.
-- **2026-06-08 reset** — prior experiments + mixed-symbol data archived to
-  `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/`.
+- **2026-06-08…11 (earlier milestones)** — 1M reaction-review cycle (9 fibs, 1D+4H),
+  Addendum 2 golden-zone retirement (issue #30, added `human_highlights`), log-scale +
+  profile fix, 1M re-label, events log-scale fix, and the BTC monthly-first reset. Full
+  detail in [log.md](log.md) (append-only trail).
 
 ## Verification Snapshot
 
@@ -93,8 +103,9 @@ append-only trail lives in [log.md](log.md).
 - `data/labels/human_fib/bitfinex/BTC-USD/1w/` — **21** base `fib_*.json` (log scale).
 - `data/labels/human_fib/bitfinex/BTC-USD/1d/` — **67** base `fib_*.json` (log scale);
   source-facit complete, verified 2026-06-11.
-- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **366** base `fib_*.json` (log scale);
-  source-facit complete, verified 2026-06-12. Coverage 2017-01-05 → 2026-06-05; up=169 / down=197.
+- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **365** active base `fib_*.json` (log scale;
+  366 drawn 2026-06-12, 1 superseded via 20250506 dedup 2026-06-15). Coverage 2017-01-05 →
+  2026-06-05.
 - `experiments/review/weekly_source_fib_map/` and `…/weekly_source_fib_zoom/` —
   generated charts (gitignored; regenerate via the two new CLIs).
 - `data/raw/bitfinex/BTC-USD/1M/limit_500.csv` — 115 bars (2016-12 .. 2026-06),
@@ -109,18 +120,32 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-1. **Human review of the Tier-1 4H maps** — open
-   `experiments/review/fourh_source_fib_map/` (regenerate via the CLI below) and scan the
-   per-year clean/levels PNGs to confirm 4H anchor pins sit on the correct structural
-   swings. Tier 1 is **built** (2026-06-12): 366/366 drawn, 11 groups; most years scan
-   cleanly. Regenerate:
-   `uv run --no-sync python -m fibengine.research.fourh_source_fib_map --fib-dir data/labels/human_fib/bitfinex/BTC-USD/4h --config config/settings.expansion.yaml`
-2. **4H visual confirmation — Tier 2 (on-demand)** — `fourh_source_fib_zoom.py` (per-fib
-   windowed 4H charts). Tier 1 already flagged **2017_h2 (~103 fibs, Sep–Dec parabola)**
-   as too dense to source-review as a map — start Tier 2 there if/when per-fib zoom is
-   wanted. Design: [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
-3. **1H source labeling** — deferred. 4H is the current lowest active timeframe. Fetch
-   1H cache first (`data.fetch --timeframes 1h`). Separate decision before starting.
+**Milestone:** Issue #32 top-3 complete + pushed (gallery `8f1e7a8`, ledger `d6ab9ec`,
+overlap detector + anchor convention `84b42db`). local == origin, tree clean, source-fib
+JSON unchanged, no new deps, no artifacts committed.
+
+**Next active track (recommended order):**
+
+1. **Single-fib declutter edit-mode — DONE.** `labeling/tool.py --edit-fib-id`.
+2. **`fib_BTC-USD_4h_20171228T200000` correction — DONE.** anchor_a moved to 2017-12-28T08:00
+   @ 13145 (candidate_1, preview-first flow); ledger updated candidate → corrected.
+   Report: [`reviews/btc-4h-fib-20171228-correction-20260615.md`](reviews/btc-4h-fib-20171228-correction-20260615.md).
+3. **Chart-regression — DONE (spike + #F).** `research/render_summary.py` + golden JSON
+   snapshots under `tests/research/snapshots/` (map/zoom/gallery; stdlib, no baselines).
+   Pixel/`pytest-mpl` still deferred. Spike:
+   [`reviews/chart-regression-strategy-20260615.md`](reviews/chart-regression-strategy-20260615.md).
+
+No open implementation items remain in the #32 tooling track. **Corpus declared clean and
+locked** (integrity capstone 2026-06-15:
+[`reviews/btc-source-fib-corpus-integrity-20260615.md`](reviews/btc-source-fib-corpus-integrity-20260615.md)).
+**MTF confluence atlas in progress.** CP1 ([table](reviews/btc-mtf-confluence-table-20260615.md))
++ CP2 ([sensitivity](reviews/btc-mtf-confluence-sensitivity-20260615.md)) DONE —
+`research/mtf_confluence.py` (stdlib). CP2: c001 robust 4-TF; **c002 chaining-dependent** (not
+tight 4-TF); fixed-band 188 clusters @0.005; chaining 14% @0.005→26% @0.01. **Next: CP3 visual
+atlas (conditional)** — render fixed-band clusters + annotate `price_span_log`; no signal/edge.
+
+**Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
+(`data.fetch --timeframes 1h`). Separate decision before starting.
 
 ## Guardrails
 
@@ -257,12 +282,13 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
 - **BTC/USD 4H source-fib phase is complete.** 366 source fibs (2017-01-05 → 2026-06-05),
   up=169 / down=197, 366/366 schema PASS (2026-06-12). Do not resume unless a bug or gap
   is found. 4H is the current lowest active timeframe (1H paused).
-- **4H visual confirmation Tier 1 is built** (`research/fourh_source_fib_map.py`,
-  2026-06-12). Annual combined 4H maps, 366/366 drawn across 11 groups. Next is **human
-  review of the generated maps**, then Tier 2 (`fourh_source_fib_zoom.py`) on-demand —
-  2017_h2 (~103 fibs) is already flagged as needing per-fib zoom. Do not start with 1H.
-  Do not start with reaction-review. Design:
-  [`reviews/btc-4h-visual-confirmation-design-20260612.md`](reviews/btc-4h-visual-confirmation-design-20260612.md).
+- **4H visual confirmation Tier 1 + Tier 2 sample-pass complete** (2026-06-15). Tier 1:
+  `research/fourh_source_fib_map.py`, 11 annual groups, 366/366 drawn. Tier 2:
+  `research/fourh_source_fib_zoom.py`, 103+37 fibs rendered; first manual sample-pass (8
+  fibs) shows no suspicious labels. Two watchlist items: `20171228` (short-span) and
+  body/close vs wick convention (undocumented). Do not start with 1H. Do not start with
+  reaction-review. Review:
+  [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
 - Do not auto-fib. Do not infer anchors. Keep the four flows distinct: 1M source /
   1M→1W projection / true 1W source / true 1D source fibs.
 

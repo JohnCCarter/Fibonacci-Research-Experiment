@@ -309,6 +309,38 @@ def load_annotation(path: str | Path) -> HumanFibAnnotation:
     )
 
 
+def find_annotation(
+    fib_id: str,
+    *,
+    exchange: str,
+    symbol: str,
+    timeframe: str,
+    root: Path | None = None,
+) -> HumanFibAnnotation:
+    """Load exactly one human fib by ``fib_id``, fail-closed for the single-fib tools.
+
+    Read-only — never mutates any label file. Raises with a clear message when the id is
+    missing, ambiguous (same filename under multiple dirs), or when the loaded fib does
+    not match the active ``symbol`` / ``timeframe`` / ``exchange``. Symbol is checked
+    before timeframe so a mismatch surfaces the most specific cause first.
+    """
+    base = Path(root) if root is not None else human_fib_dir()
+    matches = sorted(base.rglob(f"{fib_id}.json"))
+    if not matches:
+        raise FileNotFoundError(f"human fib {fib_id!r} not found under {base}")
+    if len(matches) > 1:
+        joined = ", ".join(str(m) for m in matches)
+        raise ValueError(f"human fib {fib_id!r} is ambiguous ({len(matches)} files): {joined}")
+    ann = load_annotation(matches[0])
+    if ann.symbol != symbol:
+        raise ValueError(f"{fib_id}: symbol {ann.symbol!r} != active {symbol!r}")
+    if ann.timeframe != timeframe:
+        raise ValueError(f"{fib_id}: timeframe {ann.timeframe!r} != active {timeframe!r}")
+    if ann.exchange.lower() != exchange.lower():
+        raise ValueError(f"{fib_id}: exchange {ann.exchange!r} != active {exchange!r}")
+    return ann
+
+
 def write_interactions_csv(rows: list[dict], path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     fields = ["time", "ratio", "level_price", "relation", "open", "high", "low", "close"]
