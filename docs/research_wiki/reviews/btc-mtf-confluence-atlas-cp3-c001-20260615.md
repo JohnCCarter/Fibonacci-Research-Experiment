@@ -4,9 +4,9 @@ First visual-atlas slice. Renders **one** confluence card for the single robust 
 cluster (c001) under the **fixed-band** method at the primary `epsilon_log = 0.005`, on a
 **1d** candle backdrop. This is the CP2-corrected, method-stable confluence.
 
-**Status: generated — pending human visual inspection.** This page does **not** assert the
-card design is approved. Next decision: approve the card design or adjust it (see
-*Candidate adjustments*), then proceed to the c002 chaining-dependent **contrast** card.
+**Status: human-approved (2026-06-15).** Card design approved after visual inspection; two
+polish fixes applied (title de-duplication + member traceability moved to a top-left table —
+see *Candidate adjustments*). Slice 2 (c002 chaining-dependent contrast card) now follows.
 
 **Scope honored:** fixed-band first, c001 only; no c002, no side-by-side, no full atlas, no
 1H, no reaction-review, no auto-fib, no trading/signal/edge, no new deps, no committed PNG.

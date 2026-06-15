@@ -7,10 +7,17 @@ coincide in log-price — drawn on a candle backdrop. This is *not* the per-fib 
 ``A→B`` view of ``monthly_fib_map`` / ``fourh_source_fib_map``; the levels are drawn as
 horizontal lines **across the whole window**, because that is what a confluence is.
 
-**Slice 1 scope (deliberately minimal):** only the single robust 4-TF cluster (c001,
-~29274, 2021 cycle) under the **fixed-band** method at the primary ``epsilon_log = 0.005``,
-on a **1d** candle backdrop. This is the CP2-corrected, method-stable confluence — the one
-cluster that survives as a tight 4-TF agreement under both clustering definitions.
+**Scope (two slices, both deliberately minimal):**
+
+- *Slice 1 — c001:* the single robust 4-TF cluster (~29274, 2021 cycle) under the
+  **fixed-band** method at ``epsilon_log = 0.005``. The CP2-corrected, method-stable
+  confluence — the one cluster that survives as a tight 4-TF agreement under both
+  clustering definitions.
+- *Slice 2 — c002 contrast:* the chaining-dependent 4-TF cluster (~21167, 2022-12 →
+  2023-07) under **single-linkage**. Its ``price_span_log`` (≈0.0063) exceeds epsilon, so it
+  holds together only by chaining and dissolves entirely under fixed-band. It is rendered as
+  an explicit **contrast** — never labelled a tight 4-TF, support/resistance, or robust
+  confluence; the headline + metadata say "chaining-dependent / span > epsilon".
 
 The target cluster is resolved by **structural signature**, never by a hard-coded
 ``cluster_id`` (ids are positional and method-dependent — ``order_clusters`` re-numbers).
@@ -18,7 +25,7 @@ Resolution is fail-closed: zero or multiple signature matches stop with a clear 
 
 Strict separation / non-goals (same spirit as the source-fib renderers):
 
-- fixed-band first; no side-by-side, no single-linkage contrast in this slice.
+- No side-by-side panel; each card renders on its own. No zero-span / 3-TF cards yet.
 - No 1H (the corpus has none; a 1H member would fail-closed). No reaction-review, no
   events, no projection, no auto-fib, no anchor inference, no trading/signal/edge claim.
 - Superseded ``20250506T080000`` must never appear in a member (fail-closed).
@@ -54,7 +61,7 @@ from fibengine.research.monthly_fib_map import _nearest_pos  # noqa: E402
 from fibengine.research.mtf_confluence import (  # noqa: E402
     ConfluenceCluster,
     LevelRow,
-    cluster_confluence_fixed_band,
+    cluster_for_method,
     flatten_levels,
 )
 
@@ -67,6 +74,12 @@ DEFAULT_BACKDROP_TF = "1d"
 # 1d backdrop pad: candles before/after the cluster time window so the confluence band
 # is not pinned to a chart edge. ~30 daily bars ≈ one month of context each side.
 _CONTEXT_PAD_BARS = 30
+
+# Band reconstruction tolerance (price units). Cluster min/max prices are stored rounded to
+# 2 decimals (mtf_confluence._finalize_cluster), while level rows carry the raw price; a
+# member level sitting exactly on a band edge (e.g. c002's 1M level at the rounded max) can
+# read just outside the rounded band. 1 cent safely covers the ≤0.005 rounding error.
+_BAND_PRICE_TOL = 0.01
 
 # A superseded fib must never appear in a confluence member (it is deleted on disk, but
 # guard anyway so a stale cache or a regression cannot silently reintroduce it).
@@ -91,9 +104,12 @@ class ClusterSignature:
     """Structural fingerprint used to resolve a target cluster without an id.
 
     All criteria must hold for a match. ``timeframes`` is the *exact* set; ``price_approx``
-    matches when ``|representative_price - price_approx| <= price_tol``; ``max_span_log``
-    bounds ``price_span_log``; ``window_year`` (when set) requires both window endpoints to
-    fall in that calendar year.
+    matches when ``|representative_price - price_approx| <= price_tol``; ``price_span_log``
+    must lie in ``[min_span_log, max_span_log]`` — ``min_span_log`` (default 0) lets a
+    chaining-dependent target *require* ``span > epsilon`` so resolution fail-closes if the
+    cluster ever became tight. ``window_year``/``window_year_end`` (when set) require both
+    window endpoints to fall within the inclusive calendar-year range (a single year when
+    ``window_year_end`` is omitted; c002's window spans 2022→2023).
     """
 
     tf_count: int
@@ -101,7 +117,9 @@ class ClusterSignature:
     price_approx: float
     price_tol: float
     max_span_log: float
+    min_span_log: float = 0.0
     window_year: int | None = None
+    window_year_end: int | None = None
     label: str = "cluster"
 
 
@@ -115,6 +133,29 @@ C001_SIGNATURE = ClusterSignature(
     window_year=2021,
     label="c001",
 )
+
+# Slice 2 contrast target: the chaining-dependent 4-TF cluster (~21167, 2022-12 → 2023-07).
+# It exists only under single-linkage — its members chain across log-price so ``price_span_log``
+# (≈0.0063) exceeds epsilon, and it dissolves entirely under fixed-band. ``min_span_log`` =
+# epsilon guarantees the "span > epsilon / chaining-dependent" headline (fail-closed if tight).
+C002_SIGNATURE = ClusterSignature(
+    tf_count=4,
+    timeframes=frozenset({"1M", "1w", "1d", "4h"}),
+    price_approx=21167.0,
+    price_tol=200.0,
+    min_span_log=DEFAULT_EPSILON_LOG,
+    max_span_log=0.01,
+    window_year=2022,
+    window_year_end=2023,
+    label="c002",
+)
+
+# Coherent (signature, method) pairs — the CLI selects a card by name so an incoherent
+# signature/method combination cannot be requested.
+CLUSTER_CARDS: dict[str, tuple[ClusterSignature, str]] = {
+    "c001": (C001_SIGNATURE, "fixed_band"),
+    "c002": (C002_SIGNATURE, "single_linkage"),
+}
 
 
 @dataclass
@@ -174,12 +215,14 @@ def _matches(c: ConfluenceCluster, sig: ClusterSignature) -> bool:
         return False
     if abs(c.representative_price - sig.price_approx) > sig.price_tol:
         return False
-    if c.price_span_log > sig.max_span_log:
+    if not (sig.min_span_log <= c.price_span_log <= sig.max_span_log):
         return False
     if sig.window_year is not None:
+        lo = sig.window_year
+        hi = sig.window_year_end if sig.window_year_end is not None else sig.window_year
         ws = pd.to_datetime(c.time_window_start, utc=True).year
         we = pd.to_datetime(c.time_window_end, utc=True).year
-        if ws != sig.window_year or we != sig.window_year:
+        if ws < lo or we > hi:
             return False
     return True
 
@@ -192,11 +235,9 @@ def band_member_rows(rows: list[LevelRow], cluster: ConfluenceCluster) -> list[L
     by (timeframe order, price) for stable rendering and summaries.
     """
     members = set(cluster.member_fib_ids)
-    band = [
-        r
-        for r in rows
-        if r.fib_id in members and cluster.min_price <= r.level_price <= cluster.max_price
-    ]
+    lo = cluster.min_price - _BAND_PRICE_TOL
+    hi = cluster.max_price + _BAND_PRICE_TOL
+    band = [r for r in rows if r.fib_id in members and lo <= r.level_price <= hi]
     tf_rank = {tf: i for i, tf in enumerate(_ALLOWED_TIMEFRAMES)}
     band.sort(key=lambda r: (tf_rank.get(r.timeframe, len(tf_rank)), r.level_price))
     return band
@@ -263,13 +304,19 @@ def _candle_backdrop(df: pd.DataFrame, title: str, fig_w: int):
 
 
 def _annotate_metadata(ax, card_meta: dict) -> None:
-    """Bottom-left metadata box: method, epsilon, span, tf_count (CP2-corrected headline)."""
-    text = (
-        f"method={card_meta['method']}  epsilon_log={card_meta['epsilon_log']}\n"
-        f"price_span_log={card_meta['price_span_log']}  tf_count={card_meta['tf_count']}\n"
+    """Bottom-left metadata box: method, epsilon, span, tf_count (CP2-corrected headline).
+
+    Any ``notes`` (e.g. the chaining-dependent / not-tight labels on the c002 contrast card)
+    are appended as extra lines; an empty list leaves the box identical to the c001 card.
+    """
+    lines = [
+        f"method={card_meta['method']}  epsilon_log={card_meta['epsilon_log']}",
+        f"price_span_log={card_meta['price_span_log']}  tf_count={card_meta['tf_count']}",
         f"band {card_meta['min_price']:,.0f}–{card_meta['max_price']:,.0f}  "
-        f"repr {card_meta['representative_price']:,.0f}"
-    )
+        f"repr {card_meta['representative_price']:,.0f}",
+    ]
+    lines.extend(card_meta.get("notes", []))
+    text = "\n".join(lines)
     ax.text(
         0.012,
         0.012,
@@ -374,11 +421,15 @@ def render_confluence_card(
     epsilon_log: float = DEFAULT_EPSILON_LOG,
     backdrop_tf: str = DEFAULT_BACKDROP_TF,
     pad_bars: int = _CONTEXT_PAD_BARS,
+    method: str = METHOD,
 ) -> ConfluenceCard:
     """Render the clean + levels confluence card for the signature-resolved cluster.
 
-    Pure read of the source corpus + candle cache; fail-closed on no/ambiguous signature
-    match, superseded/off-protocol members, or missing candle cache (never auto-fetches).
+    ``method`` selects the clustering definition (``fixed_band`` for the tight c001 card,
+    ``single_linkage`` for the c002 chaining-dependent contrast card). Pure read of the
+    source corpus + candle cache; fail-closed on no/ambiguous signature match, a member-
+    reconstruction mismatch, superseded/off-protocol members, or missing candle cache
+    (never auto-fetches).
     """
     if settings is None:
         settings = load_settings()
@@ -387,9 +438,15 @@ def render_confluence_card(
     if not rows:
         raise FileNotFoundError(f"No source-fib level rows under {fib_root}")
 
-    clusters = cluster_confluence_fixed_band(rows, epsilon_log)
+    clusters = cluster_for_method(rows, method, epsilon_log)
     cluster = resolve_cluster(clusters, signature)
     band = band_member_rows(rows, cluster)
+    if len(band) != cluster.level_count:
+        raise ValueError(
+            f"Member reconstruction mismatch for {cluster.cluster_id}: rebuilt {len(band)} "
+            f"level rows but cluster.level_count={cluster.level_count}. Band-price tolerance "
+            "or rounding drift — investigate before rendering (fail-closed)."
+        )
     _guard_members(band)
 
     symbol, exchange = _ref_symbol_exchange(band)
@@ -415,19 +472,24 @@ def render_confluence_card(
     df = df_full.iloc[lo : hi + 1]
 
     atlas_root = Path(out_root) if out_root else MTF_CONFLUENCE_ATLAS_ROOT
-    out_dir = atlas_root / METHOD / cluster.cluster_id
+    out_dir = atlas_root / method / cluster.cluster_id
     out_dir.mkdir(parents=True, exist_ok=True)
     clean_path = out_dir / "clean.png"
     levels_path = out_dir / "levels.png"
 
+    # A cluster whose price_span_log exceeds epsilon only holds together by chaining (only
+    # possible under single-linkage) — it is NOT a tight fixed-band confluence.
+    chaining = cluster.price_span_log > epsilon_log
+    notes = ["chaining-dependent (span > epsilon)", "NOT tight fixed-band 4-TF"] if chaining else []
     card_meta = {
-        "method": METHOD,
+        "method": method,
         "epsilon_log": epsilon_log,
         "price_span_log": cluster.price_span_log,
         "tf_count": cluster.timeframe_count,
         "min_price": cluster.min_price,
         "max_price": cluster.max_price,
         "representative_price": cluster.representative_price,
+        "notes": notes,
     }
     n = len(df)
     fig_w = max(16, min(n // 2, 36))
@@ -440,8 +502,19 @@ def render_confluence_card(
         if signature.label == cluster.cluster_id
         else f"{signature.label} ({cluster.cluster_id})"
     )
+    # Method-aware descriptor: empty for the tight fixed-band card (c001 stays identical);
+    # the chaining-dependent contrast card states its nature in the headline so it can never
+    # be misread as a tight 4-TF confluence.
+    descriptor = (
+        f"chaining-dependent {cluster.timeframe_count}-TF (single-linkage, span>ε)"
+        if chaining
+        else ""
+    )
+    head = f"{symbol} MTF confluence {id_part}"
+    if descriptor:
+        head = f"{head}  |  {descriptor}"
     base_title = (
-        f"{symbol} MTF confluence {id_part}  |  "
+        f"{head}  |  "
         f"{','.join(cluster.timeframes)}  {backdrop_tf} backdrop  {a_str} → {b_str}  (log)"
     )
     _draw_card(
@@ -479,7 +552,7 @@ def render_confluence_card(
     return ConfluenceCard(
         cluster_id=cluster.cluster_id,
         signature_label=signature.label,
-        method=METHOD,
+        method=method,
         epsilon_log=epsilon_log,
         backdrop_tf=backdrop_tf,
         representative_price=cluster.representative_price,
@@ -506,12 +579,20 @@ def _default_fib_root(settings: Settings) -> Path:
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        description="Render the BTC/USD MTF confluence atlas card (slice 1: c001, fixed-band)."
+        description="Render a BTC/USD MTF confluence atlas card. --cluster selects a coherent "
+        "(signature, method) pair: c001 (tight fixed-band) or c002 (chaining-dependent, "
+        "single-linkage)."
     )
     p.add_argument(
         "--fib-root",
         default=None,
         help="Symbol dir holding timeframe subdirs of fib_*.json (default: BTC/USD label dir)",
+    )
+    p.add_argument(
+        "--cluster",
+        choices=sorted(CLUSTER_CARDS),
+        default="c001",
+        help="Which confluence card to render (signature + method are paired; default c001)",
     )
     p.add_argument("--config", default=None, help="Path to settings YAML")
     p.add_argument("--out-dir", default=None, help="Override output root")
@@ -524,8 +605,11 @@ if __name__ == "__main__":
     args = _parse_args()
     settings = load_settings(args.config)
     fib_root = Path(args.fib_root) if args.fib_root else _default_fib_root(settings)
+    signature, method = CLUSTER_CARDS[args.cluster]
     card = render_confluence_card(
         fib_root=fib_root,
+        signature=signature,
+        method=method,
         settings=settings,
         out_root=Path(args.out_dir) if args.out_dir else None,
         epsilon_log=args.epsilon_log,

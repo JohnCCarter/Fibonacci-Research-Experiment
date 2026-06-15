@@ -14,6 +14,22 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] feat | MTF confluence atlas CP3 slice 2 — c002 contrast card (generated)
+
+c001 card **human-approved** (title dedup + member-table polish). Slice 2 adds the
+chaining-dependent **contrast** card: `mtf_confluence_atlas` is now method-aware
+(`--cluster c001|c002` pairs a structural signature with its clustering method). c002
+(~21167, 2022-12 → 2023-07) resolves only under **single-linkage** — `price_span_log`
+0.006272 **> ε=0.005**, so it chains across log-price and **dissolves entirely under
+fixed-band**. New signature fields `min_span_log` (= ε guarantees chaining; fail-closed if
+tight) + `window_year_end` (multi-year window). Headline/metadata never say "tight 4-TF":
+they state *chaining-dependent (span > epsilon) / NOT tight fixed-band 4-TF*. Fixed a shared
+`band_member_rows` rounding bug (1M level on the rounded band edge dropped 4→3): added a
+1-cent tolerance + a fail-closed `len(band)==level_count` check; **c001 re-renders
+identically** (verified 4/4). 404 tests green (+1 resolution test); c001 golden unchanged.
+PNGs gitignored, none committed. **Pending human inspection.**
+[Report](reviews/btc-mtf-confluence-atlas-cp3-c002-20260615.md).
+
 ## [2026-06-15] feat | MTF confluence atlas CP3 slice 1 — c001 card (generated)
 
 First visual-atlas slice. New `research/mtf_confluence_atlas.py` (stdlib + existing matplotlib

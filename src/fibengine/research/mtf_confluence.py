@@ -409,8 +409,8 @@ DEFAULT_EPSILONS: tuple[float, ...] = (0.0025, 0.005, 0.01)
 METHODS: tuple[str, ...] = ("single_linkage", "fixed_band")
 
 
-def _cluster_for_method(
-    rows: list[LevelRow], method: str, epsilon_log: float, min_timeframes: int
+def cluster_for_method(
+    rows: list[LevelRow], method: str, epsilon_log: float, min_timeframes: int = 2
 ) -> list[ConfluenceCluster]:
     if method == "single_linkage":
         return cluster_confluence(rows, epsilon_log, min_timeframes)
@@ -429,7 +429,7 @@ def run_sensitivity(
     summary: list[dict] = []
     for eps in epsilons:
         for method in methods:
-            clusters = _cluster_for_method(rows, method, eps, min_timeframes)
+            clusters = cluster_for_method(rows, method, eps, min_timeframes)
             hist = tf_count_histogram(clusters)
             spans = [c.price_span_log for c in clusters]
             summary.append(
@@ -488,7 +488,7 @@ def _parse_args() -> argparse.Namespace:
 def main() -> None:
     args = _parse_args()
     rows = flatten_levels(args.fib_root)
-    clusters = _cluster_for_method(rows, args.method, args.epsilon_log, args.min_timeframes)
+    clusters = cluster_for_method(rows, args.method, args.epsilon_log, args.min_timeframes)
     fibs = len({r.fib_id for r in rows})
     print(
         f"mtf confluence [{args.method}]: {len(rows)} level rows from {fibs} fibs; "

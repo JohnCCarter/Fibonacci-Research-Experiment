@@ -27,6 +27,7 @@ from fibengine.research.mtf_confluence import (
     flatten_levels,
 )
 from fibengine.research.mtf_confluence_atlas import (
+    C002_SIGNATURE,
     ClusterSignature,
     band_member_rows,
     render_confluence_card,
@@ -181,6 +182,22 @@ def test_resolve_rejects_span_over_signature():
     c = _cluster(price_span_log=0.01)
     with pytest.raises(ValueError, match="No cluster matches"):
         resolve_cluster([c], TEST_SIGNATURE)
+
+
+def test_c002_signature_min_span_and_multiyear_window():
+    # min_span_log + window_year_end: chained 2022→2023 matches; tight span fails-closed.
+    fields = dict(
+        cluster_id="c002",
+        representative_price=21167.0,
+        min_price=21092.0,
+        max_price=21225.0,
+        time_window_start="2022-12-29T00:00:00+00:00",
+        time_window_end="2023-07-01T00:00:00+00:00",
+    )
+    chained = _cluster(price_span_log=0.006272, **fields)
+    assert resolve_cluster([chained], C002_SIGNATURE) is chained
+    with pytest.raises(ValueError, match="No cluster matches"):
+        resolve_cluster([_cluster(price_span_log=0.001, **fields)], C002_SIGNATURE)
 
 
 # --- band reconstruction --------------------------------------------------------------
