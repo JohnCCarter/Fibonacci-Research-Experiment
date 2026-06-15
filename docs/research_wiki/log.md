@@ -13,6 +13,20 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] fix | 20171228 source fib corrected (preview-first flow)
+
+`fib_BTC-USD_4h_20171228T200000` corrected via preview-first flow: machine rendered 3
+candidate anchor_a moves (gitignored previews), Chamoun chose `candidate_1`, then only the
+real source JSON's anchor_a was edited 2017-12-28T20:00 @ 13611 → **2017-12-28T08:00 @
+13145** (captures the full local low→high leg from the structural bottom; original was a
+one-bar leg). anchor_b/direction/profile/scale/fib_id unchanged; levels recomputed via
+`compute_levels` (log) and match the preview (0.382/0.5/0.618 = 14227.06/14013.79/
+13803.71). Structural guard PASS via `fourh_source_fib_zoom --fib-id`. Ledger updated
+candidate → corrected (verdict suspicious→ok-with-note, status correction-candidate→
+corrected, new source_hash). Only this one fib_*.json changed; no artifacts committed.
+Report: [`reviews/btc-4h-fib-20171228-correction-20260615.md`](reviews/btc-4h-fib-20171228-correction-20260615.md).
+This closes the declutter → correction → ledger track.
+
 ## [2026-06-15] feat | Single-fib declutter edit-mode (labeling tool)
 
 Added `--edit-fib-id` to `labeling/tool.py`: opens exactly one saved human source fib,

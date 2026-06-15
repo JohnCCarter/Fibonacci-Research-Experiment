@@ -22,6 +22,10 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 20171228 source fib corrected** — preview-first flow: anchor_a moved
+  2017-12-28T20:00 @ 13611 → 2017-12-28T08:00 @ 13145 (candidate_1). Only anchor_a + levels
+  changed; anchor_b/fib_id unchanged; guard PASS; ledger candidate → corrected. Closes the
+  declutter→correction→ledger track. [Report](reviews/btc-4h-fib-20171228-correction-20260615.md).
 - **2026-06-15 Single-fib declutter edit-mode** — `labeling/tool.py --edit-fib-id` opens
   one saved human fib, hides HTF overlays, auto-fits window, preloads anchors (read-only on
   load; fail-closed loader `human_fib.find_annotation`). Default unchanged. Tool support for
@@ -132,17 +136,12 @@ JSON unchanged, no new deps, no artifacts committed.
 
 **Next active track (recommended order):**
 
-1. **Single-fib declutter edit-mode — DONE.** `labeling/tool.py --edit-fib-id` opens one
-   saved human fib, hides HTF overlays, auto-fits the window, preloads anchors (read-only
-   on load). Tool support only; no correction performed.
-2. **`fib_BTC-USD_4h_20171228T200000` correction** — still `correction-candidate` in the
-   [ledger](reviews/ledgers/btc-4h-source-quality-ledger.csv). Do **not** correct in the
-   cluttered GUI; use the declutter mode (or exact target candle timestamp). Change
-   `anchor_a` only, keep anchor_b, body/close convention. Then update the ledger row
-   candidate → corrected. Context:
-   [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
+1. **Single-fib declutter edit-mode — DONE.** `labeling/tool.py --edit-fib-id`.
+2. **`fib_BTC-USD_4h_20171228T200000` correction — DONE.** anchor_a moved to 2017-12-28T08:00
+   @ 13145 (candidate_1, preview-first flow); ledger updated candidate → corrected.
+   Report: [`reviews/btc-4h-fib-20171228-correction-20260615.md`](reviews/btc-4h-fib-20171228-correction-20260615.md).
 3. **Chart-regression strategy** — evaluate-later from #32; spike structural/hash vs
-   `pytest-mpl`, resolving the binary-baseline / anti-blob question.
+   `pytest-mpl`, resolving the binary-baseline / anti-blob question. (Next open item.)
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.
