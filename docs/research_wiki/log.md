@@ -14,6 +14,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] decision | MTF confluence CP1–CP3 — interpretation & decision note
+
+Docs-only synthesis closing the MTF-confluence track. **Observed:** 222 single-linkage
+clusters @ε=0.005 (188 fixed-band); c001 robust tight 4-TF; c002 chaining-dependent (dissolves
+under fixed-band); c004/c006/c007 zero-span; all 5 CP3 cards human-approved. **Inferred:** MTF
+confluence exists as *geometry* — c001 shows tight method-stable confluence can exist, c002
+shows single-linkage can overstate strength, zero-span shows exact-price coincidence; none of
+it proves edge/support-resistance/predictive value. **Unverified:** price-behaviour effect,
+vs-naïve-baseline usefulness, ETH generalisation, whether more cards inform or just confirm,
+behaviour-study scope risk. **Decision options** (5) compared with value/risk/scope/smallest
+slice. **Recommendation: STOP the MTF track here** — don't expand cards, don't start a
+behaviour study without a pre-registered falsifiable question + naïve-level baseline; ETH gated
+on BTC sign-off. Next active decision is a fork: **pause Fib, or open a new track with one
+clear question.** [Note](reviews/btc-mtf-confluence-interpretation-decision-20260615.md).
+
 ## [2026-06-15] decision | MTF confluence atlas CP3 — first pack closed (all cards approved)
 
 First CP3 visual-atlas pack **complete and human-approved (2026-06-15)**. Five cards across

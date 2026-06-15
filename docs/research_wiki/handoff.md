@@ -22,11 +22,11 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
-- **2026-06-15 MTF confluence atlas CP3 — first pack CLOSED (all 5 cards approved)** —
-  `research/mtf_confluence_atlas.py` method-aware (`--cluster c001|c002|c004|c006|c007`). Three
-  archetypes, all **human-approved**: c001 robust fixed-band 4-TF; c002 chaining-dependent
-  single-linkage contrast (NOT tight); c004/c006/c007 zero-span exact-price 3-TF. Signature-
-  resolved (ids positional), PNGs gitignored. 406 green. [Capstone](reviews/btc-mtf-confluence-atlas-cp3-20260615.md).
+- **2026-06-15 MTF confluence CP1–CP3 CLOSED + interpretation/decision note** — first atlas
+  pack done (5 cards, 3 archetypes, all **human-approved**): c001 robust fixed-band 4-TF; c002
+  chaining-dependent contrast (NOT tight); c004/c006/c007 zero-span exact-price 3-TF.
+  [Decision note](reviews/btc-mtf-confluence-interpretation-decision-20260615.md): confluence
+  is **geometry, not edge proof** → **rec: stop MTF track**; next = pause Fib or new question.
 - **2026-06-15 Structural chart-contract snapshots (#F)** — `research/render_summary.py`
   (stdlib): stable text summaries of map/zoom/gallery renders + golden JSON under
   `tests/research/snapshots/`. Automatic structural regression; no PNG baselines/deps.
@@ -134,15 +134,15 @@ chart-regression spike + #F render_summary/golden snapshots; detail in [log.md](
 **Corpus declared clean and
 locked** (integrity capstone 2026-06-15:
 [`reviews/btc-source-fib-corpus-integrity-20260615.md`](reviews/btc-source-fib-corpus-integrity-20260615.md)).
-**MTF confluence atlas in progress.** CP1 ([table](reviews/btc-mtf-confluence-table-20260615.md))
-+ CP2 ([sensitivity](reviews/btc-mtf-confluence-sensitivity-20260615.md)) DONE —
-`research/mtf_confluence.py` (stdlib). CP2: c001 robust 4-TF; **c002 chaining-dependent** (not
-tight 4-TF); fixed-band 188 clusters @0.005; chaining 14% @0.005→26% @0.01. **CP3 slice 1 DONE
-(generated, pending human inspection)** — `research/mtf_confluence_atlas.py` renders the c001
-card (fixed-band, ε=0.005, 1d backdrop, `price_span_log` annotated; signature-resolved,
-fail-closed; PNGs gitignored). [CP3 report](reviews/btc-mtf-confluence-atlas-cp3-c001-20260615.md).
-**Next: human visual inspection of the c001 card** → approve card design or adjust; only after
-approval, c002 chaining-dependent contrast card. No signal/edge.
+**MTF confluence track CP1–CP3 — CLOSED.** CP1 ([table](reviews/btc-mtf-confluence-table-20260615.md))
++ CP2 ([sensitivity](reviews/btc-mtf-confluence-sensitivity-20260615.md)) + CP3
+([capstone](reviews/btc-mtf-confluence-atlas-cp3-20260615.md)) done — `research/mtf_confluence.py`
++ `mtf_confluence_atlas.py` (stdlib). 5 cards, 3 archetypes, **all human-approved**: c001 robust
+fixed-band 4-TF; c002 chaining-dependent (not tight); c004/c006/c007 zero-span exact-price 3-TF.
+[Decision note](reviews/btc-mtf-confluence-interpretation-decision-20260615.md): confluence is
+**geometry, not edge proof**. **Recommendation: stop the MTF track.** No more cards / no behaviour
+study yet. **Next active decision is a fork: pause Fib, or open a new track with one falsifiable
+question** (strongest candidate: behaviour study with a naïve-level baseline — only once written).
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.
