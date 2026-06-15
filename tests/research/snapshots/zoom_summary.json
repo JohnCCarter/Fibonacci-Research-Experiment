@@ -1,0 +1,15 @@
+{
+  "artifacts": [
+    {
+      "clean": "2021_dec2020_mar2021/fib_BTC-USD_4h_20210105T040000/4h_clean.png",
+      "fib_id": "fib_BTC-USD_4h_20210105T040000",
+      "levels": "2021_dec2020_mar2021/fib_BTC-USD_4h_20210105T040000/4h_levels.png",
+      "skipped": false
+    }
+  ],
+  "fib_count": 1,
+  "flow": "fourh_source_fib_zoom",
+  "rendered": 1,
+  "scope": "2021_dec2020_mar2021",
+  "skipped": 0
+}

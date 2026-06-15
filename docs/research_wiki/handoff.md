@@ -22,6 +22,9 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 Structural chart-contract snapshots (#F)** — `research/render_summary.py`
+  (stdlib): stable text summaries of map/zoom/gallery renders + golden JSON under
+  `tests/research/snapshots/`. Automatic structural regression; no PNG baselines/deps.
 - **2026-06-15 20171228 source fib corrected** — preview-first flow: anchor_a moved
   2017-12-28T20:00 @ 13611 → 2017-12-28T08:00 @ 13145 (candidate_1). Only anchor_a + levels
   changed; anchor_b/fib_id unchanged; guard PASS; ledger candidate → corrected. Closes the
@@ -30,19 +33,13 @@ append-only trail lives in [log.md](log.md).
   one saved human fib, hides HTF overlays, auto-fits window, preloads anchors (read-only;
   fail-closed `human_fib.find_annotation`). Default unchanged. 10 tests.
 - **2026-06-15 Overlap/dedup detector + anchor convention** — `research/overlap_detector.py`
-  (stdlib-only, report-only): boxes fibs in (time, log-price), flags near-duplicate/overlap
-  candidates (box IoU + shared-anchor) for human review; never edits labels. Real run on
-  366 4H fibs → 22 candidates (all shared anchor_b). Report + CSV under
-  `docs/research_wiki/reviews/btc-4h-overlap-candidates-20260615.*`. Body/close-vs-wick
-  anchor convention (observed, not absolute) noted in `labeling/HUMAN_FIB_ANNOTATION.md`.
-  Implements Issue #32 top-ROI #3 — completes the #32 top-3.
-- **2026-06-15 Source-quality review ledger** — `research/review_ledger.py` (stdlib-only,
-  no new deps): flat CSV making review verdicts machine-trackable, controlled vocab +
-  deterministic `source_hash` tying each verdict to the exact facit version. First ledger
-  for the 4H Tier 2 sample-pass (8 rows) at
-  `docs/research_wiki/reviews/ledgers/btc-4h-source-quality-ledger.csv`; `20171228T200000`
-  tracked as suspicious / correction-candidate. Implements Issue #32 top-ROI #2.
-  Validate: `python -m fibengine.research.review_ledger --validate <ledger.csv>`.
+  (stdlib, report-only): boxes fibs in (time, log-price), flags near-duplicate/overlap
+  candidates (box IoU + shared-anchor); never edits labels. Real run: 22 candidates (all
+  shared anchor_b). Body/close-vs-wick convention noted in `HUMAN_FIB_ANNOTATION.md`.
+  Issue #32 top-ROI #3. [Report](reviews/btc-4h-overlap-candidates-20260615.md).
+- **2026-06-15 Source-quality review ledger** — `research/review_ledger.py` (stdlib): flat
+  CSV making verdicts machine-trackable (controlled vocab + deterministic `source_hash`).
+  First ledger = 4H Tier 2 (8 rows). Issue #32 top-ROI #2.
 - **2026-06-15 Static HTML artifact gallery** — `research/artifact_gallery.py` (stdlib-only):
   scans a review PNG dir → self-contained `index.html` (relative links, clean+levels paired,
   auto-detects map/zoom layouts). Standalone; markdown index untouched; output gitignored.
@@ -139,10 +136,12 @@ JSON unchanged, no new deps, no artifacts committed.
 2. **`fib_BTC-USD_4h_20171228T200000` correction — DONE.** anchor_a moved to 2017-12-28T08:00
    @ 13145 (candidate_1, preview-first flow); ledger updated candidate → corrected.
    Report: [`reviews/btc-4h-fib-20171228-correction-20260615.md`](reviews/btc-4h-fib-20171228-correction-20260615.md).
-3. **Chart-regression strategy — SPIKE DONE.** Recommendation: structural contract tests
-   + text/metadata snapshots first; defer pixel/`pytest-mpl`; no binary baselines. Follow-up
-   #F (render_summary + golden snapshots, stdlib) is the optional next implementation.
-   Report: [`reviews/chart-regression-strategy-20260615.md`](reviews/chart-regression-strategy-20260615.md).
+3. **Chart-regression — DONE (spike + #F).** `research/render_summary.py` + golden JSON
+   snapshots under `tests/research/snapshots/` (map/zoom/gallery; stdlib, no baselines).
+   Pixel/`pytest-mpl` still deferred. Spike:
+   [`reviews/chart-regression-strategy-20260615.md`](reviews/chart-regression-strategy-20260615.md).
+
+No open implementation items remain in the #32 tooling track; next work is a new decision.
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.

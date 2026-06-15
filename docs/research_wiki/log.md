@@ -13,6 +13,19 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] feat | Structural chart-contract + metadata snapshots (Issue #F)
+
+Implemented the chart-regression spike's recommendation. Added `research/render_summary.py`
+(stdlib-only, no deps): `map_summary` / `zoom_summary` / `gallery_summary` produce stable,
+text-diffable dicts from existing render results/output dirs — repo-relative forward-slash
+paths, no timestamps, no absolute paths, sorted order, no level prices (those stay in the
+source JSON). Committed golden JSON snapshots under `tests/research/snapshots/` (text only,
+no binary baselines); tests regenerate with `UPDATE_SNAPSHOTS=1`. Covers all three primary
+flows (4H map, 4H zoom, artifact gallery) + a guard test that snapshots are JSON-only.
+5 tests; ruff + full suite green (375 passed, 75.16% cov). No PNG baselines, no pixel diff,
+no new deps. Automatic structural layer; HTML gallery + ledger remain the manual visual
+layer. Closes the chart-regression follow-up (#F).
+
 ## [2026-06-15] decision | Chart regression strategy — structural-first (spike)
 
 Design spike for Issue #32 evaluate-later. Recommendation: **structural chart-contract
