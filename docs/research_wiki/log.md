@@ -13,6 +13,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] feat | Static HTML artifact gallery (Issue #32 top-ROI #1)
+
+Added `research/artifact_gallery.py` — stdlib-only helper (no new deps) that scans a
+review PNG directory and writes a self-contained `index.html` beside it (relative links,
+inline CSS/JS-free, clean+levels paired per item). Auto-detects both layouts: flat **map**
+output (`..._<label>_4h_<kind>.png`) and nested **zoom** output (`<scope>/<fib_id>/
+4h_<kind>.png`). Standalone helper by design — does **not** touch the render modules or
+the existing markdown `_write_index`. Output lands under `experiments/review/**`
+(gitignored; HTML not committed). 9 tests in `tests/research/test_artifact_gallery.py`
+(both layouts, relative-links-only, empty/missing dir, no-external-deps, markdown index
+untouched); ruff + full suite green (340 passed, 74.77% cov). Real smoke run: zoom (140
+items) + map galleries written; `git status` confirms `index.html` is ignored.
+
+Build: `python -m fibengine.research.artifact_gallery --root experiments/review/fourh_source_fib_zoom`.
+
 ## [2026-06-15] review | BTC/USD 4H visual confirmation Tier 2 — first manual sample-pass
 
 First manual sample-pass of `fourh_source_fib_zoom.py` zoom artifacts. Artifacts:

@@ -22,6 +22,12 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 Static HTML artifact gallery** — `research/artifact_gallery.py` (stdlib-only,
+  no new deps): scans a review PNG dir → self-contained `index.html` with relative links,
+  clean+levels paired, auto-detecting map (flat) and zoom (nested) layouts. Standalone
+  helper; render modules + markdown index untouched. Output gitignored under
+  `experiments/review/**` (HTML not committed). Implements Issue #32 top-ROI #1.
+  Build: `python -m fibengine.research.artifact_gallery --root experiments/review/fourh_source_fib_zoom`.
 - **2026-06-15 4H Tier 2 first manual sample-pass + first correction-candidate** — 8 fibs
   inspected (4 per scope). Zoom resolves Tier 1 readability. **1 correction-candidate:**
   `20171228T200000` — visual review found a better anchor_a candle adjacent to leg A →
