@@ -45,6 +45,22 @@ uv run python -m fibengine.labeling.human_fib \
 
 ---
 
+## Single-fib declutter edit-mode (2026-06-15)
+
+För säker granskning/korrigering av **en** sparad human fib utan plottriga HTF-overlays:
+
+```bash
+uv run --no-sync python -m fibengine.labeling.tool \
+  --symbol BTC/USD --timeframe 4h \
+  --edit-fib-id fib_BTC-USD_4h_20171228T200000 \
+  --config config/settings.expansion.yaml
+```
+
+`--edit-fib-id` laddar exakt den fiben, döljer HTF-overlays, auto-fittar fönstret till
+A→B-spannet och förladdar ankarna som aktiva high/low-picks. **Read-only vid load** —
+inget sparas förrän du trycker `w`. Failar tydligt vid okänd/tvetydig fib-id eller
+fel symbol/timeframe. Standardläget (utan flaggan) är oförändrat.
+
 ## Ankar-konvention (observerad review-praxis, 2026-06-15)
 
 Inte en absolut global regel — en **observerad current review-konvention** från BTC/USD

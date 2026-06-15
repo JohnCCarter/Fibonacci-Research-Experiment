@@ -13,6 +13,20 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
 > Older entries: [log-archive-pre-btc-reset-part1.md](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] feat | Single-fib declutter edit-mode (labeling tool)
+
+Added `--edit-fib-id` to `labeling/tool.py`: opens exactly one saved human source fib,
+hides HTF overlays (the main lower-TF clutter), auto-fits the display window to the fib's
+A→B span, and preloads its anchors as active high/low picks for assessment. Read-only on
+load (nothing saved unless `w`); fail-closed on unknown/ambiguous fib-id or wrong
+symbol/timeframe via new `human_fib.find_annotation`. Default behavior unchanged when the
+flag is absent (all new paths gated). Level fidelity verified: pick-derived ladder ==
+stored `ann.levels`. 10 tests (`tests/labeling/test_single_fib_edit_mode.py`); ruff + full
+suite green (371 passed, 75.11% cov). No source labels changed; no new deps. This is the
+tool support for the deferred `fib_BTC-USD_4h_20171228T200000` correction (correction
+itself not done). Target command:
+`python -m fibengine.labeling.tool --symbol BTC/USD --timeframe 4h --edit-fib-id fib_BTC-USD_4h_20171228T200000 --config config/settings.expansion.yaml`.
+
 ## [2026-06-15] decision | Milestone — Issue #32 top-3 complete; next track locked
 
 Closing the Issue #32 tooling phase. Top-3 shipped and pushed on `feature/research-fib`:

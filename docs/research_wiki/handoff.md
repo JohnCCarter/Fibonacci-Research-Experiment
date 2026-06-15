@@ -22,6 +22,10 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-15 Single-fib declutter edit-mode** — `labeling/tool.py --edit-fib-id` opens
+  one saved human fib, hides HTF overlays, auto-fits window, preloads anchors (read-only on
+  load; fail-closed loader `human_fib.find_annotation`). Default unchanged. Tool support for
+  the deferred `20171228` correction (not corrected). 10 tests.
 - **2026-06-15 Overlap/dedup detector + anchor convention** — `research/overlap_detector.py`
   (stdlib-only, report-only): boxes fibs in (time, log-price), flags near-duplicate/overlap
   candidates (box IoU + shared-anchor) for human review; never edits labels. Real run on
@@ -36,12 +40,10 @@ append-only trail lives in [log.md](log.md).
   `docs/research_wiki/reviews/ledgers/btc-4h-source-quality-ledger.csv`; `20171228T200000`
   tracked as suspicious / correction-candidate. Implements Issue #32 top-ROI #2.
   Validate: `python -m fibengine.research.review_ledger --validate <ledger.csv>`.
-- **2026-06-15 Static HTML artifact gallery** — `research/artifact_gallery.py` (stdlib-only,
-  no new deps): scans a review PNG dir → self-contained `index.html` with relative links,
-  clean+levels paired, auto-detecting map (flat) and zoom (nested) layouts. Standalone
-  helper; render modules + markdown index untouched. Output gitignored under
-  `experiments/review/**` (HTML not committed). Implements Issue #32 top-ROI #1.
-  Build: `python -m fibengine.research.artifact_gallery --root experiments/review/fourh_source_fib_zoom`.
+- **2026-06-15 Static HTML artifact gallery** — `research/artifact_gallery.py` (stdlib-only):
+  scans a review PNG dir → self-contained `index.html` (relative links, clean+levels paired,
+  auto-detects map/zoom layouts). Standalone; markdown index untouched; output gitignored.
+  Issue #32 top-ROI #1. `python -m fibengine.research.artifact_gallery --root <dir>`.
 - **2026-06-15 4H Tier 2 first manual sample-pass + first correction-candidate** — 8 fibs
   inspected (4 per scope). Zoom resolves Tier 1 readability. **1 correction-candidate:**
   `20171228T200000` — visual review found a better anchor_a candle adjacent to leg A →
@@ -130,8 +132,9 @@ JSON unchanged, no new deps, no artifacts committed.
 
 **Next active track (recommended order):**
 
-1. **Single-fib declutter edit-mode** (`labeling/tool.py`) — evaluate-later from #32;
-   motivated by `20171228` deferring on GUI clutter. Code change → own approved task + tests.
+1. **Single-fib declutter edit-mode — DONE.** `labeling/tool.py --edit-fib-id` opens one
+   saved human fib, hides HTF overlays, auto-fits the window, preloads anchors (read-only
+   on load). Tool support only; no correction performed.
 2. **`fib_BTC-USD_4h_20171228T200000` correction** — still `correction-candidate` in the
    [ledger](reviews/ledgers/btc-4h-source-quality-ledger.csv). Do **not** correct in the
    cluttered GUI; use the declutter mode (or exact target candle timestamp). Change
