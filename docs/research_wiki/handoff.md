@@ -58,15 +58,8 @@ append-only trail lives in [log.md](log.md).
   zone, not total fib count. Y-axis log confirmed (line 246 `monthly_fib_map.py`).
   Full review: [`reviews/btc-4h-tier1-map-review-20260615.md`](reviews/btc-4h-tier1-map-review-20260615.md).
 - **2026-06-12 4H visual confirmation Tier 1 built** — `research/fourh_source_fib_map.py`
-  renders **annual combined 4H source-fib maps** (fibs grouped by `anchor_a` year; dense
-  years >60 fibs split into calendar half-years). Reuses `monthly_fib_map` primitives
-  unchanged; no snap (source TF == chart TF == 4h); each group windowed by its fib span.
-  Real run (facit + expansion cache): **366/366 fibs drawn, 0 skipped, 11 groups** —
-  2017=13h1/**103h2**, 2018=33, 2019=26, 2020=31, 2021=55, 2022=24, 2023=17, 2024=22,
-  2025=34, 2026=8. Mid-density maps scan cleanly. **2017_h2 (~103 fibs, Sep–Dec parabola)
-  exceeds map-reviewable density → flags 2017 for Tier 2 zoom.** 14 tests pass; ruff +
-  repo-bounds + full suite green. Output gitignored under
-  `experiments/review/fourh_source_fib_map/`. No reaction-review, no events, no auto-fib.
+  renders annual combined 4H maps (366/366 drawn, 11 groups; dense 2017_h2 flagged for
+  Tier 2). Reuses `monthly_fib_map` primitives; output gitignored. Full detail in log.md.
 - **2026-06-12 4H source-fib phase complete** — **366** manual BTC/USD 4H source fibs
   drawn and verified (timeframe `4h`, log scale, `tradingview_log_chamoun`, levels
   `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, endpoint mapping ratio 0.0=anchor_b /
@@ -142,7 +135,12 @@ JSON unchanged, no new deps, no artifacts committed.
    Pixel/`pytest-mpl` still deferred. Spike:
    [`reviews/chart-regression-strategy-20260615.md`](reviews/chart-regression-strategy-20260615.md).
 
-No open implementation items remain in the #32 tooling track; next work is a new decision.
+No open implementation items remain in the #32 tooling track. **Corpus declared clean and
+locked** (integrity capstone 2026-06-15:
+[`reviews/btc-source-fib-corpus-integrity-20260615.md`](reviews/btc-source-fib-corpus-integrity-20260615.md)).
+**Next analytical pass: #1 MTF confluence atlas** — first slice a read-only confluence
+table (no chart, no trading conclusions). Design:
+[`reviews/btc-source-fib-next-research-plan-20260615.md`](reviews/btc-source-fib-next-research-plan-20260615.md).
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.

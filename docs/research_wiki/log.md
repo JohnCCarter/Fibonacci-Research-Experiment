@@ -14,6 +14,22 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] review | BTC source-fib corpus integrity report (capstone)
+
+Read-only capstone locking the corpus before the MTF analytical pass. Re-derived on disk:
+1M=9, 1w=21, 1d=67, 4h=365 (462 total; up=219/down=243), coverage (anchor-derived)
+2016-12-29 → 2026-06-07, log scale + `tradingview_log_chamoun`, no 0.236. Source-quality:
+Tier 1+2 done, 20171228 corrected, 20250506 superseded (1), ledger validates (10 rows).
+Corpus declared clean. Next: #1 MTF confluence atlas (table-first). Docs-only.
+[Report](reviews/btc-source-fib-corpus-integrity-20260615.md).
+
+## [2026-06-15] decision | Next research-pass design — corpus integrity then MTF atlas
+
+Read-only design comparing 5 candidate passes (5×8 sub-questions). Recommends corpus
+integrity report (#2) now, MTF confluence atlas (#1) next; #5 visual companion to #1;
+#3/#4 deferred. Docs-only.
+[Report](reviews/btc-source-fib-next-research-plan-20260615.md).
+
 ## [2026-06-15] maintenance | Reconcile data/labels/INDEX.md with current facit
 
 `data/labels/INDEX.md` was stale (2026-06-10: 1w/1d/4h listed absent/0). Reconciled to
