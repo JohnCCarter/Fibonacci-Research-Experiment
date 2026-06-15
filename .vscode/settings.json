@@ -1,6 +1,8 @@
 {
   "claudeCode.enableNewConversationShortcut": true,
-  "claudeCode.environmentVariables": [],
+  "claudeCode.environmentVariables": [
+    
+  ],
   "claudeCode.initialPermissionMode": "plan",
   "claudeCode.preferredLocation": "panel",
   "cursorpyright.analysis.diagnosticMode": "openFilesOnly",
@@ -14,17 +16,14 @@
   "python.terminal.useEnvFile": true,
   "scm.alwaysShowActions": true,
   "scm.alwaysShowRepositories": true,
-  "terminal.integrated.automationProfile.windows": {
-    "args": ["--login"],
-    "path": "C:\\Users\\fa06662\\AppData\\Local\\Programs\\Git\\bin\\bash.exe"
-  },
+  "terminal.integrated.automationProfile.windows": null,
   "terminal.integrated.defaultProfile.windows": "Git Bash",
   "terminal.integrated.profiles.windows": {
     "Git Bash": {
       "args": ["--login"],
       "color": "terminal.ansiGreen",
       "icon": "terminal-linux",
-      "path": "C:\\Users\\fa06662\\AppData\\Local\\Programs\\Git\\bin\\bash.exe"
+      "source": "Git Bash"
     },
     "PowerShell": {
       "color": "terminal.ansiBlue",
