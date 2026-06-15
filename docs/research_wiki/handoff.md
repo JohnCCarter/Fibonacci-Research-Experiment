@@ -142,7 +142,7 @@ confluence is **geometry, not edge proof** → **stop the MTF track**. **Fork wr
 (docs-only):** [Phase 0 prereg](reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md) registers
 one falsifiable behaviour question (causal confluence zones vs placebo/naïve levels, OOS) +
 leakage manifest, baselines, time-split holdout, stop/go; [Phase 1 spec](reviews/btc-fib-to-genesis-v2-phase1-feature-export-spec-20260615.md)
-defines the causally-safe feature-export contract (zone+bar tables, `known_after_ts` rule). **Not authorised** beyond the notes; Phase 2 (dummy-file test) needs an explicit go.
+(zone+bar tables, `known_after_ts` rule) **reviewed PASS — Phase 1 closed as docs-only contract**. **Phase 2 (dummy-file test) NOT authorised** without an explicit go.
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.

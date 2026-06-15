@@ -14,16 +14,19 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Older entries (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-15] review | Fib → Genesis V2 — Phase 1 closed (PASS)
+
+Phase 1 feature-export spec reviewed — **verdict: PASS**; **closed as a docs-only contract**.
+Remaining risk (causal features **non-empty** after all rules) is **empirical, belongs to Phase
+2**. **Phase 2 still requires explicit GO.**
+
 ## [2026-06-15] question | Fib → Genesis V2 — Phase 1 feature-export spec
 
 Docs-only **data-contract** spec (builds nothing) for a future causally-safe feature export Fib →
-Genesis V2, gated by the Phase 0 question. Defines **two tables** — a **zone registry** (one row
-per causal confluence zone, stamped `known_after_ts = max(anchor_b)+buffer`) and a **bar feature
-table** (binding per-row `zone.known_after_ts ≤ timestamp`) — **3 baseline specs** (causal swing /
-shuffled placebo / rolling-ATR), a thin **read-only CSV-first Genesis ingestion contract**
-(Genesis never sees fib internals), **9 causal invariants**, a **do-not-export list**, and a
-**Phase 2** dummy-file-test preview. Rec: sufficient; small docs-only Phase 2 next, but the
-non-empty-features risk is only empirical — needs an explicit go.
+Genesis V2, gated by the Phase 0 question. Defines a **zone registry** + **bar feature table** with
+binding rules `known_after_ts = max(anchor_b)+buffer` and per-row `zone.known_after_ts ≤ timestamp`,
+**3 baseline specs**, a **read-only CSV-first Genesis contract**, **9 causal invariants**, and a
+**do-not-export list**.
 [Spec](reviews/btc-fib-to-genesis-v2-phase1-feature-export-spec-20260615.md).
 
 ## [2026-06-15] question | Fib → Genesis V2 — Phase 0 pre-registration
