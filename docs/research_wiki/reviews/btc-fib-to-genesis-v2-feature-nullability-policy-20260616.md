@@ -165,7 +165,15 @@ column. It is **redundant** with the §4 invariant (present row + empty meta + n
 already encodes it) and is **not** added — adding a column is a Phase 1 schema change, out of
 this docs-only scope. Recorded only as a future option for the spec owner.
 
-## 7. Stop
+## 7. Review outcome
+
+**Human review 2026-06-16 — verdict PASS / closed** (commit `4599819`). Scope and the three-state
+model confirmed. **Non-blocking note for any future real export:** explicitly decide whether
+`has_robust_4tf_zone_nearby` (listed always-non-null in §2.1) is **log-price-thresholded** (stays
+non-null) or **ATR-thresholded** (then subject to the §3.1 warmup-null rule, or needs a separate
+availability flag). Resolve before that column is exported for real.
+
+## 8. Stop
 
 This note pins nullability semantics and stops. It authorises **no** code, **no** real export,
 **no** Genesis change, **no** behaviour study. Building any of these — or computing real Fib

@@ -16,6 +16,16 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-16] review | Fib → Genesis V2 — Phase 2.5 reviewed PASS / closed
+
+Human review of commit `4599819` — **verdict PASS**, Phase 2.5 closed. Confirmed docs-only:
+3-state separation (no zone known / nearby / ATR-warmup not-applicable), per-column nullability,
+distance-null as empty CSV field (not 0/inf), empty-meta ⇔ no-known-zone invariant, Genesis
+read-only consumer rules (dense table, no imputation across `known_after_ts`, meta never a
+feature). **Non-blocking pre-export note:** decide whether `has_robust_4tf_zone_nearby` is
+log-price- or ATR-thresholded (ATR ⇒ warmup-null or a separate availability flag). No Phase 3,
+no real export, no Genesis touch, no ML/backtest/signal.
+
 ## [2026-06-16] decision | Fib → Genesis V2 — Phase 2.5 feature nullability policy (docs-only)
 
 Docs-only policy pinning how the future bar feature table represents empty values — the
