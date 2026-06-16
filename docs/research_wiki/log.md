@@ -16,6 +16,17 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-16] decision | Fib → Genesis V2 — Phase 2.5 feature nullability policy (docs-only)
+
+Docs-only policy pinning how the future bar feature table represents empty values — the
+precondition flagged by the Phase 2 review. Defines **three** states (no zone known / no zone
+nearby / not-applicable ATR-warmup), per-column nullability (join keys + bools + ATR-free count
++ meta always non-null; the 7 non-ATR `nearest_*` null only when no zone known; ATR-denominated
+columns null during warmup), distances as **null not 0/inf**, the empty-meta ⇔ no-known-zone
+invariant, and read-only Genesis consumer rules (dense table, no imputation across
+`known_after_ts`). No code, no export, no Genesis touch, no ML/backtest/signal. Not Phase 3.
+[Policy](reviews/btc-fib-to-genesis-v2-feature-nullability-policy-20260616.md).
+
 ## [2026-06-16] review | Fib → Genesis V2 — Phase 2 reviewed PASS / closed
 
 Human review of commit `68dc006` — **verdict PASS**, Phase 2 closed. Confirmed: contract-test

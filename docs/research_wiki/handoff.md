@@ -22,6 +22,11 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-16 Fib → Genesis V2 Phase 2.5 feature nullability policy (docs-only)** —
+  pins how the future bar feature table represents empty values (3 states; distances null not
+  0/inf; empty-meta ⇔ no-known-zone; dense-table + no-imputation consumer rules). Precondition
+  for any real export; no code/export/Genesis/ML.
+  [Policy](reviews/btc-fib-to-genesis-v2-feature-nullability-policy-20260616.md).
 - **2026-06-16 Fib → Genesis V2 Phase 2 dummy contract test — reviewed PASS / CLOSED** —
   mechanical contract/dummy test **inside Fib only** (not export, not Genesis integration).
   `research/feature_contract.py` (stdlib) validates two committed dummy CSVs vs the Phase 1
