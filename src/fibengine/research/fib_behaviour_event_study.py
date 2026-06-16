@@ -82,10 +82,16 @@ class Level:
     price: float
 
 
-def load_fib_levels(timeframe: str, cfg: EventStudyConfig) -> list[Level]:
-    """Causal fib interior-retracement levels for a TF (prereg §3). Fail-closed if empty."""
+def load_fib_levels(
+    timeframe: str, cfg: EventStudyConfig, ratios: tuple[float, ...] | None = None
+) -> list[Level]:
+    """Causal fib retracement levels for a TF (prereg §3). Fail-closed if empty.
+
+    ``ratios`` selects which interior retracements to emit (default = all of
+    ``INTERIOR_RATIOS``); used by the context study to isolate deep vs shallow levels."""
     if timeframe not in ALLOWED_TIMEFRAMES:
         raise ValueError(f"timeframe {timeframe!r} not allowed (1H is rejected fail-closed)")
+    wanted = INTERIOR_RATIOS if ratios is None else tuple(ratios)
     bar_secs = _TF_PARAMS[timeframe][2]
     buffer = timedelta(seconds=cfg.k_confirm * bar_secs)
     # Base human-fib JSON only. Exclude regenerable auto-candidate sidecars
@@ -108,7 +114,7 @@ def load_fib_levels(timeframe: str, cfg: EventStudyConfig) -> list[Level]:
         b_t = _parse_utc(data["anchor_b"]["time"])
         known = pd.Timestamp(max(a_t, b_t) + buffer)
         by_ratio = {round(float(lv["ratio"]), 3): float(lv["price"]) for lv in data["levels"]}
-        for r in INTERIOR_RATIOS:
+        for r in wanted:
             price = by_ratio.get(r)
             if price is None or price <= 0:
                 raise ValueError(f"fib {p} missing/invalid interior ratio {r}")

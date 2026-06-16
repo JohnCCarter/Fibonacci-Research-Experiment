@@ -86,3 +86,50 @@ All 9 human-drawn 1M source fibs reviewed through 1D + 4H using
 (anchor_b → next macro boundary; 20260101 window extends to latest cache 2026-06-08).
 Total: 62 1D events, 127 4H events across the full set.
 Summary artifact: [reviews/btc-1m-reaction-review-cycle-20260611.md](reviews/btc-1m-reaction-review-cycle-20260611.md).
+
+## [2026-06-15] review | BTC/USD 4H visual confirmation Tier 2 — first manual sample-pass
+
+First manual sample-pass of `fourh_source_fib_zoom.py` zoom artifacts. Artifacts:
+103/103 rendered (2017_h2), 37/37 rendered (2021_dec2020_mar2021), 0 skipped.
+Full review: [btc-4h-tier2-sample-review-20260615.md](reviews/btc-4h-tier2-sample-review-20260615.md).
+
+**Sample set:** 8 fibs (4 per scope). **Result:** 7 OK / OK-with-note, **1 correction-candidate**.
+
+**Correction candidate (visual review 2026-06-15):**
+- `fib_BTC-USD_4h_20171228T200000` — initially watchlist (short-span, span $1,329, ankare
+  1 bar isär). Visual review in labeling tool found a candle adjacent to leg A that fits
+  better as anchor_a → reclassified **suspicious / correction-candidate**. Deferred to a
+  future correction-pass: direct manual correction attempted but the GUI view is too
+  cluttered with fib levels to move anchor_a safely; needs an isolated single-fib view or
+  the exact target candle timestamp. **No label changed; source JSON unchanged.**
+
+**Watchlist (unchanged):**
+- Body/close vs wick convention — Jan 10 2021 pair (`20210110T080000` and
+  `20210110T200000`) share identical anchor_b at ~$30,500 (body/close, not wick extreme
+  ~$28,500). Consistent local convention, not documented globally. Add note to labeling docs.
+
+**No label changes made** by this sample-pass.
+
+## [2026-06-15] review | BTC/USD 4H visual confirmation Tier 1 — map review complete
+
+Reviewed all 11 groups from `fourh_source_fib_map.py` (maps regenerated 2026-06-15).
+Full review: [btc-4h-tier1-map-review-20260615.md](reviews/btc-4h-tier1-map-review-20260615.md).
+
+**Result:** 9 of 11 groups map-OK. 2 groups need Tier 2:
+
+- **`2017_h2` (103 fibs) — full Tier 2:** Sep–Dec 2017 parabola; every zone globally
+  unreadable on the annual map. Per-fib zoom needed for all 103 fibs.
+- **`2021` (partial) — Tier 2 for Dec 2020 → Mar 2021 cluster:** Initial bull-leg
+  zone (anchor_a in Jan–Mar 2021, ~37 fibs) is unreadable. Apr–Dec 2021 is map-OK.
+  Scope: `anchor_a in [2021-01-01, 2021-04-01)`. Dec 2020 fibs are in the 2020 group
+  (map-OK) and do not need Tier 2.
+
+**Threshold rule confirmed:** local density per zone determines readability, not total
+fib count. A 55-fib group (2021) can be mostly map-OK; a 103-fib group (2017_h2) over
+4 months is globally unreadable.
+
+**Chart quality:** y-axis log confirmed (`ax.set_yscale("log")` line 246 of
+`monthly_fib_map.py`). X-axis label density is a display limitation of wide Tier 1
+maps; Tier 2 per-fib zoom windows will be narrower and more readable.
+
+**Next:** implement Tier 2 `fourh_source_fib_zoom.py`.

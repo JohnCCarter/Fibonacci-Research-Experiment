@@ -22,13 +22,14 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
-- **2026-06-16 BTC/Fib Behaviour Event Study — RUN, NO SIGNAL (delivered, pending review)**
-  (Lean Fib Research) — causal event study, matched-placebo + causal-swing baselines, OOS 70/30
-  + embargo, permutation test. **Fib levels not measurably different from placebo/swing.** Powered
-  TF (4h): fib reject 0.78 ≈ placebo 0.80 ≈ swing 0.84, p=0.63/0.19; 1d nominal-only (N<30); 1w/1M
-  too sparse. Gate fails everywhere → **strategy sanity-check NOT run.** `fib_behaviour_event_study.py`
-  + 19 tests; [prereg](reviews/btc-fib-behaviour-event-study-prereg-20260616.md) /
-  [results](reviews/btc-fib-behaviour-event-study-results-20260616.md). No Genesis/1H/ML/export.
+- **2026-06-16 BTC/Fib studies — BOTH NULL (delivered, pending review)** (Lean Fib Research).
+  **(1) Behaviour event study:** fib ≈ placebo ≈ swing (4h reject 0.78/0.80/0.84, p=0.63/0.19).
+  **(2) Context-conditioned** (continuous MFE−MAE, rank-perm + Holm; contexts trend + deep
+  0.618/0.786): no context passes — fib beats *random placebo* only nominally (p=0.042/0.056, fails
+  Holm) and **never beats swing**. **Insight:** any faint level-reaction is generic horizontal
+  structure, not Fibonacci. Both gates fail → **no strategy work.** Code:
+  `fib_behaviour_event_study.py` (19 tests) + `fib_context_conditioned_study.py` (17); preregs +
+  results `reviews/btc-fib-*-20260616.md`.
 - **2026-06-16 Fib → Genesis V2 Phase 2.5 feature nullability policy — reviewed PASS / CLOSED**
   (docs-only) — pins how the future bar feature table represents empty values (3 states; distances
   null not 0/inf; empty-meta ⇔ no-known-zone; dense-table + no-imputation consumer rules).
@@ -110,15 +111,14 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-**Behaviour event study delivered with a NULL result — awaiting human review.** The first Lean
-Fib Research question ("do fib levels react differently than placebo/swing?") ran and returned
-**no signal** ([results](reviews/btc-fib-behaviour-event-study-results-20260616.md)); the
-pre-registered gate failed on every TF so **no strategy sanity-check was run.** Honest stop.
-Next safe options (human's choice): (a) accept the null and pause/close this question; (b) a
-**new** pre-registration with a different question or metric (not a re-run of this one until it
-passes — that would be p-hacking). Pause+report if a step needs Genesis, real export, 1H, label
-change, ML/optimisation or a trading/edge claim. (Working mode: Lean Fib Research; fork that
-opened it: [note](reviews/btc-fib-post-phase25-fork-decision-20260616.md).)
+**Two pre-registered fib-behaviour questions BOTH returned NULL — awaiting human review.**
+[Unconditioned](reviews/btc-fib-behaviour-event-study-results-20260616.md) and
+[context-conditioned](reviews/btc-fib-context-conditioned-study-results-20260616.md) both fail
+their gates; fib never beats the causal-swing baseline. This closes the "does fib price-behaviour
+beat baselines" line on the current BTC corpus. Next safe options (human's choice): (a) accept the
+null and pause the behaviour line; (b) a **new** pre-registration on **fresh data** (other
+symbols/TFs — out of scope), *not* a re-run on the same data (p-hacking). Pause+report if a step
+needs Genesis, real export, 1H, label change, ML/optimisation or a trading/edge claim.
 
 **Milestone:** Issue #32 top-3 complete + pushed (gallery `8f1e7a8`, ledger `d6ab9ec`,
 overlap detector + anchor convention `84b42db`). local == origin, tree clean, source-fib

@@ -16,6 +16,24 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-16] review | BTC/Fib Context-Conditioned Study — NO CANDIDATE (delivered, pending review)
+
+Second Lean Fib question, opened after the unconditioned null: do fib levels react differently
+than placebo/swing **only in specific causal contexts**? Advisor flagged the prior `reject_rate`
+as saturated → switched primary to a **continuous** metric `reaction_asym_atr = MFE−MAE`,
+rank-permutation test, **Holm** across K=2 frozen confirmatory contexts (**trend regime**, **deep
+0.618/0.786**), MDE pre-registered, confirmatory TF=4h. Disclosed second-look (same OOS window
+reused; power pre-flight peeked) → train-sign is the guard, ceiling = candidate not confirmation.
+**Result: no confirmatory context passes.** Fib beats *random placebo* in the predicted direction
+(trend gap +0.64, deep +0.46 ATR; train-sign consistent) but only **nominally** (p=0.042/0.056,
+**fails Holm**) and **never beats the swing baseline** (swing reacts ≥ fib in both). Gaps ≪ MDE
+(~1.3–1.9). 1d underpowered (N<30, train sign flips). Insight: faint level-reaction = generic
+horizontal structure, not Fibonacci. Gate fails → **no strategy work.** New
+`research/fib_context_conditioned_study.py` (17 tests), reuses the event-study engine; artifact
+gitignored. No Genesis/1H/ML/export/label change.
+[Prereg](reviews/btc-fib-context-conditioned-study-prereg-20260616.md) /
+[results](reviews/btc-fib-context-conditioned-study-results-20260616.md).
+
 ## [2026-06-16] review | BTC/Fib Behaviour Event Study — NO SIGNAL (delivered, pending review)
 
 First Lean Fib Research question, run end-to-end. Causal event study on the locked corpus
@@ -361,53 +379,8 @@ items) + map galleries written; `git status` confirms `index.html` is ignored.
 
 Build: `python -m fibengine.research.artifact_gallery --root experiments/review/fourh_source_fib_zoom`.
 
-## [2026-06-15] review | BTC/USD 4H visual confirmation Tier 2 — first manual sample-pass
-
-First manual sample-pass of `fourh_source_fib_zoom.py` zoom artifacts. Artifacts:
-103/103 rendered (2017_h2), 37/37 rendered (2021_dec2020_mar2021), 0 skipped.
-Full review: [btc-4h-tier2-sample-review-20260615.md](reviews/btc-4h-tier2-sample-review-20260615.md).
-
-**Sample set:** 8 fibs (4 per scope). **Result:** 7 OK / OK-with-note, **1 correction-candidate**.
-
-**Correction candidate (visual review 2026-06-15):**
-- `fib_BTC-USD_4h_20171228T200000` — initially watchlist (short-span, span $1,329, ankare
-  1 bar isär). Visual review in labeling tool found a candle adjacent to leg A that fits
-  better as anchor_a → reclassified **suspicious / correction-candidate**. Deferred to a
-  future correction-pass: direct manual correction attempted but the GUI view is too
-  cluttered with fib levels to move anchor_a safely; needs an isolated single-fib view or
-  the exact target candle timestamp. **No label changed; source JSON unchanged.**
-
-**Watchlist (unchanged):**
-- Body/close vs wick convention — Jan 10 2021 pair (`20210110T080000` and
-  `20210110T200000`) share identical anchor_b at ~$30,500 (body/close, not wick extreme
-  ~$28,500). Consistent local convention, not documented globally. Add note to labeling docs.
-
-**No label changes made** by this sample-pass.
-
-## [2026-06-15] review | BTC/USD 4H visual confirmation Tier 1 — map review complete
-
-Reviewed all 11 groups from `fourh_source_fib_map.py` (maps regenerated 2026-06-15).
-Full review: [btc-4h-tier1-map-review-20260615.md](reviews/btc-4h-tier1-map-review-20260615.md).
-
-**Result:** 9 of 11 groups map-OK. 2 groups need Tier 2:
-
-- **`2017_h2` (103 fibs) — full Tier 2:** Sep–Dec 2017 parabola; every zone globally
-  unreadable on the annual map. Per-fib zoom needed for all 103 fibs.
-- **`2021` (partial) — Tier 2 for Dec 2020 → Mar 2021 cluster:** Initial bull-leg
-  zone (anchor_a in Jan–Mar 2021, ~37 fibs) is unreadable. Apr–Dec 2021 is map-OK.
-  Scope: `anchor_a in [2021-01-01, 2021-04-01)`. Dec 2020 fibs are in the 2020 group
-  (map-OK) and do not need Tier 2.
-
-**Threshold rule confirmed:** local density per zone determines readability, not total
-fib count. A 55-fib group (2021) can be mostly map-OK; a 103-fib group (2017_h2) over
-4 months is globally unreadable.
-
-**Chart quality:** y-axis log confirmed (`ax.set_yscale("log")` line 246 of
-`monthly_fib_map.py`). X-axis label density is a display limitation of wide Tier 1
-maps; Tier 2 per-fib zoom windows will be narrower and more readable.
-
-**Next:** implement Tier 2 `fourh_source_fib_zoom.py`.
 
 > **2026-06-11→06-12 entries** (1M reaction-review, 1W/1D/4H source phases, 4H Tier 1
-> design/maps) archived to [post-reset part 1](log-archive-btc-postreset-part1.md).
+> design/maps) **and the 2026-06-15 4H Tier 1/Tier 2 visual-review entries** archived to
+> [post-reset part 1](log-archive-btc-postreset-part1.md).
 
