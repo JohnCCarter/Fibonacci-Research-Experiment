@@ -108,10 +108,13 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-**Open decision point (post-Phase-2.5 fork):** [fork decision note](reviews/btc-fib-post-phase25-fork-decision-20260616.md)
-compares A pause / B new falsifiable question / C conceptual Genesis prep / D BTC-Fib quality
-(not 1H). **Rec: A primary; D the only no-new-risk continuation.** Awaiting human choice. No
-Phase 3, no export, no Genesis touch.
+**Fork RESOLVED (2026-06-16):** human chose to **continue Fib research under a new working
+mode — "Lean Fib Research"** (fast small falsifiable experiments, not new phase systems). Not
+pause (A), not Phase 3. Strictness kept on leakage/causality/no-label-change/no-Genesis/no-1H;
+ceremony reduced (no extra phase scaffolding, no docs-only middle steps, no per-microdecision
+asking). Awaiting the concrete work plan / first question from the human. Pause+report only if
+a step needs Genesis, real export, 1H, label change, ML/optimisation or a trading/edge claim.
+([fork note](reviews/btc-fib-post-phase25-fork-decision-20260616.md) for the A/B/C/D analysis.)
 
 **Milestone:** Issue #32 top-3 complete + pushed (gallery `8f1e7a8`, ledger `d6ab9ec`,
 overlap detector + anchor convention `84b42db`). local == origin, tree clean, source-fib
