@@ -12,6 +12,7 @@
   "cursorpyright.disableTaggedHints": true,
   "git.showCursorWorktrees": true,
   "python.languageServer": "None",
+  "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
   "python.terminal.activateEnvInCurrentTerminal": true,
   "python.terminal.useEnvFile": true,
   "scm.alwaysShowActions": true,
@@ -43,5 +44,6 @@
   "workbench.editor.openPositioning": "right",
   "workbench.editor.openSideBySideDirection": "right",
   "workbench.editor.tabActionLocation": "right",
-  "terminal.integrated.enableImages": true
+  "terminal.integrated.enableImages": true,
+  "python-envs.pythonProjects": []
 }
