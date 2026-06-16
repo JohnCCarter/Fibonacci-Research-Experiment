@@ -22,6 +22,12 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-16 Fib → Genesis V2 Phase 2 dummy contract test (narrow slice, DONE)** —
+  mechanical contract/dummy test **inside Fib only** (not export, not Genesis integration).
+  `research/feature_contract.py` (stdlib) validates two committed dummy CSVs vs the Phase 1
+  schema (join keys, causality, knowability floor, 1H + feature/metadata fail-closed). No fib
+  computation, no Genesis touch. 20 tests; gates green. **Stopped as scoped.**
+  [Report](reviews/btc-fib-to-genesis-v2-phase2-dummy-contract-20260616.md).
 - **2026-06-15 MTF confluence CP1–CP3 CLOSED + interpretation/decision note** — first atlas
   pack done (5 cards, 3 archetypes, all **human-approved**): c001 robust fixed-band 4-TF; c002
   chaining-dependent contrast (NOT tight); c004/c006/c007 zero-span exact-price 3-TF.
@@ -62,41 +68,10 @@ append-only trail lives in [log.md](log.md).
   in [2021-01-01, 2021-04-01), ~37 fibs). Threshold rule confirmed: local density per
   zone, not total fib count. Y-axis log confirmed (line 246 `monthly_fib_map.py`).
   Full review: [`reviews/btc-4h-tier1-map-review-20260615.md`](reviews/btc-4h-tier1-map-review-20260615.md).
-- **2026-06-12 4H visual confirmation Tier 1 built** — `research/fourh_source_fib_map.py`
-  renders annual combined 4H maps (366/366 drawn, 11 groups; dense 2017_h2 flagged for
-  Tier 2). Reuses `monthly_fib_map` primitives; output gitignored. Full detail in log.md.
-- **2026-06-12 4H source-fib phase complete** — **366** manual BTC/USD 4H source fibs
-  drawn and verified (timeframe `4h`, log scale, `tradingview_log_chamoun`, levels
-  `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, endpoint mapping ratio 0.0=anchor_b /
-  1.0=anchor_a, anchor direction, log-spacing, human/manual only). Coverage
-  **2017-01-05 → 2026-06-05**; **up=169 / down=197**. This is **source-labeling
-  completion, not reaction-review** — visual confirmation / reaction-review is a later,
-  separate decision. No auto-fib, no trading conclusions. 366/366 schema verification PASS.
-- **2026-06-12 1D reaction-review complete** — all **67** BTC/USD 1D source fibs
-  reviewed on **4H** (expansion config, 4H history to 2017-01-01). Review window:
-  anchor_b + 90 days (fixed horizon). **1 816** total 4H interactions.
-  `review_windows.yaml` written; artifacts in `experiments/review/source_fib_projection/`.
-  Summary: [`reviews/btc-1d-reaction-review-cycle-20260612.md`](reviews/btc-1d-reaction-review-cycle-20260612.md).
-  Outliers: Jan–Feb 2022 cluster (52–65 events); Dec 2020 breakout (2 events).
-  Batch script: `scripts/run_btc_1d_reaction_review.py`. 1H deferred (cache missing).
-- **2026-06-11 1D source-fib labeling complete (source-facit only)** — **67** manual
-  BTC/USD 1D source fibs drawn and verified (timeframe `1d`, log scale,
-  `tradingview_log_chamoun`, levels `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236,
-  endpoint mapping ratio 0.0=anchor_b / 1.0=anchor_a, anchor direction, log-spacing,
-  human/manual only). Coverage **2017-01-05 → 2024-12-20**; **34 down / 33 up**.
-- **2026-06-11 1W source-fib phase complete** — **21/21** BTC/USD manual 1W source
-  fibs drawn (log scale, `tradingview_log_chamoun`) and verified (profile, scale,
-  levels `[0, 0.382, 0.5, 0.618, 0.786, 1]`, no 0.236, anchor direction,
-  human/manual only). Two new research modules:
-  - `research/weekly_source_fib_map` — combined 1W/1D/4H map (all fibs per TF).
-    **1W/1D usable; combined 4H too compressed** for candle-level confirmation.
-  - `research/weekly_source_fib_zoom` — per-fib windowed 4H confirmation
-    (one chart per fib, A→B + bounded context). **Per-fib 4H usable.**
-  Strict separation kept: **1M source**, **1M→1W projection** (`weekly_projection_map`),
-  and **true 1W source** fibs are distinct flows; fail-closed guards reject any
-  non-1W / non-log / wrong-profile / 0.236 / non-human fib. No auto-fib, no
-  trading conclusions. Commits `4eb2f4b` (map + facit), `939de97` (zoom),
-  `e379fae` (CI: format + bounds fix).
+- **2026-06-11→06-12 source-fib milestones (archived)** — 1W (21), 1D (67) + 4H
+  (366→365) source phases complete, 1D 4H reaction-review (1816 interactions), 4H Tier 1
+  maps. Full detail: [log post-reset part 1](log-archive-btc-postreset-part1.md); current
+  counts in Verification Snapshot below.
 - **2026-06-08…11 (earlier milestones)** — 1M reaction-review cycle (9 fibs, 1D+4H),
   Addendum 2 golden-zone retirement (issue #30, added `human_highlights`), log-scale +
   profile fix, 1M re-label, events log-scale fix, and the BTC monthly-first reset. Full
@@ -142,7 +117,9 @@ confluence is **geometry, not edge proof** → **stop the MTF track**. **Fork wr
 (docs-only):** [Phase 0 prereg](reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md) registers
 one falsifiable behaviour question (causal confluence zones vs placebo/naïve levels, OOS) +
 leakage manifest, baselines, time-split holdout, stop/go; [Phase 1 spec](reviews/btc-fib-to-genesis-v2-phase1-feature-export-spec-20260615.md)
-(zone+bar tables, `known_after_ts` rule) **reviewed PASS — Phase 1 closed as docs-only contract**. **Phase 2 (dummy-file test) NOT authorised** without an explicit go.
+(zone+bar tables, `known_after_ts` rule) **reviewed PASS — Phase 1 closed as docs-only contract**. **Phase 2 (dummy-file test) — DONE 2026-06-16** (authorised narrow slice):
+`research/feature_contract.py` + committed dummy CSVs prove the contract validates mechanically
+with no real export and no Genesis touch ([Phase 2 report](reviews/btc-fib-to-genesis-v2-phase2-dummy-contract-20260616.md)). **Stopped** — any real export or Genesis touch needs a fresh go.
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.

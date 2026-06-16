@@ -1,0 +1,5 @@
+symbol,timeframe,timestamp,feature_version,nearest_confluence_price,nearest_confluence_distance_log,nearest_confluence_distance_atr,in_confluence_band,nearest_zone_tf_count,nearest_zone_level_count,nearest_zone_price_span_log,nearest_zone_age_bars,nearest_zone_method,num_zones_within_x_atr,num_fixed_band_zones_active,has_robust_4tf_zone_nearby,meta_referenced_zone_ids
+BTC/USD,1d,2020-12-15T00:00:00Z,v0,13764.0,0.0021,0.34,false,3,3,0.0,13,fixed_band,1,1,false,zone_dummy_b
+BTC/USD,1w,2021-05-10T00:00:00Z,v0,29274.0,0.0008,0.12,true,4,4,0.00123,1,fixed_band,1,1,true,zone_dummy_a
+BTC/USD,1d,2021-06-01T00:00:00Z,v0,29274.0,0.0150,1.20,false,4,4,0.00123,31,fixed_band,2,2,true,zone_dummy_a;zone_dummy_b
+BTC/USD,4h,2021-12-01T08:00:00Z,v0,64829.0,0.0040,0.58,false,2,2,0.00627,19,single_linkage,3,2,true,zone_dummy_a;zone_dummy_b;zone_dummy_c
