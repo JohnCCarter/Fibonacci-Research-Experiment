@@ -16,6 +16,16 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-16] decision | BTC/Fib — post-Phase-2.5 fork decision (docs-only)
+
+Clean decision point after Phase 2.5 closed. Compares 4 next-step options (A pause / B new
+falsifiable question / C conceptual Genesis prep / D BTC-Fib quality, not 1H) with
+observed/inferred/unverified kept separate. **Rec: A (pause) primary; D the only no-new-risk
+continuation.** B's real value needs code/export (breaches scope, trends to Phase 3) and its
+docs form duplicates Phase 0; C is redundant with Phase 1 + risks Genesis drift. Builds
+nothing; no Phase 3, no export, no Genesis touch, no 1H, no ML/backtest/signal. Choice is the
+human's. [Note](reviews/btc-fib-post-phase25-fork-decision-20260616.md).
+
 ## [2026-06-16] review | Fib → Genesis V2 — Phase 2.5 reviewed PASS / closed
 
 Human review of commit `4599819` — **verdict PASS**, Phase 2.5 closed. Confirmed docs-only:

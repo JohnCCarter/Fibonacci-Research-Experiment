@@ -108,6 +108,11 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
+**Open decision point (post-Phase-2.5 fork):** [fork decision note](reviews/btc-fib-post-phase25-fork-decision-20260616.md)
+compares A pause / B new falsifiable question / C conceptual Genesis prep / D BTC-Fib quality
+(not 1H). **Rec: A primary; D the only no-new-risk continuation.** Awaiting human choice. No
+Phase 3, no export, no Genesis touch.
+
 **Milestone:** Issue #32 top-3 complete + pushed (gallery `8f1e7a8`, ledger `d6ab9ec`,
 overlap detector + anchor convention `84b42db`). local == origin, tree clean, source-fib
 JSON unchanged, no new deps, no artifacts committed.
