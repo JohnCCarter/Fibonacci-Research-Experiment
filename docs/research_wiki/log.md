@@ -16,6 +16,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-16] review | BTC/Fib Behaviour Event Study — NO SIGNAL (delivered, pending review)
+
+First Lean Fib Research question, run end-to-end. Causal event study on the locked corpus
+(1M/1w/1d/4h, no 1H): fresh touches of causally-known fib **interior retracements** vs two
+baselines — **matched deterministic placebo** (same count/time, random causal-range price) and
+**causal fractal swing** highs/lows. OOS 70/30 + embargo; permutation test on test-window
+reject_rate. **Result: fib levels are not measurably different from placebo/swing.** At the only
+powered TF (4h, N≥138/source) fib reject 0.78 ≈ placebo 0.80 ≈ swing 0.84 (p=0.63/0.19); 1d
+nominal-only (not sig, N<30); 1w/1M too sparse (N≤2). High ~0.8 reject across *all* sources =
+generic mean-reversion, not a fib property. Gate fails on every TF →
+**strategy sanity-check NOT run** (Phase 0 §8 placebo stop). Code
+`fib_behaviour_event_study.py` (19 tests); artifact gitignored. No Genesis/1H/ML/export/label
+change. [Prereg](reviews/btc-fib-behaviour-event-study-prereg-20260616.md) /
+[results](reviews/btc-fib-behaviour-event-study-results-20260616.md).
+
 ## [2026-06-16] decision | BTC/Fib — post-Phase-2.5 fork decision (docs-only)
 
 Clean decision point after Phase 2.5 closed. Compares 4 next-step options (A pause / B new

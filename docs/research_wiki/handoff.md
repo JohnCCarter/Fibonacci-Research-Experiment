@@ -22,12 +22,18 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-16 BTC/Fib Behaviour Event Study — RUN, NO SIGNAL (delivered, pending review)**
+  (Lean Fib Research) — causal event study, matched-placebo + causal-swing baselines, OOS 70/30
+  + embargo, permutation test. **Fib levels not measurably different from placebo/swing.** Powered
+  TF (4h): fib reject 0.78 ≈ placebo 0.80 ≈ swing 0.84, p=0.63/0.19; 1d nominal-only (N<30); 1w/1M
+  too sparse. Gate fails everywhere → **strategy sanity-check NOT run.** `fib_behaviour_event_study.py`
+  + 19 tests; [prereg](reviews/btc-fib-behaviour-event-study-prereg-20260616.md) /
+  [results](reviews/btc-fib-behaviour-event-study-results-20260616.md). No Genesis/1H/ML/export.
 - **2026-06-16 Fib → Genesis V2 Phase 2.5 feature nullability policy — reviewed PASS / CLOSED**
-  (docs-only) — pins how the future bar feature table represents empty values (3 states;
-  distances null not 0/inf; empty-meta ⇔ no-known-zone; dense-table + no-imputation consumer
-  rules). Precondition for any real export; no code/export/Genesis/ML. **Open (non-blocking,
-  pre-export):** decide whether `has_robust_4tf_zone_nearby` is log-price- or ATR-thresholded
-  (latter ⇒ warmup-null / availability flag).
+  (docs-only) — pins how the future bar feature table represents empty values (3 states; distances
+  null not 0/inf; empty-meta ⇔ no-known-zone; dense-table + no-imputation consumer rules).
+  Precondition for any real export. **Open (non-blocking):** is `has_robust_4tf_zone_nearby`
+  log-price- or ATR-thresholded (latter ⇒ warmup-null / availability flag).
   [Policy](reviews/btc-fib-to-genesis-v2-feature-nullability-policy-20260616.md).
 - **2026-06-16 Fib → Genesis V2 Phase 2 dummy contract test — reviewed PASS / CLOSED** —
   mechanical contract/dummy test **inside Fib only** (not export, not Genesis integration).
@@ -76,14 +82,10 @@ append-only trail lives in [log.md](log.md).
   in [2021-01-01, 2021-04-01), ~37 fibs). Threshold rule confirmed: local density per
   zone, not total fib count. Y-axis log confirmed (line 246 `monthly_fib_map.py`).
   Full review: [`reviews/btc-4h-tier1-map-review-20260615.md`](reviews/btc-4h-tier1-map-review-20260615.md).
-- **2026-06-11→06-12 source-fib milestones (archived)** — 1W (21), 1D (67) + 4H
-  (366→365) source phases complete, 1D 4H reaction-review (1816 interactions), 4H Tier 1
-  maps. Full detail: [log post-reset part 1](log-archive-btc-postreset-part1.md); current
-  counts in Verification Snapshot below.
-- **2026-06-08…11 (earlier milestones)** — 1M reaction-review cycle (9 fibs, 1D+4H),
-  Addendum 2 golden-zone retirement (issue #30, added `human_highlights`), log-scale +
-  profile fix, 1M re-label, events log-scale fix, and the BTC monthly-first reset. Full
-  detail in [log.md](log.md) (append-only trail).
+- **2026-06-08→06-12 source-fib milestones (archived)** — 1M/1W/1D/4H source phases, reaction
+  reviews (1816 interactions), 4H Tier 1 maps, Addendum 2 golden-zone retirement (#30), log-scale
+  + profile fix + monthly-first reset. Detail: [log post-reset part 1](log-archive-btc-postreset-part1.md)
+  + [log.md](log.md); current counts in Verification Snapshot below.
 
 ## Verification Snapshot
 
@@ -108,13 +110,15 @@ append-only trail lives in [log.md](log.md).
 
 ## Next Useful Action
 
-**Fork RESOLVED (2026-06-16):** human chose to **continue Fib research under a new working
-mode — "Lean Fib Research"** (fast small falsifiable experiments, not new phase systems). Not
-pause (A), not Phase 3. Strictness kept on leakage/causality/no-label-change/no-Genesis/no-1H;
-ceremony reduced (no extra phase scaffolding, no docs-only middle steps, no per-microdecision
-asking). Awaiting the concrete work plan / first question from the human. Pause+report only if
-a step needs Genesis, real export, 1H, label change, ML/optimisation or a trading/edge claim.
-([fork note](reviews/btc-fib-post-phase25-fork-decision-20260616.md) for the A/B/C/D analysis.)
+**Behaviour event study delivered with a NULL result — awaiting human review.** The first Lean
+Fib Research question ("do fib levels react differently than placebo/swing?") ran and returned
+**no signal** ([results](reviews/btc-fib-behaviour-event-study-results-20260616.md)); the
+pre-registered gate failed on every TF so **no strategy sanity-check was run.** Honest stop.
+Next safe options (human's choice): (a) accept the null and pause/close this question; (b) a
+**new** pre-registration with a different question or metric (not a re-run of this one until it
+passes — that would be p-hacking). Pause+report if a step needs Genesis, real export, 1H, label
+change, ML/optimisation or a trading/edge claim. (Working mode: Lean Fib Research; fork that
+opened it: [note](reviews/btc-fib-post-phase25-fork-decision-20260616.md).)
 
 **Milestone:** Issue #32 top-3 complete + pushed (gallery `8f1e7a8`, ledger `d6ab9ec`,
 overlap detector + anchor convention `84b42db`). local == origin, tree clean, source-fib
