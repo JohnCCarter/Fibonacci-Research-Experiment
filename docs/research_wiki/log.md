@@ -16,6 +16,14 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-16] review | Fib → Genesis V2 — Phase 2 reviewed PASS / closed
+
+Human review of commit `68dc006` — **verdict PASS**, Phase 2 closed. Confirmed: contract-test
+only inside Fib, no Genesis coupling, no real export, no feature recomputation, schema/join/
+causality validated mechanically, fail-closed cases covered, `confirmation_buffer_hours` pins
+the unit. **Follow-up (not now):** before any real export, define a **nullability policy** for
+feature columns. No Phase 3, no real export, no Genesis touch, no ML/backtest/signal.
+
 ## [2026-06-16] feat | Fib → Genesis V2 — Phase 2 dummy contract test (narrow slice)
 
 Mechanical contract/dummy test **inside the Fib repo only** — not export, not Genesis

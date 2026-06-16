@@ -22,12 +22,13 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
-- **2026-06-16 Fib → Genesis V2 Phase 2 dummy contract test (narrow slice, DONE)** —
+- **2026-06-16 Fib → Genesis V2 Phase 2 dummy contract test — reviewed PASS / CLOSED** —
   mechanical contract/dummy test **inside Fib only** (not export, not Genesis integration).
   `research/feature_contract.py` (stdlib) validates two committed dummy CSVs vs the Phase 1
   schema (join keys, causality, knowability floor, 1H + feature/metadata fail-closed). No fib
-  computation, no Genesis touch. 20 tests; gates green. **Stopped as scoped.**
-  [Report](reviews/btc-fib-to-genesis-v2-phase2-dummy-contract-20260616.md).
+  computation, no Genesis touch. 20 tests; gates green. Commit `68dc006`; **human review PASS**
+  2026-06-16. Follow-up for any *real* export: define a **nullability policy** for feature
+  columns. [Report](reviews/btc-fib-to-genesis-v2-phase2-dummy-contract-20260616.md).
 - **2026-06-15 MTF confluence CP1–CP3 CLOSED + interpretation/decision note** — first atlas
   pack done (5 cards, 3 archetypes, all **human-approved**): c001 robust fixed-band 4-TF; c002
   chaining-dependent contrast (NOT tight); c004/c006/c007 zero-span exact-price 3-TF.
@@ -117,9 +118,12 @@ confluence is **geometry, not edge proof** → **stop the MTF track**. **Fork wr
 (docs-only):** [Phase 0 prereg](reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md) registers
 one falsifiable behaviour question (causal confluence zones vs placebo/naïve levels, OOS) +
 leakage manifest, baselines, time-split holdout, stop/go; [Phase 1 spec](reviews/btc-fib-to-genesis-v2-phase1-feature-export-spec-20260615.md)
-(zone+bar tables, `known_after_ts` rule) **reviewed PASS — Phase 1 closed as docs-only contract**. **Phase 2 (dummy-file test) — DONE 2026-06-16** (authorised narrow slice):
-`research/feature_contract.py` + committed dummy CSVs prove the contract validates mechanically
-with no real export and no Genesis touch ([Phase 2 report](reviews/btc-fib-to-genesis-v2-phase2-dummy-contract-20260616.md)). **Stopped** — any real export or Genesis touch needs a fresh go.
+(zone+bar tables, `known_after_ts` rule) **reviewed PASS — Phase 1 closed as docs-only contract**. **Phase 2 (dummy-file test) — reviewed PASS / CLOSED 2026-06-16** (authorised narrow slice,
+commit `68dc006`): `research/feature_contract.py` + committed dummy CSVs prove the contract
+validates mechanically with no real export and no Genesis touch
+([Phase 2 report](reviews/btc-fib-to-genesis-v2-phase2-dummy-contract-20260616.md)). **Stopped**
+— any real export or Genesis touch needs a fresh go; first define a feature-column **nullability
+policy**. No Phase 3.
 
 **Deferred:** 1H source labeling — 4H is the lowest active timeframe; fetch 1H cache first
 (`data.fetch --timeframes 1h`). Separate decision before starting.

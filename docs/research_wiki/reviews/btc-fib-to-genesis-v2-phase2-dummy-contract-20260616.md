@@ -67,6 +67,13 @@ misread it.
 `ruff` clean · 426 passed (76% cov) · `check_repo_bounds.py` PASS · CLI smoke:
 `contract OK: 3 zone(s), 4 bar(s); timeframes=['1d', '1w', '4h']`.
 
+## Review outcome
+
+**Human review 2026-06-16 — verdict PASS / closed** (commit `68dc006`). Scope, boundary, and
+fail-closed behaviour confirmed. **Follow-up for any future *real* export (not now):** define a
+**nullability policy** for the feature columns (how empty / no-known-zone rows are represented
+and how Genesis must read them).
+
 ## Stop
 
 **Stop after this** (as scoped). Nothing here authorises a real feature export, a Genesis
