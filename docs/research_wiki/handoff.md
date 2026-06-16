@@ -22,7 +22,7 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
-- **2026-06-16 BTC/Fib studies — BOTH NULL (delivered, pending review)** (Lean Fib Research).
+- **2026-06-16 BTC/Fib studies — BOTH NULL, reviewed PASS / CLOSED** (commit `f4e96f1`, Lean Fib).
   **(1) Behaviour event study:** fib ≈ placebo ≈ swing (4h reject 0.78/0.80/0.84, p=0.63/0.19).
   **(2) Context-conditioned** (continuous MFE−MAE, rank-perm + Holm; contexts trend + deep
   0.618/0.786): no context passes — fib beats *random placebo* only nominally (p=0.042/0.056, fails
@@ -55,34 +55,13 @@ append-only trail lives in [log.md](log.md).
   2017-12-28T20:00 @ 13611 → 2017-12-28T08:00 @ 13145 (candidate_1). Only anchor_a + levels
   changed; anchor_b/fib_id unchanged; guard PASS; ledger candidate → corrected. Closes the
   declutter→correction→ledger track. [Report](reviews/btc-4h-fib-20171228-correction-20260615.md).
-- **2026-06-15 Single-fib declutter edit-mode** — `labeling/tool.py --edit-fib-id` opens
-  one saved human fib, hides HTF overlays, auto-fits window, preloads anchors (read-only;
-  fail-closed `human_fib.find_annotation`). Default unchanged. 10 tests.
-- **2026-06-15 Overlap/dedup detector + anchor convention** — `research/overlap_detector.py`
-  (stdlib, report-only): boxes fibs in (time, log-price), flags near-duplicate/overlap
-  candidates (box IoU + shared-anchor); never edits labels. Real run: 22 candidates (all
-  shared anchor_b). Body/close-vs-wick convention noted in `HUMAN_FIB_ANNOTATION.md`.
-  Issue #32 top-ROI #3. [Report](reviews/btc-4h-overlap-candidates-20260615.md).
-- **2026-06-15 Source-quality review ledger** — `research/review_ledger.py` (stdlib): flat
-  CSV making verdicts machine-trackable (controlled vocab + deterministic `source_hash`).
-  First ledger = 4H Tier 2 (8 rows). Issue #32 top-ROI #2.
-- **2026-06-15 Static HTML artifact gallery** — `research/artifact_gallery.py` (stdlib-only):
-  scans a review PNG dir → self-contained `index.html` (relative links, clean+levels paired,
-  auto-detects map/zoom layouts). Standalone; markdown index untouched; output gitignored.
-  Issue #32 top-ROI #1. `python -m fibengine.research.artifact_gallery --root <dir>`.
-- **2026-06-15 4H Tier 2 first manual sample-pass + first correction-candidate** — 8 fibs
-  inspected (4 per scope). Zoom resolves Tier 1 readability. **1 correction-candidate:**
-  `20171228T200000` — visual review found a better anchor_a candle adjacent to leg A →
-  suspicious; **deferred to a future correction-pass** (GUI too cluttered for safe manual
-  edit; needs isolated single-fib view or exact target candle timestamp). No label changed.
-  Watchlist: body/close vs wick convention (undocumented).
-  Full review: [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
-- **2026-06-15 4H Tier 1 map review complete** — all 11 annual groups inspected.
-  9/11 map-OK. Two groups need Tier 2: **2017_h2** (103 fibs, Sep–Dec 2017 parabola —
-  full Tier 2) and **2021** (partial — Dec 2020 → Mar 2021 cluster only, anchor_a
-  in [2021-01-01, 2021-04-01), ~37 fibs). Threshold rule confirmed: local density per
-  zone, not total fib count. Y-axis log confirmed (line 246 `monthly_fib_map.py`).
-  Full review: [`reviews/btc-4h-tier1-map-review-20260615.md`](reviews/btc-4h-tier1-map-review-20260615.md).
+- **2026-06-15 Issue #32 top-ROI tooling — DONE** (all stdlib, report-only): single-fib declutter
+  edit-mode (`labeling/tool.py --edit-fib-id`), overlap/dedup detector (`research/overlap_detector.py`,
+  22 candidates), source-quality review ledger (`research/review_ledger.py`), static HTML artifact
+  gallery (`research/artifact_gallery.py`). Detail in [log.md](log.md) + reviews.
+- **2026-06-15 4H Tier 1 + Tier 2 visual reviews — complete** (entries archived to
+  [log part 1](log-archive-btc-postreset-part1.md)): 11 groups mapped, Tier 2 sample-pass; one
+  correction-candidate `20171228` (now corrected). Corpus declared clean below.
 - **2026-06-08→06-12 source-fib milestones (archived)** — 1M/1W/1D/4H source phases, reaction
   reviews (1816 interactions), 4H Tier 1 maps, Addendum 2 golden-zone retirement (#30), log-scale
   + profile fix + monthly-first reset. Detail: [log post-reset part 1](log-archive-btc-postreset-part1.md)
@@ -109,16 +88,30 @@ append-only trail lives in [log.md](log.md).
 
 - Minimum monthly fib count before 1W mapping?
 
-## Next Useful Action
+## Status — BTC/Fib behaviour/backtest line PAUSED / CLOSED (2026-06-16, reviewed PASS)
 
-**Two pre-registered fib-behaviour questions BOTH returned NULL — awaiting human review.**
-[Unconditioned](reviews/btc-fib-behaviour-event-study-results-20260616.md) and
-[context-conditioned](reviews/btc-fib-context-conditioned-study-results-20260616.md) both fail
-their gates; fib never beats the causal-swing baseline. This closes the "does fib price-behaviour
-beat baselines" line on the current BTC corpus. Next safe options (human's choice): (a) accept the
-null and pause the behaviour line; (b) a **new** pre-registration on **fresh data** (other
-symbols/TFs — out of scope), *not* a re-run on the same data (p-hacking). Pause+report if a step
-needs Genesis, real export, 1H, label change, ML/optimisation or a trading/edge claim.
+Commit `f4e96f1` reviewed **PASS / CLOSED**. Final conclusion (both studies):
+
+- **Unconditioned** [Behaviour Event Study](reviews/btc-fib-behaviour-event-study-results-20260616.md):
+  **no signal.**
+- **Context-Conditioned** [Study](reviews/btc-fib-context-conditioned-study-results-20260616.md):
+  **no candidate.**
+- **Fib does not beat the placebo/swing baselines** on the current BTC corpus. The swing baseline
+  **matches or beats** fib; the weak level reaction is **generic horizontal structure, not
+  Fibonacci-specific.**
+- **Strategy sanity-check: not authorised, not run.**
+
+**Discipline (binding):** do **not** re-run these studies on the same BTC data with tweaked
+parameters. Any future behaviour test must be a **new prereg on fresh data** or a **materially
+different question**. **No active next implementation is authorised.**
+
+### Future possible tracks (listed only — none started, none authorised)
+
+- Fresh-data validation on other symbols/timeframes — **requires a new prereg.**
+- Source-label quality review / correction-candidate cleanup.
+- Non-fib **horizontal structure** research (swing baseline performed at least as well).
+- Separate visual / research **tooling** improvements.
+- **Genesis/Fib remains paused** unless explicitly reopened.
 
 **Milestone:** Issue #32 top-3 complete + pushed (gallery `8f1e7a8`, ledger `d6ab9ec`,
 overlap detector + anchor convention `84b42db`). local == origin, tree clean, source-fib

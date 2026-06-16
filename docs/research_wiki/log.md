@@ -16,7 +16,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
-## [2026-06-16] review | BTC/Fib Context-Conditioned Study — NO CANDIDATE (delivered, pending review)
+## [2026-06-16] decision | BTC/Fib behaviour/backtest line — PAUSED / CLOSED (reviewed PASS)
+
+Commit `f4e96f1` reviewed **PASS / CLOSED**. Final conclusion across both pre-registered studies:
+unconditioned Behaviour Event Study = **no signal**; Context-Conditioned Study = **no candidate**.
+**Fib does not beat the placebo/swing baselines** on the current BTC corpus; the **swing baseline
+matches or beats fib**, so the weak level reaction is **generic horizontal structure, not
+Fibonacci-specific**. Strategy sanity-check **not authorised / not run**. The BTC/Fib
+behaviour/backtest line is **paused/closed**. **Discipline:** do **not** re-run these studies on the
+same BTC data with tweaked parameters; any future behaviour test must be a **new prereg on fresh
+data** or a **materially different question**; **no active next implementation is authorised**.
+Future possible tracks (listed only, none started): fresh-data validation on other symbols/TFs
+(new prereg); source-label quality / correction-candidate cleanup; non-fib horizontal-structure
+research; separate visual/research tooling; Genesis/Fib remains paused unless explicitly reopened.
+
+## [2026-06-16] review | BTC/Fib Context-Conditioned Study — NO CANDIDATE (reviewed PASS / CLOSED)
 
 Second Lean Fib question, opened after the unconditioned null: do fib levels react differently
 than placebo/swing **only in specific causal contexts**? Advisor flagged the prior `reject_rate`
@@ -34,7 +48,7 @@ gitignored. No Genesis/1H/ML/export/label change.
 [Prereg](reviews/btc-fib-context-conditioned-study-prereg-20260616.md) /
 [results](reviews/btc-fib-context-conditioned-study-results-20260616.md).
 
-## [2026-06-16] review | BTC/Fib Behaviour Event Study — NO SIGNAL (delivered, pending review)
+## [2026-06-16] review | BTC/Fib Behaviour Event Study — NO SIGNAL (reviewed PASS / CLOSED)
 
 First Lean Fib Research question, run end-to-end. Causal event study on the locked corpus
 (1M/1w/1d/4h, no 1H): fresh touches of causally-known fib **interior retracements** vs two
