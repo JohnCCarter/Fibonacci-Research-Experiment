@@ -123,11 +123,46 @@ def test_run_study_end_to_end_on_synthetic_frames(monkeypatch):
     report = hs.run_study(["4h"], None, EventStudyConfig())
     assert report["generated_by"] == "horizontal_structure_event_study"
     subjects = report["results"][0]["subjects"]
-    assert set(subjects) == {"swing", "prior_extreme"}
+    assert set(subjects) == {"swing", "prior_extreme", "round"}  # no cherry-pick to swing-only
     for s in subjects.values():
         assert s["evalue"] > 0.0  # always a valid positive e-value
         assert s["n_rw_null_levels"] <= s["n_levels"]
-    assert set(report["gate"]) == {"swing-4h", "prior_extreme-4h"}
+    assert set(report["gate"]) == {"swing-4h", "prior_extreme-4h", "round-4h"}
     assert isinstance(report["any_robust"], bool)
     for g in report["gate"].values():
         assert 0.0 <= g["p_anytime_valid"] <= 1.0
+
+
+def test_round_ladder_is_1_2_5_within_span():
+    df = pd.DataFrame({"low": [900.0, 1000.0], "high": [60000.0, 55000.0]})
+    assert hs.round_ladder(df) == [1000.0, 2000.0, 5000.0, 10000.0, 20000.0, 50000.0]
+
+
+def test_round_subject_levels_first_activation():
+    n = 40
+    close = np.linspace(950.0, 1100.0, n)  # rises through the 1000 rung
+    idx = pd.date_range("2024-01-01", periods=n, freq="4h", tz="UTC")
+    df = pd.DataFrame(
+        {"open": close, "high": close + 5, "low": close - 5, "close": close, "volume": 1.0},
+        index=idx,
+    )
+    levels = hs.round_subject_levels(df, "4h")  # window 720 > n → trailing = all prior bars
+    rung_1000 = next(lv for lv in levels if lv.price == 1000.0)
+    high = df["high"].to_numpy()
+    low = df["low"].to_numpy()
+    expected = next(idx[i] for i in range(1, n) if low[:i].min() <= 1000.0 <= high[:i].max())
+    assert rung_1000.known_after_ts == pd.Timestamp(expected)
+
+
+def test_range_min_distance_gates_on_time_and_range():
+    df = _osc_frame(60, "4h")  # closes oscillate ~[92, 108]
+    ts = [pd.Timestamp(t) for t in df.index]
+    # active: known early, price inside the oscillation band
+    active = hs._range_min_distance(df, [Level(ts[1], 100.0)], window=720)[0]
+    assert np.isfinite(active).any()
+    # inactive: known_after_ts after the whole frame
+    future = hs._range_min_distance(df, [Level(ts[-1] + pd.Timedelta(days=999), 100.0)], 720)[0]
+    assert not np.isfinite(future).any()
+    # inactive: price far outside the trailing range
+    far = hs._range_min_distance(df, [Level(ts[1], 100000.0)], 720)[0]
+    assert not np.isfinite(far).any()

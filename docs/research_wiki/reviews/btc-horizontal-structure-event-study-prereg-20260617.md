@@ -101,6 +101,28 @@ the conditional 2×2 e-value (§8) handles `n_subject ≠ n_control` natively, s
 qualifying swing is simply skipped rather than forced, which is *more* faithful to a fair random
 null than padding. Determinism: a single `default_rng(seed)` consumed in fixed level order.
 
+### §3/§4 amendment — 2026-06-17 (ROUND activation cluster; pre-execution, blind to any B-1 result)
+
+Closes the three unpinned holes in ROUND's causal-activation model (§3 left the activity predicate,
+the trailing-range length, and ROUND's `known_after_ts` underspecified). Decided before any run.
+
+1. **Trailing-range length = the recency window.** ROUND is active at bar `t` iff its price lies
+   inside `[min low, max high]` over the **trailing `level_active_bars[TF]` bars strictly before
+   `t`** (4h 720 / 1d 365 / 1w 104 / 1M 36). Fixed window, not all-history.
+2. **ROUND `known_after_ts` = the rung's first-activation bar** (first `t` it enters that trailing
+   range). This is what the RW-null pairing (§4) calibrates against.
+3. **Causal gate, applied identically to subject and RW-null (§4 "same machinery").** A level is
+   active iff `t >= known_after_ts` **and** price ∈ trailing range. For a subject rung this gate is
+   a **no-op** (first-activation *is* by definition its first in-range bar); for the RW-null it is
+   **load-bearing** — the RW price is computed from history before `τ`, so it must not be "active"
+   before `τ` (else future leak). Both run the same predicate, so the machinery stays identical.
+
+The **1-2-5 decade ladder** (§4) is restricted to rungs within the data's observed price span; rungs
+price never reaches never activate, so the restriction is causal-neutral. Implementation mirrors the
+frozen `_min_distance_series`/`find_events` with **only** the activity predicate generalized to the
+range rule (the frozen §5 event definition — fresh touch within `eps_atr·ATR` — is preserved
+verbatim), so the closed-study code is reused but never mutated.
+
 ## 5. Event definition (identical across sources)
 
 Reuse the frozen definition from the closed study (`find_events`): a **fresh touch** of the

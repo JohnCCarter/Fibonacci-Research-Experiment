@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -41,6 +42,7 @@ from fibengine.research.anytime_valid import (
 from fibengine.research.fib_behaviour_event_study import (
     _TF_PARAMS,
     ALLOWED_TIMEFRAMES,
+    Event,
     EventStudyConfig,
     Level,
     _aggregate,  # noqa: F401  (re-exported for harness symmetry / tests)
@@ -124,11 +126,109 @@ def _test_counts(rows: list[dict[str, Any]]) -> tuple[int, int]:
     return int(sum(r["reject"] for r in rows)), len(rows)
 
 
-def _subject_levels(timeframe: str, df: pd.DataFrame, cfg: EventStudyConfig, settings: Any) -> dict:
-    """Generic horizontal-structure subjects for this slice (ROUND added once it is pinned)."""
+def round_ladder(df: pd.DataFrame) -> list[float]:
+    """The 1-2-5 decade ladder (prereg §4) restricted to the observed price span (causal-neutral):
+    every ``m·10^k`` with ``m ∈ {1,2,5}`` inside ``[min low, max high]``."""
+    lo, hi = float(df["low"].min()), float(df["high"].max())
+    if not (lo > 0 and hi >= lo):
+        return []
+    rungs: list[float] = []
+    for k in range(math.floor(math.log10(lo)) - 1, math.floor(math.log10(hi)) + 2):
+        for m in (1, 2, 5):
+            p = float(m * 10.0**k)
+            if lo <= p <= hi:
+                rungs.append(p)
+    return sorted(set(rungs))
+
+
+def round_subject_levels(df: pd.DataFrame, timeframe: str) -> list[Level]:
+    """ROUND subject (prereg §3/§4 cluster): each ladder rung as a Level whose ``known_after_ts``
+    is its **first-activation** bar — the first bar the rung enters the trailing-window range."""
+    window = _TF_PARAMS[timeframe][3]
+    rungs = round_ladder(df)
+    low, high, idx = df["low"].to_numpy(), df["high"].to_numpy(), df.index
+    first_act: dict[float, Any] = {}
+    for i in range(1, len(df)):
+        lo = low[max(0, i - window) : i].min()
+        hi = high[max(0, i - window) : i].max()
+        for r in rungs:
+            if r not in first_act and lo <= r <= hi:
+                first_act[r] = idx[i]
+        if len(first_act) == len(rungs):
+            break
+    return [Level(pd.Timestamp(first_act[r]), r) for r in rungs if r in first_act]
+
+
+def _range_min_distance(
+    df: pd.DataFrame, levels: list[Level], window: int
+) -> tuple[np.ndarray, np.ndarray]:
+    """Per-bar nearest level active under the §3 range rule: ``t >= known_after_ts`` AND price in
+    ``[min low, max high]`` over the trailing ``window`` bars strictly before ``t``. Mirrors the
+    frozen ``_min_distance_series``; only the activity predicate is generalized (the gate is a no-op
+    for subject rungs, causal-protective for the RW-null — see prereg §3/§4 amendment)."""
+    low, high, ts_ns = df["low"].to_numpy(), df["high"].to_numpy(), _index_ns(df)
+    n = len(df)
+    mindist, nearest = np.full(n, np.inf), np.full(n, np.nan)
+    if not levels:
+        return mindist, nearest
+    lv_price = np.array([lv.price for lv in levels])
+    lv_known = np.array([lv.known_after_ts.value for lv in levels])
+    for i in range(1, n):
+        lo = low[max(0, i - window) : i].min()
+        hi = high[max(0, i - window) : i].max()
+        mask = (lv_known <= ts_ns[i]) & (lv_price >= lo) & (lv_price <= hi)
+        if not mask.any():
+            continue
+        prices = lv_price[mask]
+        dist = np.maximum.reduce([low[i] - prices, prices - high[i], np.zeros_like(prices)])
+        j = int(dist.argmin())
+        mindist[i], nearest[i] = float(dist[j]), float(prices[j])
+    return mindist, nearest
+
+
+def _events_from_dist(
+    df: pd.DataFrame, atr_s: np.ndarray, mindist: np.ndarray, nearest: np.ndarray, cfg
+) -> list[Event]:
+    """Frozen §5 fresh-touch event loop (verbatim from find_events), on a precomputed distance."""
+    close = df["close"].to_numpy()
+    tol = cfg.eps_atr * atr_s
+    events: list[Event] = []
+    for i in range(1, len(df)):
+        if not np.isfinite(mindist[i]) or np.isnan(atr_s[i]) or atr_s[i] <= 0:
+            continue
+        prev_fresh = (not np.isfinite(mindist[i - 1])) or (mindist[i - 1] > tol[i - 1])
+        if not (mindist[i] <= tol[i] and prev_fresh):
+            continue
+        lv = nearest[i]
+        side = "above" if close[i - 1] >= lv else "below"
+        events.append(Event(pos=i, level=float(lv), approach_side=side))
+    return events
+
+
+def _events_for(
+    df: pd.DataFrame,
+    atr_s: np.ndarray,
+    levels: list[Level],
+    cfg: EventStudyConfig,
+    tf: str,
+    mode: str,
+) -> list[Event]:
+    """Detect events for one source. ``recency`` = frozen time-window activity (SWING/PRIOR-EXTR.);
+    ``range`` = the §3 trailing-range activity (ROUND)."""
+    if mode == "recency":
+        return find_events(df, atr_s, levels, cfg, tf)
+    mindist, nearest = _range_min_distance(df, levels, _TF_PARAMS[tf][3])
+    return _events_from_dist(df, atr_s, mindist, nearest, cfg)
+
+
+def _subjects(
+    timeframe: str, df: pd.DataFrame, cfg: EventStudyConfig, settings: Any
+) -> dict[str, tuple[str, list[Level]]]:
+    """All generic horizontal-structure subjects (prereg §4): {name: (activity_mode, levels)}."""
     return {
-        "swing": detect_swing_levels(df, cfg),
-        "prior_extreme": prior_extreme_levels(timeframe, settings),
+        "swing": ("recency", detect_swing_levels(df, cfg)),
+        "prior_extreme": ("recency", prior_extreme_levels(timeframe, settings)),
+        "round": ("range", round_subject_levels(df, timeframe)),
     }
 
 
@@ -150,12 +250,12 @@ def run_timeframe(timeframe: str, cfg: EventStudyConfig, settings: Any) -> dict[
     split_idx, n = split_positions(len(df), cfg.train_frac, max_h)
 
     out: dict[str, Any] = {"timeframe": timeframe, "n_bars": int(n), "subjects": {}}
-    for name, levels in _subject_levels(timeframe, df, cfg, settings).items():
+    for name, (mode, levels) in _subjects(timeframe, df, cfg, settings).items():
         null_levels = rw_null_levels(levels, df, cfg, rng, timeframe)
         subj = _collect_rows(
             df,
             atr_s,
-            find_events(df, atr_s, levels, cfg, timeframe),
+            _events_for(df, atr_s, levels, cfg, timeframe, mode),
             primary_h,
             max_h,
             split_idx,
@@ -164,7 +264,7 @@ def run_timeframe(timeframe: str, cfg: EventStudyConfig, settings: Any) -> dict[
         null = _collect_rows(
             df,
             atr_s,
-            find_events(df, atr_s, null_levels, cfg, timeframe),
+            _events_for(df, atr_s, null_levels, cfg, timeframe, mode),
             primary_h,
             max_h,
             split_idx,
