@@ -22,6 +22,7 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-17 NEW LINE pre-registered — Fib SELECTION-LEARNING (docs-only, gated).** Different question from the closed behaviour/B-1 nulls: *can a model reproduce how the human selects swings/ranges* (labels as facit, **no edge/backtest/Genesis**). Stage 2 leg/range gestalt (5 components) = target, Stage 1 per-pivot = diagnostic; live-equivalent vs **bounded** retrospective viewport → causal-availability gap; binding feature-provenance rule; one primary cell + coverage ceiling. Two-step gate. **Next: feature/param addendum tomorrow.** [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md).
 - **2026-06-17 B-1 horizontal-structure study — BUILT + RUN → NULL (closed).** SENARE-1 e-value (conditional 2×2 safe test) + 3-subject harness (swing/round/prior-extreme vs matched random-walk null), all pins locked pre-run. `any_robust=False` on all 12 cells; only swing edges the null (e=1.70 — not even marginal; e-Holm needed E≈240 → low power). Generic structure not special vs a random walk; §10 sanity-check not run. Commits `474f320`→`44e63fa`. [Results](reviews/btc-horizontal-structure-event-study-results-20260617.md).
 - **2026-06-17 External-pattern-scan absorption — landed on `main`** (PR #33→main, merge-commit;
   plan `clever-yawning-catmull.md`). NU (docs): standing

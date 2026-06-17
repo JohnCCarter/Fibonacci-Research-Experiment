@@ -16,6 +16,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-17] decision | New line pre-registered — Fib SELECTION-LEARNING (docs-only, gated)
+
+A genuinely different question from the closed behaviour/B-1 lines: not "do fib levels repel price"
+(closed NULL) but **"can a model reproduce how the human selects swings/ranges"** — selection
+learning, labels as facit, **no edge/backtest/Genesis claim**. Target = **Stage 2 leg/range gestalt**
+(5 components: scale, pairing, direction, exclusivity, context/HTF; structure first, levels second);
+Stage 1 per-pivot = diagnostic floor (Stage 2 ≤ Stage 1 recall). Two viewports — live-equivalent
+(`anchor_b+k`) vs **bounded** retrospective (`anchor_b+W`, finite, not omniscient) — and the
+**causal-availability gap** attributed per feature-group, `k`-sweep mandatory. Binding
+**feature-provenance rule** (every feature tagged left-available/right-edge-sensitive, fail-closed,
+structurally enforced). One pre-registered **primary cell** (forking-paths defence) + candidate
+**coverage ceiling** (B-1 power-honesty parallel). Docs-only, two-step gate: feature/param addendum
+(blind) then separate go. Designed collaboratively with Chamoun (the labeler is facit on his own
+process). [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md). **Next: addendum tomorrow.**
+
 ## [2026-06-17] review | B-1 horizontal-structure study — RUN, result NULL (§12 go granted)
 
 Built then ran (prereg §12 path (a)). Commits `474f320` (SENARE-1 e-value) → `edcc87c` (slice) →
