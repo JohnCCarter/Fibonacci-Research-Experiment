@@ -16,6 +16,13 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-17] decision | Standing prereg addendum for future horizontal-structure studies
+
+NU block of the external pattern scan, docs-only:
+[horizontal-structure-prereg-addendum-20260617.md](reviews/horizontal-structure-prereg-addendum-20260617.md)
+(NU-1 random-walk control; NU-2 anytime-valid/e-Holm re-looks; NU-3 name embargo as purged-CV).
+DELAR/SENARE code planned, not authorised (`clever-yawning-catmull.md`).
+
 ## [2026-06-16] decision | BTC/Fib behaviour/backtest line — PAUSED / CLOSED (reviewed PASS)
 
 Commit `f4e96f1` reviewed **PASS / CLOSED**. Final conclusion across both pre-registered studies:
