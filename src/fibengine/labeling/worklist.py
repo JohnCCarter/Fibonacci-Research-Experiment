@@ -106,7 +106,12 @@ def format_report(report: dict) -> str:
         if report["target_reached"]
         else f"{report['remaining_to_target']} kvar till mål"
     )
+    # Klargör vilket label-system detta är: SwingLabel-setup-storen (premortem-målet),
+    # INTE BTC-protokollets human_fib source-fibs (annat schema, eget spår — exkluderas
+    # avsiktligt i store.iter_label_files, så de räknas aldrig här).
     lines = [
+        "OBS: räknar SwingLabel-setups (premortem-målet) — INTE human_fib source-fibs "
+        "(separat spår, annat schema).",
         f"Human-facit: {report['n_labeled']} / {report['target']} ({progress})",
         f"Target-matris: {report['n_covered_combos']}/{report['n_target_combos']} "
         "kombinationer täckta (mänskliga)",
