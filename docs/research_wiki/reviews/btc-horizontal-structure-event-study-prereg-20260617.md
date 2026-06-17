@@ -87,6 +87,20 @@ to swing-only):**
 **Level recency window** (frozen, applied identically to all sources): `level_active_bars` per TF
 — 4h `720`, 1d `365`, 1w `104`, 1M `36`.
 
+### §4 amendment — 2026-06-17 (pre-execution, blind to any B-1 result)
+
+Pins the RW-NULL **selection rule** (was underspecified). Decided before any run and without
+seeing output. **One synthetic path per real subject level:** for each subject level (`known_after_ts
+= τ`), simulate one deterministic path of length `level_active_bars[TF]` from the real closes
+strictly before `τ` (`synthetic_baseline`, `seed = 20260616`, GBM), and take that path's
+**most-recent swing** (`pivot_k = 3`) as the RW-NULL level, inheriting `τ` as its `known_after_ts`.
+Rationale (blind to output): *most-recent* is the unbiased temporal analogue of "the level just
+formed"; **nearest-to-current-price would bias touchability and is forbidden.** **Matched
+`known_after_ts` is the load-bearing requirement** (regime matching) — **matched count is dropped**:
+the conditional 2×2 e-value (§8) handles `n_subject ≠ n_control` natively, so a path with no
+qualifying swing is simply skipped rather than forced, which is *more* faithful to a fair random
+null than padding. Determinism: a single `default_rng(seed)` consumed in fixed level order.
+
 ## 5. Event definition (identical across sources)
 
 Reuse the frozen definition from the closed study (`find_events`): a **fresh touch** of the
