@@ -75,8 +75,10 @@ def _relation_for_bar(df: pd.DataFrame, bar_idx: int, price: float) -> str:
     )
 
 
-def _level_rows_from_swing(swing: Swing, ratios: list[float]) -> list[dict]:
-    prices = fib_levels(swing, ratios)
+def _level_rows_from_swing(
+    swing: Swing, ratios: list[float], scale_mode: str = "linear"
+) -> list[dict]:
+    prices = fib_levels(swing, ratios, scale_mode=scale_mode)
     return [
         {"ratio": f"{ratio:g}", "price": round(float(prices[ratio]), 6)} for ratio in sorted(prices)
     ]
@@ -222,8 +224,15 @@ def collect_candidates(
         else:
             lo = swing.end.index
             hi = n
-        streams = detect_level_events(df, swing, level_cfg, ratios, settings.pivots.atr_period)
-        level_rows = _level_rows_from_swing(swing, ratios)
+        streams = detect_level_events(
+            df,
+            swing,
+            level_cfg,
+            ratios,
+            settings.pivots.atr_period,
+            scale_mode=settings.fib.scale_mode,
+        )
+        level_rows = _level_rows_from_swing(swing, ratios, settings.fib.scale_mode)
         for stream in streams:
             for ev in stream.events:
                 if lo <= ev.bar_index < hi:

@@ -233,7 +233,12 @@ def run_level_events(
     streams: list[LevelInteractionStream] = []
     if swing is not None:
         streams = detect_level_events(
-            df, swing, level_cfg, settings.fib.levels, settings.pivots.atr_period
+            df,
+            swing,
+            level_cfg,
+            settings.fib.levels,
+            settings.pivots.atr_period,
+            scale_mode=settings.fib.scale_mode,
         )
 
     record = {
@@ -320,7 +325,14 @@ def _aggregate_leg_events(
         # Attributionsfönster [lo, hi) för denna leg.
         lo = t if non_overlapping else swing.end.index
         hi = legs[i + 1][0] if (non_overlapping and i + 1 < len(legs)) else n
-        streams = detect_level_events(df, swing, level_cfg, ratios, settings.pivots.atr_period)
+        streams = detect_level_events(
+            df,
+            swing,
+            level_cfg,
+            ratios,
+            settings.pivots.atr_period,
+            scale_mode=settings.fib.scale_mode,
+        )
         leg_events = 0
         for stream in streams:
             kept = [e for e in stream.events if lo <= e.bar_index < hi]
