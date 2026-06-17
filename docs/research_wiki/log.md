@@ -16,6 +16,22 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-17] maintenance | feature/research-fib promoted to main; PR review fixes + dep bump
+
+Branch promoted to `main` via **PR #33** (89-commit fast-forward; **merge-commit** to keep the
+wiki's commit-hash citations valid — squash/rebase would have orphaned them). Two PR-review
+fixes (Codex) landed on the branch first:
+- **P1** (`labeling/tool.py`): a windowed editing session now keeps out-of-window legs in memory
+  and merges them on save — pressing `s` no longer silently deletes saved legs (facit-safety).
+- **P2** (`research/level_events.py` + `human_review_rows.py`): level-event detection now threads
+  `fib.scale_mode` (= **log** per protocol) instead of defaulting to linear, so level-event
+  prices/rows match the log charts. **Behaviour change:** older level-event outputs were linear;
+  new ones are log.
+
+**PR #34** (security): bumped `cryptography` 48.0.0 → 49.0.0 (Dependabot `GHSA-537c-gmf6-5ccf`,
+High — vulnerable OpenSSL in wheels; transitive via ccxt, no upper bound). Lockfile-only;
+ccxt imports clean, gates green. Dependabot alert auto-closed.
+
 ## [2026-06-17] decision | Standing prereg addendum for future horizontal-structure studies
 
 NU block of the external pattern scan, docs-only:

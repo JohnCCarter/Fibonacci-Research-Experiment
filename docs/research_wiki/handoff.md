@@ -22,12 +22,13 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
-- **2026-06-17 External-pattern-scan absorption — NU+DELAR done** (branch `feature/research-fib`;
+- **2026-06-17 External-pattern-scan absorption — landed on `main`** (PR #33→main, merge-commit;
   plan `clever-yawning-catmull.md`). NU (docs): standing
   [prereg addendum](reviews/horizontal-structure-prereg-addendum-20260617.md) (random-walk control /
   anytime-valid re-looks / embargo named as purged-CV). DELAR (code): synthetic RW baseline,
   uncertainty-ordered worklist (`--by-uncertainty`), fail-closed swing-label validation. SENARE gated.
-  No facit/signal/auto-fib touch.
+  Review fixes: P1 windowed-save facit-safety, P2 level-events now log-scale. Sec (PR #34):
+  cryptography→49.0.0 (GHSA-537c-gmf6-5ccf). No facit/signal/auto-fib touch.
 - **2026-06-16 BTC/Fib studies — BOTH NULL, reviewed PASS / CLOSED** (commit `f4e96f1`, Lean Fib).
   **(1) Behaviour event study:** fib ≈ placebo ≈ swing (4h reject 0.78/0.80/0.84, p=0.63/0.19).
   **(2) Context-conditioned** (continuous MFE−MAE, rank-perm + Holm; contexts trend + deep
