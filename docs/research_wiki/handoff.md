@@ -22,9 +22,7 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
-- **2026-06-17 B-1 horizontal-structure study — PRE-REGISTERED (docs-only, execution-gated).**
-  Tests if *generic* levels (swing/round/prior-extreme) repel BTC more than a matched **random-walk
-  null** (`synthetic_baseline`); 3rd look → needs anytime-valid (SENARE-1) or fresh data; not run. [Prereg](reviews/btc-horizontal-structure-event-study-prereg-20260617.md).
+- **2026-06-17 B-1 horizontal-structure study — BUILT + RUN → NULL (closed).** SENARE-1 e-value (conditional 2×2 safe test) + 3-subject harness (swing/round/prior-extreme vs matched random-walk null), all pins locked pre-run. `any_robust=False` on all 12 cells; only swing edges the null (e=1.70 — not even marginal; e-Holm needed E≈240 → low power). Generic structure not special vs a random walk; §10 sanity-check not run. Commits `474f320`→`44e63fa`. [Results](reviews/btc-horizontal-structure-event-study-results-20260617.md).
 - **2026-06-17 External-pattern-scan absorption — landed on `main`** (PR #33→main, merge-commit;
   plan `clever-yawning-catmull.md`). NU (docs): standing
   [prereg addendum](reviews/horizontal-structure-prereg-addendum-20260617.md) (random-walk control /
@@ -116,7 +114,7 @@ different question**. **No active next implementation is authorised.**
 
 - Fresh-data validation on other symbols/timeframes — **requires a new prereg.**
 - Source-label quality review / correction-candidate cleanup.
-- Non-fib **horizontal structure** — now **pre-registered, docs-only, gated on SENARE-1** ([prereg](reviews/btc-horizontal-structure-event-study-prereg-20260617.md)).
+- Non-fib **horizontal structure** (B-1) — **built, run, CLOSED-NULL** ([results](reviews/btc-horizontal-structure-event-study-results-20260617.md)); any re-test = **new prereg on fresh data** or lower-multiplicity single-subject design (B-1 had low power).
 - Separate visual / research **tooling** improvements.
 - **Genesis/Fib remains paused** unless explicitly reopened.
 
