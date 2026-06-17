@@ -21,8 +21,4 @@ repos:
         entry: uv run pytest -q
         language: system
         pass_filenames: false
-        # Run the suite only when code/deps/test-affecting config change. Docs-only
-        # commits (docs/**, *.md) skip pytest — avoids a full-suite python.exe launch
-        # (Symantec SONAR) for prose. CI still runs the full suite server-side, and
-        # repo-bounds below still guards docs size on every commit.
-        files: '\.py$|^pyproject\.toml$|^uv\.lock$|^config/.*\.ya?ml$'
+        always_run: true
