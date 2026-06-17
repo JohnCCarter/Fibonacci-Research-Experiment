@@ -1,8 +1,51 @@
 # Research Wiki Log — BTC post-reset archive (part 1)
 
 Archived entries from [log.md](log.md) to keep the active log within its size bound.
-Covers the **2026-06-11 → 2026-06-12** source-fib completion milestones (1M reaction-review,
-1W, 1D, 4H source phases + 4H Tier 1 design/maps). Append-only; do not edit.
+Covers the **2026-06-11 → 2026-06-15** source-fib completion milestones (1M reaction-review,
+1W, 1D, 4H source phases + 4H Tier 1 design/maps) plus the oldest 2026-06-15 tooling/correction
+entries (single-fib edit-mode, 20171228 correction, Issue #32 milestone). Append-only; do not edit.
+
+## [2026-06-15] fix | 20171228 source fib corrected (preview-first flow)
+
+`fib_BTC-USD_4h_20171228T200000` corrected via preview-first flow: machine rendered 3
+candidate anchor_a moves (gitignored previews), Chamoun chose `candidate_1`, then only the
+real source JSON's anchor_a was edited 2017-12-28T20:00 @ 13611 → **2017-12-28T08:00 @
+13145** (captures the full local low→high leg from the structural bottom; original was a
+one-bar leg). anchor_b/direction/profile/scale/fib_id unchanged; levels recomputed via
+`compute_levels` (log) and match the preview (0.382/0.5/0.618 = 14227.06/14013.79/
+13803.71). Structural guard PASS via `fourh_source_fib_zoom --fib-id`. Ledger updated
+candidate → corrected (verdict suspicious→ok-with-note, status correction-candidate→
+corrected, new source_hash). Only this one fib_*.json changed; no artifacts committed.
+Report: [`reviews/btc-4h-fib-20171228-correction-20260615.md`](reviews/btc-4h-fib-20171228-correction-20260615.md).
+This closes the declutter → correction → ledger track.
+
+## [2026-06-15] feat | Single-fib declutter edit-mode (labeling tool)
+
+Added `--edit-fib-id` to `labeling/tool.py`: opens exactly one saved human source fib,
+hides HTF overlays (the main lower-TF clutter), auto-fits the display window to the fib's
+A→B span, and preloads its anchors as active high/low picks for assessment. Read-only on
+load (nothing saved unless `w`); fail-closed on unknown/ambiguous fib-id or wrong
+symbol/timeframe via new `human_fib.find_annotation`. Default behavior unchanged when the
+flag is absent (all new paths gated). Level fidelity verified: pick-derived ladder ==
+stored `ann.levels`. 10 tests (`tests/labeling/test_single_fib_edit_mode.py`); ruff + full
+suite green (371 passed, 75.11% cov). No source labels changed; no new deps. This is the
+tool support for the deferred `fib_BTC-USD_4h_20171228T200000` correction (correction
+itself not done). Target command:
+`python -m fibengine.labeling.tool --symbol BTC/USD --timeframe 4h --edit-fib-id fib_BTC-USD_4h_20171228T200000 --config config/settings.expansion.yaml`.
+
+## [2026-06-15] decision | Milestone — Issue #32 top-3 complete; next track locked
+
+Closing the Issue #32 tooling phase. Top-3 shipped and pushed on `feature/research-fib`:
+`8f1e7a8` static HTML artifact gallery · `d6ab9ec` source-quality review ledger ·
+`84b42db` overlap/dedup detector + anchor-convention doc. local == origin, working tree
+clean, source-fib JSON unchanged, no new dependencies, no artifacts committed.
+
+**Next active track (in order):** (1) single-fib declutter edit-mode in `labeling/tool.py`
+(evaluate-later from #32; motivated by `20171228` deferring on GUI clutter) → (2) isolated
+correction-pass on `fib_BTC-USD_4h_20171228T200000` (still correction-candidate in the
+ledger; anchor_a only, body/close convention) → (3) update ledger row candidate → corrected.
+**Also evaluate-later:** chart-regression strategy (structural/hash vs pytest-mpl,
+binary-baseline / anti-blob question). 1H source labeling remains deferred.
 
 ## [2026-06-12] review | BTC/USD 4H visual confirmation Tier 1 — annual source-fib maps built
 
