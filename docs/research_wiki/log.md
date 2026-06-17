@@ -21,7 +21,10 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 NU block of the external pattern scan, docs-only:
 [horizontal-structure-prereg-addendum-20260617.md](reviews/horizontal-structure-prereg-addendum-20260617.md)
 (NU-1 random-walk control; NU-2 anytime-valid/e-Holm re-looks; NU-3 name embargo as purged-CV).
-DELAR/SENARE code planned, not authorised (`clever-yawning-catmull.md`).
+DELAR-1/2/3 since implemented (commits `ca5ae73`/`0b380e6`/`7b03837`): synthetic random-walk
+baseline (`research/synthetic_baseline.py`), uncertainty-ordered labeling worklist
+(`labeling/worklist.py --by-uncertainty`), fail-closed swing-label JSON validation
+(`validation/schemas.py`). SENARE still gated (`clever-yawning-catmull.md`).
 
 ## [2026-06-16] decision | BTC/Fib behaviour/backtest line — PAUSED / CLOSED (reviewed PASS)
 
@@ -355,53 +358,8 @@ ledger; anchor_a only, body/close convention) → (3) update ledger row candidat
 **Also evaluate-later:** chart-regression strategy (structural/hash vs pytest-mpl,
 binary-baseline / anti-blob question). 1H source labeling remains deferred.
 
-## [2026-06-15] feat | Overlap/dedup detector + anchor convention (Issue #32 top-ROI #3)
-
-Added `research/overlap_detector.py` — stdlib-only, report-only detector. Each fib is a
-box in (time, log-price) space; per pair it computes time/price/box IoU + shared-anchor.
-Flags candidates (box_iou≥0.5 or shared anchor) for human review — never edits labels,
-never says "wrong". Fail-closed timeframe guard. Real run on 366 4H fibs: **22 candidate
-pairs, all sharing anchor_b** (no pure-geometric overlap ≥0.5) → dominant signal is
-sub-legs ending on the same swing, not duplicates. 20210110 pair confirmed (box_iou 0.51);
-2017_h2 cluster present; strongest near-dup 20250506 pair (box_iou 0.70); `20171228`
-correctly absent (anchor-quality issue, not duplication). Report:
-[`reviews/btc-4h-overlap-candidates-20260615.md`](reviews/btc-4h-overlap-candidates-20260615.md)
-+ CSV. Anchor convention (body/close vs wick, observed not absolute) documented in
-[`labeling/HUMAN_FIB_ANNOTATION.md`](../labeling/HUMAN_FIB_ANNOTATION.md). 9 tests; ruff +
-full suite green (361 passed, 75.07% cov). No source labels changed; no new deps.
-
-## [2026-06-15] feat | Source-quality review ledger (Issue #32 top-ROI #2)
-
-Added `research/review_ledger.py` — stdlib-only helper (csv/hashlib/json; no new deps)
-that makes source-fib review verdicts machine-trackable. Flat CSV, controlled vocab
-(verdict ∈ ok/ok-with-note/watchlist/suspicious; status ∈ accepted/noted/open/
-correction-candidate/deferred/corrected), with a deterministic `source_hash`
-(`sha256:<16 hex>` of the fib JSON bytes) tying each verdict to the exact facit version.
-Generated the first ledger for the 4H Tier 2 sample-pass (8 rows) at
-[`reviews/ledgers/btc-4h-source-quality-ledger.csv`](reviews/ledgers/btc-4h-source-quality-ledger.csv);
-`fib_BTC-USD_4h_20171228T200000` represented as suspicious / correction-candidate. Schema
-doc: [`reviews/ledgers/README.md`](reviews/ledgers/README.md). 12 tests
-(`tests/research/test_review_ledger.py`: hash determinism, vocab validation,
-correction-candidate representable, roundtrip, header check); ruff + full suite green
-(352 passed, 74.91% cov). No source labels changed; CSV is committed text under `docs/`.
-
-## [2026-06-15] feat | Static HTML artifact gallery (Issue #32 top-ROI #1)
-
-Added `research/artifact_gallery.py` — stdlib-only helper (no new deps) that scans a
-review PNG directory and writes a self-contained `index.html` beside it (relative links,
-inline CSS/JS-free, clean+levels paired per item). Auto-detects both layouts: flat **map**
-output (`..._<label>_4h_<kind>.png`) and nested **zoom** output (`<scope>/<fib_id>/
-4h_<kind>.png`). Standalone helper by design — does **not** touch the render modules or
-the existing markdown `_write_index`. Output lands under `experiments/review/**`
-(gitignored; HTML not committed). 9 tests in `tests/research/test_artifact_gallery.py`
-(both layouts, relative-links-only, empty/missing dir, no-external-deps, markdown index
-untouched); ruff + full suite green (340 passed, 74.77% cov). Real smoke run: zoom (140
-items) + map galleries written; `git status` confirms `index.html` is ignored.
-
-Build: `python -m fibengine.research.artifact_gallery --root experiments/review/fourh_source_fib_zoom`.
-
-
 > **2026-06-11→06-12 entries** (1M reaction-review, 1W/1D/4H source phases, 4H Tier 1
-> design/maps) **and the 2026-06-15 4H Tier 1/Tier 2 visual-review entries** archived to
+> design/maps), **the 2026-06-15 4H Tier 1/Tier 2 visual-review entries**, **and the
+> 2026-06-15 Issue #32 tooling feats** (gallery / ledger / overlap detector) archived to
 > [post-reset part 1](log-archive-btc-postreset-part1.md).
 

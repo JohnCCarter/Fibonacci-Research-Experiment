@@ -133,3 +133,48 @@ fib count. A 55-fib group (2021) can be mostly map-OK; a 103-fib group (2017_h2)
 maps; Tier 2 per-fib zoom windows will be narrower and more readable.
 
 **Next:** implement Tier 2 `fourh_source_fib_zoom.py`.
+
+## [2026-06-15] feat | Overlap/dedup detector + anchor convention (Issue #32 top-ROI #3)
+
+Added `research/overlap_detector.py` — stdlib-only, report-only detector. Each fib is a
+box in (time, log-price) space; per pair it computes time/price/box IoU + shared-anchor.
+Flags candidates (box_iou≥0.5 or shared anchor) for human review — never edits labels,
+never says "wrong". Fail-closed timeframe guard. Real run on 366 4H fibs: **22 candidate
+pairs, all sharing anchor_b** (no pure-geometric overlap ≥0.5) → dominant signal is
+sub-legs ending on the same swing, not duplicates. 20210110 pair confirmed (box_iou 0.51);
+2017_h2 cluster present; strongest near-dup 20250506 pair (box_iou 0.70); `20171228`
+correctly absent (anchor-quality issue, not duplication). Report:
+[`reviews/btc-4h-overlap-candidates-20260615.md`](reviews/btc-4h-overlap-candidates-20260615.md)
++ CSV. Anchor convention (body/close vs wick, observed not absolute) documented in
+[`labeling/HUMAN_FIB_ANNOTATION.md`](../labeling/HUMAN_FIB_ANNOTATION.md). 9 tests; ruff +
+full suite green (361 passed, 75.07% cov). No source labels changed; no new deps.
+
+## [2026-06-15] feat | Source-quality review ledger (Issue #32 top-ROI #2)
+
+Added `research/review_ledger.py` — stdlib-only helper (csv/hashlib/json; no new deps)
+that makes source-fib review verdicts machine-trackable. Flat CSV, controlled vocab
+(verdict ∈ ok/ok-with-note/watchlist/suspicious; status ∈ accepted/noted/open/
+correction-candidate/deferred/corrected), with a deterministic `source_hash`
+(`sha256:<16 hex>` of the fib JSON bytes) tying each verdict to the exact facit version.
+Generated the first ledger for the 4H Tier 2 sample-pass (8 rows) at
+[`reviews/ledgers/btc-4h-source-quality-ledger.csv`](reviews/ledgers/btc-4h-source-quality-ledger.csv);
+`fib_BTC-USD_4h_20171228T200000` represented as suspicious / correction-candidate. Schema
+doc: [`reviews/ledgers/README.md`](reviews/ledgers/README.md). 12 tests
+(`tests/research/test_review_ledger.py`: hash determinism, vocab validation,
+correction-candidate representable, roundtrip, header check); ruff + full suite green
+(352 passed, 74.91% cov). No source labels changed; CSV is committed text under `docs/`.
+
+## [2026-06-15] feat | Static HTML artifact gallery (Issue #32 top-ROI #1)
+
+Added `research/artifact_gallery.py` — stdlib-only helper (no new deps) that scans a
+review PNG directory and writes a self-contained `index.html` beside it (relative links,
+inline CSS/JS-free, clean+levels paired per item). Auto-detects both layouts: flat **map**
+output (`..._<label>_4h_<kind>.png`) and nested **zoom** output (`<scope>/<fib_id>/
+4h_<kind>.png`). Standalone helper by design — does **not** touch the render modules or
+the existing markdown `_write_index`. Output lands under `experiments/review/**`
+(gitignored; HTML not committed). 9 tests in `tests/research/test_artifact_gallery.py`
+(both layouts, relative-links-only, empty/missing dir, no-external-deps, markdown index
+untouched); ruff + full suite green (340 passed, 74.77% cov). Real smoke run: zoom (140
+items) + map galleries written; `git status` confirms `index.html` is ignored.
+
+Build: `python -m fibengine.research.artifact_gallery --root experiments/review/fourh_source_fib_zoom`.

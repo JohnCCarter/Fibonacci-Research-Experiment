@@ -22,6 +22,12 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-17 External-pattern-scan absorption — NU+DELAR done** (branch `feature/research-fib`;
+  plan `clever-yawning-catmull.md`). NU (docs): standing
+  [prereg addendum](reviews/horizontal-structure-prereg-addendum-20260617.md) (random-walk control /
+  anytime-valid re-looks / embargo named as purged-CV). DELAR (code): synthetic RW baseline,
+  uncertainty-ordered worklist (`--by-uncertainty`), fail-closed swing-label validation. SENARE gated.
+  No facit/signal/auto-fib touch.
 - **2026-06-16 BTC/Fib studies — BOTH NULL, reviewed PASS / CLOSED** (commit `f4e96f1`, Lean Fib).
   **(1) Behaviour event study:** fib ≈ placebo ≈ swing (4h reject 0.78/0.80/0.84, p=0.63/0.19).
   **(2) Context-conditioned** (continuous MFE−MAE, rank-perm + Holm; contexts trend + deep
@@ -55,13 +61,10 @@ append-only trail lives in [log.md](log.md).
   2017-12-28T20:00 @ 13611 → 2017-12-28T08:00 @ 13145 (candidate_1). Only anchor_a + levels
   changed; anchor_b/fib_id unchanged; guard PASS; ledger candidate → corrected. Closes the
   declutter→correction→ledger track. [Report](reviews/btc-4h-fib-20171228-correction-20260615.md).
-- **2026-06-15 Issue #32 top-ROI tooling — DONE** (all stdlib, report-only): single-fib declutter
-  edit-mode (`labeling/tool.py --edit-fib-id`), overlap/dedup detector (`research/overlap_detector.py`,
-  22 candidates), source-quality review ledger (`research/review_ledger.py`), static HTML artifact
-  gallery (`research/artifact_gallery.py`). Detail in [log.md](log.md) + reviews.
-- **2026-06-15 4H Tier 1 + Tier 2 visual reviews — complete** (entries archived to
-  [log part 1](log-archive-btc-postreset-part1.md)): 11 groups mapped, Tier 2 sample-pass; one
-  correction-candidate `20171228` (now corrected). Corpus declared clean below.
+- **2026-06-15 Issue #32 top-ROI tooling — DONE** (declutter edit-mode, overlap detector, review
+  ledger, artifact gallery; all stdlib). Detail in [log part 1](log-archive-btc-postreset-part1.md).
+- **2026-06-15 4H Tier 1 + Tier 2 visual reviews — complete** (11 groups; `20171228` corrected;
+  corpus clean). Archived to [log part 1](log-archive-btc-postreset-part1.md).
 - **2026-06-08→06-12 source-fib milestones (archived)** — 1M/1W/1D/4H source phases, reaction
   reviews (1816 interactions), 4H Tier 1 maps, Addendum 2 golden-zone retirement (#30), log-scale
   + profile fix + monthly-first reset. Detail: [log post-reset part 1](log-archive-btc-postreset-part1.md)
