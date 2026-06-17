@@ -16,6 +16,29 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-17] maintenance | S-3: viz/plot.py routed through shared candle helper
+
+`viz/plot.py:plot_prediction` drew its own black close-line; it now routes through the shared
+`research/human_review_candles.draw_review_candles` (same palette/path as the review charts). New
+keyword args `candlestick=False` (default — close-line, needs only `close`) / `dark_theme`;
+`candlestick=True` renders mplfinance candles (needs full OHLCV), so the function finally matches
+its "plotta candles" docstring. **No layering inversion:** `plot.py` already imports
+`labeling.store`, so it is application-tier like `labeling/tool.py` (which imports the same helper).
+Parametrised test added (both paths render a non-empty PNG); ruff + 486 pytest (`viz/plot.py` 100 %)
++ bounds green. SENARE-3 done. Working-tree only (not committed).
+
+## [2026-06-17] decision | B-1 horizontal-structure study pre-registered (docs-only, gated)
+
+Post-fib-null follow-up registered, **not run**:
+[btc-horizontal-structure-event-study-prereg-20260617.md](reviews/btc-horizontal-structure-event-study-prereg-20260617.md).
+Question: do *generic* horizontal levels (swing / 1-2-5 round ladder / prior-period extremes) repel
+BTC more than a matched **random-walk null** (`synthetic_baseline` — the unseen quantity that makes
+the question legitimate post-fib-null)? Shuffle-placebo demoted to descriptive (already seen).
+Satisfies NU-1..NU-3; as the **3rd look at the same OOS window**, execution **requires** anytime-
+valid inference (e-values / e-Holm = SENARE-1, unbuilt), so a fixed-horizon permutation is
+forbidden here. Unblock: (a) build SENARE-1 + wire DELAR-1, or (b) fresh data. All subject
+parameters frozen in the prereg before any result.
+
 ## [2026-06-17] maintenance | feature/research-fib promoted to main; PR review fixes + dep bump
 
 Branch promoted to `main` via **PR #33** (89-commit fast-forward; **merge-commit** to keep the

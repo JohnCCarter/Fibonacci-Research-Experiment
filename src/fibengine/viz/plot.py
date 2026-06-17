@@ -14,6 +14,7 @@ import pandas as pd  # noqa: E402
 from fibengine.core.fib import fib_levels  # noqa: E402
 from fibengine.core.models import Swing  # noqa: E402
 from fibengine.labeling.store import SwingLabel  # noqa: E402
+from fibengine.research.human_review_candles import draw_review_candles  # noqa: E402
 
 
 def _nearest_bar(df: pd.DataFrame, ts: str) -> int:
@@ -28,10 +29,15 @@ def plot_prediction(
     out_path: Path,
     label: SwingLabel | None = None,
     title: str = "",
+    *,
+    candlestick: bool = False,
+    dark_theme: bool = False,
 ) -> Path:
     fig, ax = plt.subplots(figsize=(14, 7))
-    x = range(len(df))
-    ax.plot(x, df["close"].to_numpy(), color="black", lw=0.8, label="close")
+    # Shared rendering primitive (same palette/path as the review charts). Default
+    # ``candlestick=False`` keeps the close-line behaviour and only needs a ``close``
+    # column; ``candlestick=True`` requires full OHLCV (see human_review_candles).
+    draw_review_candles(ax, df, candlestick=candlestick, dark_theme=dark_theme)
 
     # Predikterad leg + fib-nivåer. Provisorisk = streckad, bekräftad = heldragen.
     leg_style = "--" if swing.status == "provisional" else "-"
