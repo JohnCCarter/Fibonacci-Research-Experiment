@@ -8,6 +8,10 @@
 2. Skapa **undermapp per kategori** när en kategori växer (t.ex. `experiments/ledgers/`, `experiments/label_review/`, `experiments/runs/`).
 3. Varje flytt dokumenteras i `archive/INDEX.md` (datum, källa, anledning).
 4. Aktiva ytor pekar **inte** hit; kod och CLI läser bara canonical paths (t.ex. `experiments/results/`).
+5. **Git:** arkivblobs (runs, reviews, labels, caches, PNG/JSONL under `experiments/` och
+   `research_superseded/`) versioneras **inte** — bara `README.md`, `INDEX.md` och
+   `MANIFEST.md`. Committa **inte** arkivdata om inte användaren uttryckligen ber om det.
+   Se `repository-layout-policy.md` §7.
 
 ## Layout
 

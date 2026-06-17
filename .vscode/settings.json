@@ -1,17 +1,49 @@
 {
-  "workbench.editor.alwaysShowEditorActions": true,
-  "workbench.editor.centeredLayoutFixedWidth": true,
-  "python.languageServer": "None",
-  "cursorpyright.disableLanguageServices": true,
-  "cursorpyright.disableTaggedHints": true,
-  "cursorpyright.disableOrganizeImports": true,
-  "cursorpyright.analysis.typeCheckingMode": "off",
+  "claudeCode.enableNewConversationShortcut": true,
+  "claudeCode.environmentVariables": [
+    
+  ],
+  "claudeCode.initialPermissionMode": "plan",
+  "claudeCode.preferredLocation": "panel",
   "cursorpyright.analysis.diagnosticMode": "openFilesOnly",
-  "scm.alwaysShowActions": true,
-  "scm.alwaysShowRepositories": true,
+  "cursorpyright.analysis.typeCheckingMode": "off",
+  "cursorpyright.disableLanguageServices": true,
+  "cursorpyright.disableOrganizeImports": true,
+  "cursorpyright.disableTaggedHints": true,
   "git.showCursorWorktrees": true,
-  "terminal.sourceControlRepositoriesKind": "integrated",
+  "python.languageServer": "None",
+  "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
   "python.terminal.activateEnvInCurrentTerminal": true,
   "python.terminal.useEnvFile": true,
-  "claudeCode.initialPermissionMode": "plan"
+  "scm.alwaysShowActions": true,
+  "scm.alwaysShowRepositories": true,
+  "terminal.integrated.automationProfile.windows": null,
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.profiles.windows": {
+    "Git Bash": {
+      "args": ["--login"],
+      "color": "terminal.ansiGreen",
+      "icon": "terminal-linux",
+      "source": "Git Bash"
+    },
+    "PowerShell": {
+      "color": "terminal.ansiBlue",
+      "icon": "terminal-powershell",
+      "source": "PowerShell"
+    },
+    "Command Prompt": {
+      "color": "terminal.ansiYellow",
+      "icon": "terminal-cmd",
+      "path": "${env:windir}\\System32\\cmd.exe"
+    },
+    "Windows PowerShell": null
+  },
+  "terminal.sourceControlRepositoriesKind": "integrated",
+  "workbench.editor.alwaysShowEditorActions": true,
+  "workbench.editor.centeredLayoutFixedWidth": true,
+  "workbench.editor.openPositioning": "right",
+  "workbench.editor.openSideBySideDirection": "right",
+  "workbench.editor.tabActionLocation": "right",
+  "terminal.integrated.enableImages": true,
+  "python-envs.pythonProjects": []
 }

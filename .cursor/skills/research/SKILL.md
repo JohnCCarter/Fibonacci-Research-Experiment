@@ -102,10 +102,10 @@ All research should be documented in the research wiki:
 ## Reference Files
 
 - `docs/research_wiki/index.md` - Research wiki index
-- `docs/MTF_DAILY_RESEARCH.md` - Multi-timeframe research approach
-- `docs/FIB_BACKTEST_PLAN.md` - Backtesting methodology
+- `docs/research/MTF_DAILY_RESEARCH.md` - Multi-timeframe research approach
+- `docs/validate/FIB_BACKTEST_PLAN.md` - Backtesting methodology
 
 ## External Documentation
 
-- Research methodology in `docs/RESEARCH_HANDOFF.md`
+- Research methodology in `docs/research/RESEARCH_HANDOFF.md`
 - Experiment tracking in `experiments/results/`

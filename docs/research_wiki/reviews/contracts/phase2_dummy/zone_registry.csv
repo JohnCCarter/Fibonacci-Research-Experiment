@@ -1,0 +1,4 @@
+zone_id,symbol,method,epsilon_log,zone_price_repr,zone_price_min,zone_price_max,price_span_log,tf_count,level_count,timeframes,ratios,anchor_a_min,anchor_b_max,known_after_ts,confirmation_buffer_hours,source_member_count,feature_version
+zone_dummy_a,BTC/USD,fixed_band,0.005,29274.0,29247.0,29283.0,0.00123,4,4,"1M,1w,1d,4h","0.5,0.618,0.618,0.786",2021-01-01T00:00:00Z,2021-05-01T00:00:00Z,2021-05-03T00:00:00Z,48,4,v0
+zone_dummy_b,BTC/USD,fixed_band,0.005,13764.0,13764.0,13764.0,0.0,3,3,"1w,1d,4h","0.382,0.5,0.618",2019-06-01T00:00:00Z,2020-12-01T00:00:00Z,2020-12-02T00:00:00Z,24,3,v0
+zone_dummy_c,BTC/USD,single_linkage,0.005,64829.0,64500.0,65100.0,0.00627,2,2,"1d,4h","0.618,0.786",2021-10-01T00:00:00Z,2021-11-10T00:00:00Z,2021-11-12T00:00:00Z,48,2,v0

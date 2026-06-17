@@ -5,36 +5,39 @@
   "exchange": "bitfinex",
   "created_by": "human",
   "source": "manual_labeling_tool",
+  "scale_mode": "log",
+  "levels_profile": "tradingview_log_chamoun",
+  "human_highlights": [],
   "anchor_a": {
     "time": "2026-01-08T00:00:00+00:00",
     "price": 97850.0
   },
   "anchor_b": {
-    "time": "2026-02-19T00:00:00+00:00",
-    "price": 63990.0
+    "time": "2026-06-04T00:00:00+00:00",
+    "price": 59200.0
   },
   "direction": "down",
-  "created_at": "2026-06-02T13:20:23.680620+00:00",
+  "created_at": "2026-06-11T18:07:54.008115+00:00",
   "levels": [
     {
-      "ratio": 0.236,
-      "price": 71980.96
+      "ratio": 0.0,
+      "price": 59200.0
     },
     {
       "ratio": 0.382,
-      "price": 76924.52
+      "price": 71728.05455079
     },
     {
       "ratio": 0.5,
-      "price": 80920.0
+      "price": 76109.92050975
     },
     {
       "ratio": 0.618,
-      "price": 84915.48
+      "price": 80759.47460556
     },
     {
       "ratio": 0.786,
-      "price": 90603.96
+      "price": 87873.44596137
     },
     {
       "ratio": 1.0,

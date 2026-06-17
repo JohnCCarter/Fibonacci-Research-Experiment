@@ -10,443 +10,356 @@ Use headings like:
 
 Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 
-## [2026-06-05] decision | MTF fib level projection — design + inspection
-
-After the 1D-only track stalled at `working pipeline, no stable evidence yet`, scoped
-a new direction: project the **locked HTF human fib levels** onto **LTF candles** and
-measure LTF behavior around those exact prices (no auto-fib, no anchor moves, no
-relabel).
-
-Inspection (Observed): the fingerprint (#23), outcome (#22), join, and toplist layers
-are already timeframe-agnostic — `extract_fingerprint` / `analyze_events` only need a
-df + `event_bar` (int) + `fib_price` + `approach_side`; `classify_candle` /
-`classify_candles` already accept any df + an HTF annotation; `load_candles` supports
-all timeframes. The **only missing piece** is a deterministic LTF interaction detector
-(explicit human level prices, scan from `anchor_b` on the LTF index). `level_events.py`
-`detect_level_events` is close but bound to a machine swing + `fib_levels(swing)`.
-
-Plan: thin new runner `fibengine.research.mtf_fib_level_projection` (detector + glue
-to existing extract/analyze/join), artifacts under `experiments/runs/`, CLI
-`--human-fib --lower-timeframes --pre-bars --post-bars`. First runnable slice (no
-network) is **1W fib -> 1D candles**; `4h`/`1h` need a fetch first (ETH/SOL have no 4h
-cache). Layer separation: human_fib / projected_level / relation / fingerprint /
-outcome. Full design: [MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md).
-
-Guardrail: design/docs only so far; no code, no trading signal, no edge claim. No
-runner implemented until go-ahead.
-
-## [2026-06-05] decision | MTF fib level projection — runner implemented (1W -> 1D slice)
-
-Implemented the minimal runner `fibengine.research.mtf_fib_level_projection` with
-`detect_ltf_level_interactions(...)` (deterministic LTF touch scan from `anchor_b`
-using explicit human level prices; reuses `level_events._classify` + `classify_candle`)
-and glue to existing `extract_all` (#23) + `analyze_events` (#22) +
-`join_fingerprints_outcomes`. Per-LTF join calls keep `event_id` collision-free.
-Layers kept separate per row: human_fib / projected_level (`projected_from_timeframe`)
-/ relation / fingerprint / outcome. CLI: `--human-fib --lower-timeframes --pre-bars
---post-bars --horizons` (+ `--config`). Artifacts: `config.json`, `interactions.jsonl`,
-`fingerprint_outcomes.jsonl`, `unmatched.jsonl`, `skipped.jsonl`, `summary.json/csv`,
-`run_summary.json`; appends `experiments/results/mtf_fib_level_projection.jsonl`.
-
-Smoke (1W BTC fib `fib_BTC-USD_1w_20250116T000000` -> 1D): 6 projected levels, 42 LTF
-interactions, 168 joined rows, 0 unmatched, 0 skipped. First 0.236 touch at 2025-04-04
-(right after the leg end), `fib_price` exactly the human level. Tests: 4 new (detector
-determinism, leg-end-after-cache skip, e2e artifacts, missing-cache skip); full suite
-186 passed, coverage 75%, ruff clean on new files. Scope guard held: no swing/
-`detect_level_events` refactor, no UI, no candidate-logic change, no edge claims. 4h/1h
-deferred until a fetch populates LTF caches. Design:
-[MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md).
-
-## [2026-06-05] review | MTF fib projection checkpoint + toplist triage (1W->1D)
-
-Ran `fib_toplist --run-dir <mtf_proj_20260605T122401Z>` on the MTF run — the existing
-triage stack works unchanged on MTF output (116 buckets, all LOW SAMPLE; watch fields
-`pre_distance_atr_norm` / `post_retest_count` / `post_remained_near_level_rate` are
-single-fib low-N co-occurrences, not evidence). Wrote checkpoint
-[2026-06-05-mtf-fib-projection-checkpoint.md](reviews/2026-06-05-mtf-fib-projection-checkpoint.md):
-proven = runner exists, human levels reused verbatim, 1W->1D works (42 interactions,
-42 fingerprints, 168 joined, 0 unmatched/0 skipped, stack reusable); not proven = no
-edge, no signal, no stable behavior, no cross-TF comparison, 4H/1H deferred. Interp:
-technically validates HTF=map / LTF=behavior. Next: fetch 4H later, run 1W->4H and
-1D->4H, compare vs 1D-only. No logic changes; no edge claims. Docs/triage only — no
-src changes, so no ruff/pytest run needed.
-
-## [2026-06-05] review | MTF projection to 4H — structural detail, still low sample
-
-Fetched BTC/USD 4h only (7882 bars, 2022-10-31→2026-06-05; `limit_8000.csv`; ETH/SOL 4h
-deferred). Ran the same MTF pipeline (no logic/threshold changes): 1W→4H on
-`fib_BTC-USD_1w_20250116T000000` = 87 interactions / 348 joined / 0 unmatched / 0
-skipped (vs 42 on 1D, same fib); 1D→4H on `fib_BTC-USD_1d_20260407T000000` = 23 / 92 /
-0 / 0. Toplist: 1W→4H 184 buckets (16 reached n≥5); 1D→4H 60 buckets all LOW SAMPLE.
-Finding: 4H adds interaction *resolution* (~2× more distinct touches on the same fib),
-not *evidence* — `fib_toplist` watch sets differ across all three runs (low-N artifact).
-No edge claims; only a data fetch + run artifacts changed (no src/test edits, so no
-ruff/pytest). Details appended to
-[MTF checkpoint](reviews/2026-06-05-mtf-fib-projection-checkpoint.md).
-
-## [2026-06-05] review | MTF 4H sample growth — sufficient for descriptive review
-
-Fetched ETH/SOL 4h (7881 bars each, 2022-10-31→2026-06-05; BTC 4h already cached). Ran
-the same MTF pipeline over all base human fibs per symbol×HTF → 4H + a combined run
-(no logic/threshold changes). Combined: 136 fibs, 7453 interactions, 29812 joined rows,
-384 buckets, 0 unmatched/0 skipped; n≥5=360, n≥10=336, **n≥20=332**, max n=299. Answer:
-4H sample is now sufficient for descriptive review. Caveat (validity, not edge): the 4h
-cache starts 2022-10-31, so pre-2022 1D fibs are projected cross-era; SOL 1D→4H alone =
-5415 interactions (old 2021 levels intersected by the 2022–2026 range) and dominates the
-n≥20 count, while BTC 1D→4H stays tiny (old levels far below current price). Prefer
-anchor_b ≥ 2022-10-31 fibs for clean forward-window review. No edge claims; only data
-fetch + run artifacts + wiki changed (no src/test edits → no ruff/pytest). Details in
-[MTF checkpoint](reviews/2026-06-05-mtf-fib-projection-checkpoint.md).
-
-## [2026-06-05] review | MTF 4H cohort split — clean-forward vs cross-era
-
-Split 4H projection inputs by `anchor_b` vs cache start 2022-10-31 (selection only, no
-logic change). clean-forward (anchor_b ≥ 2022-10-31): 14 fibs, 617 interactions, 2468
-joined, 336 buckets, n≥20=32. cross-era (< 2022-10-31): 122 fibs, 6836 interactions,
-27344 joined, 384 buckets, n≥20=308. 0 unmatched/0 skipped both. Composition: clean-
-forward is BTC+SOL only — all ETH fibs are pre-2022; clean 1D is recent BTC only.
-Cross-era kept separate as historical level revisit analysis (different question; large
-count reflects old levels inside the later range, not forward reaction). toplist
-`watch=[]` in both. No edge claims; only run artifacts + wiki changed (no src/test → no
-ruff/pytest). Runs `mtf_proj_20260605T124444Z` (clean) / `…124448Z` (cross). Details:
-[MTF checkpoint](reviews/2026-06-05-mtf-fib-projection-checkpoint.md).
-
-## [2026-06-05] review | MTF clean-forward n≥20 read — no stable evidence yet
 
-Descriptive read of clean-forward run `mtf_proj_20260605T124444Z`, n≥20 buckets only
-(32 buckets / 8 families across 4 horizons; BTC+SOL only, no ETH). Findings: 4 families
-sign-stable across horizons (continuation cross 0.236 −, cross 0.382 +, cross 0.5 +,
-rejection touch 0.236 −) BUT that is mechanical (h5⊂h10⊂h20⊂h50 nested windows);
-magnitudes tiny (≤~1.6%), mfe≈mae. BTC vs SOL: no shared n≥20 bucket and per-symbol
-signs frequently disagree (e.g. cont touch 0.618 h50 BTC −0.092 vs SOL +0.084). Rates
-revert to coin-flip; crossed_back rises with horizon (mechanical). Verdict: clean-forward
-4H projection works, but no stable evidence yet. Cross-era kept separate. No edge claims;
-only a review page + wiki links added (no src/test → no ruff/pytest). Page:
-[clean-forward n≥20 review](reviews/2026-06-05-mtf-clean-forward-n20-review.md).
+> Older entries (2026-06-11→06-12 source-fib milestones):
+> [post-reset part 1](log-archive-btc-postreset-part1.md).
+> Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
+> [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
+
+## [2026-06-17] decision | Standing prereg addendum for future horizontal-structure studies
+
+NU block of the external pattern scan, docs-only:
+[horizontal-structure-prereg-addendum-20260617.md](reviews/horizontal-structure-prereg-addendum-20260617.md)
+(NU-1 random-walk control; NU-2 anytime-valid/e-Holm re-looks; NU-3 name embargo as purged-CV).
+DELAR-1/2/3 since implemented (commits `ca5ae73`/`0b380e6`/`7b03837`): synthetic random-walk
+baseline (`research/synthetic_baseline.py`), uncertainty-ordered labeling worklist
+(`labeling/worklist.py --by-uncertainty`), fail-closed swing-label JSON validation
+(`validation/schemas.py`). SENARE still gated (`clever-yawning-catmull.md`).
+
+## [2026-06-16] decision | BTC/Fib behaviour/backtest line — PAUSED / CLOSED (reviewed PASS)
+
+Commit `f4e96f1` reviewed **PASS / CLOSED**. Final conclusion across both pre-registered studies:
+unconditioned Behaviour Event Study = **no signal**; Context-Conditioned Study = **no candidate**.
+**Fib does not beat the placebo/swing baselines** on the current BTC corpus; the **swing baseline
+matches or beats fib**, so the weak level reaction is **generic horizontal structure, not
+Fibonacci-specific**. Strategy sanity-check **not authorised / not run**. The BTC/Fib
+behaviour/backtest line is **paused/closed**. **Discipline:** do **not** re-run these studies on the
+same BTC data with tweaked parameters; any future behaviour test must be a **new prereg on fresh
+data** or a **materially different question**; **no active next implementation is authorised**.
+Future possible tracks (listed only, none started): fresh-data validation on other symbols/TFs
+(new prereg); source-label quality / correction-candidate cleanup; non-fib horizontal-structure
+research; separate visual/research tooling; Genesis/Fib remains paused unless explicitly reopened.
+
+## [2026-06-16] review | BTC/Fib Context-Conditioned Study — NO CANDIDATE (reviewed PASS / CLOSED)
+
+Second Lean Fib question, opened after the unconditioned null: do fib levels react differently
+than placebo/swing **only in specific causal contexts**? Advisor flagged the prior `reject_rate`
+as saturated → switched primary to a **continuous** metric `reaction_asym_atr = MFE−MAE`,
+rank-permutation test, **Holm** across K=2 frozen confirmatory contexts (**trend regime**, **deep
+0.618/0.786**), MDE pre-registered, confirmatory TF=4h. Disclosed second-look (same OOS window
+reused; power pre-flight peeked) → train-sign is the guard, ceiling = candidate not confirmation.
+**Result: no confirmatory context passes.** Fib beats *random placebo* in the predicted direction
+(trend gap +0.64, deep +0.46 ATR; train-sign consistent) but only **nominally** (p=0.042/0.056,
+**fails Holm**) and **never beats the swing baseline** (swing reacts ≥ fib in both). Gaps ≪ MDE
+(~1.3–1.9). 1d underpowered (N<30, train sign flips). Insight: faint level-reaction = generic
+horizontal structure, not Fibonacci. Gate fails → **no strategy work.** New
+`research/fib_context_conditioned_study.py` (17 tests), reuses the event-study engine; artifact
+gitignored. No Genesis/1H/ML/export/label change.
+[Prereg](reviews/btc-fib-context-conditioned-study-prereg-20260616.md) /
+[results](reviews/btc-fib-context-conditioned-study-results-20260616.md).
+
+## [2026-06-16] review | BTC/Fib Behaviour Event Study — NO SIGNAL (reviewed PASS / CLOSED)
+
+First Lean Fib Research question, run end-to-end. Causal event study on the locked corpus
+(1M/1w/1d/4h, no 1H): fresh touches of causally-known fib **interior retracements** vs two
+baselines — **matched deterministic placebo** (same count/time, random causal-range price) and
+**causal fractal swing** highs/lows. OOS 70/30 + embargo; permutation test on test-window
+reject_rate. **Result: fib levels are not measurably different from placebo/swing.** At the only
+powered TF (4h, N≥138/source) fib reject 0.78 ≈ placebo 0.80 ≈ swing 0.84 (p=0.63/0.19); 1d
+nominal-only (not sig, N<30); 1w/1M too sparse (N≤2). High ~0.8 reject across *all* sources =
+generic mean-reversion, not a fib property. Gate fails on every TF →
+**strategy sanity-check NOT run** (Phase 0 §8 placebo stop). Code
+`fib_behaviour_event_study.py` (19 tests); artifact gitignored. No Genesis/1H/ML/export/label
+change. [Prereg](reviews/btc-fib-behaviour-event-study-prereg-20260616.md) /
+[results](reviews/btc-fib-behaviour-event-study-results-20260616.md).
+
+## [2026-06-16] decision | BTC/Fib — post-Phase-2.5 fork decision (docs-only)
+
+Clean decision point after Phase 2.5 closed. Compares 4 next-step options (A pause / B new
+falsifiable question / C conceptual Genesis prep / D BTC-Fib quality, not 1H) with
+observed/inferred/unverified kept separate. **Rec: A (pause) primary; D the only no-new-risk
+continuation.** B's real value needs code/export (breaches scope, trends to Phase 3) and its
+docs form duplicates Phase 0; C is redundant with Phase 1 + risks Genesis drift. Builds
+nothing; no Phase 3, no export, no Genesis touch, no 1H, no ML/backtest/signal. Choice is the
+human's. [Note](reviews/btc-fib-post-phase25-fork-decision-20260616.md).
+
+## [2026-06-16] review | Fib → Genesis V2 — Phase 2.5 reviewed PASS / closed
+
+Human review of commit `4599819` — **verdict PASS**, Phase 2.5 closed. Confirmed docs-only:
+3-state separation (no zone known / nearby / ATR-warmup not-applicable), per-column nullability,
+distance-null as empty CSV field (not 0/inf), empty-meta ⇔ no-known-zone invariant, Genesis
+read-only consumer rules (dense table, no imputation across `known_after_ts`, meta never a
+feature). **Non-blocking pre-export note:** decide whether `has_robust_4tf_zone_nearby` is
+log-price- or ATR-thresholded (ATR ⇒ warmup-null or a separate availability flag). No Phase 3,
+no real export, no Genesis touch, no ML/backtest/signal.
+
+## [2026-06-16] decision | Fib → Genesis V2 — Phase 2.5 feature nullability policy (docs-only)
+
+Docs-only policy pinning how the future bar feature table represents empty values — the
+precondition flagged by the Phase 2 review. Defines **three** states (no zone known / no zone
+nearby / not-applicable ATR-warmup), per-column nullability (join keys + bools + ATR-free count
++ meta always non-null; the 7 non-ATR `nearest_*` null only when no zone known; ATR-denominated
+columns null during warmup), distances as **null not 0/inf**, the empty-meta ⇔ no-known-zone
+invariant, and read-only Genesis consumer rules (dense table, no imputation across
+`known_after_ts`). No code, no export, no Genesis touch, no ML/backtest/signal. Not Phase 3.
+[Policy](reviews/btc-fib-to-genesis-v2-feature-nullability-policy-20260616.md).
+
+## [2026-06-16] review | Fib → Genesis V2 — Phase 2 reviewed PASS / closed
+
+Human review of commit `68dc006` — **verdict PASS**, Phase 2 closed. Confirmed: contract-test
+only inside Fib, no Genesis coupling, no real export, no feature recomputation, schema/join/
+causality validated mechanically, fail-closed cases covered, `confirmation_buffer_hours` pins
+the unit. **Follow-up (not now):** before any real export, define a **nullability policy** for
+feature columns. No Phase 3, no real export, no Genesis touch, no ML/backtest/signal.
+
+## [2026-06-16] feat | Fib → Genesis V2 — Phase 2 dummy contract test (narrow slice)
+
+Mechanical contract/dummy test **inside the Fib repo only** — not export, not Genesis
+integration. New stdlib-only `research/feature_contract.py` validates two synthetic dummy CSVs
+(committed under `reviews/contracts/phase2_dummy/`: 3 zones, 4 bars incl. a multi-zone row)
+against the Phase 1 schema: exact-header schema, join keys `(symbol,timeframe,timestamp)`
+non-null + unique, causality `known_after_ts <= timestamp` over the whole reference set,
+knowability floor `known_after_ts >= max(anchor_b)+buffer`, 1H fail-closed, feature/metadata
+boundary asserted at import. No fib computation, no Genesis import, no pipeline/ML/backtest/
+signal/edge. 20 tests; ruff + 426 passed (76%) + repo-bounds green; CLI smoke OK. **Stop after
+this.** [Report](reviews/btc-fib-to-genesis-v2-phase2-dummy-contract-20260616.md).
+
+## [2026-06-15] review | Fib → Genesis V2 — Phase 1 closed (PASS)
+
+Phase 1 feature-export spec reviewed — **verdict: PASS**; **closed as a docs-only contract**.
+Remaining risk (causal features **non-empty** after all rules) is **empirical, belongs to Phase
+2**. **Phase 2 still requires explicit GO.**
+
+## [2026-06-15] question | Fib → Genesis V2 — Phase 1 feature-export spec
+
+Docs-only **data-contract** spec (builds nothing) for a future causally-safe feature export Fib →
+Genesis V2, gated by the Phase 0 question. Defines a **zone registry** + **bar feature table** with
+binding rules `known_after_ts = max(anchor_b)+buffer` and per-row `zone.known_after_ts ≤ timestamp`,
+**3 baseline specs**, a **read-only CSV-first Genesis contract**, **9 causal invariants**, and a
+**do-not-export list**.
+[Spec](reviews/btc-fib-to-genesis-v2-phase1-feature-export-spec-20260615.md).
+
+## [2026-06-15] question | Fib → Genesis V2 — Phase 0 pre-registration
+
+Docs-only pre-registration of the one falsifiable behaviour question (does price react measurably
+differently at causal robust fixed-band MTF confluence zones than at matched naïve/placebo levels,
+OOS?) + why-not-anchor-first (selection leakage), causal feature rule, leakage manifest, ≥3
+baselines (causal swing + shuffled/placebo = primary), time-split/embargo holdout, neutral success
+metrics, stop/go. Authorises nothing beyond the note.
+[Note](reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md).
+
+## [2026-06-15] decision | MTF confluence CP1–CP3 — interpretation & decision note
+
+Docs-only synthesis closing the MTF-confluence track. **Observed:** 222 single-linkage
+clusters @ε=0.005 (188 fixed-band); c001 robust tight 4-TF; c002 chaining-dependent (dissolves
+under fixed-band); c004/c006/c007 zero-span; all 5 CP3 cards human-approved. **Inferred:** MTF
+confluence exists as *geometry* — c001 shows tight method-stable confluence can exist, c002
+shows single-linkage can overstate strength, zero-span shows exact-price coincidence; none of
+it proves edge/support-resistance/predictive value. **Unverified:** price-behaviour effect,
+vs-naïve-baseline usefulness, ETH generalisation, whether more cards inform or just confirm,
+behaviour-study scope risk. **Decision options** (5) compared with value/risk/scope/smallest
+slice. **Recommendation: STOP the MTF track here** — don't expand cards, don't start a
+behaviour study without a pre-registered falsifiable question + naïve-level baseline; ETH gated
+on BTC sign-off. Next active decision is a fork: **pause Fib, or open a new track with one
+clear question.** [Note](reviews/btc-mtf-confluence-interpretation-decision-20260615.md).
+
+## [2026-06-15] decision | MTF confluence atlas CP3 — first pack closed (all cards approved)
+
+First CP3 visual-atlas pack **complete and human-approved (2026-06-15)**. Five cards across
+three structural archetypes: **c001** robust fixed-band 4-TF (span 0.00123 ≤ ε); **c002**
+chaining-dependent single-linkage contrast (span 0.00627 > ε, dissolves under fixed-band,
+never presented as tight 4-TF); **c004/c006/c007** zero-span exact-price 3-TF (span = 0 at
+~$64829/$13764/$9085). All resolved by structural signature (cluster ids are positional and
+unstable), out_dir keyed on stable label, charts assert geometry only — no edge/signal/
+support-resistance. PNGs gitignored, none committed. **Next decision (not started):** stop
+here as the first pack, or later expand with fixed-band clusters only on an explicit go.
+Docs-only close; gates green (406 passed). [Capstone](reviews/btc-mtf-confluence-atlas-cp3-20260615.md).
+
+## [2026-06-15] feat | MTF confluence atlas CP3 slice 3 — zero-span 3-TF cards (generated)
+
+c002 contrast card **human-approved**. Slice 3 adds three **zero-span** (exact-price) 3-TF
+cards under **fixed-band**: `c004`/`c006`/`c007` at ~$64829/$13764/$9085, where
+`price_span_log == 0` — several human-drawn fib levels from three timeframes on the
+*identical* price (immune to epsilon and chaining; the structural opposite of c002). **Label
+discipline:** c004/c006/c007 are CP2's stable labels; cluster ids are positional and have
+since shifted (they resolve to c002/c003/c004 under the current corpus), so resolution is by
+structural signature (`tf_count==3`, exact TF set, `repr ± 50`, `price_span_log == 0`,
+window-year range) — each matches exactly one fixed-band cluster. Output dir is now keyed on
+the **stable signature label** (not the positional id); titles show `label (cluster_id)`.
+The degenerate `[min,max]` band (min==max) renders as the single exact-price line; metadata
+says *zero-span (exact-price coincidence) / N levels share one price across M TFs*. Fail-closed
+`len(band)==level_count` cross-check passed (5/4/4). c001 re-renders identically (label==id).
+406 tests green (+2 zero-span resolution tests in a new file to respect the 300-line bound; no
+golden snapshots for the three cards — synthetic zero-span corpus would exceed it). PNGs
+gitignored, none committed. **Pending human inspection.**
+[Report](reviews/btc-mtf-confluence-atlas-cp3-zero-span-20260615.md).
+
+## [2026-06-15] feat | MTF confluence atlas CP3 slice 2 — c002 contrast card (generated)
+
+c001 card **human-approved** (title dedup + member-table polish). Slice 2 adds the
+chaining-dependent **contrast** card: `mtf_confluence_atlas` is now method-aware
+(`--cluster c001|c002` pairs a structural signature with its clustering method). c002
+(~21167, 2022-12 → 2023-07) resolves only under **single-linkage** — `price_span_log`
+0.006272 **> ε=0.005**, so it chains across log-price and **dissolves entirely under
+fixed-band**. New signature fields `min_span_log` (= ε guarantees chaining; fail-closed if
+tight) + `window_year_end` (multi-year window). Headline/metadata never say "tight 4-TF":
+they state *chaining-dependent (span > epsilon) / NOT tight fixed-band 4-TF*. Fixed a shared
+`band_member_rows` rounding bug (1M level on the rounded band edge dropped 4→3): added a
+1-cent tolerance + a fail-closed `len(band)==level_count` check; **c001 re-renders
+identically** (verified 4/4). 404 tests green (+1 resolution test); c001 golden unchanged.
+PNGs gitignored, none committed. **Pending human inspection.**
+[Report](reviews/btc-mtf-confluence-atlas-cp3-c002-20260615.md).
+
+## [2026-06-15] feat | MTF confluence atlas CP3 slice 1 — c001 card (generated)
+
+First visual-atlas slice. New `research/mtf_confluence_atlas.py` (stdlib + existing matplotlib
+stack) renders one confluence card for the robust 4-TF cluster **c001** under **fixed-band** at
+the primary `epsilon_log=0.005`, on a **1d** candle backdrop. Target resolved by **structural
+signature** (tf_count==4, exactly {1M,1w,1d,4h}, repr≈29274±200, span≤0.005, window year 2021),
+never a hard-coded id — exactly one fixed-band cluster matches. Fail-closed: zero/ambiguous
+signature match, superseded `20250506T080000` in any member, off-protocol timeframe (no 1H),
+and missing candle cache (no auto-fetch). Members reconstructed in-process from `LevelRow`
+(not the truncated CSV); 4 members (1M/1w/1d/4h) at 29247–29283, `price_span_log=0.00123`
+annotated in a metadata box (CP2-corrected headline). Card = candles + shaded [min,max] band +
+representative line + per-TF member lines (levels view). `render_summary` gained
+`cluster_atlas_summary` (includes the analytical numbers — `price_span_log` is the central CP2
+metric) + golden snapshot. PNGs under `experiments/review/mtf_confluence_atlas/fixed_band/c001/`
+(gitignored, none staged). 10 tests; no new deps; no source labels changed. **Generated,
+pending human visual inspection** — observed: the four members within $36 render as a near-single
+band (label stacking noted as a candidate adjustment). Next: approve card design or adjust, then
+c002 chaining-dependent contrast card. No chart-as-signal, no edge.
+[Report](reviews/btc-mtf-confluence-atlas-cp3-c001-20260615.md).
+
+## [2026-06-15] review | MTF confluence CP2 — sensitivity / robustness
+
+Robustness pass over CP1. Added stdlib `cluster_confluence_fixed_band` (complete-linkage in
+price + single-linkage in time) + `run_sensitivity` (9 new tests). Predeclared epsilons
+0.0025/0.005/0.01. Single-linkage total 173/222/266; chaining (span>ε) 12/30/70 = 7%/14%/26%.
+Fixed-band 144/188/242 (0 over-ε by construction). **c001 (~29274) robust 4-TF** across
+methods/epsilons (3-TF under fixed-band only at 0.01, a band-cut effect). **c002 (~21167)
+chaining-dependent** — 4-TF only under single-linkage at ε≥0.005 with span 0.00627>ε; dissolves
+to 2-TF fragments under fixed-band. Verdict: confluence is real but CP1 overstated c002.
+Conditional GO to CP3 visual atlas (render fixed-band + annotate span). No chart, no tuning,
+no source change. Full suite 394 passed, 75%. Report:
+[`reviews/btc-mtf-confluence-sensitivity-20260615.md`](reviews/btc-mtf-confluence-sensitivity-20260615.md).
+
+## [2026-06-15] review | MTF confluence atlas CP1 — confluence table
+
+First analytical slice on the locked corpus. New stdlib module `research/mtf_confluence.py`
+(10 tests): flattens 462 fibs → 2772 level rows, clusters by log-price proximity
+(epsilon_log=0.005, chosen before results) + overlapping anchor windows, requires ≥2 TFs.
+Result: **222 clusters** (2×4-TF, 24×3-TF; 1d,4h dominates 143). Chaining visible
+(30/222 span>eps, reported). **Stop/go: GO** to CP2 (sensitivity/robustness, multi-eps +
+complete-linkage). No chart, no trading conclusions, no tuning. Committed CSV under docs;
+large levels CSV gitignored.
+[Report](reviews/btc-mtf-confluence-table-20260615.md).
+
+## [2026-06-15] review | BTC source-fib corpus integrity report (capstone)
+
+Read-only capstone locking the corpus before the MTF analytical pass. Re-derived on disk:
+1M=9, 1w=21, 1d=67, 4h=365 (462 total; up=219/down=243), coverage (anchor-derived)
+2016-12-29 → 2026-06-07, log scale + `tradingview_log_chamoun`, no 0.236. Source-quality:
+Tier 1+2 done, 20171228 corrected, 20250506 superseded (1), ledger validates (10 rows).
+Corpus declared clean. Next: #1 MTF confluence atlas (table-first). Docs-only.
+[Report](reviews/btc-source-fib-corpus-integrity-20260615.md).
+
+## [2026-06-15] decision | Next research-pass design — corpus integrity then MTF atlas
+
+Read-only design comparing 5 candidate passes (5×8 sub-questions). Recommends corpus
+integrity report (#2) now, MTF confluence atlas (#1) next; #5 visual companion to #1;
+#3/#4 deferred. Docs-only.
+[Report](reviews/btc-source-fib-next-research-plan-20260615.md).
+
+## [2026-06-15] maintenance | Reconcile data/labels/INDEX.md with current facit
+
+`data/labels/INDEX.md` was stale (2026-06-10: 1w/1d/4h listed absent/0). Reconciled to
+on-disk base counts (excl. sidecars): 1M=9, 1w=21, 1d=67, 4h=365; authority pointed to
+handoff.md. Docs-only. (Note: log.md near its size bound — archive old entries next.)
+
+## [2026-06-15] fix | 20250506 dedup — fib A superseded, fib B retained
+
+Resolved the strongest overlap-detector near-duplicate. `fib_BTC-USD_4h_20250506T080000`
+and `…120000` are the same up-leg to the same high (shared anchor_b 97840; box_iou 0.70).
+Candle data: 05-06 12:00 low (93663) is the true bottom = B's anchor_a; A's anchor_a
+(08:00 @ 93988) is one bar early on a higher low — a redundant, worse version (not a
+complementary sub-leg). Decision: **supersede A, retain B.** No retired-label pattern
+exists, so A's `fib_*.json` was deleted from active facit and documented. Active 4H count
+**366 → 365** (current-state docs updated; dated historical 366 entries kept). Ledger gained
+a tested `superseded` status; both fibs now tracked (B ok/accepted, A suspicious/superseded
+with provenance hash). fib B unchanged (verified no diff); only A deleted; no other source
+JSON touched. Report:
+[`reviews/btc-4h-fib-20250506-dedup-20260615.md`](reviews/btc-4h-fib-20250506-dedup-20260615.md).
+
+## [2026-06-15] feat | Structural chart-contract + metadata snapshots (Issue #F)
+
+Implemented the chart-regression spike's recommendation. Added `research/render_summary.py`
+(stdlib-only, no deps): `map_summary` / `zoom_summary` / `gallery_summary` produce stable,
+text-diffable dicts from existing render results/output dirs — repo-relative forward-slash
+paths, no timestamps, no absolute paths, sorted order, no level prices (those stay in the
+source JSON). Committed golden JSON snapshots under `tests/research/snapshots/` (text only,
+no binary baselines); tests regenerate with `UPDATE_SNAPSHOTS=1`. Covers all three primary
+flows (4H map, 4H zoom, artifact gallery) + a guard test that snapshots are JSON-only.
+5 tests; ruff + full suite green (375 passed, 75.16% cov). No PNG baselines, no pixel diff,
+no new deps. Automatic structural layer; HTML gallery + ledger remain the manual visual
+layer. Closes the chart-regression follow-up (#F).
+
+## [2026-06-15] decision | Chart regression strategy — structural-first (spike)
+
+Design spike for Issue #32 evaluate-later. Recommendation: **structural chart-contract
+tests + text/metadata snapshots first; defer pixel regression.** Grounded in the repo's
+existing style (~170 structural assertions across 22 render test files) and the anti-blob
+policy. Adopt now: extend structural assertions on render dataclasses + committed golden
+JSON/markdown summaries (no blobs). Keep HTML gallery + ledger as the manual visual layer.
+Defer `pytest-mpl`/`matplotlib.testing.compare` (need committed PNG baselines, flaky across
+versions); reject image/perceptual hashing (new dep, version-sensitive). No binary
+baselines committed. Follow-up issue #F drafted (render_summary + golden snapshots, stdlib).
+Report: [`reviews/chart-regression-strategy-20260615.md`](reviews/chart-regression-strategy-20260615.md).
+Docs-only; no code/deps/artifacts.
+
+## [2026-06-15] fix | 20171228 source fib corrected (preview-first flow)
+
+`fib_BTC-USD_4h_20171228T200000` corrected via preview-first flow: machine rendered 3
+candidate anchor_a moves (gitignored previews), Chamoun chose `candidate_1`, then only the
+real source JSON's anchor_a was edited 2017-12-28T20:00 @ 13611 → **2017-12-28T08:00 @
+13145** (captures the full local low→high leg from the structural bottom; original was a
+one-bar leg). anchor_b/direction/profile/scale/fib_id unchanged; levels recomputed via
+`compute_levels` (log) and match the preview (0.382/0.5/0.618 = 14227.06/14013.79/
+13803.71). Structural guard PASS via `fourh_source_fib_zoom --fib-id`. Ledger updated
+candidate → corrected (verdict suspicious→ok-with-note, status correction-candidate→
+corrected, new source_hash). Only this one fib_*.json changed; no artifacts committed.
+Report: [`reviews/btc-4h-fib-20171228-correction-20260615.md`](reviews/btc-4h-fib-20171228-correction-20260615.md).
+This closes the declutter → correction → ledger track.
+
+## [2026-06-15] feat | Single-fib declutter edit-mode (labeling tool)
+
+Added `--edit-fib-id` to `labeling/tool.py`: opens exactly one saved human source fib,
+hides HTF overlays (the main lower-TF clutter), auto-fits the display window to the fib's
+A→B span, and preloads its anchors as active high/low picks for assessment. Read-only on
+load (nothing saved unless `w`); fail-closed on unknown/ambiguous fib-id or wrong
+symbol/timeframe via new `human_fib.find_annotation`. Default behavior unchanged when the
+flag is absent (all new paths gated). Level fidelity verified: pick-derived ladder ==
+stored `ann.levels`. 10 tests (`tests/labeling/test_single_fib_edit_mode.py`); ruff + full
+suite green (371 passed, 75.11% cov). No source labels changed; no new deps. This is the
+tool support for the deferred `fib_BTC-USD_4h_20171228T200000` correction (correction
+itself not done). Target command:
+`python -m fibengine.labeling.tool --symbol BTC/USD --timeframe 4h --edit-fib-id fib_BTC-USD_4h_20171228T200000 --config config/settings.expansion.yaml`.
+
+## [2026-06-15] decision | Milestone — Issue #32 top-3 complete; next track locked
+
+Closing the Issue #32 tooling phase. Top-3 shipped and pushed on `feature/research-fib`:
+`8f1e7a8` static HTML artifact gallery · `d6ab9ec` source-quality review ledger ·
+`84b42db` overlap/dedup detector + anchor-convention doc. local == origin, working tree
+clean, source-fib JSON unchanged, no new dependencies, no artifacts committed.
+
+**Next active track (in order):** (1) single-fib declutter edit-mode in `labeling/tool.py`
+(evaluate-later from #32; motivated by `20171228` deferring on GUI clutter) → (2) isolated
+correction-pass on `fib_BTC-USD_4h_20171228T200000` (still correction-candidate in the
+ledger; anchor_a only, body/close convention) → (3) update ledger row candidate → corrected.
+**Also evaluate-later:** chart-regression strategy (structural/hash vs pytest-mpl,
+binary-baseline / anti-blob question). 1H source labeling remains deferred.
+
+> **2026-06-11→06-12 entries** (1M reaction-review, 1W/1D/4H source phases, 4H Tier 1
+> design/maps), **the 2026-06-15 4H Tier 1/Tier 2 visual-review entries**, **and the
+> 2026-06-15 Issue #32 tooling feats** (gallery / ledger / overlap detector) archived to
+> [post-reset part 1](log-archive-btc-postreset-part1.md).
 
-## [2026-06-04] ingest | Karpathy LLM wiki pattern
-
-Source: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
-
-Takeaway: use a persistent, agent-maintained wiki as a compounding research
-artifact. Raw sources remain the source of truth; wiki pages summarize,
-cross-link, and preserve decisions so future sessions do not re-derive context.
-
-Repo mapping:
-
-- `docs/research_wiki/index.md` is the content map.
-- `docs/research_wiki/log.md` is the chronological trail.
-- Future concept, decision, and review pages should link back to source docs and
-  generated review artifacts.
-
-Guardrail: this is documentation infrastructure only. It does not add auto-fib,
-trading logic, ML behavior, or promotion-path changes.
-
-## [2026-06-04] decision | Expand to full repo wiki
-
-Decision: grow `docs/research_wiki/` from a minimal scaffold into a practical
-repo knowledge base before the project structure grows further.
-
-Added scope:
-
-- glossary
-- core concepts
-- module and data reference pages
-- CLI command reference
-- first decision/source pages
-
-Boundary: still docs-only. No runtime code, automation, promotion-path changes,
-auto-fib, trading signals, or ML behavior.
-
-## [2026-06-04] decision | Adopt atomic artifacts and handoff
-
-Decision: adopt two workflow patterns from the Karpathy gist review as repo
-conventions:
-
-- atomic runnable artifacts for small, complete, bounded research work.
-- agent handoff/log for current context and durable session trail.
-
-Implementation:
-
-- [Atomic runnable artifacts](concepts/atomic-runnable-artifacts.md)
-- [Agent handoff and log](concepts/agent-handoff-log.md)
-- [Current handoff](handoff.md)
-- [Atomic artifact template](templates/atomic-artifact.md)
-- [Handoff entry template](templates/handoff-entry.md)
-
-Boundary: adopt the shape, not the external code. No ML code, auto-tuning,
-runtime behavior, or promotion-path change.
-
-## [2026-06-04] decision | Enforce wiki maintenance rule
-
-Decision: operationalize the Karpathy LLM-wiki pattern with a persistent Cursor
-rule.
-
-Implementation:
-
-- `.cursor/rules/research-wiki-maintenance.mdc`
-
-Effect: future agents should read `index.md`, `log.md`, and `handoff.md` before
-substantial work, then update the smallest relevant wiki pages after meaningful
-research, review, architecture, workflow, or implementation changes.
-
-Boundary: this is agent discipline, not runtime automation. It must not change
-research results, promote behavior, add auto-fib, or turn candidates into facit.
-
-## [2026-06-04] ingest | NVIDIA Qwen3 Coder API
-
-Source: NVIDIA NIM / build.nvidia.com model `qwen/qwen3-coder-480b-a35b-instruct`.
-
-Repo mapping:
-
-- `scripts/nvidia_qwen_smoke.py` — stdlib smoke via `NVIDIA_API_KEY`.
-- [NVIDIA Qwen API](reference/nvidia-qwen-api.md) — setup and guardrails.
-
-Boundary: external assistant only; keys in env only; not fibengine runtime.
-
-## [2026-06-04] verify | NVIDIA API docs + smoke
-
-Source: [infer API](https://docs.api.nvidia.com/nim/reference/qwen-qwen3-coder-480b-a35b-instruct-infer)
-confirms OpenAI-compatible `/v1/chat/completions` on `integrate.api.nvidia.com`.
-
-Effect: smoke verified locally (~28s, streaming). Wiki reference updated with infer
-link and cold-start latency note. Optional diag: `scripts/nvidia_qwen_diag.py`.
-
-## [2026-06-04] doc | Cursor BYOK for Qwen3 Coder
-
-Added [Cursor chat steps](reference/nvidia-qwen-api.md#cursor-chat-byok) for
-`qwen/qwen3-coder-480b-a35b-instruct` via OpenAI override + custom model ID.
-
-## [2026-06-04] maintenance | Repo-aware agent rules (Qwen in Chat)
-
-Source: user request — Qwen should behave as repo-aware coding agent in Chat, not
-memory-only chatbot.
-
-Added:
-
-- `.cursor/rules/repo-aware-coding-agent.mdc` (always apply)
-- `docs/REPO_AWARE_AGENT.md` — Cursor settings, `@` context, User Rules snippet
-- `.github/copilot-instructions.md` — Copilot parity
-- `AGENTS.md` section + link from [nvidia-qwen-api.md](reference/nvidia-qwen-api.md)
-
-Note: BYOK still limits which Cursor modes route to Qwen; rules apply when project
-rules are enabled in Chat.
-
-## [2026-06-04] maintenance | Qwen repo-agent prompts + CLI check
-
-Added `docs/prompts/qwen-chat-starter.md` and `scripts/qwen_repo_agent_check.py`
-(repo excerpt → NVIDIA NIM; expects Inspected/Observed/Assumptions sections). Verified OK locally.
-
-## [2026-06-04] maintenance | Cursor workspace agent shell
-
-Added `docs/CURSOR_WORKSPACE_AGENT.md`, `.cursor/README.md`, `.cursor/commands/repo-agent.md`
-(slash command prefills wiki `@` + repo-aware prompt). AGENTS.md and wiki index updated.
-
-## [2026-06-04] maintenance | Qwen hooks (sessionStart + beforeSubmitPrompt)
-
-`.cursor/hooks.json`: when model contains `qwen`, inject repo-agent context at session
-start and block bare prompts until `/repo-agent` or wiki `@` (see CURSOR_WORKSPACE_AGENT.md).
-
-## [2026-06-04] decision | GLM-5.1 lead + Qwen3-Coder implement
-
-Policy: GLM owns plan/review/approval; Qwen owns scoped implementation. Added
-`docs/MODEL_COLLABORATION.md`, `.cursor/rules/model-collaboration-policy.mdc`,
-`/glm-plan`, `/qwen-implement`, `on_glm_session.py`, updated Qwen hooks, `nvidia_glm_smoke.py`,
-wiki [nvidia-glm-api.md](reference/nvidia-glm-api.md), [model-handoff template](templates/model-handoff.md).
-
-## [2026-06-05] maintenance | Fib-aware review implementation (#15)
-
-Implemented fib-aware rendering in `human_review_level_events.py` and aligned
-`level_event_review_tool.py` titles. Human-fib event JSON path via
-`--human-fib-events`; tests in `test_human_fib_review_rows.py`,
-`test_human_review_sampling.py`, updated `test_human_review_level_events.py`.
-
-Verification: `ruff check` OK; 12 research tests passed.
-
-## [2026-06-05] review | ETH 1d human-fib smoke (#15 gate)
-
-Smoke pack `human_fib_review_20260605T064610Z` from
-`fib_ETH-USD_1d_20170618T000000_events.json` (10/35 events sampled).
-
-Acceptance: H/L anchors, all fib levels, relation vs `*_candidate`, and `fib_id`
-visible on PNG charts. Distilled page:
-[2026-06-05 ETH 1d smoke](reviews/2026-06-05-eth-1d-human-fib-smoke.md).
-
-## [2026-06-05] decision | Tooling spike conclusion (#16)
-
-After smoke: keep Matplotlib PNG + JSON review path; defer Dash/Panel/React/HTML
-until a human reviewer flags pan/zoom as blocker. Spike doc updated with smoke
-outcome. Issue #16 deliverable (recommendation + comparison) was already in
-[FIB_AWARE_TOOLING_SPIKE.md](../../FIB_AWARE_TOOLING_SPIKE.md).
-
-## [2026-06-05] maintenance | GLM delegates to Qwen subagent
-
-Qwen is GLM's implementation subagent, not a manual peer chat by default.
-
-Added/updated:
-
-- `.cursor/agents/qwen-implementer.md` (`model: qwen/qwen3-coder-480b-a35b-instruct`)
-- `.cursor/agents/glm-lead.md` (`model: z-ai/glm-5.1`)
-- `model-collaboration-policy.mdc`, `glm-plan.md`, `on_glm_session.py`, `MODEL_COLLABORATION.md`
-
-Delegate pattern: `Use the qwen-implementer subagent to implement this GLM handoff:` + handoff block.
-
-## [2026-06-05] implement | issue #19 fib-leg direction overlay
-
-Purple H→L / L→H leg arrow on review chart + panel `FIB LEG` section; off-screen
-anchor hints. Layer order: leg → fib levels → event → callout.
-
-## [2026-06-05] implement | issue #18 review chart polish
-
-Follow-up UX: full H/L anchor labels with price on-chart (smart offset), spacier
-review panel sections (H / FIB LEVELS / L / EVENT), more subdued inactive fib
-lines, collision-safer event callout. Smoke `human_fib_review_*` regen.
-
-## [2026-06-05] implement | issue #17 review chart UX
-
-Matplotlib polish in `human_review_level_events` + `level_event_review_tool`:
-ACTIVE badge, subdued inactive fib lines, review panel (fib ladder), split status
-lines, improved event callout, no edge anchor clutter. Smoke pack
-`human_fib_review_20260605T091458Z`.
-
-## [2026-06-05] fix | fib review broken on short 1d cache
-
-Root cause: ETH 1d cache was 1000 bars (from 2023-09-10); human-fib events from
-2017 mapped to bar 0 via nearest-neighbor — fib lines invisible, wrong event candle.
-
-Fix: `timeframe_limits.1d` → 3500, stricter `_bar_index`, resolve `event_bar` from
-ISO timestamp, coverage check in `level_event_review_tool`. Verified pack
-`human_fib_review_20260605T083224Z` (event 2017-08-21 bar 289, fib 346 in range).
-
-## [2026-06-05] feat | fingerprint × outcome join (#22 + #23)
-
-`fibengine.research.fib_fingerprint_outcomes` — joins fingerprint (#23) and
-outcome (#22) layers on `event_id` (1 fingerprint × N horizons). Smoke: maj-BTC
-(1 event, 4 rows). Full batch: 51 joined events, 204 rows, 104 load-skipped
-(pre-2022-10-31). Docs: [FIB_FINGERPRINT_OUTCOMES.md](../FIB_FINGERPRINT_OUTCOMES.md).
-
-## [2026-06-05] config | candle window 2022-10-31 → today
-
-`data.history_start: "2022-10-31"` in settings; fetch paginates from that date;
-`load_candles` trims older bars. `timeframe_limits` resized (1d: 1400, 1w: 220).
-
-## [2026-06-05] feat | fib level interaction fingerprints (#23)
-
-`fibengine.research.fib_level_fingerprints` — deterministic pre/at/post features
-per human-fib event; complements #22. Docs: [FIB_LEVEL_FINGERPRINTS.md](../FIB_LEVEL_FINGERPRINTS.md).
-
-## [2026-06-05] feat | fib candidate outcome backtest (#22)
-
-`fibengine.research.fib_candidate_outcomes` — forward metrics per event×horizon
-from human-fib `*_events.json`; summary by candidate/relation/level/TF. Docs:
-[FIB_CANDIDATE_OUTCOMES.md](../FIB_CANDIDATE_OUTCOMES.md).
-
-## [2026-06-05] feat | fib-context review view (#21)
-
-`window_for_view` / `xlim_for_view` in `human_review_level_events`; interactive
-`level_event_review_tool` defaults to fib-context (full H/L + event overlay), `g`
-toggles event-zoom. PNG export uses fib-context by default. Docs:
-[LEVEL_EVENT_HUMAN_REVIEW.md](../LEVEL_EVENT_HUMAN_REVIEW.md).
-
-## [2026-06-05] doc | VS Code Copilot NVIDIA BYOK
-
-Added [VSCODE_COPILOT_NVIDIA_MODELS.md](../VSCODE_COPILOT_NVIDIA_MODELS.md) and
-summary in `.github/copilot-instructions.md` — Custom Endpoint +
-`chatLanguageModels.json` for `z-ai/glm-5.1` and
-`qwen/qwen3-coder-480b-a35b-instruct` (same NIM API as Cursor).
-
-## [2026-06-05] feat | fingerprint × outcome triage top-list
-
-`fibengine.research.fib_toplist` — read-only exporter over one join run:
-`toplist.csv` (candidate summary ranked per candidate × horizon, `LOW SAMPLE`
-when `n_events` < 5) + `TOPLIST_NOTES.md` (inventory, top-1 preview, Spearman
-fingerprint↔outcome hints, untuned watch/weak/noise buckets). Applied to
-`fp_outcomes_20260605T114206Z`: 148 buckets, **all LOW SAMPLE** (max n=3) — the
-honest triage takeaway is "needs more events", not edge. Descriptive only; no
-signal/strategy/tuning. Docs: [FIB_FINGERPRINT_OUTCOMES.md](../FIB_FINGERPRINT_OUTCOMES.md).
-
-## [2026-06-05] feat | data expansion + multi-run stability triage
-
-`config/settings.expansion.yaml` (history_start 2016-11-05, 1d limit 3500) + new
-`--config` flag on the join CLI widen the candle data scope **without** touching the
-global 2022-10-31 default or any analysis threshold. Expanded run
-`fp_outcomes_20260605T115819Z`: **51 → 1148 events** (204 → 4592 rows), recovering ETH
-2017-2018 (BTC pre-2016 + SOL pre-2022 1d stay skipped, no deep cache). `fib_toplist
---compare-to` adds `sample_inventory.csv` + `MULTIRUN_NOTES.md`: 240 buckets reach n>=5
-(152 >=10, 80 >=20). Key finding: with 22x data **every** baseline fingerprint-vs-mfe
-co-occurrence WEAKENED or sign-flipped — the low-N "watch" signals were artifacts.
-Descriptive triage only; no edge/signal/tuning/candidate-logic change.
-
-## [2026-06-05] review | fib fingerprint × outcome checkpoint
-
-Research checkpoint: #22/#23/join/triage implemented and proven mechanically;
-expanded run (1148 events) found **no stable fingerprint/outcome relationship** and
-prior small-N watch signals were likely artifacts. Not proven: no edge, no stable
-candidate signal, no stable fingerprint, no trading logic. Next: analyze the 80
-buckets at n>=20; if nothing consistent across candidate/level/TF/horizon, mark track
-`working pipeline, no evidence yet`. Page:
-[2026-06-05 checkpoint](reviews/2026-06-05-fib-fingerprint-outcome-checkpoint.md).
-
-## [2026-06-05] review | n>=20 bucket analysis
-
-Descriptive read of the 80 n>=20 buckets (20 candidate×relation×level groups, all 4
-horizons, all 1d). Only consistent structures are **mechanical** (mfe/mae/crossed_back
-grow with horizon length) or **definitional** (close_on_approach_side encodes the
-candidate's at-event side). Raw forward_return tracks sample down-drift, not candidate
-property. 4 single-relation groups (`rejection touch 0.618/1`, `continuation touch
-0.618/0.786`) flagged *worth more data*, not evidence. Verdict: **working pipeline, no
-stable evidence yet**. Page:
-[2026-06-05 n>=20 review](reviews/2026-06-05-fib-n20-bucket-review.md).
-
-## [2026-06-08] maintenance | Close implemented GitHub issues
-
-Closed on GitHub (implementation already in repo): **#15** (fib-aware review),
-**#16** (tooling spike), **#17–#19** (review chart UX/polish/leg overlay),
-**#21** (fib-context view), **#22** (candidate outcomes), **#23** (fingerprints).
-Each close comment links smoke/docs/checkpoint. Remaining open: **#14**, **#25**
-(+ PR #24/#26 if applicable).
-
-## [2026-06-08] decision | Close #14 minimal (facit vs MTF projection)
-
-Updated [HTF_LTF_RESEARCH_ALIGNMENT.md](../HTF_LTF_RESEARCH_ALIGNMENT.md): spår **A**
-(facit chain 1w→1d ✅; 4h/1h `legs[]` + 1d→4h disambiguation deferred) vs spår **B**
-(MTF projection research — 1W→1D/4H, 1D→4H implemented; does not replace 4h facit).
-Closed **#14** on GitHub with decision + links to
-[MTF_FIB_LEVEL_PROJECTION.md](../MTF_FIB_LEVEL_PROJECTION.md) and MTF wiki checkpoints.
-No code or research-logic changes.
-
-## [2026-06-08] doc | Issue #25 tooling recommendation (main, not PR #26)
-
-Added `docs/TOOLING_RECOMMENDATION_REPORT.md` + `TOOLING_RECOMMENDATION_TOOLS.md` —
-issue #25 format (per-tool category, strategy, success-criteria map). Grounded in repo
-(uv/ruff/pytest/pydantic/ccxt/matplotlib/custom research stack). PR #26 noted as separate
-agent/CI supplement. No deps, no adoption. Next: human review → close #25 on GitHub.
-
-## [2026-06-08] implement | Tooling A–F (#25 follow-ups)
-
-- **A** `fibengine.validation` — pandera OHLCV + pydantic `FetchManifest`/`ReviewRow`; validate on `load_candles`.
-- **B** `fibengine.research.ledger_query` + `scripts/query/ledger_row_counts.sql` (DuckDB over JSONL).
-- **C** Split `human_review_level_events` → constants/rows/charts/pack + thin CLI re-exports.
-- **D** mplfinance candles in `human_review_charts` (`--line` fallback kept).
-- **E** `tests/core/test_fib_hypothesis.py` (hypothesis dev dep).
-- **F** `manifest.json` beside CSV on fetch (`fetch.py`).
-Verification: ruff OK; pytest 195 passed, 76% cov.
-
-## [2026-06-08] refactor | Shared mplfinance candles (PNG + interactive)
-
-`human_review_candles.py` — single `draw_review_candles` / `review_mpf_style` for
-PNG (`human_review_charts`) and `level_event_review_tool` (dark theme). Same up/down
-colors; fib overlays unchanged. Tests: `test_human_review_candles.py`.
-
-## [2026-06-08] release | Merge PR #27 to main
-
-Merged `feature/research-spot-check` → `main` (`bd22e87`): tooling A–F, fib/MTF
-research stack, docs/wiki, cursor collaboration, security fixes. Closed superseded
-PRs #20/#24/#26. Local `main` verified: pytest 198 passed.
-
-## [2026-06-08] chore | Close #25; remove scratch scripts
-
-Closed **#25** on GitHub after tooling A–F landed on `feature/research-spot-check`
-(3 commits: feat/docs/chore). Deleted one-off `_scratch_*.py` scripts — findings
-already in wiki reviews (`fib-n20-bucket`, `mtf-clean-forward-n20`, MTF checkpoint).
-Repo bounds tiers raised for `research/*.py` (750 lines).

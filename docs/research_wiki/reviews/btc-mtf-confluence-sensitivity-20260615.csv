@@ -1,0 +1,7 @@
+epsilon_log,method,total_clusters,n_4tf,n_3tf,n_2tf,max_price_span_log,clusters_over_epsilon
+0.0025,single_linkage,173,1,13,159,0.004562,12
+0.0025,fixed_band,144,1,11,132,0.002477,0
+0.005,single_linkage,222,2,24,196,0.016427,30
+0.005,fixed_band,188,1,15,172,0.004711,0
+0.01,single_linkage,266,6,40,220,0.082249,70
+0.01,fixed_band,242,0,28,214,0.009918,0

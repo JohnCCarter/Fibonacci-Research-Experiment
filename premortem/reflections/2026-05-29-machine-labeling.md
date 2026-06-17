@@ -37,5 +37,5 @@ Nästa steg (kräver nät/människa):
   i `labeling.tool` och befordra de rimliga till human.
 - Kör därefter `pivot_recall` + `matrix` och kalibrera `gate_*`.
 
-Uppföljning 2026-05-29 (BTC 1w): se `docs/MACHINE_LABELING.md` och
+Uppföljning 2026-05-29 (BTC 1w): se `docs/labeling/MACHINE_LABELING.md` och
 `2026-05-29-btc-1w-machine-approved.md` — fråga A vs chartfönster (fråga B).

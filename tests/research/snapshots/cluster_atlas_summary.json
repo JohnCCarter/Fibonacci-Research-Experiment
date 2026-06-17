@@ -1,0 +1,32 @@
+{
+  "backdrop_tf": "1d",
+  "clean": "fixed_band/c001/clean.png",
+  "cluster_id": "c001",
+  "epsilon_log": 0.005,
+  "flow": "mtf_confluence_atlas",
+  "levels": "fixed_band/c001/levels.png",
+  "member_count": 4,
+  "member_fib_ids": [
+    "fib_BTC-USD_1M_20210401T000000",
+    "fib_BTC-USD_1d_20210127T000000",
+    "fib_BTC-USD_1w_20210121T000000",
+    "fib_BTC-USD_4h_20210126T200000"
+  ],
+  "method": "fixed_band",
+  "price_max": 30000.0,
+  "price_min": 30000.0,
+  "price_span_log": 0.0,
+  "ratios": [
+    0.0,
+    1.0
+  ],
+  "representative_price": 30000.0,
+  "signature_label": "c001",
+  "tf_count": 4,
+  "timeframes": [
+    "1M",
+    "1w",
+    "1d",
+    "4h"
+  ]
+}

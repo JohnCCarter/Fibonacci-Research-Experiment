@@ -81,6 +81,7 @@ def detect_ltf_level_interactions(
     projected_from_timeframe: str,
     level_cfg: LevelEventConfig | None = None,
     atr_period: int = 14,
+    end_time: str | None = None,
 ) -> tuple[list[dict], str | None]:
     """Find LTF candle interactions with explicit HTF human level prices.
 
@@ -100,6 +101,9 @@ def detect_ltf_level_interactions(
         return [], "leg_end_after_cache"
     scan_start = max(scan_start, 1)  # need a previous bar to read approach side
 
+    end_ts = pd.to_datetime(end_time, utc=True) if end_time else None
+    end_bar = int(df.index.searchsorted(end_ts, side="right")) if end_ts is not None else n
+
     highs = df["high"].to_numpy()
     lows = df["low"].to_numpy()
     closes = df["close"].to_numpy()
@@ -114,7 +118,7 @@ def detect_ltf_level_interactions(
         price = float(lvl["price"])
         gap_count = cfg.debounce_bars  # eligible for the first touch immediately
 
-        for bar in range(scan_start, n):
+        for bar in range(scan_start, end_bar):
             touched = lows[bar] - band[bar] <= price <= highs[bar] + band[bar]
             if not touched:
                 gap_count += 1

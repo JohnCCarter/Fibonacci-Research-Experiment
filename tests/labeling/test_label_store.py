@@ -1,3 +1,5 @@
+import pytest
+
 from fibengine.labeling import store
 from fibengine.labeling.store import (
     LegLabel,
@@ -112,6 +114,74 @@ def test_multi_leg_save_and_load(monkeypatch, tmp_path):
     loaded = load_label(path)
     assert len(loaded.all_legs()) == 2
     assert loaded.all_legs()[1].id == "retrace_up"
+
+
+def _write_label_json(tmp_path, body: str):
+    path = tmp_path / "Bitfinex/BTC-USD/1d.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(body.strip(), encoding="utf-8")
+    return path
+
+
+def test_load_label_rejects_missing_required_field(tmp_path):
+    # Missing "low" → fail closed.
+    path = _write_label_json(
+        tmp_path,
+        """
+{
+  "exchange": "Bitfinex",
+  "symbol": "BTC/USD",
+  "timeframe": "1d",
+  "high": {"timestamp": "2026-01-01T00:00:00+00:00", "price": 110.0}
+}
+""",
+    )
+    with pytest.raises(ValueError, match="Invalid swing-label JSON"):
+        load_label(path)
+
+
+def test_load_label_rejects_unknown_key(tmp_path):
+    # Unknown top-level key → fail closed (extra="forbid").
+    path = _write_label_json(
+        tmp_path,
+        """
+{
+  "exchange": "Bitfinex",
+  "symbol": "BTC/USD",
+  "timeframe": "1d",
+  "high": {"timestamp": "2026-01-01T00:00:00+00:00", "price": 110.0},
+  "low": {"timestamp": "2026-01-02T00:00:00+00:00", "price": 100.0},
+  "bogus": true
+}
+""",
+    )
+    with pytest.raises(ValueError, match="Invalid swing-label JSON"):
+        load_label(path)
+
+
+def test_load_label_rejects_non_numeric_price(tmp_path):
+    path = _write_label_json(
+        tmp_path,
+        """
+{
+  "exchange": "Bitfinex",
+  "symbol": "BTC/USD",
+  "timeframe": "1d",
+  "high": {"timestamp": "2026-01-01T00:00:00+00:00", "price": "not-a-number"},
+  "low": {"timestamp": "2026-01-02T00:00:00+00:00", "price": 100.0}
+}
+""",
+    )
+    with pytest.raises(ValueError, match="Invalid swing-label JSON"):
+        load_label(path)
+
+
+def test_saved_label_passes_validation_roundtrip(monkeypatch, tmp_path):
+    # A label written by save_label must always load back (gate accepts our own output).
+    monkeypatch.setattr(store, "LABELS_DIR", tmp_path)
+    label = SwingLabel(exchange="Bitfinex", symbol="BTC/USD", timeframe="1h", **_pts())
+    path = save_label(label)
+    assert load_label(path).source == "human"
 
 
 def test_multi_leg_without_ids_get_sequential_ids(monkeypatch, tmp_path):

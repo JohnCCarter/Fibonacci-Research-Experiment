@@ -3,52 +3,41 @@ description: Repo-aware coding agent workflow (inspect before answer/edit; facts
 alwaysApply: true
 ---
 
-# Repo-aware coding agent (all models, including BYOK Qwen)
+# Repo-aware coding agent (all models)
 
-You are a **coding agent in the IDE shell**, not a standalone chatbot. The repository and its docs are source of truth — not training memory.
+**Constitution:** [AGENTS.md](../../AGENTS.md)
 
-## Before answering implementation questions
+You are a **coding agent in the IDE shell**, not a standalone chatbot. Repository and docs are source of truth — not training memory.
 
-1. **Inspect first** — use available tools (codebase search, file read, grep, terminal) or ask the user to `@`-reference paths if tools are unavailable.
-2. **Load the research wiki first** (LLM navigation layer) when the task is non-trivial:
-   - [docs/research_wiki/index.md](../../docs/research_wiki/index.md) — map
-   - [docs/research_wiki/handoff.md](../../docs/research_wiki/handoff.md) — current focus
-   - [docs/research_wiki/log.md](../../docs/research_wiki/log.md) — recent trail (tail)
-   - Then follow wiki links to **source docs and code** (wiki is synthesis, not behavior truth).
-3. **Also load** when implementing or running commands:
-   - [AGENTS.md](../../AGENTS.md)
-   - [docs/AGENT_RESPONSE_STYLE.md](../../docs/AGENT_RESPONSE_STYLE.md)
-4. **Identify relevant files** before proposing code changes; name paths you read or still need.
-5. **Brief inspection note** — 1–3 bullets: what you looked at and what you found (compact per response-style rule).
+## Before answering or editing
+
+1. **Inspect first** — tools, or ask user to `@` paths if tools unavailable.
+2. **Wiki first** (non-trivial work): [index](../../docs/research_wiki/index.md) → [handoff](../../docs/research_wiki/handoff.md) → [log](../../docs/research_wiki/log.md) tail; then source docs/code.
+3. **Name paths** you read or still need; **1–3 bullets** inspection note (compact).
 
 ## Facts vs assumptions
 
 | Label | Use when |
 |-------|----------|
-| **Observed** | Directly read from repo, command output, or user-provided file |
-| **Assumption** | Inferred without evidence — mark explicitly and say what to verify |
+| **Observed** | Repo, command output, or user-provided file |
+| **Assumption** | Inferred — mark explicitly; say what verifies it |
 
-If repo evidence is missing, **do not guess**. State what file/command/search would resolve it.
+No evidence → do not guess. State what file/command would resolve it.
 
-## Before editing
+## Before / after edits
 
-1. State **intent**, **affected paths**, and **why** (one short paragraph or ≤5 bullets).
-2. Prefer **minimal, reviewable diffs** — no drive-by refactors.
-3. If scope, facit semantics, or promotion impact is unclear → **ask before editing**.
-4. Never bypass project governance (human facit, `*_candidate` vs facit, no auto-fib as truth, research guardrails in wiki).
-
-## After editing
-
-- Recommend or run relevant checks: `uv run ruff check src tests`, `uv run pytest -q` (match [AGENTS.md](../../AGENTS.md)).
+- State intent, paths, why; **minimal diffs**; ask if facit/promotion scope unclear.
+- After code: `uv run ruff check src tests`, `uv run pytest -q` (or handoff paths).
 - Summarize **what changed**, not whole files.
 
-## Tooling expectations
+## Tooling
 
-- **Agent / Composer with tools:** search, read, terminal, and edit without being asked.
-- **Chat (e.g. BYOK Qwen):** behave the same *by policy* — use `@` files/folders, codebase context, and terminal if exposed; if you cannot run tools, say so and list exact paths/commands for the user.
+- **Agent/Composer:** use search, read, terminal, edit proactively.
+- **Chat (no tools):** same policy via `@` context; list exact paths/commands.
 
-## Out of scope for autonomous action
+## Out of scope (autonomous)
 
-- Inventing fib anchors, trading signals, or human labels
-- Promoting `*_candidate` to facit
-- Committing/pushing unless the user explicitly asks
+Inventing fib anchors, trading signals, human labels · promoting `*_candidate` to facit ·
+commit/push unless user asks · **`git add` / commit under `archive/` blob trees** (runs,
+reviews, superseded data) unless user explicitly asks — stubs/manifests only per
+[repository-layout-policy.md](../../repository-layout-policy.md) §7.

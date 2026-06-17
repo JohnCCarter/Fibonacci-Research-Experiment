@@ -1,12 +1,14 @@
 # experiments/results
 
-Append-only resultatfiler (`*.jsonl`) från körningar.
+Append-only `*.jsonl` ledgers from runner CLIs.
 
-## Filer
+**Reset 2026-06-08:** All pre-BTC-monthly ledgers moved to
+`archive/research_superseded/2026-06-08_pre_btc_monthly_reset/experiments/results/`.
 
-- `pivot_recall.jsonl` pivot-kvalitet mot labels.
-- `backtests.jsonl` stabilitetsresultat (Lager A).
-- `trade_backtests.jsonl` trade-resultat (Lager B).
-- `backtest_matrix.jsonl` stabilitet över symbol/timeframe-matris.
-- `trade_matrix.jsonl` trade-matris över symbol/timeframe.
-- `leaderboard.jsonl` sammanfattning av experimentkörningar.
+New runs append here under the [BTC-first protocol](../../docs/BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md).
+
+Expected files (when runners are used again):
+
+- `fib_level_fingerprints.jsonl`, `fib_candidate_outcomes.jsonl`, `fib_fingerprint_outcomes.jsonl`
+- `mtf_fib_level_projection.jsonl` (BTC-only when invoked)
+- Validate track: `pivot_recall.jsonl`, `backtests.jsonl`, etc.

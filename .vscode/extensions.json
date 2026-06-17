@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "anthropic.claude-code",
+        "openai.chatgpt",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "ms-vscode.powershell",
+        "esbenp.prettier-vscode",
+        "ms-python.python",
+        "ms-python.debugpy",
+        "ms-python.vscode-python-envs",
+        "ms-vscode.vscode-websearchforcopilot",
+        "adamraichu.zip-viewer"
+    ]
+}

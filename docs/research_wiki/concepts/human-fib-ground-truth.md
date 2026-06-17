@@ -40,7 +40,7 @@ then scans bars after the drawn leg and emits `*_candidate` events.
 
 ## Source Links
 
-- [Human fib annotation](../../HUMAN_FIB_ANNOTATION.md)
-- [Level event human review](../../LEVEL_EVENT_HUMAN_REVIEW.md)
+- [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)
+- [Level event human review](../../research/LEVEL_EVENT_HUMAN_REVIEW.md)
 - [human_fib.py](../../../src/fibengine/labeling/human_fib.py)
 - [human_fib_events.py](../../../src/fibengine/labeling/human_fib_events.py)

@@ -5,8 +5,8 @@ alwaysApply: true
 
 # Response style (repo default)
 
-Follow [docs/AGENT_RESPONSE_STYLE.md](../../docs/AGENT_RESPONSE_STYLE.md).
+Part of [AGENTS.md](../../AGENTS.md) §3. Full spec: [AGENT_RESPONSE_STYLE.md](../../docs/agent/AGENT_RESPONSE_STYLE.md).
 
 **Default:** short answers; no long reports; diff/summary not full files; ≤10 bullets; status = blockers + next step only.
 
-**Expand** only if the user asks (e.g. "förklara mer", "det är ok att förklara", "full rapport") or a deep answer is required for correctness/safety.
+**Expand** only if user opts in (e.g. "förklara mer", "full rapport") or correctness/safety requires detail.

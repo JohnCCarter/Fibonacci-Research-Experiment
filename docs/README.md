@@ -1,23 +1,27 @@
 # docs
 
-Djupare styrning och ramverk utöver snabbstart.
+Long-lived documentation. Start here, then open a category folder.
 
-- `AGENT_RESPONSE_STYLE.md` — **agent-svar:** kort som standard; utökad förklaring först när användaren säger ok / ber om mer
-- `TRACKS.md` — officiell 3-spårsmodell:
-  - Research / Experiment
-  - Validate
-  - Promotion
-- `FIB_BACKTEST_PLAN.md` — backtest-roadmap (faser, status, kommandon, promotion gate)
-- `MTF_DAILY_RESEARCH.md` — **MTF-ursprung (läs först):** samma H/L på 1w vs 1d → fler nivåträffar på daily; weekly = VAD, daily = HUR
-- `HTF_LTF_RESEARCH_ALIGNMENT.md` — top-down fib: 1w → 1d → 4h → 1h (research protocol)
-- `CONTRIBUTING.md` — lint, test, pre-commit, CI före commit/push
-- `MACHINE_LABELING.md` — maskin-kandidater: motor-swing vs chartfönster (båda giltiga)
-- `LABELING_TOOL.md` — labeling GUI: begränsningar, redraw, säkra UI-ändringar
-- `HUMAN_FIB_ANNOTATION.md` — **manuell fib som ground truth** (`w` / CLI): nivå-beräkning, candle-interaktion (`above/below/touch/cross`), och behavior-candidates (`human_fib_events`: `rejection/continuation/failure/reaction`); ingen auto-fib
-- `TOOLING_RECOMMENDATION_REPORT.md` — read-only verktygsstrategi (issue #25); tabeller i `TOOLING_RECOMMENDATION_TOOLS.md`
-- `research_wiki/` — persistent research-wiki: index, logg, koncept, beslut och review-insikter
+## Entry points
 
-## Aktiva label-ytor
+| Doc | Purpose |
+|-----|---------|
+| [../CLAUDE.md](../CLAUDE.md) | **Claude:** kort repo-orientering + token-budget (läs `AGENTS.md` först) |
+| [TRACKS.md](TRACKS.md) | Research / Validate / Promotion separation |
+| [BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md](BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md) | Aktiv research: BTC, 1M→1w→1d→… |
 
-- Swing-facit (aktiv): `data/labels/bitfinex/`
-- Human-fib ground truth (aktiv): `data/labels/human_fib/bitfinex/`
+## Categories
+
+| Folder | Contents |
+|--------|----------|
+| [agent/](agent/) | **Constitution** → [AGENTS.md](../AGENTS.md); [AGENT_RESPONSE_STYLE.md](agent/AGENT_RESPONSE_STYLE.md) response style |
+| [labeling/](labeling/) | Human fib, machine labels, GUI, behavior facit |
+| [research/](research/) | MTF, level events, fib pipelines, handoff |
+| [validate/](validate/) | Backtest plan, Genesis/Bitfinex validate |
+| [tooling/](tooling/) | Tooling recommendation report (#25) |
+| [research_wiki/](research_wiki/) | LLM-maintained wiki (index, log, handoff, reviews) |
+
+## Active label surfaces
+
+- Swing facit: `data/labels/bitfinex/`
+- Human-fib ground truth: `data/labels/human_fib/bitfinex/`

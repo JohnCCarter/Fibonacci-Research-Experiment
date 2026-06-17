@@ -1,4 +1,13 @@
+---
+status: historical
+superseded_by: 2026-06-15-btc-monthly-first-reset
+---
+
 # 2026-06-02 — MTF-ursprung: samma H/L på 1w och 1d
+
+> **Historical (superseded):** mixed-symbol/pre-monthly-spåret arkiverades vid BTC monthly-first-
+> reseten 2026-06-08. Behåll som kontext, **ej aktuell evidens** — se
+> [2026-06-15 reset](2026-06-15-btc-monthly-first-reset.md).
 
 **Typ:** finding (chart observation)  
 **Taggar:** MTF, 1w, 1d, labeling, fib, origin
@@ -24,8 +33,8 @@
 
 ## Beslut
 
-1. Dokumentera ursprunget som **§0** i [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md) och i [RESEARCH_HANDOFF.md](../../docs/RESEARCH_HANDOFF.md).
-2. Hålla fast vid **weekly = VAD**, **daily = HUR** i all facit-design (se även [HTF_LTF_RESEARCH_ALIGNMENT.md](../../docs/HTF_LTF_RESEARCH_ALIGNMENT.md)).
+1. Dokumentera ursprunget som **§0** i [MTF_DAILY_RESEARCH.md](../../docs/research/MTF_DAILY_RESEARCH.md) och i [RESEARCH_HANDOFF.md](../../docs/research/RESEARCH_HANDOFF.md).
+2. Hålla fast vid **weekly = VAD**, **daily = HUR** i all facit-design (se även [HTF_LTF_RESEARCH_ALIGNMENT.md](../../docs/research/HTF_LTF_RESEARCH_ALIGNMENT.md)).
 3. Räkna inte `experiment` (en motor-swing vs leg_1) som validering av denna insikt.
 
 ## Nästa steg
@@ -35,5 +44,5 @@
 
 ## Referenser
 
-- [MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md) §0
+- [MTF_DAILY_RESEARCH.md](../../docs/research/MTF_DAILY_RESEARCH.md) §0
 - [2026-05-29-mtf-daily-fib-research](2026-05-29-mtf-daily-fib-research.md) — multi-leg, overwrite-fix, teknisk uppföljning

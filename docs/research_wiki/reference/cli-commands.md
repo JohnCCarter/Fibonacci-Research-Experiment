@@ -38,15 +38,6 @@ uv run python -m fibengine.labeling.human_fib --show <annotation.json>
 uv run python -m fibengine.labeling.human_fib_events --fib <fib_id>.json
 ```
 
-## External model (optional)
-
-```bash
-# PowerShell: $env:NVIDIA_API_KEY = "nvapi-..."
-uv run python scripts/nvidia_qwen_smoke.py
-```
-
-See [nvidia-qwen-api.md](nvidia-qwen-api.md).
-
 ## Review
 
 ```bash
@@ -59,6 +50,5 @@ uv run python -m fibengine.research.level_event_review_tool \
 
 ## Source Links
 
-- [Contributing](../../CONTRIBUTING.md)
-- [Level event human review](../../LEVEL_EVENT_HUMAN_REVIEW.md)
-- [Human fib annotation](../../HUMAN_FIB_ANNOTATION.md)
+- [Level event human review](../../research/LEVEL_EVENT_HUMAN_REVIEW.md)
+- [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)

@@ -32,7 +32,7 @@
 | Fraktal MTF (olika veckor â†’ 1d per endpoint) | `mtf_disambiguation.py` |
 | Daily touch/rejection-scan | `mtf_leg_research.py`, `scripts/mtf_leg_daily_fib.py` |
 | Multi-leg save (`p`, auto-append pÃ¥ `s`) | `store.py` (`LegLabel`), `tool.py` |
-| Dokumentation | `docs/MTF_DAILY_RESEARCH.md`, `LABELING_TOOL.md` Â§3Aâ€“3D, Â§5B |
+| Dokumentation | `docs/research/MTF_DAILY_RESEARCH.md`, `LABELING_TOOL.md` Â§3Aâ€“3D, Â§5B |
 
 ## Golden set
 
@@ -51,5 +51,5 @@
 - Motor eller experiment som lÃ¤ser `legs[]` eller behavior-JSON.
 - `role` / `note` per leg i labeling tool.
 
-**Djupare guide:** [docs/MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md)
+**Djupare guide:** [docs/research/MTF_DAILY_RESEARCH.md](../../docs/research/MTF_DAILY_RESEARCH.md)
 

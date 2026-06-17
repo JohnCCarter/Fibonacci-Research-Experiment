@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from fibengine.core.config import REPO_ROOT
+from fibengine.validation.schemas import validate_label_payload
 
 LABELS_DIR = REPO_ROOT / "data" / "labels"
 _LABELS_DIR_OVERRIDE: Path | None = None
@@ -201,6 +202,7 @@ def find_label(exchange: str, symbol: str, timeframe: str) -> SwingLabel | None:
 
 def load_label(path: str | Path) -> SwingLabel:
     data = json.loads(Path(path).read_text())
+    validate_label_payload(data, source_path=path)
     legs_raw = data.get("legs")
     if legs_raw:
         legs = [LegLabel(**leg) for leg in legs_raw]

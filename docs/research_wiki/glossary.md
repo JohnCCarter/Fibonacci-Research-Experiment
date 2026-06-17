@@ -15,7 +15,10 @@ details.
 - **Fib level** — a derived price at a ratio such as `0.382`, `0.5`, or `0.618`.
 - **HUR** — how price behaves around a fib range at a lower timeframe, especially
   daily candles after a weekly range is selected.
-- **Handoff** — current working context for future agents and humans.
+- **Handoff** — current working context for future agents and humans
+  ([handoff.md](handoff.md)).
+- **Agent constitution** — [AGENTS.md](../../AGENTS.md): duties, guardrails, and
+  source authority. Cursor enforcement in `.cursor/rules`.
 - **Human fib** — manually drawn anchors plus derived levels saved under
   `data/labels/human_fib/`.
 - **Layer A** — swing selection and fib research, the core project surface.
@@ -29,7 +32,7 @@ details.
 
 ## Source Links
 
-- [Research handoff](../RESEARCH_HANDOFF.md)
-- [Human fib annotation](../HUMAN_FIB_ANNOTATION.md)
-- [Level events](../LEVEL_EVENTS.md)
+- [Research handoff](../research/RESEARCH_HANDOFF.md)
+- [Human fib annotation](../labeling/HUMAN_FIB_ANNOTATION.md)
+- [Level events](../research/LEVEL_EVENTS.md)
 - [Repo tracks](../TRACKS.md)

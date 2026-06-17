@@ -58,7 +58,7 @@ En enda etikett per nivå raderar denna information.
 
 ## Scope realignment (2026-05-31, issue #12)
 
-Tmp manuell JSON (Drift A) lärde `events[]`; **plan:** maskin → spot-check 20–40 ([#12](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/12), [RESEARCH_HANDOFF](../../docs/RESEARCH_HANDOFF.md)).
+Tmp manuell JSON (Drift A) lärde `events[]`; **plan:** maskin → spot-check 20–40 ([#12](https://github.com/JohnCCarter/Fibonacci-Research-Experiment/issues/12), [RESEARCH_HANDOFF](../../docs/research/RESEARCH_HANDOFF.md)).
 
 ## Öppet (medvetet ej gjort)
 
@@ -70,6 +70,6 @@ Tmp manuell JSON (Drift A) lärde `events[]`; **plan:** maskin → spot-check 20
 
 ## Referenser
 
-- [docs/BEHAVIOR_FACIT.md](../../docs/BEHAVIOR_FACIT.md) — schema v3
-- [docs/MTF_DAILY_RESEARCH.md](../../docs/MTF_DAILY_RESEARCH.md) — Weekly VAD / daily HUR
+- [docs/labeling/BEHAVIOR_FACIT.md](../../docs/labeling/BEHAVIOR_FACIT.md) — schema v3
+- [docs/research/MTF_DAILY_RESEARCH.md](../../docs/research/MTF_DAILY_RESEARCH.md) — Weekly VAD / daily HUR
 - [2026-05-29-mtf-daily-fib-research.md](2026-05-29-mtf-daily-fib-research.md) — multi-leg, tmp

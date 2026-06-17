@@ -1,67 +1,110 @@
-﻿# AGENTS.md
+# CONSTITUTION FOR AGENTS
 
-## Response style (read first)
+This file is the **canonical constitution** for every automated agent that works
+in this repository (Cursor, Copilot, Cloud Agents). It defines **duties,
+guardrails, and the source-authority model**.
 
-**Default: compact.** Short answers; no long reports; show what changed (not whole files); max **10** bullets; status updates = **blockers + next step** only.
-
-**Expand** when the user opts in (e.g. “förklara mer”, “det är ok att förklara”, “full rapport”) or when safety/correctness requires detail.
-
-Full spec: [docs/AGENT_RESPONSE_STYLE.md](docs/AGENT_RESPONSE_STYLE.md) · Cursor rule: `.cursor/rules/agent-response-style.mdc`
-
-## Repo-aware agent (all models, including BYOK Qwen in Chat)
-
-**Policy:** Inspect the repo before implementation answers; separate facts from assumptions; minimal diffs; ask before edit when scope is unclear. Not a memory-only chatbot.
-
-- Rule: `.cursor/rules/repo-aware-coding-agent.mdc` (`alwaysApply: true`)
-- **Model collaboration (GLM lead + Qwen implement):** [docs/MODEL_COLLABORATION.md](docs/MODEL_COLLABORATION.md) · `/glm-plan` · `/qwen-implement`
-- **Cursor workspace setup:** [docs/CURSOR_WORKSPACE_AGENT.md](docs/CURSOR_WORKSPACE_AGENT.md) · [.cursor/README.md](.cursor/README.md)
-- Research context: `docs/research_wiki/index.md`, `handoff.md`
+Wiki maintenance discipline lives in
+[`.cursor/rules/research-wiki-maintenance.mdc`](.cursor/rules/research-wiki-maintenance.mdc);
+source authority lives in
+[`docs/research_wiki/reference/source-authority.md`](docs/research_wiki/reference/source-authority.md).
 
 ---
 
-## Cursor Cloud specific instructions
+## 1. Duties of every agent
 
-### Product
+| Duty | Requirement |
+|------|-------------|
+| **Inspect first** | Read relevant code, docs, wiki (`handoff.md`, `log.md`) before answers or edits |
+| **Facts vs assumptions** | Label **Observed** (repo/output) vs **Assumption**; do not guess missing behavior |
+| **Minimal diffs** | Smallest correct change; no drive-by refactors |
+| **Ask before scope creep** | Unclear facit, promotion, or research impact → stop and ask |
+| **Response style** | Compact by default — [AGENT_RESPONSE_STYLE.md](docs/agent/AGENT_RESPONSE_STYLE.md) |
+| **Verify** | After code changes: `uv run ruff check src tests` and `uv run pytest -q` |
 
-**fibengine** is a Python research engine for human-like Fibonacci swing selection (Layer A). There is no web server or databaseâ€”workflows are CLI modules (`experiment`, `backtest`, `labeling`) plus an optional Matplotlib labeling GUI.
+Enforcement: [`.cursor/rules/`](.cursor/rules/) (`alwaysApply`).
 
-### Dependencies (automatic on VM startup)
+---
 
-The update script runs `uv sync --extra dev`, which creates/updates `.venv` from `pyproject.toml` / `uv.lock`. Python **3.11+** is required (CI and local use 3.12).
+## 2. Source authority (how to treat evidence)
 
-### Lint / test / build (match CI)
+The wiki (`docs/research_wiki/`) is **navigation and synthesis**, never truth.
+When the wiki and a source layer disagree, the **source wins** — fix the wiki or
+flag the conflict. Full model:
+[source-authority.md](docs/research_wiki/reference/source-authority.md).
 
-From repo root:
+| Rule | Meaning |
+|------|---------|
+| Human fib = **facit** | Manual anchors/levels/events are ground truth |
+| `*_candidate` ≠ facit | Machine suggestions stay candidates until human promotion |
+| Wiki = navigation | `docs/research_wiki/` synthesizes; **source code and docs** are behavior truth |
+| Source authority | When wiki and source evidence disagree, **source wins** — fix or flag the wiki |
+| Local config ≠ truth | `.claude/`, `.env`, caches, `data/raw/`, temp charts/logs are local-only — never wiki memory or source truth |
+| No auto-fib as truth | Do not promote automated fib selection to facit |
+| No trading signals | Research engine only — no signal/edge claims in agent output |
+| Tracks | Research → Validate → Promotion — see [TRACKS.md](docs/TRACKS.md) |
+| Archive blobs | Local disk only; git tracks `archive/` stubs and `MANIFEST.md` — **never commit archive data unless the user explicitly asks** ([repository-layout-policy.md](repository-layout-policy.md) §7) |
+
+---
+
+## 3. Wiki maintenance (prevent stale memory)
+
+After meaningful research/labeling/review work: update the smallest relevant page
+under `docs/research_wiki/`, link it from `index.md`, append one `log.md` entry,
+and update `handoff.md` if focus/next-action/blockers changed. Skip for trivial
+Q&A or mechanical changes. Rule:
+[research-wiki-maintenance.mdc](.cursor/rules/research-wiki-maintenance.mdc).
+
+The repo-bound contract is enforced by
+[`scripts/check_repo_bounds.py`](scripts/check_repo_bounds.py) (file-size limits,
+required wiki/schema files exist, no local/private artifact tracked) — run in CI.
+
+---
+
+## 4. Navigation map
+
+| Need | Go to |
+|------|--------|
+| **Claude quick start** | [CLAUDE.md](CLAUDE.md) — orientation + `.rgignore` token budget |
+| Current focus / next step | [research_wiki/handoff.md](docs/research_wiki/handoff.md) |
+| Source authority | [research_wiki/reference/source-authority.md](docs/research_wiki/reference/source-authority.md) |
+| Doc categories | [docs/README.md](docs/README.md) |
+| Response style | [docs/agent/AGENT_RESPONSE_STYLE.md](docs/agent/AGENT_RESPONSE_STYLE.md) |
+
+---
+
+## Appendix A — Product and quality gate (all agents)
+
+**fibengine** is a Python research engine for human-like Fibonacci swing selection
+(Layer A). CLI workflows (`experiment`, `backtest`, `labeling`) plus optional Matplotlib
+labeling GUI. No web server or database.
+
+From repo root (match CI):
 
 ```bash
+uv run python scripts/check_repo_bounds.py
 uv run ruff check src tests
 uv run ruff format --check src tests
 uv run pytest -q
 uv build
 ```
 
-Optional local gate (same hooks as documented in README): `uv run pre-commit run --all-files`.
+Optional: `uv run pre-commit run --all-files` · Python **3.11+** via `uv sync --extra dev`.
 
-### Running the main pipeline (hello-world)
+**Hello-world pipeline**
 
-1. **Candles** — `uv run python -m fibengine.data.fetch` caches OHLCV under `data/raw/` (gitignored). Cache is not auto-refreshed; use `--refresh`. Labeling set: `uv run python -m fibengine.data.fetch --labeling-set --refresh`. Needs outbound HTTPS to Bitfinex via CCXT. If the API is blocked in the VM, either request egress for `api.Bitfinex.com` or populate `data/raw/` manually before running pipelines that call `load_candles()`.
-2. **Experiment** â€” `uv run python -m fibengine.experiment` runs swing selection for all human labels in `data/labels/`, writes plots and `metrics.json` under `experiments/runs/experiment/<date>/<run_id>/`, and appends to `experiments/results/leaderboard.jsonl`.
-3. **Labeling worklist** â€” `uv run python -m fibengine.labeling.worklist` (no network).
-4. **Interactive labeler** â€” `uv run python -m fibengine.labeling.tool` needs a display/GUI backend (not typical in headless cloud VMs).
+1. `uv run python -m fibengine.data.fetch` — cache OHLCV under `data/raw/` (`--refresh` for updates)
+2. `uv run python -m fibengine.experiment` — swing selection vs `data/labels/`
+3. `uv run python -m fibengine.labeling.worklist` — worklist (no network)
+4. `uv run python -m fibengine.labeling.tool` — GUI (needs display)
 
-### Services
+**Gotchas:** `load_candles(..., fetch_if_missing=True)` fetches only when cache is missing;
+coverage gate **60%** (`pyproject.toml`); long TF limits in `config/settings.yaml`.
 
-| Component | Required for | Notes |
-|-----------|----------------|-------|
-| `.venv` via `uv sync` | Everything | No Docker Compose in repo |
-| `pytest` | CI / dev | Uses synthetic fixtures; no network |
-| Bitfinex (CCXT) | Live fetch / fresh caches | Optional if `data/raw/` already populated |
-| Matplotlib GUI | `labeling.tool` | Optional |
+---
 
-### Gotchas
+## Appendix B — Cloud VM
 
-- `load_candles(..., fetch_if_missing=True)` only fetches when cache is missing (never refreshes). Re-run `fibengine.data.fetch --refresh` for up-to-date bars.
-- `load_candles(..., fetch_if_missing=True)` failures look like CCXT `NetworkError` / SSL errors if egress is blocked.
-- Long timeframes use higher `timeframe_limits` in `config/settings.yaml`; labels can be `out_of_window` if history is too short (see experiment logs).
-- Coverage gate is **60%** via pytest `addopts` in `pyproject.toml`; `labeling/tool.py` is omitted from coverage.
-
+Cloud startup runs `uv sync --extra dev`. Bitfinex egress may be blocked — populate
+`data/raw/` manually or allow `api.bitfinex.com`. Headless VMs typically skip the
+`labeling.tool` GUI.

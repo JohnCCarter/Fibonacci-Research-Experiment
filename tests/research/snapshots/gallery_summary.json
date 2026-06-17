@@ -1,0 +1,21 @@
+{
+  "flow": "artifact_gallery",
+  "groups": [
+    {
+      "items": [
+        {
+          "images": {
+            "clean": "2017_h2/fib_BTC-USD_4h_20171228T200000/4h_clean.png",
+            "levels": "2017_h2/fib_BTC-USD_4h_20171228T200000/4h_levels.png"
+          },
+          "kinds": [
+            "clean",
+            "levels"
+          ],
+          "label": "fib_BTC-USD_4h_20171228T200000"
+        }
+      ],
+      "label": "2017_h2"
+    }
+  ]
+}

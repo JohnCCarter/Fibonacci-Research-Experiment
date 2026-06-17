@@ -8,7 +8,11 @@ Aktiva experimentytor och versionerade sammanställningar.
 - `runs/` aktiv yta för framtida per-körning audit-mappar + `INDEX.md`.
 - `label_review/` versionerade label-checkpoints (`batches/`, `packs/`).
 
-Historiska audit-mappar och review-exporter ligger i `archive/experiments/`.
+**Reset 2026-06-08:** Pre-BTC-monthly generated outputs moved to
+`archive/research_superseded/2026-06-08_pre_btc_monthly_reset/`.
+Older May 2026 material remains in `archive/experiments/`.
+
+Active protocol: [docs/BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md](../docs/BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md).
 
 Se även `repository-layout-policy.md` §5 och §10 för vad som ska sparas/städas.
 

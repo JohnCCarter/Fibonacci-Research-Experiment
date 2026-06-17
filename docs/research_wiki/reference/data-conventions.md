@@ -19,8 +19,9 @@ data/labels/human_fib/{exchange}/{symbol}/{timeframe}/{fib_id}_events.json
 data/labels/human_fib/{exchange}/{symbol}/{timeframe}/{fib_id}_interactions.csv
 ```
 
-The annotation JSON stores anchors and levels. The events JSON stores
-`*_candidate` streams. The interactions CSV stores per-candle raw relations.
+The annotation JSON stores anchors and levels (versioned facit). The events
+JSON and interactions CSV are regenerable (`human_fib_events` / `--classify`) and
+are gitignored under `data/labels/human_fib/`.
 
 ## Research Behavior Facit
 
@@ -42,9 +43,24 @@ experiments/review/fib_level_events/{run_id}/
 Review packs contain `review_sample.csv`, `review_sample.jsonl`,
 `REVIEW_INDEX.md`, and chart PNGs.
 
+## Superseded research archive
+
+```text
+archive/research_superseded/{reset_id}/
+```
+
+Pre-reset experiments, labels, caches, and review packs live here **on disk**.
+Git tracks only each reset's `MANIFEST.md` (see `archive/INDEX.md`).
+
+Legacy May 2026 runs under `archive/experiments/` follow the same rule: local
+blobs only; `README.md` / `INDEX.md` stubs stay in git.
+
+**Agent rule:** do not commit archive blobs unless the user explicitly asks —
+[repository-layout-policy.md](../../../repository-layout-policy.md) §7.
+
 ## Source Links
 
-- [Human fib annotation](../../HUMAN_FIB_ANNOTATION.md)
-- [Behavior facit](../../BEHAVIOR_FACIT.md)
-- [Level event human review](../../LEVEL_EVENT_HUMAN_REVIEW.md)
+- [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)
+- [Behavior facit](../../labeling/BEHAVIOR_FACIT.md)
+- [Level event human review](../../research/LEVEL_EVENT_HUMAN_REVIEW.md)
 - [data labels README](../../../data/labels/README.md)

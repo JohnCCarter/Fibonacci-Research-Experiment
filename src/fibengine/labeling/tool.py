@@ -3,6 +3,9 @@
 Run:
     uv run python -m fibengine.labeling.tool
     uv run python -m fibengine.labeling.tool --symbols BTC/USD,ETH/USD --timeframes 1h,1w
+    # single-fib declutter mode (open one saved human fib, HTF overlays hidden):
+    uv run python -m fibengine.labeling.tool --symbol BTC/USD --timeframe 4h \
+        --edit-fib-id fib_BTC-USD_4h_20171228T200000 --config config/settings.expansion.yaml
 
 Controls:
 - Click sets the active point. It snaps to the nearest bar high/low.
@@ -11,7 +14,7 @@ Controls:
 - h / l: next click sets high / low
 - u/backspace: undo latest high/low edit
 - r: clear current picks
-- f: toggle fib levels
+- f: toggle fib levels (includes read-only HTF human-fib overlays on lower TFs)
 - g: toggle high-low range shading
 - w: write active fib as a human ground-truth annotation (data/labels/human_fib/...)
 - s: save label (all legs) for the active symbol/timeframe
@@ -28,7 +31,7 @@ Controls:
 Tips:
 - Matplotlib toolbar: pan/zoom; view persists across redraw until z (reset) or market change.
 
-Hover: crosshair price (mouse Y) + bar OHLC readout. See docs/LABELING_TOOL.md
+Hover: crosshair price (mouse Y) + bar OHLC readout. See docs/labeling/LABELING_TOOL.md
 """
 
 from __future__ import annotations
@@ -38,14 +41,16 @@ from dataclasses import dataclass, field
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib.patches import Rectangle
 
 from fibengine.core.config import DataConfig, Settings, load_settings
 from fibengine.core.fib import fib_from_prices
 from fibengine.data.loader import load_candles
 from fibengine.labeling.hover import HoverReadout
+from fibengine.labeling.htf_fib_overlay import draw_htf_overlays, load_htf_overlays
 from fibengine.labeling.human_fib import (
+    HumanFibAnnotation,
     anchors_from_picks,
+    find_annotation,
     make_annotation,
     save_annotation,
 )
@@ -63,8 +68,9 @@ from fibengine.labeling.store import (
     save_label,
     set_labels_dir,
 )
+from fibengine.research.human_review_candles import draw_review_candles
 
-DEFAULT_FIB_LEVELS = [0.236, 0.382, 0.5, 0.618, 0.786]
+DEFAULT_FIB_LEVELS = [0.0, 0.382, 0.5, 0.618, 0.786, 1.0]
 LEG_FIB_COLORS = ["#6ea8ff", "#ffb86b", "#bd93f9", "#8be9fd", "#ff79c6"]
 LEG_MARKER_ALPHA_INACTIVE = 0.45
 DEFAULT_LABEL_TIMEFRAMES = ["15m", "30m", "1h", "4h", "daily", "weekly", "monthly"]
@@ -190,14 +196,15 @@ def _cycle(values: list[str], current: str, delta: int) -> str:
 def _fib_prices_from_picks(
     picks: dict[str, tuple[int, float]],
     levels: list[float],
+    scale_mode: str = "log",
 ) -> dict[float, float]:
     if "high" not in picks or "low" not in picks:
         return {}
     high_idx, high_price = picks["high"]
     low_idx, low_price = picks["low"]
     if low_idx <= high_idx:
-        return fib_from_prices(low_price, high_price, levels)
-    return fib_from_prices(high_price, low_price, levels)
+        return fib_from_prices(low_price, high_price, levels, scale_mode=scale_mode)
+    return fib_from_prices(high_price, low_price, levels, scale_mode=scale_mode)
 
 
 def _parse_args() -> argparse.Namespace:
@@ -219,7 +226,126 @@ def _parse_args() -> argparse.Namespace:
         default="",
         help="Label JSON root (default data/labels). Use data/labels/tmp for a clean sandbox.",
     )
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="",
+        help="Settings file (default: config/settings.yaml).",
+    )
+    parser.add_argument(
+        "--window-start",
+        default=None,
+        help=(
+            "ISO date to restrict displayed candles from (e.g. 2019-01-01). "
+            "Windowing is display-only; save paths are unchanged. "
+            "Mutually exclusive with --label-year."
+        ),
+    )
+    parser.add_argument(
+        "--window-end",
+        default=None,
+        help=(
+            "ISO date to restrict displayed candles to (e.g. 2019-12-31). "
+            "Mutually exclusive with --label-year."
+        ),
+    )
+    parser.add_argument(
+        "--label-year",
+        type=int,
+        default=None,
+        help=(
+            "Display only candles for YEAR (±--buffer-months context on each side). "
+            "Convenience wrapper for --window-start/--window-end. "
+            "Buffer zone is context only — label swings whose anchors lie within the year. "
+            "Mutually exclusive with --window-start/--window-end."
+        ),
+    )
+    parser.add_argument(
+        "--buffer-months",
+        type=int,
+        default=3,
+        help="Context months prepended/appended when using --label-year (default: 3).",
+    )
+    parser.add_argument(
+        "--edit-fib-id",
+        dest="edit_fib_id",
+        default=None,
+        help=(
+            "Single-fib declutter mode: open exactly one saved human source fib by id "
+            "(e.g. fib_BTC-USD_4h_20171228T200000). HTF overlays are hidden, the window "
+            "auto-fits the fib's A→B span, and its anchors are preloaded for assessment. "
+            "Read-only on load — nothing is saved unless you press 'w'."
+        ),
+    )
     return parser.parse_args()
+
+
+def _window_from_anchors(
+    ann: HumanFibAnnotation, min_pad_days: int = 2
+) -> tuple[pd.Timestamp, pd.Timestamp]:
+    """Display window bracketing a fib's A→B span with symmetric context padding.
+
+    Pad each side by the larger of the leg span or ``min_pad_days`` so a one-bar leg
+    still gets readable context. Pure helper — no I/O.
+    """
+    ta = pd.to_datetime(ann.anchor_a.time, utc=True)
+    tb = pd.to_datetime(ann.anchor_b.time, utc=True)
+    lo, hi = min(ta, tb), max(ta, tb)
+    pad = max(hi - lo, pd.Timedelta(days=min_pad_days))
+    return lo - pad, hi + pad
+
+
+def _preload_fib_picks(workspace: LabelWorkspace, ann: HumanFibAnnotation) -> None:
+    """Load a fib's exact anchors as the active high/low picks (in-memory only).
+
+    Maps anchors to high/low by price so the existing redraw shows the selected fib's
+    markers and its level ladder. Mutates no label file.
+    """
+    points = [
+        (ann.anchor_a.time, float(ann.anchor_a.price)),
+        (ann.anchor_b.time, float(ann.anchor_b.price)),
+    ]
+    hi = max(points, key=lambda p: p[1])
+    lo = min(points, key=lambda p: p[1])
+    workspace.picks = {
+        "high": (_nearest_timestamp_bar(workspace.df, hi[0]), hi[1]),
+        "low": (_nearest_timestamp_bar(workspace.df, lo[0]), lo[1]),
+    }
+    workspace.active_kind = "high"
+
+
+def _resolve_window(
+    args: argparse.Namespace,
+) -> tuple[pd.Timestamp | None, pd.Timestamp | None]:
+    """Return (window_start, window_end) from CLI args.
+
+    --label-year and --window-start/--window-end are mutually exclusive.
+    Returns (None, None) when no window args are given — no filtering applied.
+    """
+    has_explicit = bool(getattr(args, "window_start", None) or getattr(args, "window_end", None))
+    has_year = getattr(args, "label_year", None) is not None
+    if has_explicit and has_year:
+        raise SystemExit(
+            "Error: --label-year and --window-start/--window-end are mutually exclusive. "
+            "Use one or the other."
+        )
+    if has_year:
+        buf: int = getattr(args, "buffer_months", 3)
+        year: int = args.label_year
+        start = pd.Timestamp(f"{year}-01-01", tz="UTC") - pd.DateOffset(months=buf)
+        end = pd.Timestamp(f"{year + 1}-01-01", tz="UTC") + pd.DateOffset(months=buf)
+        return pd.Timestamp(start), pd.Timestamp(end)
+    ws = (
+        pd.to_datetime(getattr(args, "window_start", None), utc=True)
+        if getattr(args, "window_start", None)
+        else None
+    )
+    we = (
+        pd.to_datetime(getattr(args, "window_end", None), utc=True)
+        if getattr(args, "window_end", None)
+        else None
+    )
+    return ws, we
 
 
 @dataclass
@@ -231,26 +357,107 @@ class LabelWorkspace:
     picks: dict[str, tuple[int, float]] = field(default_factory=dict)
     history: list[str] = field(default_factory=list)
     legs: list[LegLabel] = field(default_factory=list)
+    # Legs loaded from facit but hidden by a display window. Kept in memory so a
+    # windowed save merges them back instead of silently dropping them (facit-safety).
+    hidden_legs: list[LegLabel] = field(default_factory=list)
     active_leg_index: int = 0
     show_fib: bool = True
     show_range: bool = False
+    window_start: pd.Timestamp | None = None
+    window_end: pd.Timestamp | None = None
+    single_fib_mode: bool = False
+    _htf_overlays: list | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
-        self.df = load_candles(self.settings.data)
+        self.df = self._load_chart_candles()
 
     @property
     def data(self) -> DataConfig:
         return self.settings.data
 
+    def _load_chart_candles(self) -> pd.DataFrame:
+        """Load candles from local cache only (no exchange fetch on TF switch)."""
+        try:
+            df = load_candles(self.settings.data, fetch_if_missing=False)
+        except FileNotFoundError as exc:
+            raise SystemExit(
+                f"{exc}\n"
+                "Labeling tool does not auto-fetch. Run preflight first:\n"
+                "  uv run python -m fibengine.labeling.preflight "
+                f"--symbol {self.data.symbol} --config <settings.yaml>"
+            ) from exc
+        df = self._apply_window(df)
+        if df.empty and (self.window_start is not None or self.window_end is not None):
+            raise SystemExit(
+                f"Window filter produced an empty chart for "
+                f"{self.data.symbol} {self.data.timeframe}. "
+                "Check --window-start/--window-end or --label-year vs available cache range."
+            )
+        return df
+
+    def _apply_window(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Return a date-filtered slice of df. Timestamps preserved; save semantics unchanged."""
+        if self.window_start is None and self.window_end is None:
+            return df
+        mask = pd.Series(True, index=df.index)
+        if self.window_start is not None:
+            mask &= df.index >= self.window_start
+        if self.window_end is not None:
+            mask &= df.index <= self.window_end
+        return df[mask]
+
+    def _in_display_window(self, ts_str: str) -> bool:
+        ts = pd.to_datetime(ts_str, utc=True)
+        if self.window_start is not None and ts < self.window_start:
+            return False
+        if self.window_end is not None and ts > self.window_end:
+            return False
+        return True
+
+    def get_htf_overlays(self) -> list:
+        """Return HTF fib overlays; loaded once per market, cached until market switch.
+
+        In single-fib declutter mode the HTF overlays are suppressed (this is the main
+        source of chart clutter on lower timeframes), so only the selected fib shows.
+        """
+        if self.single_fib_mode:
+            return []
+        if self._htf_overlays is None:
+            self._htf_overlays = load_htf_overlays(
+                self.data.exchange,
+                self.data.symbol,
+                self.data.timeframe,
+            )
+        return self._htf_overlays
+
     def set_market(self, symbol: str | None = None, timeframe: str | None = None) -> None:
-        self.settings.data = self.settings.data.model_copy(
+        next_data = self.settings.data.model_copy(
             update={
                 key: value
                 for key, value in {"symbol": symbol, "timeframe": timeframe}.items()
                 if value is not None
             }
         )
-        self.df = load_candles(self.settings.data)
+        try:
+            df = load_candles(next_data, fetch_if_missing=False)
+        except FileNotFoundError as exc:
+            print(
+                f"Cannot switch to {next_data.symbol} {next_data.timeframe}: {exc}\n"
+                "Prefetch cache (tool does not auto-fetch). Example:\n"
+                "  uv run python -m fibengine.labeling.preflight "
+                f"--symbol {next_data.symbol} --timeframes {next_data.timeframe}"
+            )
+            return
+        display_df = self._apply_window(df)
+        if display_df.empty and (self.window_start is not None or self.window_end is not None):
+            print(
+                f"Window filter returned empty chart for {next_data.symbol} {next_data.timeframe}. "
+                "Cache may not cover this window range."
+            )
+            return
+        self.settings.data = next_data
+        self.df = display_df
+        self._htf_overlays = None
         self.picks.clear()
         self.history.clear()
         self.legs.clear()
@@ -272,10 +479,29 @@ class LabelWorkspace:
         self.picks.update(self._picks_from_leg(self.legs[self.active_leg_index]))
 
     def load_existing_label(self) -> None:
+        self.hidden_legs = []
         existing = find_label(self.data.exchange, self.data.symbol, self.data.timeframe)
         if existing is None:
             return
-        self.legs = list(existing.all_legs())
+        all_legs = list(existing.all_legs())
+        if self.window_start is not None or self.window_end is not None:
+            in_window: list[LegLabel] = []
+            hidden: list[LegLabel] = []
+            for leg in all_legs:
+                visible = self._in_display_window(leg.high.timestamp) and self._in_display_window(
+                    leg.low.timestamp
+                )
+                (in_window if visible else hidden).append(leg)
+            self.hidden_legs = hidden
+            all_legs = in_window
+            if hidden:
+                print(
+                    f"{len(hidden)} saved leg(s) outside the display window are hidden but "
+                    "will be preserved on save."
+                )
+        if not all_legs:
+            return
+        self.legs = all_legs
         self.active_leg_index = 0
         self._load_picks_from_active_leg()
         n = len(self.legs)
@@ -452,7 +678,10 @@ class LabelWorkspace:
             print("Choose both high and low before saving.")
             return
 
-        legs_to_save = [leg for leg in self.legs if leg.high.price and leg.low.price]
+        visible = [leg for leg in self.legs if leg.high.price and leg.low.price]
+        hidden = [leg for leg in self.hidden_legs if leg.high.price and leg.low.price]
+        # Merge back legs hidden by a display window so a windowed save is non-destructive.
+        legs_to_save = visible + hidden
         if not legs_to_save:
             print("No legs to save.")
             return
@@ -490,6 +719,8 @@ class LabelWorkspace:
             exchange=self.data.exchange,
             anchor_a=anchor_a,
             anchor_b=anchor_b,
+            scale_mode=self.settings.fib.scale_mode,
+            levels_profile=self.settings.fib.levels_profile,
         )
         path = save_annotation(annotation)
         print(f"Saved human fib annotation ({annotation.direction}) -> {path}")
@@ -516,18 +747,37 @@ def run_label_tool(args: argparse.Namespace | None = None):
     if args and getattr(args, "labels_dir", ""):
         set_labels_dir(args.labels_dir)
         print(f"Labels dir: {args.labels_dir}")
-    settings = _apply_cli_overrides(
-        load_settings(),
-        args
-        or argparse.Namespace(
-            exchange=None,
-            symbol=None,
-            timeframe=None,
-            limit=None,
-            symbols=None,
-            timeframes=None,
-        ),
+    cli = args or argparse.Namespace(
+        exchange=None,
+        symbol=None,
+        timeframe=None,
+        limit=None,
+        symbols=None,
+        timeframes=None,
+        config="",
+        window_start=None,
+        window_end=None,
+        label_year=None,
+        buffer_months=3,
+        edit_fib_id=None,
     )
+    settings = _apply_cli_overrides(load_settings(cli.config or None), cli)
+    window_start, window_end = _resolve_window(cli)
+
+    edit_fib_id = getattr(cli, "edit_fib_id", None)
+    selected_fib: HumanFibAnnotation | None = None
+    if edit_fib_id:
+        try:
+            selected_fib = find_annotation(
+                edit_fib_id,
+                exchange=settings.data.exchange,
+                symbol=settings.data.symbol,
+                timeframe=settings.data.timeframe,
+            )
+        except (FileNotFoundError, ValueError) as exc:
+            raise SystemExit(f"--edit-fib-id: {exc}") from exc
+        if window_start is None and window_end is None:
+            window_start, window_end = _window_from_anchors(selected_fib)
     args = args or argparse.Namespace(symbols=None, timeframes=None)
     symbols = _csv_values(args.symbols, DEFAULT_CYCLE_SYMBOLS)
     timeframes = _csv_values(args.timeframes, _default_timeframes(settings.data.timeframe))
@@ -538,8 +788,34 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
     queue = [(sym, tf) for sym in symbols for tf in timeframes]
 
-    workspace = LabelWorkspace(settings, symbols, timeframes)
-    workspace.load_existing_label()
+    workspace = LabelWorkspace(
+        settings,
+        symbols,
+        timeframes,
+        window_start=window_start,
+        window_end=window_end,
+        single_fib_mode=selected_fib is not None,
+    )
+    if selected_fib is not None:
+        _preload_fib_picks(workspace, selected_fib)
+        print(
+            f"Single-fib edit mode: {selected_fib.fib_id} ({selected_fib.direction}) "
+            "— HTF overlays hidden, anchors preloaded. Nothing saved unless you press 'w'."
+        )
+    else:
+        workspace.load_existing_label()
+
+    if window_start is not None or window_end is not None:
+        if getattr(cli, "label_year", None) is not None:
+            print(
+                f"Year window: {cli.label_year} ±{cli.buffer_months}m  "
+                f"({window_start.strftime('%Y-%m-%d')} -> {window_end.strftime('%Y-%m-%d')})"
+                "  [save paths unchanged]"
+            )
+        else:
+            ws_str = window_start.strftime("%Y-%m-%d") if window_start else "start"
+            we_str = window_end.strftime("%Y-%m-%d") if window_end else "end"
+            print(f"Display window: {ws_str} -> {we_str}  [save paths unchanged]")
 
     print(
         f"Symbol cycle ({len(symbols)}): {', '.join(symbols)}  "
@@ -613,7 +889,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
             color="#d6d9e0",
         )
 
-    def redraw(*, reset_view: bool = False) -> None:
+    def redraw(*, reset_view: bool = False, lightweight: bool = False) -> None:
         nonlocal view_limits, chart_drawn
         if reset_view:
             view_limits = None
@@ -622,45 +898,16 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
         ax.clear()
         ax.set_facecolor("#0f1117")
+        # Log price axis so log-scale fib levels render evenly spaced (TradingView-style).
+        ax.set_yscale("log" if workspace.settings.fib.scale_mode == "log" else "linear")
         df = workspace.df
         x = range(len(df))
-        opens = df["open"].to_numpy()
-        highs = df["high"].to_numpy()
         lows = df["low"].to_numpy()
-        closes = df["close"].to_numpy()
+        highs = df["high"].to_numpy()
 
-        up_color = "#26a69a"
-        down_color = "#ef5350"
-        wick_color = "#c7cedb"
-        candle_width = 0.62
+        draw_review_candles(ax, df, candlestick=True, dark_theme=True)
 
-        # Candlesticks for a more standard trading-chart look.
-        for i, (o, h, low, c) in enumerate(zip(opens, highs, lows, closes, strict=False)):
-            color = up_color if c >= o else down_color
-            ax.vlines(i, low, h, color=wick_color, linewidth=0.8, alpha=0.9, zorder=2)
-            body_bottom = min(o, c)
-            body_height = abs(c - o)
-            if body_height <= 1e-12:
-                ax.hlines(
-                    c,
-                    i - candle_width / 2,
-                    i + candle_width / 2,
-                    color=color,
-                    linewidth=1.2,
-                    zorder=3,
-                )
-            else:
-                ax.add_patch(
-                    Rectangle(
-                        (i - candle_width / 2, body_bottom),
-                        candle_width,
-                        body_height,
-                        facecolor=color,
-                        edgecolor=color,
-                        linewidth=0.8,
-                        zorder=3,
-                    )
-                )
+        draw_htf_overlays(ax, df, workspace.get_htf_overlays(), show=workspace.show_fib)
 
         if workspace.show_range:
             ax.fill_between(
@@ -700,7 +947,9 @@ def run_label_tool(args: argparse.Namespace | None = None):
             draw_fib = workspace.show_fib and picks and (active or len(workspace.legs) <= 1)
             if draw_fib:
                 for level, price in _fib_prices_from_picks(
-                    picks, workspace.settings.fib.levels or DEFAULT_FIB_LEVELS
+                    picks,
+                    workspace.settings.fib.levels or DEFAULT_FIB_LEVELS,
+                    scale_mode=workspace.settings.fib.scale_mode,
                 ).items():
                     ax.axhline(
                         price,
@@ -755,7 +1004,8 @@ def run_label_tool(args: argparse.Namespace | None = None):
             ax.set_ylim(*view_limits[1])
 
         update_title()
-        fig.tight_layout()
+        if not lightweight:
+            fig.tight_layout()
         hover.reattach(ax, fig)
         chart_drawn = True
         fig.canvas.draw_idle()
@@ -799,7 +1049,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
                 workspace.move_pick(kind, min(max(base_idx + delta, 0), n))
             mark_dirty(True)
             click_moved = True
-            redraw()
+            redraw(lightweight=True)
             return
 
         if drag_kind is not None:
@@ -810,7 +1060,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
             workspace.move_pick(drag_kind, idx)
             mark_dirty(True)
             click_moved = True
-            redraw()
+            redraw(lightweight=True)
             return
 
         hover.update(event, workspace.df)

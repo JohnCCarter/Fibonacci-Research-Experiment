@@ -4,6 +4,11 @@ En research-/prototyp-engine som försöker välja swing high/low på ett chart
 **som en teknisk analytiker** — inte en vanlig Fib-indikator och inte standard
 ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativt.
 
+> **Agenter, börja här:**
+> [`docs/research_wiki/handoff.md`](docs/research_wiki/handoff.md) (aktuellt fokus) ·
+> [`docs/research_wiki/reference/source-authority.md`](docs/research_wiki/reference/source-authority.md) (källa slår wiki) ·
+> [`docs/BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md`](docs/BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md) (aktivt protokoll: BTC/USD, 1M → 1w → 1d → 4h → 1h)
+
 > Status: MVP / prototyp / premortem. Lättviktig disciplin (logging, audits,
 > reflektion) — ingen tung governance. Kan ev. portas in i Genesis-Core senare.
 
@@ -11,8 +16,8 @@ ZigZag-Fib. Den väljer swingar, ritar Fib automatiskt och förbättras iterativ
 > och städningsregler.
 > Premortem/reflektion är obligatoriskt: se `premortem/` och `repository-layout-policy.md` §11.
 > Spårmodell: se `docs/TRACKS.md` (Research / Validate / Promotion).
-> Backtest-roadmap: [`docs/FIB_BACKTEST_PLAN.md`](docs/FIB_BACKTEST_PLAN.md).
-> Bitfinex / Genesis validate: [`docs/GENESIS_BITFINEX_VALIDATE.md`](docs/GENESIS_BITFINEX_VALIDATE.md).
+> Backtest-roadmap: [`docs/validate/FIB_BACKTEST_PLAN.md`](docs/validate/FIB_BACKTEST_PLAN.md).
+> Bitfinex / Genesis validate: [`docs/validate/GENESIS_BITFINEX_VALIDATE.md`](docs/validate/GENESIS_BITFINEX_VALIDATE.md).
 > Arkiv (legacy/dubletter): [`archive/`](archive/README.md).
 
 ## Filosofi
@@ -44,7 +49,7 @@ uv run pre-commit install                     # git hooks (en gång)
 uv run pre-commit run --all-files             # lint + format + test före push
 ```
 
-Kvalitetsgate: se [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) och CI i `.github/workflows/ci.yml`.
+Kvalitetsgate: CI i `.github/workflows/ci.yml` (ruff + pytest på push/PR mot `main`).
 
 Använd `--config` för en principmotiverad variant under `config/variants/` utan att ändra baseline:
 
@@ -124,7 +129,7 @@ leg än en ritning är det en signal att undersöka, inte automatiskt ett fel.
 ### Maskin-labeling (kandidater, inte facit)
 
 Två giltiga frågor (motor-swing vs synligt chartfönster) — se
-[`docs/MACHINE_LABELING.md`](docs/MACHINE_LABELING.md).
+[`docs/labeling/MACHINE_LABELING.md`](docs/labeling/MACHINE_LABELING.md).
 
 `labeling/autolabel.py` kan generera **provisoriska** swing-kandidater
 (`source="machine"`) från motorns eget urval, så att du slipper börja från ett

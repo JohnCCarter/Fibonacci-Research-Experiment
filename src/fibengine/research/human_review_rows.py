@@ -75,8 +75,10 @@ def _relation_for_bar(df: pd.DataFrame, bar_idx: int, price: float) -> str:
     )
 
 
-def _level_rows_from_swing(swing: Swing, ratios: list[float]) -> list[dict]:
-    prices = fib_levels(swing, ratios)
+def _level_rows_from_swing(
+    swing: Swing, ratios: list[float], scale_mode: str = "linear"
+) -> list[dict]:
+    prices = fib_levels(swing, ratios, scale_mode=scale_mode)
     return [
         {"ratio": f"{ratio:g}", "price": round(float(prices[ratio]), 6)} for ratio in sorted(prices)
     ]
@@ -222,8 +224,15 @@ def collect_candidates(
         else:
             lo = swing.end.index
             hi = n
-        streams = detect_level_events(df, swing, level_cfg, ratios, settings.pivots.atr_period)
-        level_rows = _level_rows_from_swing(swing, ratios)
+        streams = detect_level_events(
+            df,
+            swing,
+            level_cfg,
+            ratios,
+            settings.pivots.atr_period,
+            scale_mode=settings.fib.scale_mode,
+        )
+        level_rows = _level_rows_from_swing(swing, ratios, settings.fib.scale_mode)
         for stream in streams:
             for ev in stream.events:
                 if lo <= ev.bar_index < hi:
@@ -401,15 +410,11 @@ def collect_human_fib_event_candidates(
     return rows, load_skips
 
 
-def sample_candidates(rows: list[dict], cfg: HumanReviewConfig) -> list[dict]:
-    rng = random.Random(cfg.seed)
-    pool = [
-        r
-        for r in rows
-        if (not cfg.candidate_types or r["auto_candidate"] in cfg.candidate_types)
-        and (not cfg.levels or r["fib_level"] in cfg.levels)
-    ]
-    if not pool:
+def _balanced_fill(
+    pool: list[dict], limit: int, cfg: HumanReviewConfig, rng: random.Random
+) -> list[dict]:
+    """Round-robin pick across candidate types, rotating levels within each type."""
+    if limit <= 0 or not pool:
         return []
     by_type: dict[str, dict[str, list[dict]]] = defaultdict(lambda: defaultdict(list))
     for r in sorted(pool, key=lambda x: x["review_id"]):
@@ -426,10 +431,10 @@ def sample_candidates(rows: list[dict], cfg: HumanReviewConfig) -> list[dict]:
     per_type: Counter = Counter()
     per_level: Counter = Counter()
     progress = True
-    while len(selected) < cfg.max_events and progress:
+    while len(selected) < limit and progress:
         progress = False
         for t in types:
-            if len(selected) >= cfg.max_events:
+            if len(selected) >= limit:
                 break
             if cfg.max_per_candidate and per_type[t] >= cfg.max_per_candidate:
                 continue
@@ -447,5 +452,23 @@ def sample_candidates(rows: list[dict], cfg: HumanReviewConfig) -> list[dict]:
                 per_level[lvl] += 1
                 progress = True
                 break
+    return selected
+
+
+def sample_candidates(rows: list[dict], cfg: HumanReviewConfig) -> list[dict]:
+    rng = random.Random(cfg.seed)
+    pool = [
+        r
+        for r in rows
+        if (not cfg.candidate_types or r["auto_candidate"] in cfg.candidate_types)
+        and (not cfg.levels or r["fib_level"] in cfg.levels)
+    ]
+    if not pool:
+        return []
+
+    # All levels are sampled equally (round-robin across candidate × level). No
+    # golden-zone / primary-level bias (Addendum 2): the machine treats every level the
+    # same; human_highlights affect presentation only, never sampling.
+    selected = _balanced_fill(pool, cfg.max_events, cfg, rng)
     selected.sort(key=lambda x: x["review_id"])
     return selected

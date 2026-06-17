@@ -186,6 +186,36 @@ def test_collect_candidates_single_mode_uses_selected_swing(monkeypatch):
     assert all(r["event_bar"] > 40 for r in rows)
 
 
+def test_collect_candidates_honors_configured_log_scale(monkeypatch):
+    """Regression (PR #33 P2): collect_candidates must thread settings.fib.scale_mode
+    into the detector and the level ladder, not silently fall back to linear."""
+    from fibengine.core.fib import fib_levels
+    from fibengine.research.human_review_rows import decode_levels
+
+    df = _trend_df()
+    settings = _settings()
+    assert settings.fib.scale_mode == "log"  # repo default
+    swing = _up_swing(df)
+    monkeypatch.setattr(hr, "select_swing", lambda _df, _p, _s: swing)
+    rows = collect_candidates(df, settings, mode="single")
+    assert rows
+
+    ratios = settings.fib.levels
+    log_ladder = {
+        f"{r:g}": round(float(p), 6) for r, p in fib_levels(swing, ratios, scale_mode="log").items()
+    }
+    lin_ladder = {
+        f"{r:g}": round(float(p), 6)
+        for r, p in fib_levels(swing, ratios, scale_mode="linear").items()
+    }
+    assert log_ladder != lin_ladder  # scales must differ for this swing, else the test is moot
+
+    for r in rows:
+        decoded = {d["ratio"]: d["price"] for d in decode_levels(r)}
+        assert decoded == log_ladder  # ladder honors log scale, not linear
+        assert r["fib_price"] == log_ladder[r["fib_level"]]
+
+
 def test_end_to_end_package_files_created(monkeypatch, tmp_path):
     df = _trend_df()
     settings = _settings()

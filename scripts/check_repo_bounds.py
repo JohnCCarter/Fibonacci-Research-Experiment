@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""Pre-commit: file size / anti-blob limits (see repository-layout-policy.md §2B)."""
+"""Repo-bound contract: file-size limits + LLM Wiki boundary.
+
+Protects the LLM Wiki pattern: required schema/wiki files must exist, and
+local/private artifacts must not be tracked (see repository-layout-policy.md §2B,
+docs/research_wiki/reference/source-authority.md).
+"""
 
 from __future__ import annotations
 
 import fnmatch
+import subprocess
 import sys
 from pathlib import Path
 
@@ -31,6 +37,20 @@ GRANDFATHERED: dict[str, str] = {
     "scripts/behavior_facit.py": "CLI för behavior facit; plan: tunn wrapper",
     "scripts/compare_mtf_disambiguation.py": "Research compare CLI; plan: dela argparse vs report",
 }
+
+# Local/private artifacts that must never be tracked (they pollute repo memory).
+POLLUTION_GLOBS = (
+    ".env .venv/* .coverage .coverage.* .pytest_cache/* "
+    ".ruff_cache/* dist/* .claude/* *.log ._*.png"
+).split()
+
+# LLM Wiki contract: schema + wiki spine + source authority must exist.
+REQUIRED_FILES = (
+    "AGENTS.md CLAUDE.md README.md "
+    "docs/research_wiki/README.md docs/research_wiki/index.md "
+    "docs/research_wiki/log.md docs/research_wiki/handoff.md "
+    "docs/research_wiki/reference/source-authority.md"
+).split()
 
 
 def _rel(path: Path) -> str:
@@ -72,9 +92,22 @@ def _iter_monitored() -> list[Path]:
     return out
 
 
+def check_boundary() -> list[str]:
+    """LLM Wiki boundary: required files present, no private artifact tracked."""
+    fails = [f"missing required file: {f}" for f in REQUIRED_FILES if not (REPO_ROOT / f).is_file()]
+    res = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "ls-files"], capture_output=True, text=True, check=False
+    )
+    for rel in res.stdout.splitlines():
+        if any(fnmatch.fnmatch(rel, g) for g in POLLUTION_GLOBS):
+            fails.append(f"local/private artifact tracked: {rel}")
+    return fails
+
+
 def main() -> int:
     paths = [Path(p).resolve() for p in sys.argv[1:]] if len(sys.argv) > 1 else _iter_monitored()
     failed = [msg for p in paths if (msg := check_path(p))]
+    failed += check_boundary()
     if failed:
         print("Repo bounds exceeded:\n" + "\n".join(f"  - {f}" for f in failed))
         return 1

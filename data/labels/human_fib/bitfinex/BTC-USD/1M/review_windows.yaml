@@ -1,0 +1,59 @@
+# Source-fib review windows — BTC/USD 1M
+#
+# PURPOSE
+# -------
+# Fib levels are mathematical (derived from anchor_a/anchor_b prices).
+# Review windows are human-defined scope: they say which time period is
+# meaningful to review for a given fib.  Events outside the review window
+# are excluded from all review artifacts (CSV, JSONL, REVIEW_INDEX.md, charts).
+#
+# RULE (human protocol)
+# ---------------------
+#   review_start_time = fib anchor_b.time   (omit to use that default)
+#   review_end_time   = the point where the next macro segment takes over
+#                       i.e. roughly when the next human 1M fib is drawn
+#   Never extend review_end_time to "now" unless the fib is explicitly
+#   the current active fib — use --full-history / full_history=True for debug.
+#
+# STATUS
+# ------
+# The three entries below are DRAFT — pending human confirmation (2026-06-10).
+# The remaining 1M fibs are commented TBD; they render full-history until
+# their windows are confirmed and added here.
+#
+# Schema per fib_id:
+#   review_start_time: ISO-8601 UTC  (default: anchor_b.time if absent)
+#   review_end_time:   ISO-8601 UTC  (default: end of candle cache if absent)
+
+fib_BTC-USD_1M_20201001T000000:
+  review_start_time: "2021-04-01T00:00:00Z"
+  review_end_time:   "2021-06-01T00:00:00Z"
+
+fib_BTC-USD_1M_20210401T000000:
+  review_start_time: "2021-06-01T00:00:00Z"
+  review_end_time:   "2021-11-01T00:00:00Z"
+
+fib_BTC-USD_1M_20211101T000000:
+  review_start_time: "2021-11-01T00:00:00Z"
+  review_end_time:   "2022-11-01T00:00:00Z"
+
+fib_BTC-USD_1M_20220401T000000:
+  review_start_time: "2022-11-01T00:00:00Z"
+  review_end_time:   "2023-01-01T00:00:00Z"
+
+fib_BTC-USD_1M_20230101T000000:
+  review_start_time: "2023-07-01T00:00:00Z"
+  review_end_time:   "2023-10-01T00:00:00Z"
+
+fib_BTC-USD_1M_20231001T000000:
+  review_start_time: "2024-03-01T00:00:00Z"
+  review_end_time:   "2024-08-01T00:00:00Z"
+fib_BTC-USD_1M_20240801T000000:
+  review_start_time: "2024-12-01T00:00:00Z"
+  review_end_time:   "2025-04-01T00:00:00Z"
+fib_BTC-USD_1M_20250401T000000:
+  review_start_time: "2025-08-01T00:00:00Z"
+  review_end_time:   "2026-01-01T00:00:00Z"
+fib_BTC-USD_1M_20260101T000000:
+  review_start_time: "2026-02-01T00:00:00Z"
+  review_end_time:   "2026-06-08T00:00:00Z"

@@ -3,7 +3,7 @@
 TvÃ¥ giltiga frÃ¥gor (bÃ¥da kan vara rÃ¤tt â€” blanda inte ihop dem):
 - **A Motor-swing:** `autolabel` = bÃ¤sta leg pÃ¥ tillgÃ¤nglig historik (standard CLI).
 - **B ChartfÃ¶nster:** endpoints inom ett synligt datumintervall (ej standard Ã¤n;
-  se docs/MACHINE_LABELING.md).
+  se docs/labeling/MACHINE_LABELING.md).
 
 VIKTIGT â€” integritet:
 - Maskin-labels (`source="machine"`) Ã¤r KANDIDATER, inte facit. De skrivs sÃ¥ att de

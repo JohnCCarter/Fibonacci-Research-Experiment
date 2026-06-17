@@ -1,0 +1,47 @@
+{
+  "fib_id": "fib_BTC-USD_4h_20220224T040000",
+  "symbol": "BTC/USD",
+  "timeframe": "4h",
+  "exchange": "bitfinex",
+  "created_by": "human",
+  "source": "manual_labeling_tool",
+  "scale_mode": "log",
+  "levels_profile": "tradingview_log_chamoun",
+  "human_highlights": [],
+  "anchor_a": {
+    "time": "2022-02-24T04:00:00+00:00",
+    "price": 34425.0
+  },
+  "anchor_b": {
+    "time": "2022-02-28T20:00:00+00:00",
+    "price": 44268.0
+  },
+  "direction": "up",
+  "created_at": "2026-06-12T11:54:21.951726+00:00",
+  "levels": [
+    {
+      "ratio": 0.0,
+      "price": 44268.0
+    },
+    {
+      "ratio": 0.382,
+      "price": 40213.27163503
+    },
+    {
+      "ratio": 0.5,
+      "price": 39037.49351585
+    },
+    {
+      "ratio": 0.618,
+      "price": 37896.09345469
+    },
+    {
+      "ratio": 0.786,
+      "price": 36328.39096076
+    },
+    {
+      "ratio": 1.0,
+      "price": 34425.0
+    }
+  ]
+}

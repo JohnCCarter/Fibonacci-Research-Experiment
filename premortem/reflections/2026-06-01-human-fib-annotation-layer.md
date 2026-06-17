@@ -7,9 +7,9 @@
   level as `above/below/touch/cross`. `w` key in the labeling tool + CLI. No auto-fib.
 - New `fibengine.labeling.human_fib_events`: feeds the human fib into the existing
   `detect_level_events` → `*_candidate` (`rejection/continuation/failure/reaction`)
-  per level. Same taxonomy as `docs/LEVEL_EVENTS.md`. **Candidates never facts.**
-- Docs: `docs/HUMAN_FIB_ANNOTATION.md` (both layers), linked from `docs/README.md`
-  and `docs/RESEARCH_HANDOFF.md`.
+  per level. Same taxonomy as `docs/research/LEVEL_EVENTS.md`. **Candidates never facts.**
+- Docs: `docs/labeling/HUMAN_FIB_ANNOTATION.md` (both layers), linked from `docs/README.md`
+  and `docs/research/RESEARCH_HANDOFF.md`.
 
 ## Why it matters
 

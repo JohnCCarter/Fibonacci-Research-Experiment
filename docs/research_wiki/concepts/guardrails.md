@@ -29,7 +29,7 @@ large narrative.
 ## Source Links
 
 - [Repo tracks](../../TRACKS.md)
-- [Research handoff](../../RESEARCH_HANDOFF.md)
-- [Human fib annotation](../../HUMAN_FIB_ANNOTATION.md)
-- [Level events](../../LEVEL_EVENTS.md)
+- [Research handoff](../../research/RESEARCH_HANDOFF.md)
+- [Human fib annotation](../../labeling/HUMAN_FIB_ANNOTATION.md)
+- [Level events](../../research/LEVEL_EVENTS.md)
 - [Repository layout policy](../../../repository-layout-policy.md)

@@ -1,0 +1,16 @@
+{
+  "fib_count": 2,
+  "flow": "fourh_source_fib_map",
+  "groups": [
+    {
+      "clean": "fourh_source_fib_map_2017_4h_clean.png",
+      "drawn": 2,
+      "fib_count": 2,
+      "label": "2017",
+      "levels": "fourh_source_fib_map_2017_4h_levels.png",
+      "skipped": 0,
+      "window_end": "2017-09-26",
+      "window_start": "2017-07-25"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ This directory contains AI agent skills for the Fibonacci research project. Each
 
 ## Skill Structure
 
-Each skill follows the NVIDIA Agent Skills specification:
+Each skill follows the Agent Skills specification:
 - Portable directories with a `SKILL.md` file at their root
 - YAML frontmatter with required `name` and `description` fields
 - Progressive disclosure model for lightweight loading
@@ -30,4 +30,4 @@ To add a new skill:
 
 For more information about the skills framework, see the [Agent Skills specification](https://agentskills.io/specification).
 
-Repo-aware agent policy (inspect before edit): [docs/REPO_AWARE_AGENT.md](../../docs/REPO_AWARE_AGENT.md).
+Repo-aware agent policy (inspect before edit): [.cursor/rules/repo-aware-coding-agent.mdc](../rules/repo-aware-coding-agent.mdc).
