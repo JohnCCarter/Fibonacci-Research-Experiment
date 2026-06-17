@@ -114,13 +114,34 @@ This study is a **3rd look at the same BTC OOS window** (behaviour → context-c
 look" → B-1). Per **NU-2**, a fresh fixed-horizon permutation p-value on that window is **invalid**
 (optional stopping / peeking) and is **forbidden here**.
 
-- **Required inference:** **anytime-valid** — e-values / confidence sequences per subject vs
-  RW-NULL on `reject_rate` in the **test** window (Johari, Pekelis & Walsh, arXiv:1512.04922).
-- **Multiplicity** (3 subjects × 4 TFs): **e-Holm**, the e-value analogue of the **Holm**
-  correction the repo already uses.
-- **Dependency:** no e-value / e-Holm code exists (**SENARE-1**, gated/unbuilt). **Therefore this
-  study cannot be executed until SENARE-1 is built and `synthetic_baseline` is wired into a
-  horizontal-structure harness (DELAR-1 wiring).** Both are unauthorised by this doc.
+- **Required inference:** **anytime-valid** — an **e-value** per subject vs RW-NULL on the
+  test-window `reject` counts. Anytime-valid lineage anchor: Johari, Pekelis & Walsh,
+  arXiv:1512.04922.
+- **Multiplicity** (3 subjects × 4 TFs): convert each e-value to its calibrated anytime-valid
+  p-value `p = min(1, 1/E)` (Markov / Ville) and apply the repo's **existing tested Holm-Bonferroni**
+  (`fib_context_conditioned_study._holm`) across the family. Holm controls FWER under arbitrary
+  dependence, so this is the e-value analogue of the Holm the repo already uses.
+- **Dependency:** no e-value code exists (**SENARE-1**, gated/unbuilt). **This study cannot be
+  executed until SENARE-1 is built and `synthetic_baseline` is wired into a horizontal-structure
+  harness (DELAR-1 wiring).**
+
+### §8 amendment — 2026-06-17 (pre-execution, blind to any B-1 result)
+
+Made **before** SENARE-1 was run and **without** seeing any B-1 output — a correctness fix, not a
+goalpost move. The exact e-value construction is pinned to the **conditional 2×2 / Fisher
+noncentral-hypergeometric e-value** (safe-testing lineage: Grünwald, de Heide & Koolen, *Safe
+Testing*, 2024; Turner, Ly & Grünwald, two-sample / 2×2 safe tests), **not** a two-sample mSPRT
+mixture. Rationale (both blind to output): (a) **exactness at small N** — conditioning on the total
+reject count removes the nuisance base-rate, so `E[E]=1` under H0 holds *exactly at every N*,
+whereas mSPRT's normal approximation only holds asymptotically and §9 admits 1M/1w often have
+N<30; (b) it avoids hand-rolling a mixture (bug risk flagged pre-build). Johari/Pekelis/Walsh stays
+as the anytime-valid *lineage* anchor (NU-2 requires "via e-values" generically, not a pinned
+equation). **Free parameter pinned here, before running:** the alternative is a fixed equal-weight
+grid of odds-ratios `ψ ∈ {1.5, 2.0, 3.0}` (one-sided, subject repels *more*). Crucially, validity is
+**exact for any prior over ψ** (each `E_ψ` has `E[E_ψ]=1` under H0, so any convex combination does
+too) — the grid affects **power only, never the Type-I guarantee**; it is pinned solely to remove
+post-hoc selection. **Ship-gate:** a null-simulation test (equal Bernoulli rates, many draws)
+must empirically confirm `mean(E) ≤ 1` at small *and* large N before the harness is trusted.
 
 ## 9. Pre-registered robustness criterion (stop/go)
 
