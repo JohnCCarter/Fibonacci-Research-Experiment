@@ -357,6 +357,9 @@ class LabelWorkspace:
     picks: dict[str, tuple[int, float]] = field(default_factory=dict)
     history: list[str] = field(default_factory=list)
     legs: list[LegLabel] = field(default_factory=list)
+    # Legs loaded from facit but hidden by a display window. Kept in memory so a
+    # windowed save merges them back instead of silently dropping them (facit-safety).
+    hidden_legs: list[LegLabel] = field(default_factory=list)
     active_leg_index: int = 0
     show_fib: bool = True
     show_range: bool = False
@@ -476,21 +479,26 @@ class LabelWorkspace:
         self.picks.update(self._picks_from_leg(self.legs[self.active_leg_index]))
 
     def load_existing_label(self) -> None:
+        self.hidden_legs = []
         existing = find_label(self.data.exchange, self.data.symbol, self.data.timeframe)
         if existing is None:
             return
         all_legs = list(existing.all_legs())
         if self.window_start is not None or self.window_end is not None:
-            before = len(all_legs)
-            all_legs = [
-                leg
-                for leg in all_legs
-                if self._in_display_window(leg.high.timestamp)
-                and self._in_display_window(leg.low.timestamp)
-            ]
-            dropped = before - len(all_legs)
-            if dropped:
-                print(f"Skipped {dropped} saved leg(s) outside display window.")
+            in_window: list[LegLabel] = []
+            hidden: list[LegLabel] = []
+            for leg in all_legs:
+                visible = self._in_display_window(leg.high.timestamp) and self._in_display_window(
+                    leg.low.timestamp
+                )
+                (in_window if visible else hidden).append(leg)
+            self.hidden_legs = hidden
+            all_legs = in_window
+            if hidden:
+                print(
+                    f"{len(hidden)} saved leg(s) outside the display window are hidden but "
+                    "will be preserved on save."
+                )
         if not all_legs:
             return
         self.legs = all_legs
@@ -670,7 +678,10 @@ class LabelWorkspace:
             print("Choose both high and low before saving.")
             return
 
-        legs_to_save = [leg for leg in self.legs if leg.high.price and leg.low.price]
+        visible = [leg for leg in self.legs if leg.high.price and leg.low.price]
+        hidden = [leg for leg in self.hidden_legs if leg.high.price and leg.low.price]
+        # Merge back legs hidden by a display window so a windowed save is non-destructive.
+        legs_to_save = visible + hidden
         if not legs_to_save:
             print("No legs to save.")
             return

@@ -176,3 +176,64 @@ def test_edit_fib_id_arg_parses_and_defaults_none(monkeypatch):
     assert tool._parse_args().edit_fib_id is None
     monkeypatch.setattr(sys, "argv", ["tool", "--edit-fib-id", "fib_X"])
     assert tool._parse_args().edit_fib_id == "fib_X"
+
+
+def test_windowed_save_preserves_out_of_window_legs(monkeypatch, tmp_path):
+    """Regression (PR #33 P1): a windowed editing session must not silently delete
+    saved legs outside the display window. They are hidden on load and merged on save."""
+    from fibengine.labeling import store
+    from fibengine.labeling.store import LegLabel, Point, SwingLabel
+
+    df = pd.DataFrame(
+        {"open": [1.0], "high": [1.0], "low": [1.0], "close": [1.0], "volume": [1.0]},
+        index=pd.to_datetime(["2018-02-09T00:00:00+00:00"], utc=True),
+    )
+    monkeypatch.setattr(tool.LabelWorkspace, "_load_chart_candles", lambda self: df)
+
+    store.set_labels_dir(tmp_path)
+    try:
+        leg_old = LegLabel(
+            high=Point("2017-12-10T00:00:00+00:00", 14000.0),
+            low=Point("2017-12-09T00:00:00+00:00", 13000.0),
+            id="leg_old",
+        )
+        leg_new = LegLabel(
+            high=Point("2018-02-10T00:00:00+00:00", 16000.0),
+            low=Point("2018-02-09T00:00:00+00:00", 15000.0),
+            id="leg_new",
+        )
+        store.save_label(
+            SwingLabel(
+                exchange="bitfinex",
+                symbol="BTC/USD",
+                timeframe="4h",
+                high=leg_new.high,
+                low=leg_new.low,
+                legs=[leg_old, leg_new],
+            )
+        )
+
+        settings = load_settings()
+        settings.data.exchange = "bitfinex"
+        settings.data.symbol = "BTC/USD"
+        settings.data.timeframe = "4h"
+        ws = tool.LabelWorkspace(
+            settings,
+            ["BTC/USD"],
+            ["4h"],
+            window_start=pd.Timestamp("2018-01-01T00:00:00+00:00"),
+            window_end=pd.Timestamp("2018-03-01T00:00:00+00:00"),
+        )
+
+        ws.load_existing_label()
+        assert [leg.id for leg in ws.legs] == ["leg_new"]  # only the in-window leg is visible
+        assert [leg.id for leg in ws.hidden_legs] == ["leg_old"]  # out-of-window leg preserved
+
+        ws.picks.clear()  # simulate "no pick edits" then press 's'
+        ws.save_current_label()
+
+        reloaded = store.find_label("bitfinex", "BTC/USD", "4h")
+        assert reloaded is not None
+        assert {leg.id for leg in reloaded.all_legs()} == {"leg_old", "leg_new"}
+    finally:
+        store.set_labels_dir(None)
