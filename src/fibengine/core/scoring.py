@@ -43,3 +43,19 @@ def select_swing(
     swing = ranked[0]
     swing.status = classify_swing(df, swing, pivot_cfg.fractal_n, scoring_cfg.confirm_min_retrace)
     return swing
+
+
+def swing_score_margin(
+    df: pd.DataFrame, pivot_cfg: PivotConfig, scoring_cfg: ScoringConfig
+) -> float | None:
+    """Top-1 minus top-2 swing score — an *ambiguity* signal for labeling prioritisation.
+
+    A small margin means the machine is torn between its two best swing candidates → a hard,
+    high-value case for a human to label first (active-learning uncertainty sampling). Returns
+    ``None`` when fewer than two candidate swings exist (nothing to disambiguate). This is a
+    read-only scorer: it ranks candidates but writes nothing and promotes nothing to facit.
+    """
+    ranked = rank_swings(df, pivot_cfg, scoring_cfg)
+    if len(ranked) < 2:
+        return None
+    return float(ranked[0].score - ranked[1].score)

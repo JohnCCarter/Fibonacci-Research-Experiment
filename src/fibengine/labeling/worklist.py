@@ -64,6 +64,42 @@ def coverage_report(
     }
 
 
+def order_missing_by_uncertainty(
+    missing: list[tuple[str, str, str]], settings
+) -> list[tuple[str, str, str]]:
+    """Reorder unlabeled combos so the *most ambiguous* ones come first (active-learning).
+
+    For each combo, load its cached candles read-only and compute the top-1−top-2 swing-score
+    margin (``core.scoring.swing_score_margin``). A small margin = the machine is torn = a hard,
+    high-value case for the human to label first, so combos are sorted ascending by margin.
+    Combos with no cache or fewer than two candidate swings cannot be scored and are appended
+    last in their original order (deterministic). **Read-only: loads nothing over the network,
+    writes no labels, promotes nothing to facit.**
+    """
+    from fibengine.core.scoring import swing_score_margin
+    from fibengine.data.loader import load_candles
+
+    scored: list[tuple[float, int, tuple[str, str, str]]] = []
+    unscored: list[tuple[str, str, str]] = []
+    for idx, combo in enumerate(missing):
+        exchange, symbol, timeframe = combo
+        margin: float | None = None
+        try:
+            data_cfg = settings.data.model_copy(
+                update={"exchange": exchange, "symbol": symbol, "timeframe": timeframe}
+            )
+            df = load_candles(data_cfg, fetch_if_missing=False)
+            margin = swing_score_margin(df, settings.pivots, settings.scoring)
+        except (FileNotFoundError, ValueError):
+            margin = None  # no cache / unusable → leave unscored, don't crash the worklist
+        if margin is None:
+            unscored.append(combo)
+        else:
+            scored.append((margin, idx, combo))
+    scored.sort(key=lambda t: (t[0], t[1]))  # most uncertain first; stable tie-break
+    return [combo for _, _, combo in scored] + unscored
+
+
 def format_report(report: dict) -> str:
     progress = (
         "mål uppnått"
@@ -110,6 +146,13 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--target", type=int, default=LABEL_TARGET, help=f"Label-mål (default: {LABEL_TARGET})"
     )
+    parser.add_argument(
+        "--by-uncertainty",
+        action="store_true",
+        help="Ordna olabelade combos efter swing-ambiguitet (svåraste först); läser cache, "
+        "skriver inget. Kräver cachade candles.",
+    )
+    parser.add_argument("--config", help="Config-sökväg för --by-uncertainty (default: baseline)")
     return parser.parse_args()
 
 
@@ -127,6 +170,11 @@ def main() -> None:
         timeframes=_split_csv(args.timeframes),
         target=args.target,
     )
+    if args.by_uncertainty:
+        from fibengine.core.config import load_settings
+
+        settings = load_settings(args.config)
+        report["missing_combos"] = order_missing_by_uncertainty(report["missing_combos"], settings)
     print(format_report(report))
 
 

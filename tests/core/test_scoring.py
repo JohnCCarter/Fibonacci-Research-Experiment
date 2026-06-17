@@ -1,5 +1,7 @@
+import pytest
+
 from fibengine.core.config import PivotConfig, ScoringConfig
-from fibengine.core.scoring import rank_swings, select_swing
+from fibengine.core.scoring import rank_swings, select_swing, swing_score_margin
 
 
 def _scoring_cfg() -> ScoringConfig:
@@ -41,3 +43,12 @@ def test_select_swing_prefers_recent_large_clean_leg(synthetic_df):
     assert swing.direction == "up"
     assert swing.end.price > 128
     assert swing.status in {"confirmed", "provisional"}
+
+
+def test_swing_score_margin_is_top1_minus_top2(synthetic_df):
+    pivot, cfg = PivotConfig(min_prominence_atr=0.3), _scoring_cfg()
+    legs = rank_swings(synthetic_df, pivot, cfg)
+    assert len(legs) >= 2  # the synthetic fixture yields multiple candidate legs
+    margin = swing_score_margin(synthetic_df, pivot, cfg)
+    assert margin == pytest.approx(legs[0].score - legs[1].score)
+    assert margin >= 0  # ranked descending, so the gap is non-negative

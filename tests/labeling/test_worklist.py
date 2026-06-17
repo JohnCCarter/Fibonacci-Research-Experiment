@@ -1,5 +1,37 @@
+from types import SimpleNamespace
+
 from fibengine.labeling import worklist
 from fibengine.labeling.store import Point, SwingLabel
+
+
+class _FakeData:
+    def model_copy(self, update):
+        return SimpleNamespace(**update)
+
+
+def _fake_settings():
+    return SimpleNamespace(data=_FakeData(), pivots=object(), scoring=object())
+
+
+def _patch_uncertainty(monkeypatch, margins: dict, missing_cache: set):
+    """Fake candle-load + margin so ordering is testable without a real corpus."""
+    import fibengine.core.scoring as scoring
+    import fibengine.data.loader as loader
+
+    def fake_load_candles(data_cfg, fetch_if_missing=True):
+        if data_cfg.symbol in missing_cache:
+            raise FileNotFoundError("no cache")
+        return data_cfg  # stand-in df carrying .symbol
+
+    def fake_margin(df, pivot_cfg, scoring_cfg):
+        return margins[df.symbol]
+
+    monkeypatch.setattr(loader, "load_candles", fake_load_candles)
+    monkeypatch.setattr(scoring, "swing_score_margin", fake_margin)
+
+
+def _combo(symbol: str) -> tuple[str, str, str]:
+    return ("bitfinex", symbol, "1d")
 
 
 def _label(
@@ -89,3 +121,40 @@ def test_format_report_emits_runnable_commands(monkeypatch):
     text = worklist.format_report(report)
     assert "fibengine.labeling.tool" in text
     assert "--symbol BTC/USD --timeframe 30m" in text
+
+
+def test_order_by_uncertainty_most_ambiguous_first(monkeypatch):
+    # AAA margin 0.5, BBB 0.1 (more uncertain), CCC unscored (None), DDD no cache.
+    _patch_uncertainty(
+        monkeypatch,
+        margins={"AAA": 0.5, "BBB": 0.1, "CCC": None, "DDD": 0.0},
+        missing_cache={"DDD"},
+    )
+    missing = [_combo(s) for s in ("AAA", "BBB", "CCC", "DDD")]
+    ordered = worklist.order_missing_by_uncertainty(missing, _fake_settings())
+    # Scored ascending by margin first (BBB before AAA), then unscored in original order.
+    assert ordered == [_combo("BBB"), _combo("AAA"), _combo("CCC"), _combo("DDD")]
+
+
+def test_order_by_uncertainty_is_deterministic(monkeypatch):
+    _patch_uncertainty(
+        monkeypatch,
+        margins={"AAA": 0.5, "BBB": 0.1, "CCC": None, "DDD": 0.0},
+        missing_cache={"DDD"},
+    )
+    missing = [_combo(s) for s in ("AAA", "BBB", "CCC", "DDD")]
+    first = worklist.order_missing_by_uncertainty(missing, _fake_settings())
+    second = worklist.order_missing_by_uncertainty(missing, _fake_settings())
+    assert first == second
+
+
+def test_order_by_uncertainty_writes_no_labels(monkeypatch, tmp_path):
+    from fibengine.labeling import store
+
+    store.set_labels_dir(tmp_path)
+    try:
+        _patch_uncertainty(monkeypatch, margins={"AAA": 0.2}, missing_cache=set())
+        worklist.order_missing_by_uncertainty([_combo("AAA")], _fake_settings())
+        assert list(tmp_path.rglob("*.json")) == []  # ordering is read-only
+    finally:
+        store.set_labels_dir(None)
