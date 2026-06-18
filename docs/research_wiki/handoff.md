@@ -8,7 +8,7 @@ append-only trail lives in [log.md](log.md).
 **BTC monthly-first top-down protocol** — re-labeling on BTC/USD only after the
 **2026-06-09 log-scale + profile reset** (prior linear / 0.236 labels archived).
 
-**Canonical protocol:** [BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md](../../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md)
+**Canonical protocol:** [BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md](../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md)
 
 | Step | Timeframe | Status |
 |------|-----------|--------|
@@ -293,7 +293,7 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
 
 ## Links
 
-- [BTC-first protocol](../../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md)
+- [BTC-first protocol](../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md)
 - [Research wiki index](index.md)
 - [Human fib annotation](../labeling/HUMAN_FIB_ANNOTATION.md)
 - [Archive manifest](../../archive/research_superseded/2026-06-08_pre_btc_monthly_reset/MANIFEST.md)

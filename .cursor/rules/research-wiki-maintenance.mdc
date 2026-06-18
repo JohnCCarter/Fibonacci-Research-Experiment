@@ -34,10 +34,18 @@ Before final response when durable context was created:
 
 Skip for trivial Q&A, status-only replies, or mechanical changes with no research context.
 
+## Lint (keep memory consistent)
+
+- **Mechanical (enforced):** `scripts/wiki_lint.py` (pre-commit + CI) fails on dead internal links
+  + orphan pages. Don't leave these to discipline.
+- **Semantic (agent, periodic):** scan for stale claims, contradictions vs source, missing concept
+  pages, wrong section/textual refs (e.g. a stale "§6"), superseded-not-marked. Fix or flag
+  `> CONFLICT: …`, then log a `maintenance` entry. See `docs/research_wiki/README.md` "Lint".
+
 ## Guardrails
 
 - Link to source docs; do not copy long specs into wiki.
-- Stay within repo doc bounds.
+- Search surface (`.rgignore`) stays scoped; knowledge corpus may grow (anti-runaway caps only).
 - No promoting wiki notes to runtime behavior.
 - No auto-fib, trading signals, edge claims, ML loops, or optimization via wiki.
 - `*_candidate` ≠ human facit.

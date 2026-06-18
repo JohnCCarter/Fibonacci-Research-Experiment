@@ -20,6 +20,7 @@ on 2026-06-08. They are **not** current evidence.
 | File | Description |
 |------|-------------|
 | [btc-1m-reaction-review-cycle-20260611.md](btc-1m-reaction-review-cycle-20260611.md) | All 9 BTC/USD 1M source fibs — 1D + 4H reaction review, approved 2026-06-11 |
+| [btc-1d-reaction-review-cycle-20260612.md](btc-1d-reaction-review-cycle-20260612.md) | BTC/USD 1D source fibs — reaction review cycle, 2026-06-12 |
 | [fib-tooling-ecosystem-scan-20260615.md](fib-tooling-ecosystem-scan-20260615.md) | Issue #32 tooling/ecosystem scan — inventory-only; top-3 ROI: HTML gallery, review ledger, overlap detector |
 | [ledgers/README.md](ledgers/README.md) | Source-quality review ledgers (machine-trackable verdicts) — Issue #32 top-ROI #2 |
 | [btc-4h-overlap-candidates-20260615.md](btc-4h-overlap-candidates-20260615.md) | 4H overlap/near-duplicate candidates (report-only) — Issue #32 top-ROI #3 |
