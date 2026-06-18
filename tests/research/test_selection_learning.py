@@ -81,6 +81,58 @@ def test_auc_perfect_and_degenerate():
     assert sl.roc_auc(np.array([1, 1]), np.array([0.1, 0.9])) is None  # no negatives
 
 
+# --- AP-lift inference: decision-point cluster bootstrap --------------------------------------
+
+
+def test_bootstrap_detects_real_lift():
+    # model ranks positives top, baseline ranks them bottom → lift > 0 reliably
+    n_groups = 40
+    y, sm, sb, groups = [], [], [], []
+    for g in range(n_groups):
+        # one positive + three negatives per decision-point group
+        y += [1, 0, 0, 0]
+        sm += [0.9, 0.2, 0.1, 0.15]  # model: positive on top
+        sb += [0.1, 0.9, 0.8, 0.7]  # baseline: positive at bottom
+        groups += [g, g, g, g]
+    out = sl.decision_point_bootstrap(
+        np.array(y, float), np.array(sm), np.array(sb), np.array(groups), n_boot=300, seed=1
+    )
+    assert out is not None
+    assert out["method"] == "decision_point_cluster_bootstrap"
+    assert out["n_groups"] == n_groups
+    assert out["lift_mean"] > 0
+    assert out["ci95_low"] > 0  # CI excludes 0 → lift is real
+    assert out["p_one_sided_lift_le_0"] < 0.05
+
+
+def test_bootstrap_no_lift_when_rankers_equal():
+    # identical model/baseline scores → lift ≈ 0, p should not be significant
+    rng = np.random.default_rng(2)
+    n = 80
+    groups = np.repeat(np.arange(20), 4)
+    y = (rng.random(n) < 0.25).astype(float)
+    s = rng.random(n)
+    out = sl.decision_point_bootstrap(y, s, s.copy(), groups, n_boot=300, seed=3)
+    if out is not None:  # None only if a degenerate resample wiped positives
+        assert out["lift_mean"] == pytest.approx(0.0, abs=1e-9)
+        assert out["p_one_sided_lift_le_0"] >= 0.5  # cannot reject null
+
+
+def test_bootstrap_none_without_positives():
+    groups = np.array([0, 0, 1, 1])
+    assert (
+        sl.decision_point_bootstrap(
+            np.zeros(4),
+            np.array([0.1, 0.2, 0.3, 0.4]),
+            np.array([0.4, 0.3, 0.2, 0.1]),
+            groups,
+            n_boot=50,
+            seed=0,
+        )
+        is None
+    )
+
+
 # --- logistic regression (deterministic, interpretable) ---------------------------------------
 
 

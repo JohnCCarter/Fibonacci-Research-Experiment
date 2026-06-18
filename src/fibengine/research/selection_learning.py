@@ -93,6 +93,7 @@ class SelectionConfig:
     l2: float = 1.0  # logistic ridge penalty
     n_iter: int = 500
     lr: float = 0.1
+    n_boot: int = 2000  # decision-point cluster-bootstrap resamples for the AP-lift CI/p
     seed: int = SEED
 
 
@@ -327,6 +328,50 @@ def roc_auc(y_true: np.ndarray, scores: np.ndarray) -> float | None:
     return float((sum_pos - n_pos * (n_pos + 1) / 2.0) / (n_pos * n_neg))
 
 
+def decision_point_bootstrap(
+    y: np.ndarray,
+    scores_model: np.ndarray,
+    scores_base: np.ndarray,
+    groups: np.ndarray,
+    n_boot: int,
+    seed: int,
+) -> dict[str, Any] | None:
+    """Cluster-bootstrap CI + one-sided p for the AP-lift, resampled by **decision point**.
+
+    The candidate rows cluster by ``anchor_b`` decision point (many legs share one endpoint); an
+    independent row bootstrap would understate variance. So we resample whole decision-point groups
+    with replacement, re-pool their candidates, and recompute ``AP(model) − AP(baseline)`` on the
+    held-fixed model scores (no refit — this measures the OOS test-estimate's sampling variability).
+    Null = lift ≤ 0; one-sided p = fraction of resamples with lift ≤ 0. None if no positives."""
+    if y.sum() == 0:
+        return None
+    uniq = np.unique(groups)
+    rows_by_group = {int(g): np.flatnonzero(groups == g) for g in uniq}
+    rng = np.random.default_rng(seed)
+    lifts: list[float] = []
+    for _ in range(n_boot):
+        sampled = rng.choice(uniq, size=len(uniq), replace=True)
+        idx = np.concatenate([rows_by_group[int(g)] for g in sampled])
+        ap_m = average_precision(y[idx], scores_model[idx])
+        ap_b = average_precision(y[idx], scores_base[idx])
+        if ap_m is None or ap_b is None:
+            continue
+        lifts.append(ap_m - ap_b)
+    if not lifts:
+        return None
+    arr = np.array(lifts)
+    return {
+        "method": "decision_point_cluster_bootstrap",
+        "n_boot": n_boot,
+        "n_boot_effective": int(arr.size),
+        "n_groups": int(uniq.size),
+        "lift_mean": float(arr.mean()),
+        "ci95_low": float(np.percentile(arr, 2.5)),
+        "ci95_high": float(np.percentile(arr, 97.5)),
+        "p_one_sided_lift_le_0": float(np.mean(arr <= 0.0)),
+    }
+
+
 # --- per-timeframe driver ---------------------------------------------------------------------
 
 
@@ -368,8 +413,12 @@ def run_timeframe(timeframe: str, cfg: SelectionConfig, settings: Any) -> dict[s
     reachable_fraction = len(matched_humans) / len(human_legs) if human_legs else None
 
     ap_model = ap_base = auc_model = lift = None
+    p_model = mag = None
+    model_weights = None
     if len(train) and len(test) and y_tr.sum() > 0 and y_te.sum() > 0:
         model = fit_logreg(x_tr, y_tr, cfg)
+        # §10 interpretability: standardized weights are directly comparable across features
+        model_weights = {f: float(w) for f, w in zip(feat_names, model["w"], strict=True)}
         p_model = predict_proba(model, x_te)
         ap_model = average_precision(y_te, p_model)
         auc_model = roc_auc(y_te, p_model)
@@ -381,10 +430,14 @@ def run_timeframe(timeframe: str, cfg: SelectionConfig, settings: Any) -> dict[s
 
     n_test_pos = int(y_te.sum())
     powered = n_test_pos >= cfg.min_test_positives
-    # NOT an inferential verdict — just a point-estimate flag (lift>0 on a powered cell). The
-    # significance test (CI / p-value on the AP-lift, resampled by decision point to respect
-    # candidate clustering) is the pending next step; do not read this as "beats baseline".
+    # NOT an inferential verdict — just a point-estimate flag (lift>0 on a powered cell).
     lift_pos_powered = bool(powered and lift is not None and lift > 0)
+
+    # AP-lift inference (this slice): decision-point cluster bootstrap, powered cells only.
+    inference = None
+    if powered and lift is not None and p_model is not None and mag is not None:
+        groups = np.array([c.anchor_b_pos for c in test])
+        inference = decision_point_bootstrap(y_te, p_model, mag, groups, cfg.n_boot, cfg.seed)
 
     return {
         "timeframe": timeframe,
@@ -401,8 +454,10 @@ def run_timeframe(timeframe: str, cfg: SelectionConfig, settings: Any) -> dict[s
         "ap_baseline": ap_base,
         "ap_lift": lift,
         "auc_model_secondary": auc_model,
+        "model_weights_standardized": model_weights,  # §10 interpretability (read before claiming)
         "powered": powered,
         "lift_pos_powered": lift_pos_powered,  # point-estimate flag, NOT an inferential verdict
+        "ap_lift_inference": inference,  # CI + one-sided p on the AP-lift (powered cells only)
         "retro_W_bars": _TF_W_BARS[timeframe],
     }
 
@@ -415,7 +470,7 @@ def run_study(timeframes: list[str], config_path: str | None, cfg: SelectionConf
         "generated_by": "fib_selection_learning",
         "stage": "stage2_headline_live_k3",
         "metric": "pooled_test_average_precision",
-        "inference_status": "PENDING — point estimates only; no CI/p-value on the AP-lift yet",
+        "inference": "AP-lift: decision-point cluster bootstrap (powered cells only)",
         "seed": cfg.seed,
         "timeframes": timeframes,
         "any_lift_pos_powered": any_lift_pos_powered,
@@ -450,9 +505,8 @@ def main(argv: list[str] | None = None) -> int:
             f"[{r['timeframe']}] ap_model={r['ap_model']} ap_base={r['ap_baseline']} "
             f"lift={r['ap_lift']} test_pos={r['n_test_positives']} "
             f"cover={r['reachable_fraction']} powered={r['powered']} "
-            f"lift_pos_powered={r['lift_pos_powered']}"
+            f"lift_pos_powered={r['lift_pos_powered']} inf={r['ap_lift_inference']}"
         )
-    print(f"inference={report['inference_status']}")
     print(f"any_lift_pos_powered={report['any_lift_pos_powered']}  summary={path}")
     return 0
 

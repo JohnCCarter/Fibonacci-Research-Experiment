@@ -31,6 +31,20 @@ structurally enforced). One pre-registered **primary cell** (forking-paths defen
 (blind) then separate go. Designed collaboratively with Chamoun (the labeler is facit on his own
 process). [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md). **Next: addendum tomorrow.**
 
+## [2026-06-18] review | Fib SELECTION-LEARNING AP-lift inference (4h) → MODEST single-feature lead
+
+Inference slice (scoped: 4h AP-lift only). Decision-point cluster bootstrap (2000 resamples by
+`anchor_b` group, model held fixed): lift +0.052, **95% CI [0.023, 0.120] excludes 0**, 0/2000
+resamples ≤ 0 — the 4h AP-lift is **robustly positive vs the magnitude baseline, OOS** (a
+bootstrap-stability statement, not a permutation-null p). **But** the §10 interpretable weights show
+it is **carried almost entirely by `cleanliness`** (std weight 0.20 vs prominence 0.07,
+structure_alignment ≈ 0): human-marked legs are *cleaner/more efficient* than magnitude predicts —
+a single coherent correlate, **not** a multi-feature reproduction of human selection. Scope limits:
+beats **magnitude only** (§6 most-prominent baseline untested; prominence carries weight so the lift
+may shrink against it); AP 0.057 capped by 0.83 coverage ceiling (human not reproduced); 1M/1w/1d
+**underpowered, not refuted**. **No edge/behaviour claim.** Recommended next (separate go):
+prominence-baseline sensitivity on 4h. [Results](reviews/btc-fib-selection-learning-results-20260618.md).
+
 ## [2026-06-18] review | Fib SELECTION-LEARNING Stage-2 headline built + run → POINT ESTIMATE (no claim)
 
 §12.3 go granted. Built `research/selection_learning.py` (+15 tests) and ran the single
