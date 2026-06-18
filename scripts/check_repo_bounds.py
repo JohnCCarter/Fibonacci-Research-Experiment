@@ -21,11 +21,19 @@ RULES: list[tuple[str, int, int]] = [
     ("src/fibengine/research/*.py", 750, 32 * 1024),
     ("src/fibengine/labeling/*.py", 600, 32 * 1024),
     ("tests/research/*.py", 300, 20 * 1024),
-    ("docs/research_wiki/log.md", 500, 28 * 1024),
+    # Agent-native wiki (decisions/2026-06-17-wiki-is-agent-native.md): cap the always-read fast
+    # path (index/handoff) modestly so orientation stays cheap; let the query-on-demand corpus
+    # (concepts/reference/reviews/decisions/sources + log) grow — anti-runaway ceilings only, so
+    # the agent accumulates instead of re-deriving and is never forced to archive mid-task.
+    ("docs/research_wiki/index.md", 400, 32 * 1024),
+    ("docs/research_wiki/handoff.md", 400, 32 * 1024),
+    ("docs/research_wiki/log.md", 1500, 120 * 1024),
+    ("docs/research_wiki/log-archive-*.md", 1500, 120 * 1024),
+    ("docs/research_wiki/*.md", 600, 48 * 1024),
     ("src/fibengine/**/*.py", 450, 28 * 1024),
     ("tests/**/*.py", 280, 18 * 1024),
     ("docs/**/*.md", 300, 20 * 1024),
-    ("scripts/*.py", 120, 8 * 1024),
+    ("scripts/*.py", 160, 12 * 1024),
 ]
 
 SKIP_NAMES = {"INDEX.md", "README.md"}

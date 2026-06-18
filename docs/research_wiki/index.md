@@ -1,8 +1,14 @@
 # Research Wiki Index
 
-Start here when looking for accumulated repo context. Source evidence is the
-truth; wiki pages are the map and synthesis. When they disagree, the source wins
-— see [source-authority.md](reference/source-authority.md).
+**Agent-native warm context** — start here to orient in milliseconds instead of
+re-searching the repo or re-deriving methodology (purpose:
+[decisions/2026-06-17-wiki-is-agent-native.md](decisions/2026-06-17-wiki-is-agent-native.md)).
+Source evidence is the truth; wiki pages are the map and accumulated knowledge. When they
+disagree, the source wins — see [source-authority.md](reference/source-authority.md).
+
+**Before re-deriving methodology or proposing a study,** check
+[Methodology](#methodology--query-before-re-deriving) and
+[closed questions](reference/closed-questions.md) (do-not-re-run registry).
 
 ## Wiki Operations
 
@@ -36,6 +42,18 @@ truth; wiki pages are the map and synthesis. When they disagree, the source wins
 - [Human fib ground truth](concepts/human-fib-ground-truth.md) — manual anchors,
   levels, and candidate events.
 
+## Methodology — query before re-deriving
+
+Accumulated external methodology so agents read instead of re-derive (see
+[methodology-anchors.md](sources/methodology-anchors.md) for the papers):
+
+- [Anytime-valid e-values + e-Holm](concepts/anytime-valid-evalues.md) — conditional 2×2 safe-test
+  e-value for re-looks at a peeked window.
+- [Purged / embargoed CV](concepts/purged-embargoed-cv.md) — leakage-safe OOS split (López de Prado).
+- [Random-walk null](concepts/random-walk-null.md) — the control a level-reaction claim must beat.
+- [**Closed questions**](reference/closed-questions.md) — do-not-re-run registry (fib behaviour,
+  context-conditioned, B-1 all NULL).
+
 ## Templates
 
 - [Atomic artifact template](templates/atomic-artifact.md) — skeleton for small
@@ -45,6 +63,9 @@ truth; wiki pages are the map and synthesis. When they disagree, the source wins
 
 ## Decisions
 
+- [2026-06-17 wiki is agent-native](decisions/2026-06-17-wiki-is-agent-native.md) — the wiki is the
+  agent's persistent warm context (agent curates, human queries, source wins); search-surface vs
+  knowledge-corpus split; accumulation loop restored.
 - [2026-06-04 fib-aware review](decisions/2026-06-04-fib-aware-review.md) —
   current decision to improve review rendering and defer full UI replacement.
 
@@ -52,6 +73,8 @@ truth; wiki pages are the map and synthesis. When they disagree, the source wins
 
 - [Karpathy LLM wiki](sources/karpathy-llm-wiki.md) — source pattern for this
   wiki.
+- [Methodology anchors](sources/methodology-anchors.md) — external papers the repo's methods rely
+  on (Lo–Mamaysky–Wang, Johari–Pekelis–Walsh, Grünwald safe testing, López de Prado).
 
 ## Reviews
 

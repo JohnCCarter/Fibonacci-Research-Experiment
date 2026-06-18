@@ -50,5 +50,5 @@ When sources disagree:
 
 - [check_repo_bounds.py](../../../scripts/check_repo_bounds.py) fails CI if a
   required wiki/schema file is missing or a local/private artifact is tracked.
-- [AGENTS.md](../../../AGENTS.md) §6 and
+- [AGENTS.md](../../../AGENTS.md) §2 (source authority) + §3 (maintenance) and
   [CLAUDE.md](../../../CLAUDE.md) carry the short version of this rule.

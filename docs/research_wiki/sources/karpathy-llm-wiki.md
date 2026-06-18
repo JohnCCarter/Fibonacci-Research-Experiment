@@ -25,9 +25,17 @@ decisions so future sessions do not rediscover everything from scratch.
 - Small pages with source links.
 - Concepts and decisions as durable artifacts.
 
-## What We Do Not Adopt Yet
+## Update (2026-06-17): accumulation loop now adopted
 
-- Search tooling.
+[decisions/2026-06-17-wiki-is-agent-native.md](../decisions/2026-06-17-wiki-is-agent-native.md)
+extends this pattern: the wiki is **agent-native warm context** for ms-orientation, **the agent
+curates** (the human queries), and the **accumulation loop is now live** — external methodology gets
+concept/source pages so agents query instead of re-derive (it had been frozen out by an empty
+`sources/`). Size caps were relaxed to "anti-runaway only" so knowledge is never buried by archiving.
+
+## What We Still Do Not Adopt
+
+- Search tooling beyond `.rgignore` scoping + the `index.md` content map (sufficient at this scale).
 - Heavy automation scripts.
 - Obsidian-specific setup.
 - Any behavior that changes runtime research results.

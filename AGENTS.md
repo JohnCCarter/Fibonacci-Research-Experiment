@@ -28,16 +28,19 @@ Enforcement: [`.cursor/rules/`](.cursor/rules/) (`alwaysApply`).
 
 ## 2. Source authority (how to treat evidence)
 
-The wiki (`docs/research_wiki/`) is **navigation and synthesis**, never truth.
-When the wiki and a source layer disagree, the **source wins** — fix the wiki or
-flag the conflict. Full model:
-[source-authority.md](docs/research_wiki/reference/source-authority.md).
+The wiki (`docs/research_wiki/`) is **agent-native warm context** — navigation
+**and** accumulated knowledge for fast cross-session orientation — but **never
+truth**. When the wiki and a source layer disagree, the **source wins** — fix the
+wiki or flag the conflict (this guard matters *more* when the agent both writes and
+reads its own memory). Full model:
+[source-authority.md](docs/research_wiki/reference/source-authority.md);
+purpose: [decisions/2026-06-17-wiki-is-agent-native.md](docs/research_wiki/decisions/2026-06-17-wiki-is-agent-native.md).
 
 | Rule | Meaning |
 |------|---------|
 | Human fib = **facit** | Manual anchors/levels/events are ground truth |
 | `*_candidate` ≠ facit | Machine suggestions stay candidates until human promotion |
-| Wiki = navigation | `docs/research_wiki/` synthesizes; **source code and docs** are behavior truth |
+| Wiki = agent memory | `docs/research_wiki/` is agent-native warm context (navigation + accumulated knowledge); **source code and docs** are behavior truth |
 | Source authority | When wiki and source evidence disagree, **source wins** — fix or flag the wiki |
 | Local config ≠ truth | `.claude/`, `.env`, caches, `data/raw/`, temp charts/logs are local-only — never wiki memory or source truth |
 | No auto-fib as truth | Do not promote automated fib selection to facit |
@@ -48,6 +51,12 @@ flag the conflict. Full model:
 ---
 
 ## 3. Wiki maintenance (prevent stale memory)
+
+The agent **curates** the wiki (the human asks questions); maintenance is
+self-interest, not a chore — persist now so the next agent orients in milliseconds.
+**Query the wiki before re-deriving methodology** (see
+[concepts/](docs/research_wiki/concepts/) and
+[reference/closed-questions.md](docs/research_wiki/reference/closed-questions.md)).
 
 After meaningful research/labeling/review work: update the smallest relevant page
 under `docs/research_wiki/`, link it from `index.md`, append one `log.md` entry,

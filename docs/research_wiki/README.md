@@ -1,11 +1,14 @@
 # Research Wiki
 
-This directory is the persistent **LLM-maintained wiki** for the Fibonacci
-experiment ([Karpathy LLM wiki](sources/karpathy-llm-wiki.md) pattern). It exists
-for navigation, synthesis, decisions, concepts, handoff, and links between raw
-sources and future work.
+This directory is the **agent-native warm context** for the Fibonacci experiment
+([Karpathy LLM wiki](sources/karpathy-llm-wiki.md) pattern, extended — see
+[decisions/2026-06-17-wiki-is-agent-native.md](decisions/2026-06-17-wiki-is-agent-native.md)).
+It exists so an agent **orients in milliseconds across sessions** ("as if the session
+never ended") instead of re-searching the repo or re-deriving methodology. Operating
+model: **the agent curates, the human asks questions, the agent does the rest.**
 
-**This layer is:** memory and synthesis for agents and humans.
+**This layer is:** the agent's persistent memory — navigation **and** accumulated
+knowledge (summaries, concepts, decisions, contradictions, links).
 **This layer is not:** raw evidence, and not executable truth.
 
 Every page must be grounded in a source: human fib labels, the active protocol
@@ -29,10 +32,16 @@ with that evidence, **fix the wiki or flag the conflict** — the source wins. S
   human review label exists.
 - Do not add auto-fib, trading signals, edge claims, ML behavior, or optimization
   loops here.
+- **Query the wiki before re-deriving methodology** (check [concepts/](concepts/) and
+  [reference/closed-questions.md](reference/closed-questions.md) first).
 - Prefer small pages with links over long reports.
 - Update `index.md` whenever adding, moving, or retiring a page.
 - Append to `log.md` for ingests, decisions, review sessions, and maintenance.
-- Keep every page within the repo doc bounds.
+- **Search surface vs knowledge corpus:** keep the always-read fast path (`index.md`,
+  `handoff.md`) lean for cheap orientation; the query-on-demand corpus (concepts, reference,
+  reviews, decisions, sources, log) may grow freely — bounds are anti-runaway only, not a reason
+  to bury knowledge by archiving. Keep noisy raw surfaces out of search via
+  [`.rgignore`](../../.rgignore), not by capping pages.
 
 ## Page Types
 
@@ -47,7 +56,8 @@ with that evidence, **fix the wiki or flag the conflict** — the source wins. S
 
 ## Maintenance Loop
 
-Use this loop after meaningful research work:
+The agent curates this — it is self-interest, not a chore: persist now so the next agent (or
+future-you) orients in milliseconds. Use this loop after meaningful research work:
 
 1. Add or update the smallest relevant wiki page.
 2. Link it from `index.md`.

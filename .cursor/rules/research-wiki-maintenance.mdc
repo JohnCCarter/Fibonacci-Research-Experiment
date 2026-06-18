@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Research Wiki Maintenance
 
-**Constitution guardrails:** [AGENTS.md](../../AGENTS.md) §6 · Wiki is **navigation**, not behavior truth.
+**Constitution guardrails:** [AGENTS.md](../../AGENTS.md) §2 (source authority) + §3 (maintenance) · Wiki is **agent-native warm context** (navigation + accumulated knowledge); source wins.
 
 ## Read before substantial work
 
@@ -14,6 +14,10 @@ Research, labeling, review tooling, or non-trivial implementation:
 - `docs/research_wiki/index.md`
 - `docs/research_wiki/handoff.md`
 - `docs/research_wiki/log.md` (tail)
+
+**Query the wiki before re-deriving methodology** — check
+`docs/research_wiki/concepts/` and `docs/research_wiki/reference/closed-questions.md` (do-not-re-run
+registry) first. Maintenance is the agent's own investment: persist so the next agent orients in ms.
 
 Truth: source docs, code, labels, experiment outputs, GitHub issues. When wiki and
 evidence disagree, **source wins** — fix or flag the wiki
