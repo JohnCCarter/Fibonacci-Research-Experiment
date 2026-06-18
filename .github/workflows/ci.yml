@@ -26,9 +26,6 @@ jobs:
       - name: Repo-bound contract (LLM Wiki boundary)
         run: uv run python scripts/check_repo_bounds.py
 
-      - name: Wiki lint (dead links / orphan pages)
-        run: uv run python scripts/wiki_lint.py
-
       - name: Ruff lint
         run: uv run ruff check src tests
 

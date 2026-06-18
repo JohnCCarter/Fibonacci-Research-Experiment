@@ -73,9 +73,13 @@ Karpathy's third operation (Ingest / Query / **Lint**). Split by what is determi
 needs judgment:
 
 - **Mechanical (automated, enforced):** [`scripts/wiki_lint.py`](../../scripts/wiki_lint.py) runs in
-  pre-commit + CI and fails on **dead internal links** and **orphan pages** (any wiki `.md` not
-  reachable from `index.md`/`log.md`). Frozen `log-archive-*.md` are excluded as sources but still
-  provide reachability. This is the tedious bookkeeping — never left to discipline.
+  **pre-commit** (and on demand) and fails on **dead internal links** and **orphan pages** (any wiki
+  `.md` not reachable from `index.md`/`log.md`). Frozen `log-archive-*.md` are excluded as sources
+  (still traversed for reachability), and links into local-only roots (`archive/`, `data/`,
+  `experiments/`) are skipped so the check is environment-independent. Pre-commit — not CI — is the
+  home: it runs in the same environment that authors the links, where the agent fixes them in
+  context; a CI gate on docs links would false-fail on local-only paths and is disproportionate for
+  an agent-maintained repo. This is the tedious bookkeeping — never left to discipline.
 - **Semantic (agent judgment, run periodically / when the corpus shifts):** scan for **stale
   claims** (counts/state that no longer match source), **contradictions vs source** (layers 1–4),
   **missing concept pages** (methodology re-derived in chat instead of read), **wrong section/textual

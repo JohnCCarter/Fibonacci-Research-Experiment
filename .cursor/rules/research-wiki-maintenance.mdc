@@ -36,8 +36,9 @@ Skip for trivial Q&A, status-only replies, or mechanical changes with no researc
 
 ## Lint (keep memory consistent)
 
-- **Mechanical (enforced):** `scripts/wiki_lint.py` (pre-commit + CI) fails on dead internal links
-  + orphan pages. Don't leave these to discipline.
+- **Mechanical (enforced):** `scripts/wiki_lint.py` (pre-commit; runs where links are authored —
+  not CI, which would false-fail on local-only `archive/` paths) fails on dead internal links +
+  orphan pages. Don't leave these to discipline.
 - **Semantic (agent, periodic):** scan for stale claims, contradictions vs source, missing concept
   pages, wrong section/textual refs (e.g. a stale "§6"), superseded-not-marked. Fix or flag
   `> CONFLICT: …`, then log a `maintenance` entry. See `docs/research_wiki/README.md` "Lint".

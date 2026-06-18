@@ -74,3 +74,9 @@ def test_clean_wiki_passes(tmp_path):
     _write(tmp_path / "index.md", "[a](a.md)")
     _write(tmp_path / "a.md", "leaf")
     assert wl.dead_links(tmp_path) == [] and wl.orphans(tmp_path) == []
+
+
+def test_local_only_roots_skipped(tmp_path):
+    # links into intentionally-uncommitted roots must not be validated (env-independent)
+    _write(tmp_path / "index.md", "[a](archive/gone.md) [b](data/x.csv) [c](experiments/y.json)")
+    assert wl.dead_links(tmp_path, repo_root=tmp_path) == []

@@ -21,6 +21,11 @@ WIKI = REPO_ROOT / "docs" / "research_wiki"
 # index = content map; log + archives = chronological hubs that link the review corpus.
 ROOT_NAMES = ("index.md", "log.md", "handoff.md", "README.md", "glossary.md")
 
+# Intentionally-uncommitted areas (repo policy / .rgignore): present locally but absent in a fresh
+# clone / CI / cloud VM. Links into them are NOT validated — else the lint is environment-dependent
+# (this is exactly why a reviews/README.md -> archive/ link passed locally but failed CI).
+LOCAL_ONLY_ROOTS = ("archive/", "data/", "experiments/")
+
 _LINK = re.compile(r"\]\(([^)]+)\)")  # markdown ](target)
 
 
@@ -52,8 +57,19 @@ def _disp(p: Path) -> str:
         return p.as_posix()
 
 
-def dead_links(wiki: Path) -> list[str]:
-    """(file -> target) where a relative link points at something that does not exist."""
+def _is_local_only(dest: Path, repo_root: Path = REPO_ROOT) -> bool:
+    """True if `dest` is under an intentionally-uncommitted root (skip; not cross-env checkable)."""
+    try:
+        rel = dest.relative_to(repo_root).as_posix()
+    except ValueError:
+        return False  # outside the repo — let the existence check decide
+    return rel.startswith(LOCAL_ONLY_ROOTS)
+
+
+def dead_links(wiki: Path, repo_root: Path = REPO_ROOT) -> list[str]:
+    """(file -> target) where a relative link points at a path that does not exist. Targets under
+    local-only roots are skipped (they exist locally but not in a fresh clone / CI — see
+    LOCAL_ONLY_ROOTS), keeping the check environment-independent."""
     fails: list[str] = []
     for md in sorted(wiki.rglob("*.md")):
         if _is_archive(md):
@@ -61,7 +77,10 @@ def dead_links(wiki: Path) -> list[str]:
         for t in _targets(md.read_text(encoding="utf-8")):
             if not t:
                 continue
-            if not _resolve(md, t).exists():
+            dest = _resolve(md, t)
+            if _is_local_only(dest, repo_root):
+                continue
+            if not dest.exists():
                 fails.append(f"dead link: {_disp(md)} -> {t}")
     return fails
 
