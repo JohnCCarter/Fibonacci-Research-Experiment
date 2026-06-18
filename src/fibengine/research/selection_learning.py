@@ -28,7 +28,7 @@ import argparse
 import glob
 import json
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +38,7 @@ import pandas as pd
 from fibengine.core.config import REPO_ROOT, PivotConfig, ScoringConfig, load_settings
 from fibengine.core.features import compute_features
 from fibengine.core.models import Pivot, Swing
+from fibengine.core.scale import detect_pivots_multi
 from fibengine.data.loader import atr, load_candles
 from fibengine.pivots.detect import detect_pivots
 
@@ -207,6 +208,10 @@ def build_candidates(
     index_ns = df.index.values.astype("datetime64[ns]").astype("int64")
     n = len(df)
     full_pivots = detect_pivots(df, pivot_cfg)
+    # scale_confluence (k*=12) needs larger-degree pivots; compute them on the truncated frame ONLY
+    # when the active whitelist admits it (k>=12) — else it stays the degenerate neutral 0.5 and is
+    # whitelisted out anyway. Keeps k<12 cheap and the k=12 cell causally honest.
+    need_confluence = "scale_confluence" in live_feature_names(cfg.k)
     out: list[Candidate] = []
     for piv in full_pivots:
         j = piv.index
@@ -220,11 +225,16 @@ def build_candidates(
         end_piv = next((q for q in piv_t if q.index == j and q.kind == piv.kind), None)
         if end_piv is None:  # dedupe/edge dropped it on the truncated frame — not live-confirmable
             continue
+        multi_t = (
+            detect_pivots_multi(df_t, pivot_cfg, scoring_cfg.confluence_degrees)
+            if need_confluence
+            else None
+        )
         prior_opp = [q for q in piv_t if q.kind != end_piv.kind and q.index < end_piv.index]
         atr_at_b = float(atr_arr[j]) if 0 <= j < len(atr_arr) else float("nan")
         for start in prior_opp[-cfg.max_legs_per_point :]:
             swing = Swing(start=start, end=end_piv)
-            feats = compute_features(df_t, swing, atr_t, scoring_cfg, piv_t, None)
+            feats = compute_features(df_t, swing, atr_t, scoring_cfg, piv_t, multi_t)
             h = _matches_human(start, end_piv, human_legs, index_ns, atr_at_b, cfg)
             out.append(
                 Candidate(
@@ -463,9 +473,12 @@ def run_timeframe(timeframe: str, cfg: SelectionConfig, settings: Any) -> dict[s
     lift_vs_prom_sum = lift_vs_prom_max = None
     inf_prom_sum = inf_prom_max = None
     prominence_verdict = None
+    groups = np.array([c.anchor_b_pos for c in test])  # decision-point ids for cluster bootstrap
     if powered and ap_model is not None and p_model is not None and mag is not None:
-        groups = np.array([c.anchor_b_pos for c in test])
         inference = decision_point_bootstrap(y_te, p_model, mag, groups, cfg.n_boot, cfg.seed)
+    # §6 prominence baselines: only where prominence is causally whitelisted at this k (k*=3).
+    # k<3 → N/A (not failure): prominence is not live-available, so the family check skips it.
+    if powered and p_model is not None and "prominence" in feat_names:
         prom_sum = x_te[:, feat_names.index("prominence")]  # A (parallel to magnitude column)
         prom_max = np.array([c.prom_max for c in test])  # B
         ap_base_prom_sum = average_precision(y_te, prom_sum)
@@ -509,6 +522,69 @@ def run_timeframe(timeframe: str, cfg: SelectionConfig, settings: Any) -> dict[s
     }
 
 
+def _k_survives_magnitude(r: dict[str, Any]) -> bool:
+    """Transparency flag: powered AND the model-vs-magnitude bootstrap CI excludes 0 (the weaker
+    bar). Reported alongside the family criterion; never the verdict driver."""
+    inf = r.get("ap_lift_inference_vs_magnitude")
+    return bool(r.get("powered") and inf is not None and inf["ci95_low"] > 0.0)
+
+
+def _k_survives_family(r: dict[str, Any]) -> bool:
+    """LOCKED survival criterion (user 2026-06-18): a k-cell survives iff it is powered AND the
+    model AP-lift CI excludes 0 vs EVERY causally-allowed §6 baseline at that k — magnitude always,
+    plus prominence A/B where prominence is whitelisted (k>=3). The stronger, more valid bar; it is
+    the same family the k=3 headline already had to beat (validity over convenience)."""
+    if not r.get("powered"):
+        return False
+    infs = [
+        r.get("ap_lift_inference_vs_magnitude"),
+        r.get("ap_lift_inference_vs_prominence_sum"),
+        r.get("ap_lift_inference_vs_prominence_max"),
+    ]
+    present = [i for i in infs if i is not None]
+    # require magnitude present (always allowed) and ALL present baselines' CI exclude 0
+    if r.get("ap_lift_inference_vs_magnitude") is None:
+        return False
+    return all(i["ci95_low"] > 0.0 for i in present)
+
+
+def k_sweep_verdict(per_k: list[dict[str, Any]]) -> str:
+    """Cross-k verdict (locked rule). Survival = the prominence-FAMILY criterion.
+
+    ≥2 k survive → k-stable; only k=3 → narrow buffer dependency; none → primary-k3-only."""
+    survivors = {int(r["k"]) for r in per_k if _k_survives_family(r)}
+    if len(survivors) >= 2:
+        return "k_stable_live_selection_signal"
+    if survivors == {3}:
+        return "k_sensitive_narrow_confirmation_buffer_dependency"
+    return "previous_result_valid_only_for_primary_k3_not_robust_across_k"
+
+
+def run_k_sweep(
+    timeframe: str, ks: list[int], config_path: str | None, cfg: SelectionConfig
+) -> dict:
+    """4H live-only k-sweep sensitivity (addendum A5 k-sweep). Re-runs the headline cell per k —
+    each k rebuilds the candidate universe on its own truncated viewport and applies the frozen
+    k*-whitelist. Reports per-k cells + the locked cross-k verdict. No W/gap, no Stage 1."""
+    settings = load_settings(config_path) if config_path else load_settings()
+    per_k: list[dict[str, Any]] = []
+    for k in ks:
+        res = run_timeframe(timeframe, replace(cfg, k=k), settings)
+        res["active_features"] = live_feature_names(k)
+        res["survives_vs_magnitude"] = _k_survives_magnitude(res)  # transparency (weaker bar)
+        res["survives_prominence_family"] = _k_survives_family(res)  # LOCKED verdict driver
+        per_k.append(res)
+    return {
+        "generated_by": "fib_selection_learning_k_sweep",
+        "timeframe": timeframe,
+        "metric": "pooled_test_average_precision",
+        "k_values": ks,
+        "seed": cfg.seed,
+        "k_sweep_verdict": k_sweep_verdict(per_k),
+        "results_by_k": per_k,
+    }
+
+
 def run_study(timeframes: list[str], config_path: str | None, cfg: SelectionConfig) -> dict:
     settings = load_settings(config_path) if config_path else load_settings()
     results = [run_timeframe(tf, cfg, settings) for tf in timeframes]
@@ -535,12 +611,39 @@ def _write_summary(report: dict, out_dir: Path) -> Path:
     return path
 
 
+def _print_k_sweep(report: dict, path: Path) -> None:
+    for r in report["results_by_k"]:
+        print(
+            f"[k={r['k']}] active={r['active_features']} "
+            f"n_test={r['n_test']} test_pos={r['n_test_positives']} powered={r['powered']} "
+            f"ap_model={r['ap_model']} ap_mag={r['ap_baseline_magnitude']} "
+            f"lift_vs_mag={r['ap_lift_vs_magnitude']} "
+            f"survives_family={r['survives_prominence_family']} "
+            f"(mag_only={r['survives_vs_magnitude']})"
+        )
+        print(
+            f"    lift_vs_prom_sum={r['ap_lift_vs_prominence_sum']} "
+            f"lift_vs_prom_max={r['ap_lift_vs_prominence_max']}"
+        )
+        print(f"    inf_vs_mag={r['ap_lift_inference_vs_magnitude']}")
+        print(f"    inf_vs_prom_sum={r['ap_lift_inference_vs_prominence_sum']}")
+        print(f"    inf_vs_prom_max={r['ap_lift_inference_vs_prominence_max']}")
+        print(f"    weights={r['model_weights_standardized']}")
+    print(f"k_sweep_verdict={report['k_sweep_verdict']}  summary={path}")
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="BTC Fib selection-learning (Stage 2 headline)")
     ap.add_argument("--timeframes", default="1d,4h")
     ap.add_argument("--config", default="config/settings.expansion.yaml")
     ap.add_argument("--out", default=str(RESULTS_DIR))
+    ap.add_argument("--k-sweep", action="store_true", help="4H live-only k-sweep {0,3,6,12}")
     args = ap.parse_args(argv)
+    if args.k_sweep:
+        report = run_k_sweep("4h", list(K_SWEEP), args.config, SelectionConfig())
+        path = _write_summary(report, Path(args.out) / "k_sweep")
+        _print_k_sweep(report, path)
+        return 0
     tfs = [t.strip() for t in args.timeframes.split(",") if t.strip()]
     bad = [t for t in tfs if t not in ALLOWED_TIMEFRAMES]
     if bad:

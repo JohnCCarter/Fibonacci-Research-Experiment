@@ -141,6 +141,67 @@ def test_prominence_verdict_locked_rule():
     assert sl.prominence_survival_verdict(None, None) == "reduced_to_magnitude_baseline_only"
 
 
+def _kcell(
+    k: int,
+    powered: bool,
+    mag_low: float | None,
+    prom_sum_low: float | None = None,
+    prom_max_low: float | None = None,
+) -> dict:
+    def _ci(low):
+        return None if low is None else {"ci95_low": low, "ci95_high": low + 0.1}
+
+    return {
+        "k": k,
+        "powered": powered,
+        "ap_lift_inference_vs_magnitude": _ci(mag_low),
+        "ap_lift_inference_vs_prominence_sum": _ci(prom_sum_low),
+        "ap_lift_inference_vs_prominence_max": _ci(prom_max_low),
+    }
+
+
+def test_k_survives_family_requires_all_allowed_baselines():
+    # powered + all three CI exclude 0 → survives the family
+    assert sl._k_survives_family(_kcell(3, True, 0.02, 0.01, 0.03)) is True
+    # magnitude survives but a prominence baseline does NOT → family fails (the validity point)
+    assert sl._k_survives_family(_kcell(3, True, 0.02, -0.01, 0.03)) is False
+    # k=0: prominence N/A (absent) → only magnitude required; survives on magnitude alone
+    assert sl._k_survives_family(_kcell(0, True, 0.02, None, None)) is True
+    # not powered / no magnitude inference → no survival
+    assert sl._k_survives_family(_kcell(3, False, 0.02, 0.01, 0.03)) is False
+    assert sl._k_survives_family(_kcell(3, True, None, 0.01, 0.03)) is False
+
+
+def test_k_survives_magnitude_is_the_weaker_transparency_bar():
+    # magnitude-only flag ignores prominence (weaker bar, reported for transparency)
+    assert sl._k_survives_magnitude(_kcell(3, True, 0.02, -0.01, -0.01)) is True
+    assert sl._k_survives_magnitude(_kcell(3, True, -0.02)) is False
+
+
+def test_k_sweep_verdict_uses_family_criterion():
+    # k=3,6,12 all survive the family → k-stable
+    cells = [
+        _kcell(0, False, None),
+        _kcell(3, True, 0.02, 0.01, 0.03),
+        _kcell(6, True, 0.01, 0.02, 0.02),
+        _kcell(12, True, 0.03, 0.01, 0.01),
+    ]
+    assert sl.k_sweep_verdict(cells) == "k_stable_live_selection_signal"
+    # only k=3 survives the family (k=6 fails a prominence baseline) → narrow dependency
+    cells2 = [
+        _kcell(0, False, None),
+        _kcell(3, True, 0.02, 0.01, 0.02),
+        _kcell(6, True, 0.02, -0.01, 0.02),
+    ]
+    assert sl.k_sweep_verdict(cells2) == "k_sensitive_narrow_confirmation_buffer_dependency"
+    # none survive the family → primary-k3-only / not robust
+    cells3 = [_kcell(3, True, 0.02, -0.02, 0.01), _kcell(6, False, None)]
+    assert (
+        sl.k_sweep_verdict(cells3)
+        == "previous_result_valid_only_for_primary_k3_not_robust_across_k"
+    )
+
+
 def test_bootstrap_none_without_positives():
     groups = np.array([0, 0, 1, 1])
     assert (
