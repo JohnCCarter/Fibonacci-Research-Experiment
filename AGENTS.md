@@ -26,6 +26,23 @@ Enforcement: [`.cursor/rules/`](.cursor/rules/) (`alwaysApply`).
 
 ---
 
+## Agent epistemic principles
+
+Binding operating principles (not hints) — read with §1.
+
+- **Research easy, authority hard.** Keep experiments cheap and fast (small, falsifiable, minimal
+  ceremony — *not* mini-Genesis). Make *promotion to truth* expensive: a result becomes facit, a
+  claim, or an edge only via pre-registration, OOS + matched controls, and explicit human sign-off.
+  Low friction to explore; high bar to assert. Null results are first-class outcomes.
+- **Validity over convenience.** When a decision admits ≥2 plausible baselines / controls / null
+  models / feature definitions / tolerances / confirmation buffers / split or power rules, do **not**
+  silently pick the easiest-to-code or result-convenient one. Name the alternatives, state the
+  tradeoff, and either lock one with a methodological reason **before running** or pre-declare a
+  small family the result must **survive**. **Never choose a baseline/control after seeing the
+  result.** Smallest implementation is allowed only **after** validity is preserved.
+
+---
+
 ## 2. Source authority (how to treat evidence)
 
 The wiki (`docs/research_wiki/`) is **agent-native warm context** — navigation
