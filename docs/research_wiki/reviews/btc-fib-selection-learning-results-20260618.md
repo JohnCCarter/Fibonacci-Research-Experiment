@@ -6,14 +6,15 @@ of the pre-registered **Stage 2 headline cell** (live-equivalent viewport, prima
 per the [prereg](btc-fib-selection-learning-prereg-20260617.md) +
 [§12 addendum](btc-fib-selection-learning-addendum-20260618.md) (metric pinned A5.1, blind).
 
-> **STATUS (updated 2026-06-18, inference slice done): a MODEST, largely single-feature lead on
-> the one powered cell (4h) — not a reproduction of human selection.** The 4h AP-lift over the
-> **magnitude** baseline is robustly positive out-of-sample (decision-point bootstrap 95% CI
-> `[0.023, 0.120]` excludes 0; 0/2000 resamples ≤ 0). But reading the interpretable weights (§10),
-> the lift is carried **almost entirely by `cleanliness`** (standardized weight 0.20 vs prominence
-> 0.07, structure_alignment ≈ 0) — a single coherent correlate (human-marked legs are *cleaner/more
-> efficient* than magnitude alone predicts), **not** a rich multi-feature reproduction. It beats the
-> **magnitude** baseline only; the §6 **most-prominent** baseline is untested (next sensitivity).
+> **STATUS (updated 2026-06-18, prominence-sensitivity done): a MODEST, largely single-feature
+> (`cleanliness`) lead on the one powered cell (4h) that SURVIVES the §6 prominence family — but is
+> NOT a reproduction of human selection, and no edge/behaviour claim.** The 4h AP-lift is robustly
+> positive out-of-sample vs **all three** §6 baselines — magnitude (CI `[0.023, 0.120]`), summed
+> prominence A (`[0.018, 0.104]`), and max prominence B (`[0.021, 0.116]`); every CI excludes 0,
+> 0/2000 resamples ≤ 0. Pre-committed verdict: **`survives_prominence_family`**. The interpretable
+> weights (§10) are unchanged — the lift is carried **almost entirely by `cleanliness`**
+> (standardized 0.20 vs prominence 0.07, structure_alignment ≈ 0): human-marked legs are
+> *cleaner/more efficient*, a single coherent correlate, **not** a multi-feature reproduction.
 > Absolute AP 0.057 against a 0.83 coverage ceiling = low agreement; **the human is not
 > "reproduced".** 1M/1w/1d are **underpowered, not refuted**.
 
@@ -67,28 +68,50 @@ Standardized logistic weights (4h): `cleanliness 0.203`, `prominence 0.071`, `du
 legs are *cleaner / more efficient* (net move ÷ path) than magnitude alone predicts — **not** a
 multi-feature "reproduction of human selection."
 
+## Prominence-baseline sensitivity (4h, done 2026-06-18)
+
+§6 lists the trivial-leg baseline as "largest-magnitude / **most-prominent**". The headline pinned
+**magnitude**; this sensitivity tests whether the lift survives the stronger **prominence** family.
+**Both instantiations + the verdict rule were locked before the run** (not chosen after): **A** =
+summed endpoint prominence (= the `prominence` feature column, rank-equivalent to the raw sum);
+**B** = max endpoint prominence. Same candidate universe / viewport / `k=3` / ε / purged split /
+held-fixed model — only the baseline ranking rule differs.
+
+| §6 baseline | AP | model AP-lift | bootstrap 95% CI | excludes 0? |
+|-------------|---:|--------------:|------------------|:-----------:|
+| magnitude | 0.0051 | +0.0516 | [0.023, 0.120] | yes |
+| **prominence A (summed)** | 0.0138 | **+0.0430** | **[0.018, 0.104]** | **yes** |
+| **prominence B (max)** | 0.0079 | **+0.0488** | **[0.021, 0.116]** | **yes** |
+
+- **Sanity:** both prominence baselines (A 0.0138, B 0.0079) beat the magnitude baseline (0.0051) —
+  prominence *is* the stronger trivial rule, as expected. The model still beats both.
+- Bootstrap stability: `0/2000` resamples ≤ 0 for A and B.
+- **Pre-committed verdict = `survives_prominence_family`** (lift > 0 with CI excluding 0 vs **both**
+  A and B). The earlier cleanliness lift is **not** a magnitude-baseline artifact, and **not** a
+  prominence artifact either.
+- Weights unchanged (model held fixed): `cleanliness` still carries the lift (0.20).
+
 ## Observed / Inferred / Unverified
 
-- **Observed (verified):** the numbers above; the 4h AP-lift is robustly positive vs the magnitude
-  baseline (CI excludes 0); `cleanliness` carries the lift; pipeline causal; 18 unit tests green.
-- **Inferred:** beyond leg size, the human's leg choice on 4h tracks **leg cleanliness/efficiency**
-  out-of-sample. 4h is the only adequately powered cell.
+- **Observed (verified):** the numbers above; the 4h AP-lift is robustly positive vs **all three**
+  §6 baselines (magnitude + prominence A + prominence B; every CI excludes 0); `cleanliness` carries
+  the lift; pipeline causal; 19 unit tests green.
+- **Inferred:** beyond leg size *and* leg prominence, the human's leg choice on 4h tracks **leg
+  cleanliness/efficiency** out-of-sample. 4h is the only adequately powered cell.
 - **Unverified / scope limits (do not claim past these):**
-  1. **Beats the *magnitude* baseline only.** The §6 alternative **most-prominent** baseline is
-     untested — and since `prominence` carries some model weight, the lift could shrink against it.
-     This is the obvious next sensitivity.
-  2. **Largely a single feature** (`cleanliness`) → a lead, not a structural confirmation; could be
-     a mechanical correlate of how clean legs are detected/anchored.
-  3. **Low absolute agreement** (AP 0.057, capped by the 0.83 coverage ceiling) — the human is
+  1. **Largely a single feature** (`cleanliness`) → a robust lead, not a structural confirmation;
+     could still be a mechanical correlate of how clean legs are detected/anchored.
+  2. **Low absolute agreement** (AP 0.057, capped by the 0.83 coverage ceiling) — the human is
      **not** reproduced.
-  4. 1M/1w/1d are **underpowered, not refuted.**
+  3. 1M/1w/1d are **underpowered, not refuted.**
+  4. No edge/behaviour/PnL meaning — this is selection imitation only.
 
-## This slice is complete — next steps (NONE started; each needs a separate go)
+## Next steps (NONE started; each needs a separate go)
 
-- **(Recommended next)** prominence-baseline sensitivity: re-instantiate the §6 baseline as
-  most-prominent and re-test the 4h lift — does the cleanliness-driven lift survive a stronger rule?
 - Later (addendum A5, separately gated): `k`-sweep {0,3,6,12} + retrospective `W` → causal-
   availability gap; **Stage-1** per-pivot diagnostic; set-level **exclusivity** output diagnostic.
+- Optional: probe whether the `cleanliness` lead is a detection/anchoring artifact (the open
+  interpretive question), before reading it as a substantive selection insight.
 
 ## Discipline honoured
 
@@ -97,4 +120,5 @@ mutation, no tuning on test (all knobs frozen pre-run in the addendum). Artifact
 (`experiments/review/fib_selection_learning/summary.json`) are **gitignored**, regenerable.
 
 > A modest, largely single-feature (cleanliness) lead on one powered cell — statistically robust
-> vs the magnitude baseline, but not a reproduction of human selection and untested vs prominence.
+> vs the magnitude AND prominence (A/B) baselines, but not a reproduction of human selection and no
+> edge/behaviour claim.

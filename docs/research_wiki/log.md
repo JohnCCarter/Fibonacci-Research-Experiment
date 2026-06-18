@@ -31,6 +31,23 @@ structurally enforced). One pre-registered **primary cell** (forking-paths defen
 (blind) then separate go. Designed collaboratively with Chamoun (the labeler is facit on his own
 process). [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md). **Next: addendum tomorrow.**
 
+## [2026-06-18] review | Fib SELECTION-LEARNING prominence-baseline sensitivity (4h) → survives_prominence_family
+
+Scoped sensitivity (4h only): does the cleanliness-driven AP-lift survive the stronger §6
+prominence baseline? **Both instantiations + the verdict rule locked before the run** (not chosen
+after): A = summed endpoint prominence (= `prominence` feature col, rank-equiv to raw sum), B = max
+endpoint prominence. Same candidate universe / viewport / `k=3` / ε / purged split / held-fixed
+model — only the baseline ranking differs. Decision-point cluster bootstrap (2000×). Result: model
+AP-lift robust vs **all three** §6 baselines — magnitude +0.052 [0.023,0.120], prominence-A +0.043
+[0.018,0.104], prominence-B +0.049 [0.021,0.116]; every CI excludes 0, 0/2000 ≤ 0. Sanity: both
+prominence baselines (0.0138 / 0.0079) beat magnitude (0.0051) as expected; model beats both.
+**Pre-committed verdict = `survives_prominence_family`.** Weights unchanged → **`cleanliness` still
+carries the lift** (0.20), structure_alignment ≈ 0. So the lead is **not** a magnitude- or
+prominence-artifact — but still single-feature, low absolute AP (0.057 vs 0.83 coverage ceiling),
+**not a reproduction of human selection, no edge/behaviour claim**; 1M/1w/1d underpowered. Open
+interpretive question: is `cleanliness` a detection/anchoring artifact? +1 test (19 total).
+[Results](reviews/btc-fib-selection-learning-results-20260618.md).
+
 ## [2026-06-18] review | Fib SELECTION-LEARNING AP-lift inference (4h) → MODEST single-feature lead
 
 Inference slice (scoped: 4h AP-lift only). Decision-point cluster bootstrap (2000 resamples by

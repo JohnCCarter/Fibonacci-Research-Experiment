@@ -156,6 +156,7 @@ class Candidate:
     features: dict[str, float]
     label: int  # 1 if matches a human leg within ε, else 0
     human_idx: int = -1  # which human leg it matched (for coverage), else -1
+    prom_max: float = 0.0  # max(start, end) raw endpoint ATR-prominence (§6 prominence baseline B)
 
 
 def _matches_human(
@@ -232,6 +233,7 @@ def build_candidates(
                     features=feats,
                     label=1 if h >= 0 else 0,
                     human_idx=h,
+                    prom_max=max(float(start.prominence), float(end_piv.prominence)),
                 )
             )
     return out
@@ -372,6 +374,26 @@ def decision_point_bootstrap(
     }
 
 
+def prominence_survival_verdict(
+    inf_sum: dict[str, Any] | None, inf_max: dict[str, Any] | None
+) -> str:
+    """Pre-committed §6 prominence-family verdict (locked before the run, not chosen after).
+
+    A bootstrap CI "survives" if its lower bound > 0 (lift robustly positive). Survival vs BOTH the
+    summed (A) and max (B) prominence baselines → robust; only one → baseline-dependent; neither →
+    the earlier lift reduces to a magnitude-baseline-only lead."""
+
+    def _survives(inf: dict[str, Any] | None) -> bool:
+        return inf is not None and inf["ci95_low"] > 0.0
+
+    surv_sum, surv_max = _survives(inf_sum), _survives(inf_max)
+    if surv_sum and surv_max:
+        return "survives_prominence_family"
+    if surv_sum or surv_max:
+        return "baseline_dependent_inconclusive"
+    return "reduced_to_magnitude_baseline_only"
+
+
 # --- per-timeframe driver ---------------------------------------------------------------------
 
 
@@ -433,11 +455,29 @@ def run_timeframe(timeframe: str, cfg: SelectionConfig, settings: Any) -> dict[s
     # NOT an inferential verdict — just a point-estimate flag (lift>0 on a powered cell).
     lift_pos_powered = bool(powered and lift is not None and lift > 0)
 
-    # AP-lift inference (this slice): decision-point cluster bootstrap, powered cells only.
+    # AP-lift inference (decision-point cluster bootstrap), powered cells only.
     inference = None
-    if powered and lift is not None and p_model is not None and mag is not None:
+    # §6 prominence-baseline sensitivity (locked pre-run): A = summed endpoint prominence
+    # (= the `prominence` feature column, rank-equivalent to raw sum), B = max endpoint prominence.
+    ap_base_prom_sum = ap_base_prom_max = None
+    lift_vs_prom_sum = lift_vs_prom_max = None
+    inf_prom_sum = inf_prom_max = None
+    prominence_verdict = None
+    if powered and ap_model is not None and p_model is not None and mag is not None:
         groups = np.array([c.anchor_b_pos for c in test])
         inference = decision_point_bootstrap(y_te, p_model, mag, groups, cfg.n_boot, cfg.seed)
+        prom_sum = x_te[:, feat_names.index("prominence")]  # A (parallel to magnitude column)
+        prom_max = np.array([c.prom_max for c in test])  # B
+        ap_base_prom_sum = average_precision(y_te, prom_sum)
+        ap_base_prom_max = average_precision(y_te, prom_max)
+        if ap_base_prom_sum is not None:
+            lift_vs_prom_sum = ap_model - ap_base_prom_sum
+        if ap_base_prom_max is not None:
+            lift_vs_prom_max = ap_model - ap_base_prom_max
+        nb, sd = cfg.n_boot, cfg.seed
+        inf_prom_sum = decision_point_bootstrap(y_te, p_model, prom_sum, groups, nb, sd)
+        inf_prom_max = decision_point_bootstrap(y_te, p_model, prom_max, groups, nb, sd)
+        prominence_verdict = prominence_survival_verdict(inf_prom_sum, inf_prom_max)
 
     return {
         "timeframe": timeframe,
@@ -451,13 +491,20 @@ def run_timeframe(timeframe: str, cfg: SelectionConfig, settings: Any) -> dict[s
         "n_test": len(test),
         "n_test_positives": n_test_pos,
         "ap_model": ap_model,
-        "ap_baseline": ap_base,
-        "ap_lift": lift,
+        "ap_baseline_magnitude": ap_base,
+        "ap_baseline_prominence_sum": ap_base_prom_sum,  # §6 baseline A
+        "ap_baseline_prominence_max": ap_base_prom_max,  # §6 baseline B
+        "ap_lift_vs_magnitude": lift,
+        "ap_lift_vs_prominence_sum": lift_vs_prom_sum,
+        "ap_lift_vs_prominence_max": lift_vs_prom_max,
         "auc_model_secondary": auc_model,
         "model_weights_standardized": model_weights,  # §10 interpretability (read before claiming)
         "powered": powered,
         "lift_pos_powered": lift_pos_powered,  # point-estimate flag, NOT an inferential verdict
-        "ap_lift_inference": inference,  # CI + one-sided p on the AP-lift (powered cells only)
+        "ap_lift_inference_vs_magnitude": inference,
+        "ap_lift_inference_vs_prominence_sum": inf_prom_sum,
+        "ap_lift_inference_vs_prominence_max": inf_prom_max,
+        "prominence_survival_verdict": prominence_verdict,  # pre-committed §6-family rule
         "retro_W_bars": _TF_W_BARS[timeframe],
     }
 
@@ -502,11 +549,17 @@ def main(argv: list[str] | None = None) -> int:
     path = _write_summary(report, Path(args.out))
     for r in report["results"]:
         print(
-            f"[{r['timeframe']}] ap_model={r['ap_model']} ap_base={r['ap_baseline']} "
-            f"lift={r['ap_lift']} test_pos={r['n_test_positives']} "
-            f"cover={r['reachable_fraction']} powered={r['powered']} "
-            f"lift_pos_powered={r['lift_pos_powered']} inf={r['ap_lift_inference']}"
+            f"[{r['timeframe']}] ap_model={r['ap_model']} "
+            f"ap_mag={r['ap_baseline_magnitude']} ap_prom_sum={r['ap_baseline_prominence_sum']} "
+            f"ap_prom_max={r['ap_baseline_prominence_max']} "
+            f"lift_vs_mag={r['ap_lift_vs_magnitude']} "
+            f"lift_vs_prom_sum={r['ap_lift_vs_prominence_sum']} "
+            f"lift_vs_prom_max={r['ap_lift_vs_prominence_max']} "
+            f"test_pos={r['n_test_positives']} powered={r['powered']} "
+            f"verdict={r['prominence_survival_verdict']}"
         )
+        print(f"    inf_prom_sum={r['ap_lift_inference_vs_prominence_sum']}")
+        print(f"    inf_prom_max={r['ap_lift_inference_vs_prominence_max']}")
     print(f"any_lift_pos_powered={report['any_lift_pos_powered']}  summary={path}")
     return 0
 

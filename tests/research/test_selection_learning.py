@@ -118,6 +118,29 @@ def test_bootstrap_no_lift_when_rankers_equal():
         assert out["p_one_sided_lift_le_0"] >= 0.5  # cannot reject null
 
 
+def _inf(ci_low: float) -> dict:
+    return {"ci95_low": ci_low, "ci95_high": ci_low + 0.1, "lift_mean": ci_low + 0.05}
+
+
+def test_prominence_verdict_locked_rule():
+    # survives BOTH (A and B CI excludes 0) → robust
+    assert sl.prominence_survival_verdict(_inf(0.02), _inf(0.01)) == "survives_prominence_family"
+    # survives only one → baseline-dependent / inconclusive
+    assert (
+        sl.prominence_survival_verdict(_inf(0.02), _inf(-0.01)) == "baseline_dependent_inconclusive"
+    )
+    assert (
+        sl.prominence_survival_verdict(_inf(-0.05), _inf(0.03)) == "baseline_dependent_inconclusive"
+    )
+    # survives neither → reduced to magnitude-only
+    assert (
+        sl.prominence_survival_verdict(_inf(-0.02), _inf(-0.01))
+        == "reduced_to_magnitude_baseline_only"
+    )
+    # None (unpowered / no positives) counts as non-survival
+    assert sl.prominence_survival_verdict(None, None) == "reduced_to_magnitude_baseline_only"
+
+
 def test_bootstrap_none_without_positives():
     groups = np.array([0, 0, 1, 1])
     assert (
