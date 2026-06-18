@@ -31,6 +31,20 @@ structurally enforced). One pre-registered **primary cell** (forking-paths defen
 (blind) then separate go. Designed collaboratively with Chamoun (the labeler is facit on his own
 process). [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md). **Next: addendum tomorrow.**
 
+## [2026-06-18] review | Fib SELECTION-LEARNING Stage-2 headline built + run → POINT ESTIMATE (no claim)
+
+§12.3 go granted. Built `research/selection_learning.py` (+15 tests) and ran the single
+pre-registered headline cell (Stage 2, live-equivalent `k=3`, pooled-AP per A5.1). Causal by
+construction: features computed on a frame **truncated at `anchor_b+k`** with the `k*≤3` whitelist
+(`{magnitude,cleanliness,duration,prominence,structure_alignment}`), candidate universe re-detected
+on the truncated frame, ε-match to human legs (A4), purged split (embargo = reach `k`), numpy
+logistic regression (zero new deps, §10) vs §6 magnitude baseline. **Only 4h powered** (65 test
+pos): AP model 0.057 vs base 0.005 (≈11×, ≈22× base rate), secondary AUC 0.914; AUC≈0.88–0.91 on
+1M/1d too (1w 0 test pos). **STATUS: point estimate, inference PENDING** — `lift_pos_powered` is a
+flag, not a significance test; no CI/p-value on the AP-lift yet → **no finding claimed**. Next:
+inference on the AP-lift resampled by decision point, then k-sweep/W/gap/Stage-1. Artifacts
+gitignored. [Results](reviews/btc-fib-selection-learning-results-20260618.md).
+
 ## [2026-06-18] decision | Fib SELECTION-LEARNING §12 addendum frozen (docs-only, blind)
 
 Step-2 of the two-step gate, blind to output. Reuses the engine's **8 existing interpretable

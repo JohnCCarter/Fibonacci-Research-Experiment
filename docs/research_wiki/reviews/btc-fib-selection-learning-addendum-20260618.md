@@ -140,6 +140,25 @@ viewport at primary `k = 3`**, vs the §6 baseline, primary metric (§9), one pe
   [anytime-valid e-value machinery](../concepts/anytime-valid-evalues.md) if re-looks occur;
   ordinary Holm for a single look), pre-declared here.
 
+### A5.1 Primary metric + aggregation (pinned 2026-06-18, blind — closes the §9 menu)
+
+§9 offered a menu ("AUC / average-precision and/or PR-F1") and A5 left it as "primary metric (§9)".
+Pinned here **before any run, blind to output**, to close the forking path:
+
+- **Primary metric = Average Precision (AP)** = area under the precision–recall curve, with candidate
+  legs ranked by the model's score (and by the §6 rule for the baseline). Rationale: the candidate
+  pool is **overwhelmingly negative** (the human marks a few legs among many enumerated), so ROC-AUC
+  reads optimistically on the dominant negatives; AP is the honest primary on a rare-positive ranking
+  task. **ROC-AUC is reported as secondary.**
+- **Aggregation = pooled.** AP is computed over **all test-window decision-point candidate rows
+  pooled into one ranking** (one AP per TF), **not** averaged per-viewport/per-decision-point. The
+  single headline number per TF is pooled test AP.
+- **Lift = AP(live-equivalent model at `k=3`) − AP(§6 baseline)** on the identical test candidate set
+  and identical truncated viewport (only the ranking rule differs). Null = lift ≤ 0.
+- **Coverage ceiling (§9):** AP is interpreted against the fraction of human legs whose anchors fall
+  within ε of any detected candidate at the decision-point viewport — absolute AP is capped by that
+  ceiling, not by 1.0; reported alongside.
+
 ## A6. What this addendum does NOT do
 
 - No code, no harness, no run, no dependency, no label/corpus mutation (still docs-only).
