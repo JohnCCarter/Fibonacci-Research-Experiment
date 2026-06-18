@@ -31,6 +31,22 @@ structurally enforced). One pre-registered **primary cell** (forking-paths defen
 (blind) then separate go. Designed collaboratively with Chamoun (the labeler is facit on his own
 process). [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md). **Next: addendum tomorrow.**
 
+## [2026-06-18] decision | Fib SELECTION-LEARNING §12 addendum frozen (docs-only, blind)
+
+Step-2 of the two-step gate, blind to output. Reuses the engine's **8 existing interpretable
+features** (`core/features.py`) — no new ones — and tags each with a **minimum confirmation buffer
+`k*`** (magnitude/cleanliness/duration/round_number=0; prominence/structure_alignment=3;
+scale_confluence=12; recency=∞). This refines §5's binary left/right tag: a bare binary + mechanical
+exclusion would freeze the live model at every `k`, making the mandatory `k`-sweep (§8) **vacuous**
+(advisor catch) — `k*` makes the sweep admit features as the buffer grows, so the causal-availability
+gap is empirical not a tagging artifact. `recency` dropped from the live model (dataset-end ref);
+exclusivity #4 operationalized set-level over `structure_window=6` base-pivot chunks (`k*=3`, no
+parent-degree boundaries); ε **reused** from `EvaluationConfig` (`time_tol=3`, `price_tol=0.5` ATR —
+blindness defense). `k`-sweep {0,3,6,12}, `W` per TF (1M=24/1w=52/1d=120/4h=180 bars), **single
+primary cell = Stage 2 + live-equivalent + `k=3`** (base detector confirmation), all else secondary.
+Pinned to `settings.expansion.yaml`. **Still gated:** §12.3 separate explicit go before any build/run.
+[Addendum](reviews/btc-fib-selection-learning-addendum-20260618.md).
+
 ## [2026-06-17] review | B-1 horizontal-structure study — RUN, result NULL (§12 go granted)
 
 Built then ran (prereg §12 path (a)). Commits `474f320` (SENARE-1 e-value) → `edcc87c` (slice) →

@@ -140,7 +140,9 @@ claim. Artifacts gitignored.**
 1. This prereg freezes the **design, rules, metric, baseline, viewports, provenance discipline,
    guardrails**.
 2. A **dated addendum (blind to any output)** freezes the **concrete feature list + provenance tags
-   + `k`/`W`/ε values** — to be drafted next, **before any code or run**.
+   + `k`/`W`/ε values** — **drafted 2026-06-18**:
+   [§12 addendum](btc-fib-selection-learning-addendum-20260618.md) (feature `k*`-buffer provenance,
+   exclusivity #4 operationalization, `k`/`W`/ε per TF + single primary cell at `k=3`).
 3. Execution then requires a **separate explicit go**. Building or running before steps 2–3 is
    unauthorised by this doc.
 
