@@ -31,6 +31,24 @@ structurally enforced). One pre-registered **primary cell** (forking-paths defen
 (blind) then separate go. Designed collaboratively with Chamoun (the labeler is facit on his own
 process). [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md). **Next: addendum tomorrow.**
 
+## [2026-06-18] review | Fib SELECTION-LEARNING k-sweep {0,3,6,12} (4h) → k_stable_live_selection_signal
+
+Mandatory confirmation-buffer sweep (addendum §A5), live-only, so the headline `k=3` is not a
+forking-paths artifact. **Verdict rule locked before the run:** a `k` cell survives only if powered
+**and** its model AP-lift CI excludes 0 vs **every** causally-allowed §6 baseline (the locked
+prominence-FAMILY criterion — magnitude + prominence A/B); cross-k verdict
+`k_stable_live_selection_signal` iff ≥2 cells survive. Result: **k=0 degenerate** (0 candidates,
+`reachable_fraction=0.0`, unpowered — *not interpretable*, excluded); **k=3/6/12 all powered and
+survive** (`p_one_sided lift≤0 = 0/2000` throughout; lowest CI floor k=12 vs prom-sum 0.025). 3/3
+powered cells survive → **`k_stable_live_selection_signal`**: the lead is not a narrow-buffer
+artifact. Modest framing intact — `cleanliness` dominates (~0.20) at every powered k; k=12
+`scale_confluence` (~0.13) is a **secondary hint** once causally available, not a second pillar; AP
+0.057→0.066 (far under 0.83 ceiling); **single-feature, not a reproduction, no edge/behaviour/Genesis
+claim**; 1M/1w/1d underpowered, not refuted. Code+tests committed `ea6c2ea` (ruff/format/bounds/544
+pytest green, cov 75.52%); artifacts gitignored/regenerable. Next candidate tracks (NONE started,
+separate GO each): retrospective `W`/causal-availability gap; Stage-1 per-pivot diagnostic.
+[Results](reviews/btc-fib-selection-learning-results-20260618.md).
+
 ## [2026-06-18] review | Fib SELECTION-LEARNING prominence-baseline sensitivity (4h) → survives_prominence_family
 
 Scoped sensitivity (4h only): does the cleanliness-driven AP-lift survive the stronger §6

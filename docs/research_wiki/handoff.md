@@ -22,6 +22,7 @@ append-only trail lives in [log.md](log.md).
 
 ## Recent Changes
 
+- **2026-06-18 Fib SELECTION-LEARNING k-sweep {0,3,6,12} (4h) → `k_stable_live_selection_signal`.** Mandatory confirmation-buffer sweep (live-only), locked prominence-FAMILY survival rule (powered AND CI excludes 0 vs **every** §6 baseline — magnitude + prominence A/B). **k=0 degenerate** (0 candidates, reachable 0.0, unpowered — *not interpretable*, excluded); **k=3/6/12 all powered and survive** the locked family (`p_one_sided lift≤0 = 0/2000` throughout; lowest CI floor k=12 vs prom-sum 0.025). ≥2 survivors → cross-k verdict **`k_stable_live_selection_signal`**: the lead is **not** a narrow-buffer artifact. **Modest framing holds:** `cleanliness` still dominates (~0.20) at every powered k; at k=12 `scale_confluence` enters at ~0.13 only as a **secondary hint** (causally available there), not a second pillar; AP rises only 0.057→0.066, far under the 0.83 ceiling — **still single-feature, NOT a reproduction, no edge/behaviour/backtest/Genesis claim**; 1M/1w/1d **underpowered, not refuted**. Code+tests `ea6c2ea` (gates green). [Results](reviews/btc-fib-selection-learning-results-20260618.md).
 - **2026-06-18 Fib SELECTION-LEARNING prominence-baseline sensitivity (4h) → `survives_prominence_family`.** Locked pre-run (A=summed endpoint prominence = `prominence` feature col; B=max endpoint prominence) + locked verdict rule. Same universe/viewport/k/ε/split/model — only baseline rule differs. Model AP-lift robust vs **all three** §6 baselines: magnitude [0.023,0.120], prominence-A +0.043 [0.018,0.104], prominence-B +0.049 [0.021,0.116]; every CI excludes 0, 0/2000 ≤ 0. Sanity: prominence baselines beat magnitude (as expected); model beats both. Weights unchanged → **`cleanliness` still carries the lift** (0.20). So the lead is **not** a magnitude- or prominence-artifact — but still single-feature, low absolute AP (0.057 vs 0.83 ceiling), **not a reproduction**, no edge claim; 1M/1w/1d underpowered. Open: is `cleanliness` a detection/anchoring artifact? [Results](reviews/btc-fib-selection-learning-results-20260618.md).
 - **2026-06-18 Fib SELECTION-LEARNING Stage-2 headline + AP-lift inference → MODEST single-feature lead on 4h (not a reproduction).** `research/selection_learning.py` (+18 tests): causal truncate-and-whitelist at `anchor_b+k`, re-detected candidate universe, ε-match, purged split, numpy logreg vs §6 **magnitude** baseline, pooled-AP (A5.1). **Only 4h powered.** Decision-point cluster bootstrap (2000×, by `anchor_b` group): lift +0.052, **95% CI [0.023, 0.120] excludes 0** (0/2000 ≤ 0) — robust vs magnitude, OOS. **But** the interpretable weights show the lift is **carried almost entirely by `cleanliness`** (0.20 vs prominence 0.07, structure_alignment ≈ 0): human legs are *cleaner/more efficient*, **not** a multi-feature reproduction. Beats **magnitude only** (prominence baseline untested); AP 0.057 vs 0.83 ceiling = low agreement; 1M/1w/1d **underpowered, not refuted**. **Recommended next: prominence-baseline sensitivity on 4h** (does the cleanliness lift survive a stronger §6 rule?). [Results](reviews/btc-fib-selection-learning-results-20260618.md). Artifacts gitignored.
 - **2026-06-18 Fib SELECTION-LEARNING §12 addendum FROZEN (docs-only, blind to output).** Step-2 of the two-step gate: reuses the engine's **8 existing interpretable features** (no new ones), tags each with a **minimum confirmation buffer `k*`** (0 / 3 / 12 / ∞) — refining §5's binary so the mandatory `k`-sweep isn't vacuous; `recency` dropped from the live model (`k*=∞`, dataset-end ref); exclusivity #4 = set-level over `structure_window=6` base-pivot chunks (`k*=3`, no parent-degree boundaries); ε **reused** from `EvaluationConfig` (`time_tol=3`, `price_tol=0.5` ATR, blindness defense); `k`-sweep {0,3,6,12} + `W` per TF + **single primary cell at `k=3`** (base detector confirmation). **Still gated: §12.3 separate explicit go before any build/run.** [Addendum](reviews/btc-fib-selection-learning-addendum-20260618.md).
@@ -75,6 +76,32 @@ append-only trail lives in [log.md](log.md).
   reviews (1816 interactions), 4H Tier 1 maps, Addendum 2 golden-zone retirement (#30), log-scale
   + profile fix + monthly-first reset. Detail: [log post-reset part 1](log-archive-btc-postreset-part1.md)
   + [log.md](log.md); current counts in Verification Snapshot below.
+
+## Status — Fib SELECTION-LEARNING line (2026-06-18, slice committed `ea6c2ea`)
+
+Distinct question from the closed behaviour/B-1 nulls: *can a model reproduce how the human selects
+legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib claim**). Result so far
+(4h is the only powered cell):
+
+- **Magnitude baseline — survived** (AP-lift CI `[0.023, 0.120]` excludes 0, OOS).
+- **Prominence family A/B — survived** (`survives_prominence_family`; CI excludes 0 vs summed *and*
+  max prominence).
+- **k-sweep {0,3,6,12} — `k_stable_live_selection_signal`:** k=0 degenerate / **not interpretable**
+  (0 candidates); k=3/6/12 powered and survive the locked baseline family.
+- **Modest framing (binding when citing this):** `cleanliness` still dominates the weights; the k=12
+  `scale_confluence` term (~0.13) is **only a secondary hint**, not a second pillar; **low absolute
+  AP** (0.057–0.066 vs 0.83 ceiling); **no full reproduction of human selection**; **no
+  edge/behaviour/backtest/Genesis claim**; **1M/1w/1d underpowered, not refuted**.
+
+### Next candidate tracks (listed only — NONE started, NONE authorised)
+
+- **Retrospective `W` / causal-availability gap (4h)** — compare live-equivalent vs a bounded
+  retrospective viewport; measure the right-edge/context gap.
+- **Stage-1 per-pivot diagnostic** — whether endpoint/pivot selection is itself learnable.
+
+**Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
+may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal
+branches in `selection_learning.py:118-142` (currently uncovered — see audit).
 
 ## Verification Snapshot
 

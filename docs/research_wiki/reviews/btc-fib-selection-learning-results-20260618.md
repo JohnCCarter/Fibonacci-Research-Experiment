@@ -6,17 +6,21 @@ of the pre-registered **Stage 2 headline cell** (live-equivalent viewport, prima
 per the [prereg](btc-fib-selection-learning-prereg-20260617.md) +
 [§12 addendum](btc-fib-selection-learning-addendum-20260618.md) (metric pinned A5.1, blind).
 
-> **STATUS (updated 2026-06-18, prominence-sensitivity done): a MODEST, largely single-feature
-> (`cleanliness`) lead on the one powered cell (4h) that SURVIVES the §6 prominence family — but is
-> NOT a reproduction of human selection, and no edge/behaviour claim.** The 4h AP-lift is robustly
+> **STATUS (updated 2026-06-18, prominence-sensitivity + k-sweep done): a MODEST, largely
+> single-feature (`cleanliness`) lead on the one powered cell (4h) that SURVIVES the §6 prominence
+> family AND is STABLE across the confirmation-buffer sweep `k ∈ {0,3,6,12}` — but is NOT a
+> reproduction of human selection, and no edge/behaviour claim.** The 4h AP-lift is robustly
 > positive out-of-sample vs **all three** §6 baselines — magnitude (CI `[0.023, 0.120]`), summed
 > prominence A (`[0.018, 0.104]`), and max prominence B (`[0.021, 0.116]`); every CI excludes 0,
-> 0/2000 resamples ≤ 0. Pre-committed verdict: **`survives_prominence_family`**. The interpretable
-> weights (§10) are unchanged — the lift is carried **almost entirely by `cleanliness`**
-> (standardized 0.20 vs prominence 0.07, structure_alignment ≈ 0): human-marked legs are
-> *cleaner/more efficient*, a single coherent correlate, **not** a multi-feature reproduction.
-> Absolute AP 0.057 against a 0.83 coverage ceiling = low agreement; **the human is not
-> "reproduced".** 1M/1w/1d are **underpowered, not refuted**.
+> 0/2000 resamples ≤ 0. Pre-committed verdict: **`survives_prominence_family`**. The k-sweep cross-k
+> verdict is **`k_stable_live_selection_signal`** (k=3/6/12 all powered and survive the locked
+> baseline family; k=0 is degenerate/uninterpretable, excluded). The interpretable weights (§10) are
+> essentially unchanged across k — the lift is carried **almost entirely by `cleanliness`**
+> (standardized 0.20); at `k=12` `scale_confluence` enters as a **secondary hint** (0.13) once it is
+> causally available, but does not displace `cleanliness`. Human-marked legs are *cleaner/more
+> efficient*, a single coherent correlate, **not** a multi-feature reproduction. Absolute AP
+> 0.057–0.066 against a 0.83 coverage ceiling = low agreement; **the human is not "reproduced".**
+> 1M/1w/1d are **underpowered, not refuted**.
 
 ## What was built + run
 
@@ -91,6 +95,35 @@ held-fixed model — only the baseline ranking rule differs.
   prominence artifact either.
 - Weights unchanged (model held fixed): `cleanliness` still carries the lift (0.20).
 
+## k-sweep sensitivity (4h, done 2026-06-18)
+
+The addendum (§A5) mandates a confirmation-buffer sweep so the headline `k=3` is not a forking-paths
+artifact. Live-only sensitivity over `k ∈ {0,3,6,12}`; **verdict rule locked before the run** — a `k`
+cell *survives* only if it is **powered AND** its model AP-lift CI excludes 0 vs **every** causally
+allowed §6 baseline (the locked prominence-FAMILY criterion, magnitude required). Cross-k verdict:
+`k_stable_live_selection_signal` if ≥2 cells survive.
+
+| k | active features | n_test (pos) | powered | AP model | AP-lift vs mag | survives family | verdict |
+|--:|-----------------|-------------:|:-------:|---------:|---------------:|:---------------:|---------|
+| 0 | mag/clean/dur | 0 (0) | no | — | — | — | degenerate (0 candidates, reachable 0.0) |
+| 3 | +prom/struct | 24 852 (65) | yes | 0.0567 | +0.0516 | **yes** | survives_prominence_family |
+| 6 | +prom/struct | 24 912 (63) | yes | 0.0582 | +0.0531 | **yes** | survives_prominence_family |
+| 12 | +prom/struct/**scale_confl** | 24 888 (63) | yes | 0.0665 | +0.0614 | **yes** | survives_prominence_family |
+
+- **k=0 is degenerate, not a null:** with zero confirmation buffer no bars exist after `anchor_b`, so
+  the candidate universe is empty (`reachable_fraction = 0.0`, unpowered). Expected; excluded from the
+  verdict — **not interpretable as a result.**
+- **k=3/6/12 all survive** the locked family (CI excludes 0 vs magnitude *and* both prominence
+  baselines; `p_one_sided(lift≤0) = 0/2000` throughout). Lowest CI floor across all cells/baselines:
+  `k=12` vs prominence-sum `ci95_low = 0.025`; `k=3` vs prominence-sum `ci95_low = 0.018`.
+- **Cross-k verdict = `k_stable_live_selection_signal`** (3 of 3 powered cells survive; ≥2 required).
+  The lead is **not** an artifact of one narrow confirmation buffer.
+- **Modest framing (unchanged):** `cleanliness` still dominates the weights at every powered k (~0.20).
+  At `k=12` `scale_confluence` becomes causally available and enters at ~0.13 — a **secondary hint**,
+  not a second pillar; `cleanliness` still carries the lift. AP rises only modestly (0.057 → 0.066)
+  and stays far under the 0.83 coverage ceiling: **still a single-feature lead, still not a
+  reproduction, still no edge/behaviour claim.**
+
 ## Observed / Inferred / Unverified
 
 - **Observed (verified):** the numbers above; the 4h AP-lift is robustly positive vs **all three**
@@ -106,18 +139,26 @@ held-fixed model — only the baseline ranking rule differs.
   3. 1M/1w/1d are **underpowered, not refuted.**
   4. No edge/behaviour/PnL meaning — this is selection imitation only.
 
-## Next steps (NONE started; each needs a separate go)
+## Next steps (NONE started; each needs a separate explicit GO)
 
-- Later (addendum A5, separately gated): `k`-sweep {0,3,6,12} + retrospective `W` → causal-
-  availability gap; **Stage-1** per-pivot diagnostic; set-level **exclusivity** output diagnostic.
-- Optional: probe whether the `cleanliness` lead is a detection/anchoring artifact (the open
-  interpretive question), before reading it as a substantive selection insight.
+- `k`-sweep {0,3,6,12} — **DONE** (above) → `k_stable_live_selection_signal`.
+- **Retrospective `W` / causal-availability gap (4h)** — compare the live-equivalent viewport against
+  a bounded retrospective viewport to measure the right-edge/context gap. **Candidate track, not
+  started.**
+- **Stage-1 per-pivot diagnostic** — whether endpoint/pivot selection is itself learnable.
+  **Candidate track, not started.**
+- Set-level **exclusivity** output diagnostic; optional probe of whether the `cleanliness` lead is a
+  detection/anchoring artifact (the open interpretive question).
+- **No W/gap, no Stage 1, no new sensitivity, and no Genesis may be started automatically — each
+  requires a separate explicit GO.**
 
 ## Discipline honoured
 
 No edge/behaviour claim, no backtest/PnL, no Genesis, no 1H, no auto-fib-as-truth, no label/corpus
 mutation, no tuning on test (all knobs frozen pre-run in the addendum). Artifacts
-(`experiments/review/fib_selection_learning/summary.json`) are **gitignored**, regenerable.
+(`experiments/review/fib_selection_learning/summary.json` + `…/k_sweep/summary.json`) are
+**gitignored**, regenerable. Code + tests committed `ea6c2ea` (gates green: ruff/format/bounds/544
+pytest, cov 75.52%).
 
 > A modest, largely single-feature (cleanliness) lead on one powered cell — statistically robust
 > vs the magnitude AND prominence (A/B) baselines, but not a reproduction of human selection and no
