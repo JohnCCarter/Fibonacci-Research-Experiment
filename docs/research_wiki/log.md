@@ -16,6 +16,20 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-22] decision | Fib SELECTION-LEARNING retrospective W / causal-availability-gap LOCK (docs-only, gated)
+
+Commit-1 lock for side-quest #1, **blind** (no retrospective model built, no gap value ever
+computed). Reuses §A5 pins (4h `W=180`, cells `{0,3,6,12}`, primary `k=3`, pooled AP, ε, §6 family;
+`recency` viewport-relative). **New locks:** gap(k) = `AP(retro W) − AP(live k)` on the **identical
+live-at-`k` rows** (same-row parity → isolates *feature availability*, not universe size); **common
+embargo = `W`** for both models (leakage-safe parity); decision-point cluster bootstrap 2000×, seed
+20260618; verdict `no_causal_gap` / `gap_closes_with_buffer` / `gap_persists` / `inconclusive` /
+`artifact_check_needed` (4h primary; gap cells `{3,6,12}`, k=0 degenerate-excluded). **Secondary /
+sensitivity**, descriptive with CIs — **not** in the Holm headline family, **no** new positive claim.
+Non-claims binding: not a reproduction; no edge/behaviour/PnL/Genesis/auto-fib/1H/ETH; cleanliness-
+artifact stays open. Execution (Commit 2) needs a **separate explicit GO**.
+[Lock doc](reviews/btc-fib-selection-learning-w-gap-lock-20260622.md).
+
 ## [2026-06-17] decision | New line pre-registered — Fib SELECTION-LEARNING (docs-only, gated)
 
 A genuinely different question from the closed behaviour/B-1 lines: not "do fib levels repel price"
