@@ -63,6 +63,10 @@ Accumulated external methodology so agents read instead of re-derive (see
 
 ## Decisions
 
+- [2026-06-22 project command playbooks](decisions/2026-06-22-project-command-playbooks.md) — the
+  four repo commands (`/fib-scope-check`, `/absorb-patterns`, `/prepare-home-computer`,
+  `/prepare-job-computer`) live as versioned docs under `docs/agent/commands/`, not local `.claude/`
+  (#36 design).
 - [2026-06-17 wiki is agent-native](decisions/2026-06-17-wiki-is-agent-native.md) — the wiki is the
   agent's persistent warm context (agent curates, human queries, source wins); search-surface vs
   knowledge-corpus split; accumulation loop restored.
