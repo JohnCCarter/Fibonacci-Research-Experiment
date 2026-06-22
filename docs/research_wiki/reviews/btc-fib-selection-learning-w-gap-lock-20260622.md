@@ -128,6 +128,32 @@ secondary). It is **descriptive with CIs**, does **not** enter the four-TF Holm 
   has been computed** (blindness attestation above). The verdict rule is fixed **before** seeing which
   branch the data takes.
 
+## L9. Build-time clarifications (locked 2026-06-22, before code — user-confirmed)
+
+Two terms left abstract in L0/A2.1 were resolved **before any code or run**, blind:
+
+- **Viewport-relative `recency` — `viewport_start = anchor_a`.** Therefore
+  `recency_retro = (anchor_b.index − anchor_a.index) / (W + (anchor_b.index − anchor_a.index))` =
+  `leg / (W + leg)`. This is the literal reading of the A2.1 formula and the only one matching its
+  note ("≈constant for legs ending at the viewport edge; informative only across differing depths").
+  Alternatives `anchor_b − W` and the dataset-relative form are **rejected**. Locked, not chosen
+  after output.
+- **Same-row reconstruction rule.** If a live-at-`k` row cannot be reconstructed on `df_W` (pivot /
+  dedup / edge effect, or the endpoint's `anchor_b + W` viewport runs past the data), that row is
+  **excluded from BOTH models** for the paired gap. **No imputation.** Logged per TF and `k`:
+  `#rows excluded` and `#positives excluded`. The **primary paired gap is computed only on identical
+  rows where both live(`k`) and retro(`W`) features are defined.** If exclusions are non-trivial they
+  are reported as a **scope-limit / possible artifact** — never used to improve the result, never
+  re-decided after output.
+
+**Per-feature gap attribution (descriptive, fixed pre-output):** report (i) the retrospective model's
+standardized weights and the live model's weights side by side, and (ii) a fixed two-group
+decomposition — `gap_from_wider_frame` = `AP(retro restricted to live-`k` features, computed on the
+`W` frame) − AP(live)`; `gap_from_right_edge_features` = `AP(full retro) − AP(retro shared-only)`.
+This isolates how much of the gap comes from recomputing shared features on the wider frame vs from
+the right-edge-only features (`recency`, and `scale_confluence` where `k < 12`). Descriptive only; no
+new claim, not in the Holm family.
+
 ## L8. What this doc does NOT do
 
 No code, no harness, no run, no dependency, no label/corpus mutation. Does **not** grant execution —

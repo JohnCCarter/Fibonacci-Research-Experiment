@@ -28,6 +28,8 @@ import argparse
 import glob
 import json
 import math
+import sys
+import time
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
@@ -213,7 +215,12 @@ def build_candidates(
     # whitelisted out anyway. Keeps k<12 cheap and the k=12 cell causally honest.
     need_confluence = "scale_confluence" in live_feature_names(cfg.k)
     out: list[Candidate] = []
-    for piv in full_pivots:
+    n_piv = len(full_pivots)
+    _progress(f"  build_candidates: {n_piv} pivots, df={n} bars (per-endpoint detect)")
+    t0 = time.perf_counter()
+    for i_piv, piv in enumerate(full_pivots, start=1):
+        if i_piv % 50 == 0 or i_piv == n_piv:
+            _progress(f"    pivot {i_piv}/{n_piv} ({time.perf_counter() - t0:.0f}s)")
         j = piv.index
         end_view = j + cfg.k
         if end_view >= n:  # cannot be confirmed live within the data — skip (no peeking)
@@ -585,6 +592,17 @@ def run_k_sweep(
     }
 
 
+# --- retrospective W / causal-availability gap (side-quest #1, W-gap lock 2026-06-22) ---------
+
+
+def _progress(msg: str) -> None:
+    """Flushed progress to **stderr** (never stdout/JSON) so a long run is never blind again.
+
+    Root cause of the 2026-06-22 blind 2h run: piped stdout buffers → 0 bytes until flush. stderr
+    with ``flush=True`` is result-neutral (no effect on seeded bootstrap or any metric)."""
+    print(f"[w_gap {time.strftime('%H:%M:%S')}] {msg}", file=sys.stderr, flush=True)
+
+
 def run_study(timeframes: list[str], config_path: str | None, cfg: SelectionConfig) -> dict:
     settings = load_settings(config_path) if config_path else load_settings()
     results = [run_timeframe(tf, cfg, settings) for tf in timeframes]
@@ -638,11 +656,40 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--config", default="config/settings.expansion.yaml")
     ap.add_argument("--out", default=str(RESULTS_DIR))
     ap.add_argument("--k-sweep", action="store_true", help="4H live-only k-sweep {0,3,6,12}")
+    ap.add_argument(
+        "--w-gap", action="store_true", help="retro-W / causal-availability gap (4h {3,6,12})"
+    )
+    ap.add_argument(
+        "--w-gap-probe",
+        action="store_true",
+        help="time ONE 4h k=3 gap cell + print ETA for the full study (no summary written)",
+    )
     args = ap.parse_args(argv)
+    if args.w_gap_probe:
+        from fibengine.research.selection_learning_gap import run_gap_cell
+
+        settings = load_settings(args.config) if args.config else load_settings()
+        t0 = time.perf_counter()
+        run_gap_cell("4h", PRIMARY_K, _TF_W_BARS["4h"], SelectionConfig(), settings)
+        dt = time.perf_counter() - t0
+        # full study = three 4h cells (≈equal cost, shared W=180) + 3 smaller context cells
+        print(
+            f"PROBE one 4h k={PRIMARY_K} cell = {dt:.0f}s. "
+            f"Full study ETA ≈ 3x4h ({3 * dt:.0f}s) + context(1M/1w/1d, cheaper) "
+            f"≈ {3.5 * dt / 60:.1f}–{4.5 * dt / 60:.1f} min."
+        )
+        return 0
     if args.k_sweep:
         report = run_k_sweep("4h", list(K_SWEEP), args.config, SelectionConfig())
         path = _write_summary(report, Path(args.out) / "k_sweep")
         _print_k_sweep(report, path)
+        return 0
+    if args.w_gap:
+        from fibengine.research.selection_learning_gap import print_w_gap, run_w_gap_study
+
+        report = run_w_gap_study(args.config, SelectionConfig())
+        path = _write_summary(report, Path(args.out) / "w_gap")
+        print_w_gap(report, path)
         return 0
     tfs = [t.strip() for t in args.timeframes.split(",") if t.strip()]
     bad = [t for t in tfs if t not in ALLOWED_TIMEFRAMES]
