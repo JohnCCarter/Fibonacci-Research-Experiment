@@ -27,4 +27,6 @@ repos:
         entry: uv run pytest -q
         language: system
         pass_filenames: false
-        always_run: true
+        # Run only when code/tests change; docs-only commits skip the full
+        # suite (CI still runs full pytest on push — the authoritative gate).
+        files: ^(src/|tests/).*\.py$
