@@ -40,6 +40,18 @@ Binding operating principles (not hints) — read with §1.
   tradeoff, and either lock one with a methodological reason **before running** or pre-declare a
   small family the result must **survive**. **Never choose a baseline/control after seeing the
   result.** Smallest implementation is allowed only **after** validity is preserved.
+- **Intent alignment over plan inertia.** A technically correct step — code runs, test well-formed,
+  stats sound, matches the local spec — can still be the *wrong* work if it does not answer the
+  human's actual claim. Before starting or continuing any research / implementation / audit path,
+  be able to state: what is the user's real goal, what question does this step answer, are they the
+  same, and if not what is the mismatch. **Re-check intent** when a line repeatedly returns
+  null/inconclusive, when the user says "not what I meant," when the test answers a narrower or
+  different question, when the work is correct but no longer useful, or when you are optimizing the
+  current plan instead of the objective. Do not continue a correct path that answers the wrong
+  question — pause and ask, or explicitly reframe. **Guardrail (interlocks with *Validity over
+  convenience*):** this must never be used to chase positive results — changing the question after a
+  null is valid *only* when the prior question is shown misaligned with the original claim, and the
+  new question is stated explicitly (scope, baselines, non-claims) **before** any new run.
 
 ---
 
