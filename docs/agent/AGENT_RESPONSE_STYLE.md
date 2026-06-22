@@ -63,3 +63,4 @@ Always include enough detail for **safety and correctness**:
 
 - [`AGENTS.md`](../../AGENTS.md) — constitution (roles, workflow, guardrails)
 - [`RESEARCH_HANDOFF.md`](RESEARCH_HANDOFF.md) — research scope (not response length)
+- [`commands/`](commands/README.md) — project command playbooks (`/fib-scope-check`, `/absorb-patterns`, `/prepare-home-computer`, `/prepare-job-computer`)
