@@ -7,6 +7,7 @@ network. Shared machinery lives in ``selection_learning`` (sl); the gap addition
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -183,3 +184,55 @@ def test_check_frozen_cell_fails_on_empty_frame(monkeypatch):
     chk = slg.check_frozen_cell("4h", _StubSettings())
     assert not chk.ok
     assert "empty" in chk.message
+
+
+# --- per-cell checkpoint / resume -------------------------------------------------------------
+
+
+def test_run_or_load_cell_writes_then_resumes(tmp_path, monkeypatch):
+    calls = {"n": 0}
+
+    def _fake_cell(tf, k, w, cfg, settings):  # noqa: ARG001 — stub, counts invocations
+        calls["n"] += 1
+        return {"timeframe": tf, "k": k, "gap": -0.004, "powered": True}
+
+    monkeypatch.setattr(slg, "run_gap_cell", _fake_cell)
+    cfg = sl.SelectionConfig()
+    r1 = slg._run_or_load_cell("4h", 3, 180, cfg, object(), tmp_path)
+    r2 = slg._run_or_load_cell("4h", 3, 180, cfg, object(), tmp_path)
+    assert r1 == r2 == {"timeframe": "4h", "k": 3, "gap": -0.004, "powered": True}
+    assert calls["n"] == 1  # second call loaded from disk, did NOT recompute the ~70-min cell
+    assert (tmp_path / "4h_k3.json").exists()
+    assert not (tmp_path / "4h_k3.json.tmp").exists()  # atomic rename cleaned the temp
+
+
+def test_run_or_load_cell_recomputes_on_seed_mismatch(tmp_path, monkeypatch):
+    calls = {"n": 0}
+
+    def _fake_cell(tf, k, w, cfg, settings):  # noqa: ARG001 — stub, counts invocations
+        calls["n"] += 1
+        return {"timeframe": tf, "k": k}
+
+    monkeypatch.setattr(slg, "run_gap_cell", _fake_cell)
+    # a checkpoint from a different seed must be ignored, not silently reused
+    (tmp_path / "4h_k3.json").write_text(
+        json.dumps({"seed": 999, "cell": {"stale": True}}), encoding="utf-8"
+    )
+    out = slg._run_or_load_cell("4h", 3, 180, sl.SelectionConfig(), object(), tmp_path)
+    assert calls["n"] == 1
+    assert out == {"timeframe": "4h", "k": 3}
+
+
+def test_run_w_gap_study_checkpoints_every_cell_and_aggregates(tmp_path, monkeypatch):
+    def _fake_cell(tf, k, w, cfg, settings):  # noqa: ARG001 — stub cell
+        return {"timeframe": tf, "k": k, "powered": False, "gap_inference": None}
+
+    monkeypatch.setattr(slg, "run_gap_cell", _fake_cell)
+    monkeypatch.setattr(slg, "load_settings", lambda *a, **k: object())
+    rep = slg.run_w_gap_study(None, sl.SelectionConfig(), ckpt_dir=tmp_path)
+    assert [r["k"] for r in rep["results_4h"]] == [3, 6, 12]
+    assert len(rep["results_context_underpowered"]) == 3
+    assert "gap_verdict" in rep
+    # all six cells persisted (3x 4h + 1M/1w/1d)
+    for name in ("4h_k3", "4h_k6", "4h_k12", "1M_k3", "1w_k3", "1d_k3"):
+        assert (tmp_path / f"{name}.json").exists()

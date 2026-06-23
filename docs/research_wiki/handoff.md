@@ -96,17 +96,21 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
 
 ### Next candidate tracks (listed only — NONE started, NONE authorised)
 
-- **Retrospective `W` / causal-availability gap (4h) — BUILT + committed (`884d4c0`), RUN IN PROGRESS (job machine 2026-06-23).**
+- **Retrospective `W` / causal-availability gap (4h) — BUILT, RUN PARTIAL/PENDING-RESUME (job machine 2026-06-23).**
   Harness in `research/selection_learning_gap.py`. **Preflight FIRST (fail-fast, no run, exit 0/1):**
   `uv run python -m fibengine.research.selection_learning --w-gap-preflight` — verifies every TF the
   run touches loads the frozen snapshot **and** the facit is intact, so a missing context cell or a
   drifted frame is caught in seconds, not after hours. Then probe one cell + ETA: `--w-gap-probe`.
-  **Measured 2026-06-23 (probe, 4h k=3):** one 4h cell ≈ **66 min** (3942 s); full study ≈ **~3.5 h**
-  (3× 4h cells k∈{3,6,12} + cheap 1M/1w/1d context). Probe point estimate `gap(k=3) ≈ −0.0045`,
-  powered (61 test-pos), 85 560/86 244 paired (0.8% excluded) — **CI not captured in probe**; the full
-  run's CIs decide the L5 verdict. Run (~3.5 h, live progress to stderr):
+  **Measured 2026-06-23 (probe + partial full run, 4h k=3):** one 4h cell ≈ **66–71 min**; full study
+  ≈ **~3.5 h** (3× 4h cells k∈{3,6,12} + cheap 1M/1w/1d context). Deterministic point estimate
+  `gap(k=3) ≈ −0.0045`, powered (61 test-pos), 85 560/86 244 paired (0.8% excluded) — **CI not yet on
+  disk** (a full run died at ~2h, k=6, from an accidental python stop — not SEP/OOM/cap); the full
+  run's CIs decide the L5 verdict. **NOW RESUME-ABLE:** each cell is checkpointed to
+  `…/w_gap/cells/{tf}_k{k}.json` (seed-stamped, atomic) — rerunning `--w-gap` skips finished cells, so
+  an interrupted run loses at most the in-flight cell. Run / resume (~3.5 h fresh, less on resume):
   `PYTHONUNBUFFERED=1 uv run python -u -m fibengine.research.selection_learning --w-gap`
-  → `experiments/review/fib_selection_learning/w_gap/summary.json`. ⚠️ **Frozen-data parity
+  → `experiments/review/fib_selection_learning/w_gap/summary.json` (written after **all** cells; clear
+  `cells/` to force a clean rerun). ⚠️ **Frozen-data parity
   (load-bearing):** do **NOT** run `data.fetch --refresh` — it overwrites the same CSV **and** its
   sidecar `manifest.json` together with fresh bars, changing the universe/split vs the locked k-sweep;
   the preflight's committed fingerprints (in `selection_learning_gap.py`) are the only independent

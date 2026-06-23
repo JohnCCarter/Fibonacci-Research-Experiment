@@ -19,8 +19,10 @@ Run (CLI stays in ``selection_learning``):
 
 from __future__ import annotations
 
+import json
 import time
 from dataclasses import dataclass, replace
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -38,6 +40,7 @@ from fibengine.research.selection_learning import (
     _TF_W_BARS,
     K_STAR,
     PRIMARY_K,
+    RESULTS_DIR,
     Candidate,
     SelectionConfig,
     _progress,
@@ -289,13 +292,61 @@ def gap_verdict(per_k: list[dict[str, Any]]) -> str:
     return "gap_persists" if inf12["ci95_low"] > 0.0 else "gap_closes_with_buffer"
 
 
-def run_w_gap_study(config_path: str | None, cfg: SelectionConfig) -> dict:
+def _json_default(o: Any) -> Any:
+    """numpy scalars so a ~70-min cell never fails to JSON-serialize at checkpoint time."""
+    if isinstance(o, np.generic):
+        return o.item()
+    raise TypeError(f"not JSON-serializable: {type(o)}")
+
+
+def _run_or_load_cell(
+    timeframe: str, k: int, w_bars: int, cfg: SelectionConfig, settings: Any, ckpt_dir: Path
+) -> dict:
+    """Run one gap cell, or load it from a per-cell checkpoint if a same-seed one exists.
+
+    Each ~70-min 4h cell is the unit of work that survives an interrupted run (accidental kill,
+    sleep): on completion its result is written **atomically** to ``ckpt_dir/{tf}_k{k}.json`` and a
+    later ``--w-gap`` run skips it. Seed-stamped — a config/seed change forces a clean recompute.
+    Data drift is guarded by ``--w-gap-preflight``; clear ``cells/`` to force a full rerun.
+    The returned cell is always JSON-round-tripped, so the aggregated summary stays serializable."""
+    path = ckpt_dir / f"{timeframe}_k{k}.json"
+    if path.exists():
+        saved = json.loads(path.read_text(encoding="utf-8"))
+        if saved.get("seed") == cfg.seed:
+            _progress(f"RESUME tf={timeframe} k={k}: loaded checkpoint {path.name}")
+            return saved["cell"]
+        _progress(f"stale ckpt {path.name}: seed {saved.get('seed')}!={cfg.seed}, recompute")
+    result = run_gap_cell(timeframe, k, w_bars, cfg, settings)
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(
+        json.dumps(
+            {"seed": cfg.seed, "cell": result}, indent=2, sort_keys=True, default=_json_default
+        ),
+        encoding="utf-8",
+    )
+    tmp.replace(path)
+    _progress(f"checkpoint written {path.name}")
+    return json.loads(path.read_text(encoding="utf-8"))["cell"]
+
+
+def run_w_gap_study(
+    config_path: str | None, cfg: SelectionConfig, ckpt_dir: Path | None = None
+) -> dict:
     """Retrospective-W / causal-availability-gap study (side-quest #1). 4h primary over the gap
-    cells {3,6,12}; 1M/1w/1d at primary k=3 as **underpowered context only** (W-gap lock L4)."""
+    cells {3,6,12}; 1M/1w/1d at primary k=3 as **underpowered context only** (W-gap lock L4).
+
+    Checkpoints each cell under ``ckpt_dir`` (default ``RESULTS_DIR/w_gap/cells``) so an interrupted
+    run resumes without recomputing finished cells (study ~3.5h, longer than one sitting)."""
     settings = load_settings(config_path) if config_path else load_settings()
-    primary = [run_gap_cell("4h", k, _TF_W_BARS["4h"], cfg, settings) for k in GAP_K_CELLS]
+    if ckpt_dir is None:
+        ckpt_dir = RESULTS_DIR / "w_gap" / "cells"
+    primary = [
+        _run_or_load_cell("4h", k, _TF_W_BARS["4h"], cfg, settings, ckpt_dir) for k in GAP_K_CELLS
+    ]
     context = [
-        run_gap_cell(tf, PRIMARY_K, _TF_W_BARS[tf], cfg, settings) for tf in ("1M", "1w", "1d")
+        _run_or_load_cell(tf, PRIMARY_K, _TF_W_BARS[tf], cfg, settings, ckpt_dir)
+        for tf in ("1M", "1w", "1d")
     ]
     return {
         "generated_by": "fib_selection_learning_w_gap",
