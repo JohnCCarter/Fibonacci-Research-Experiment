@@ -651,6 +651,11 @@ def _print_k_sweep(report: dict, path: Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # UTF-8 console so a multi-hour run never dies on a cp1252 charmap encode at its final print.
+    for _s in (sys.stdout, sys.stderr):
+        _rc = getattr(_s, "reconfigure", None)
+        if _rc is not None:
+            _rc(encoding="utf-8")
     ap = argparse.ArgumentParser(description="BTC Fib selection-learning (Stage 2 headline)")
     ap.add_argument("--timeframes", default="1d,4h")
     ap.add_argument("--config", default="config/settings.expansion.yaml")
@@ -662,9 +667,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--w-gap-probe",
         action="store_true",
-        help="time ONE 4h k=3 gap cell + print ETA for the full study (no summary written)",
+        help="time ONE 4h k=3 cell + ETA for the full study (no summary)",
+    )
+    ap.add_argument(
+        "--w-gap-preflight",
+        action="store_true",
+        help="frozen-data parity + facit fail-fast for W-gap TFs (no run)",
     )
     args = ap.parse_args(argv)
+    if args.w_gap_preflight:
+        from fibengine.research.selection_learning_gap import run_preflight
+
+        return run_preflight(args.config)
     if args.w_gap_probe:
         from fibengine.research.selection_learning_gap import run_gap_cell
 
@@ -674,9 +688,8 @@ def main(argv: list[str] | None = None) -> int:
         dt = time.perf_counter() - t0
         # full study = three 4h cells (≈equal cost, shared W=180) + 3 smaller context cells
         print(
-            f"PROBE one 4h k={PRIMARY_K} cell = {dt:.0f}s. "
-            f"Full study ETA ≈ 3x4h ({3 * dt:.0f}s) + context(1M/1w/1d, cheaper) "
-            f"≈ {3.5 * dt / 60:.1f}–{4.5 * dt / 60:.1f} min."
+            f"PROBE one 4h k={PRIMARY_K} cell={dt:.0f}s. Full study ETA ~3x4h "
+            f"({3 * dt:.0f}s)+context ~{3.5 * dt / 60:.1f}-{4.5 * dt / 60:.1f} min."
         )
         return 0
     if args.k_sweep:

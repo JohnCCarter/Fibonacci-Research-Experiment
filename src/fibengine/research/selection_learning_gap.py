@@ -20,7 +20,7 @@ Run (CLI stays in ``selection_learning``):
 from __future__ import annotations
 
 import time
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from typing import Any
 
 import numpy as np
@@ -30,6 +30,7 @@ from fibengine.core.config import PivotConfig, ScoringConfig, load_settings
 from fibengine.core.features import compute_features
 from fibengine.core.models import Swing
 from fibengine.core.scale import detect_pivots_multi
+from fibengine.data.fetch import cache_path
 from fibengine.data.loader import atr, load_candles
 from fibengine.pivots.detect import detect_pivots
 from fibengine.research.selection_learning import (
@@ -331,3 +332,113 @@ def print_w_gap(report: dict, path: Any) -> None:
                 )
                 print(f"    retro_weights={a['retro_weights_standardized']}")
     print(f"gap_verdict={report['gap_verdict']}  summary={path}")
+
+
+# --- frozen-data parity preflight (fail-fast before the inherent ~2-3h run) --------------------
+
+# ``run_w_gap_study`` loads candles via ``load_candles``/``cache_path`` under
+# ``config/settings.expansion.yaml`` — which resolves 4h→limit_8000, 1d→limit_3500, 1w→limit_1000,
+# 1M→limit_500 and trims at history_start=2016-11-05 — and ε-matches the human facit. These
+# fingerprints are the **committed, independent** parity anchor: a ``data.fetch --refresh`` rewrites
+# the same CSV **and** its sidecar ``manifest.json`` together, so only a reference kept in version
+# control (here) can catch silent drift that would change the universe/split vs the locked k-sweep.
+# Captured 2026-06-22 from the verified snapshot (post-load: trim + OHLCV validation applied).
+PREFLIGHT_TIMEFRAMES = ("4h", "1w", "1d", "1M")  # run order: 4h primary first, then context cells
+FROZEN_SNAPSHOT: dict[str, dict[str, Any]] = {
+    "4h": {
+        "bars": 21015,
+        "first_ts": "2016-11-05T00:00:00+00:00",
+        "last_ts": "2026-06-08T12:00:00+00:00",
+    },
+    "1w": {
+        "bars": 500,
+        "first_ts": "2016-11-10T00:00:00+00:00",
+        "last_ts": "2026-06-04T00:00:00+00:00",
+    },
+    "1d": {
+        "bars": 3503,
+        "first_ts": "2016-11-05T00:00:00+00:00",
+        "last_ts": "2026-06-08T00:00:00+00:00",
+    },
+    "1M": {
+        "bars": 115,
+        "first_ts": "2016-12-01T00:00:00+00:00",
+        "last_ts": "2026-06-01T00:00:00+00:00",
+    },
+}
+FROZEN_FACIT_COUNT: dict[str, int] = {"4h": 365, "1w": 21, "1d": 67, "1M": 9}
+
+
+@dataclass
+class PreflightCheck:
+    timeframe: str
+    ok: bool
+    message: str
+
+
+def compare_fingerprint(
+    timeframe: str, bars: int, first_ts: str, last_ts: str, n_facit: int
+) -> list[str]:
+    """Pure parity check vs the committed frozen reference. Returns mismatch strings (empty ⇒ OK).
+    Exact match required (strict FAIL): any bar-count / span / facit drift means the on-disk data is
+    no longer the locked k-sweep snapshot and the gap run would be incomparable to it."""
+    ref = FROZEN_SNAPSHOT[timeframe]
+    out: list[str] = []
+    if bars != ref["bars"]:
+        out.append(f"bars {bars} != frozen {ref['bars']}")
+    if first_ts != ref["first_ts"]:
+        out.append(f"first_ts {first_ts} != frozen {ref['first_ts']}")
+    if last_ts != ref["last_ts"]:
+        out.append(f"last_ts {last_ts} != frozen {ref['last_ts']}")
+    want = FROZEN_FACIT_COUNT[timeframe]
+    if n_facit != want:
+        out.append(f"facit {n_facit} != frozen {want}")
+    return out
+
+
+def check_frozen_cell(timeframe: str, settings: Any) -> PreflightCheck:
+    """Load the exact cache + facit the W-gap run would use for ``timeframe`` and compare to the
+    frozen reference. Never fetches (fail-closed) and never builds the candidate universe (so it
+    stays cheap — the ~2-3h cost is in build_candidates/build_retro_features, skipped here)."""
+    data_cfg = settings.data.model_copy(update={"timeframe": timeframe})
+    path = cache_path(data_cfg)
+    try:
+        df = load_candles(data_cfg, fetch_if_missing=False, strict=False)
+    except FileNotFoundError:
+        return PreflightCheck(timeframe, False, f"no cache at {path} - copy the frozen snapshot")
+    if df.empty:
+        return PreflightCheck(timeframe, False, f"empty frame at {path.name}")
+    try:
+        n_facit = len(load_human_legs(timeframe))
+    except ValueError as exc:
+        return PreflightCheck(timeframe, False, f"facit load failed: {exc}")
+    mism = compare_fingerprint(
+        timeframe, len(df), df.index[0].isoformat(), df.index[-1].isoformat(), n_facit
+    )
+    if mism:
+        return PreflightCheck(timeframe, False, f"{path.name}: " + "; ".join(mism))
+    return PreflightCheck(
+        timeframe, True, f"{path.name}: {len(df)} bars, {n_facit} facit (frozen-parity OK)"
+    )
+
+
+def run_preflight(config_path: str | None) -> int:
+    """Fail-fast preflight for the W-gap run: verify every TF the study touches (4h primary +
+    1M/1w/1d context) loads the frozen snapshot and the facit corpus is intact **before** paying the
+    inherent ~2-3h per-endpoint-detect cost. Strict — any drift on any TF ⇒ NOT READY (exit 1).
+    Pair with ``--w-gap-probe`` (times one real cell + ETA) for full pre-run confidence."""
+    settings = load_settings(config_path) if config_path else load_settings()
+    print("=== W-gap preflight (frozen-data parity, cache-only) ===")
+    print(f"config: {config_path or 'config/settings.yaml (default)'}")
+    failures = 0
+    for tf in PREFLIGHT_TIMEFRAMES:
+        chk = check_frozen_cell(tf, settings)
+        print(f"[{'OK' if chk.ok else 'FAIL'}] {tf}: {chk.message}")
+        failures += 0 if chk.ok else 1
+    print()
+    if failures:
+        print(f"NOT READY: {failures} TF(s) drifted or missing - do NOT run --w-gap.")
+        print("Restore the exact frozen CSVs (do NOT data.fetch --refresh), then re-run preflight.")
+    else:
+        print("READY: all TFs match the frozen k-sweep snapshot. Next: --w-gap-probe for the ETA.")
+    return 1 if failures else 0

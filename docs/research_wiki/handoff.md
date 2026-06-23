@@ -96,16 +96,25 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
 
 ### Next candidate tracks (listed only — NONE started, NONE authorised)
 
-- **Retrospective `W` / causal-availability gap (4h) — BUILT + committed (`884d4c0`), RUN PENDING (home).**
-  Harness in `research/selection_learning_gap.py`. Run (~2-3h, live progress to stderr):
+- **Retrospective `W` / causal-availability gap (4h) — BUILT + committed (`884d4c0`), RUN IN PROGRESS (job machine 2026-06-23).**
+  Harness in `research/selection_learning_gap.py`. **Preflight FIRST (fail-fast, no run, exit 0/1):**
+  `uv run python -m fibengine.research.selection_learning --w-gap-preflight` — verifies every TF the
+  run touches loads the frozen snapshot **and** the facit is intact, so a missing context cell or a
+  drifted frame is caught in seconds, not after hours. Then probe one cell + ETA: `--w-gap-probe`.
+  **Measured 2026-06-23 (probe, 4h k=3):** one 4h cell ≈ **66 min** (3942 s); full study ≈ **~3.5 h**
+  (3× 4h cells k∈{3,6,12} + cheap 1M/1w/1d context). Probe point estimate `gap(k=3) ≈ −0.0045`,
+  powered (61 test-pos), 85 560/86 244 paired (0.8% excluded) — **CI not captured in probe**; the full
+  run's CIs decide the L5 verdict. Run (~3.5 h, live progress to stderr):
   `PYTHONUNBUFFERED=1 uv run python -u -m fibengine.research.selection_learning --w-gap`
-  → `experiments/review/fib_selection_learning/w_gap/summary.json`. Probe one cell + ETA first:
-  `--w-gap-probe`. ⚠️ **Frozen-data parity (load-bearing):** do **NOT** run `data.fetch --refresh`
-  for this study — it pulls fresh bars and changes the universe/split vs the locked k-sweep (4h data
-  frozen at 2026-06-09). **Copy the exact `data/raw/bitfinex/BTC-USD/{1M,1w,1d,4h}/*.csv` snapshot**
-  from the source machine instead (overriding the generic "fetch fresh" cache step below). After the
-  run: deliver the 7 Commit-2 items (results → gates → **L5 verdict** → observed/inferred/unverified;
-  report non-trivial row exclusions as scope-limit/possible artifact).
+  → `experiments/review/fib_selection_learning/w_gap/summary.json`. ⚠️ **Frozen-data parity
+  (load-bearing):** do **NOT** run `data.fetch --refresh` — it overwrites the same CSV **and** its
+  sidecar `manifest.json` together with fresh bars, changing the universe/split vs the locked k-sweep;
+  the preflight's committed fingerprints (in `selection_learning_gap.py`) are the only independent
+  guard. **Under `config/settings.expansion.yaml` the run loads these exact files (copy them, do not
+  refetch):** `4h/limit_8000.csv` (21015 bars, 2016-11-05→2026-06-08T12:00 — NOT `limit_20000.csv`),
+  `1d/limit_3500.csv` (3503), `1w/limit_1000.csv` (500), `1M/limit_500.csv` (115); facit 365/67/21/9.
+  After the run: deliver the 7 Commit-2 items (results → gates → **L5 verdict** →
+  observed/inferred/unverified; report non-trivial row exclusions as scope-limit/possible artifact).
 - **Stage-1 per-pivot diagnostic** — whether endpoint/pivot selection is itself learnable.
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis

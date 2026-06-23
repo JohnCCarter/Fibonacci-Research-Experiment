@@ -7,6 +7,8 @@ network. Shared machinery lives in ``selection_learning`` (sl); the gap addition
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -116,3 +118,68 @@ def test_build_retro_features_same_rows_and_exclusions():
     retro_big, excl_big = slg.build_retro_features(df, live, pivot_cfg, scoring_cfg, cfg, len(df))
     assert not retro_big
     assert excl_big["rows_excluded_endpoint_W_beyond_data"] == len(live)
+
+
+# --- frozen-data parity preflight -------------------------------------------------------------
+
+
+def test_frozen_reference_covers_every_run_timeframe():
+    # the preflight must check exactly the TFs the W-gap run touches, with both refs defined
+    for tf in slg.PREFLIGHT_TIMEFRAMES:
+        assert tf in slg.FROZEN_SNAPSHOT
+        assert tf in slg.FROZEN_FACIT_COUNT
+        assert set(slg.FROZEN_SNAPSHOT[tf]) == {"bars", "first_ts", "last_ts"}
+
+
+def test_compare_fingerprint_exact_match_is_ok():
+    ref = slg.FROZEN_SNAPSHOT["4h"]
+    assert (
+        slg.compare_fingerprint(
+            "4h", ref["bars"], ref["first_ts"], ref["last_ts"], slg.FROZEN_FACIT_COUNT["4h"]
+        )
+        == []
+    )
+
+
+def test_compare_fingerprint_flags_each_drift():
+    ref = slg.FROZEN_SNAPSHOT["4h"]
+    facit = slg.FROZEN_FACIT_COUNT["4h"]
+    # a refresh that appends one fresh bar shifts bars AND last_ts → both flagged
+    mism = slg.compare_fingerprint(
+        "4h", ref["bars"] + 1, ref["first_ts"], "2026-06-09T08:00:00+00:00", facit
+    )
+    assert any("bars" in m for m in mism)
+    assert any("last_ts" in m for m in mism)
+    # a dropped/added facit file is caught even when candles are pristine
+    only_facit = slg.compare_fingerprint(
+        "4h", ref["bars"], ref["first_ts"], ref["last_ts"], facit - 1
+    )
+    assert only_facit == [f"facit {facit - 1} != frozen {facit}"]
+
+
+class _StubSettings:
+    class _Data:
+        def model_copy(self, update):  # noqa: ARG002 — only the timeframe matters downstream
+            return self
+
+    data = _Data()
+
+
+def test_check_frozen_cell_fails_on_missing_cache(monkeypatch):
+    monkeypatch.setattr(slg, "cache_path", lambda cfg: Path("nowhere/limit_8000.csv"))
+
+    def _missing(cfg, fetch_if_missing, strict):  # noqa: ARG001 — fail-closed stand-in
+        raise FileNotFoundError
+
+    monkeypatch.setattr(slg, "load_candles", _missing)
+    chk = slg.check_frozen_cell("4h", _StubSettings())
+    assert not chk.ok
+    assert "no cache" in chk.message
+
+
+def test_check_frozen_cell_fails_on_empty_frame(monkeypatch):
+    monkeypatch.setattr(slg, "cache_path", lambda cfg: Path("x/limit_8000.csv"))
+    monkeypatch.setattr(slg, "load_candles", lambda cfg, fetch_if_missing, strict: pd.DataFrame())
+    chk = slg.check_frozen_cell("4h", _StubSettings())
+    assert not chk.ok
+    assert "empty" in chk.message
