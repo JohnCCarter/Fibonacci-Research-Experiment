@@ -96,29 +96,19 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
 
 ### Next candidate tracks (listed only — NONE started, NONE authorised)
 
-- **Retrospective `W` / causal-availability gap (4h) — BUILT, RUN PARTIAL/PENDING-RESUME (job machine 2026-06-23).**
-  Harness in `research/selection_learning_gap.py`. **Preflight FIRST (fail-fast, no run, exit 0/1):**
-  `uv run python -m fibengine.research.selection_learning --w-gap-preflight` — verifies every TF the
-  run touches loads the frozen snapshot **and** the facit is intact, so a missing context cell or a
-  drifted frame is caught in seconds, not after hours. Then probe one cell + ETA: `--w-gap-probe`.
-  **Measured 2026-06-23 (probe + partial full run, 4h k=3):** one 4h cell ≈ **66–71 min**; full study
-  ≈ **~3.5 h** (3× 4h cells k∈{3,6,12} + cheap 1M/1w/1d context). Deterministic point estimate
-  `gap(k=3) ≈ −0.0045`, powered (61 test-pos), 85 560/86 244 paired (0.8% excluded) — **CI not yet on
-  disk** (a full run died at ~2h, k=6, from an accidental python stop — not SEP/OOM/cap); the full
-  run's CIs decide the L5 verdict. **NOW RESUME-ABLE:** each cell is checkpointed to
-  `…/w_gap/cells/{tf}_k{k}.json` (seed-stamped, atomic) — rerunning `--w-gap` skips finished cells, so
-  an interrupted run loses at most the in-flight cell. Run / resume (~3.5 h fresh, less on resume):
-  `PYTHONUNBUFFERED=1 uv run python -u -m fibengine.research.selection_learning --w-gap`
-  → `experiments/review/fib_selection_learning/w_gap/summary.json` (written after **all** cells; clear
-  `cells/` to force a clean rerun). ⚠️ **Frozen-data parity
-  (load-bearing):** do **NOT** run `data.fetch --refresh` — it overwrites the same CSV **and** its
-  sidecar `manifest.json` together with fresh bars, changing the universe/split vs the locked k-sweep;
-  the preflight's committed fingerprints (in `selection_learning_gap.py`) are the only independent
-  guard. **Under `config/settings.expansion.yaml` the run loads these exact files (copy them, do not
-  refetch):** `4h/limit_8000.csv` (21015 bars, 2016-11-05→2026-06-08T12:00 — NOT `limit_20000.csv`),
-  `1d/limit_3500.csv` (3503), `1w/limit_1000.csv` (500), `1M/limit_500.csv` (115); facit 365/67/21/9.
-  After the run: deliver the 7 Commit-2 items (results → gates → **L5 verdict** →
-  observed/inferred/unverified; report non-trivial row exclusions as scope-limit/possible artifact).
+- **Retrospective `W` / causal-availability gap (4h) — DONE (job machine 2026-06-23). Verdict
+  `no_causal_gap`.** Full `--w-gap` run completed (all 6 cells, ~3.5 h, deterministic seed 20260618);
+  results in [w-gap RESULTS](reviews/btc-fib-selection-learning-w-gap-results-20260623.md), locked per
+  the [w-gap LOCK](reviews/btc-fib-selection-learning-w-gap-lock-20260622.md). On the only powered
+  cell (4h): **gap(k=3) = −0.0045, 95% CI [−0.070, +0.031] includes 0** (p=0.61) → L5 `no_causal_gap`
+  — the bounded 180-bar retrospective view buys **no** selection info the live view at `k=3` lacks.
+  Gap point estimate ≤ 0 at every k (k=12 borderline: CI upper +0.0004, p=0.97, attributed to the
+  wider-frame recompute — reported as sensitivity, does **not** trip the direction guard). 1M/1w/1d
+  underpowered (2/0/7 test-pos), context only. Row exclusions trivial (≈0.8%). **No reproduction, no
+  edge/behaviour claim** (L6). Harness `research/selection_learning_gap.py`; summary +
+  `cells/*.json` gitignored/regenerable; gates green (ruff/format/557 pytest cov 74.83%/bounds).
+  Re-run (deterministic, resume-able, frozen data — do **NOT** `data.fetch --refresh`):
+  `PYTHONUNBUFFERED=1 uv run python -u -m fibengine.research.selection_learning --w-gap`.
 - **Stage-1 per-pivot diagnostic** — whether endpoint/pivot selection is itself learnable.
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
