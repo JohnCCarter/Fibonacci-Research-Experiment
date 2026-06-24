@@ -133,20 +133,25 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   single open CRUX (is `cleanliness` a genuine signal or a **detector/anchoring artifact**?). Frames
   the next-step choice A (exclusivity / artifact diagnostic) / B (detector-independent anchor-probe) /
   C (pause + theory) — **none started**. [Checkpoint](reviews/btc-fib-selection-learning-checkpoint-20260624.md).
-- **2026-06-24 Fib SELECTION-LEARNING `cleanliness` artifact-probe — LOCKED (Commit 1, docs-only),
-  RUN PENDING separate GO.** Cheap-first scope of track B (chosen after a design-only feasibility
-  check): tests the open crux — is the Stage-2 `cleanliness` lead genuine or a detector/anchoring
-  artifact — on **existing facit data, no new candidate universe**. Two contrasts, blind-locked in the
-  [artifact LOCK](reviews/btc-fib-selection-learning-artifact-lock-20260624.md): (1) **surfacing** =
-  reached-vs-unreached human-leg cleanliness (ALL 365 4h legs, exact anchors, Stage-2 ε-reconstruction
-  split — unreached are the signal, not filtered); (2) **snapping** = exact-vs-snapped paired contrast.
-  Quarter-block bootstrap, verdict {`detector_surfacing_artifact` / `no_surfacing_artifact` /
-  `snapping_inflates_cleanliness` / `no_snapping_inflation` → `artifact_risk_reduced` vs
-  `detector_artifact_supported`}. **Matched-null / new universe NOT built** — gated optional rung,
-  only if surfacing artifact is found AND needs quantifying, and then only behind its own separate
-  blind lock (A8). **Diagnostic; `artifact_risk_reduced` ≠ "cleanliness proven human intuition"; no
-  reproduction/edge/behaviour claim.** Commit 2 (build+run) needs a separate GO and new module
-  `selection_learning_artifact.py`.
+- **2026-06-24 Fib SELECTION-LEARNING `cleanliness` artifact-probe — BUILT + RUN → inflationary
+  artifact NOT supported on 4h, but marginal/non-replicating → "investigate, not a finding".**
+  Commit 2 of the [artifact LOCK](reviews/btc-fib-selection-learning-artifact-lock-20260624.md)
+  (`b533385`), executed verbatim. New `research/selection_learning_artifact.py` (+13 tests; own
+  `--artifact` CLI, no code into byte-capped `selection_learning.py`). Fidelity OK (4h reached
+  **0.860**, reproduces Stage-2 ~0.83). **Surfacing:** reached legs *less* clean than unreached (gap
+  **−0.0557**, CI [−0.1150, −0.00095] excludes 0 below) → locked guard **`inverse_surfacing`** (marginal:
+  CI upper −0.00095). **Snapping:** snapping to detector pivots *lowers* cleanliness (gap **−0.0219**,
+  CI [−0.0320, −0.0102]) → locked guard **`snapping_deflates`**. Both guards point **against** the
+  inflationary detector-artifact hypothesis — but it is **NOT `artifact_risk_reduced`** (both CIs
+  *exclude* 0, not include) and the snapping effect **flips sign on 1d** (+0.0222, `detector_artifact_
+  supported` context) → **TF-dependent, investigate, no sign/positive claim.** **Combined: A7 did not
+  pre-register a powered direction-guard outcome → no new combined verdict; harness emits a descriptive
+  `meta:` status (NOT `inconclusive_underpowered`, the cells are powered). The lock was NOT changed.**
+  Matched-null / new universe **NOT built** (gated, A8). Crux stays OPEN, sharper investigate-target
+  (why reached/snapped legs are less clean; why snapping flips sign by TF). No reproduction/edge/
+  behaviour/Genesis/1H/ETH. [Results](reviews/btc-fib-selection-learning-artifact-results-20260624.md);
+  summary + `cells/*.json` gitignored/regenerable. Re-run (deterministic, frozen data, no `--refresh`):
+  `PYTHONUNBUFFERED=1 uv run --no-sync python -u -m fibengine.research.selection_learning_artifact --artifact`.
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
 may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal
