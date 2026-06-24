@@ -126,6 +126,13 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   [Results](reviews/btc-fib-selection-learning-stage1-results-20260624.md); summary + `cells/*.json`
   gitignored/regenerable. Re-run (deterministic, frozen data, **no `--refresh`**):
   `PYTHONUNBUFFERED=1 uv run --no-sync python -u -m fibengine.research.selection_learning_stage1 --stage1`.
+- **2026-06-24 Fib SELECTION-LEARNING campaign CHECKPOINT (docs-only, no new claim).** Consolidates
+  the five committed runs (Stage-2 → prominence-family → k-sweep → W-gap `no_causal_gap` → Stage-1
+  `no_pivot_signal_above_prominence`): what we KNOW (modest, OOS, live-available, buffer-stable,
+  baseline-robust `cleanliness` lead in the leg gestalt; low absolute AP; 4h-only powered) and the
+  single open CRUX (is `cleanliness` a genuine signal or a **detector/anchoring artifact**?). Frames
+  the next-step choice A (exclusivity / artifact diagnostic) / B (detector-independent anchor-probe) /
+  C (pause + theory) — **none started**. [Checkpoint](reviews/btc-fib-selection-learning-checkpoint-20260624.md).
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
 may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal
