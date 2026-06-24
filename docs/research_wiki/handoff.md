@@ -5,6 +5,13 @@ append-only trail lives in [log.md](log.md).
 
 ## Current Focus
 
+> **NORTH STAR (binding — no drift):** the selection-learning line exists to *learn how the human
+> selects meaningful fib legs/ranges and draws Fib like a human analyst (facit = ground truth)* — **not**
+> to explain detector/snapping/measurement geometry. Every selection-learning step must first answer
+> *"does this improve the model's ability to select human-like legs/ranges vs the facit?"* — if no,
+> don't start it; park it. Controls + mechanics are **DONE/PARKED**
+> ([main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md)).
+
 **BTC monthly-first top-down protocol** — re-labeling on BTC/USD only after the
 **2026-06-09 log-scale + profile reset** (prior linear / 0.236 labels archived).
 
@@ -21,6 +28,13 @@ append-only trail lives in [log.md](log.md).
 **ETH/USD:** blocked until BTC protocol approved.
 
 ## Recent Changes
+
+- **2026-06-24 Fib SELECTION-LEARNING — MAIN-QUEST RESET (docs-only).** Stop the mechanics drift,
+  re-anchor to the north star (above). Controls/mechanics (artifact-probe, snapping/net-path mechanics,
+  flip) are **DONE; matched-null / detector-geometry side-quests PARKED.** Next step only if it improves
+  the model's human-like leg/range selection vs facit (behind a blind lock); else park the modeling and
+  return to the human BTC top-down labeling main quest.
+  [Main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md).
 
 - **2026-06-22 Fib SELECTION-LEARNING W-gap study — BUILT + module split, RUN PENDING (home).** Commit 2 of side-quest #1, built to the [W-gap LOCK](reviews/btc-fib-selection-learning-w-gap-lock-20260622.md) (`4f47d8e`): `gap(k)=AP(retro-W)−AP(live-k)` on identical rows, embargo=W, L5 verdict. New `research/selection_learning_gap.py` (+5 tests); W-gap code split out to keep `selection_learning.py` under the §6 size cap (was 995 lines); flushed-stderr `_progress` logging in `build_candidates`+`build_retro_features` so a long run is never blind (result-neutral). **Run NOT executed** — inherent ~2-3h per-endpoint-detect cost on the ~20k-bar 4h frame (leakage-bearing truncation, no legal shortcut); to run at home (see Next tracks). No gap results, no verdict. Commit `884d4c0`, gates green (pytest 549, cov 75%).
 - **2026-06-18 Fib SELECTION-LEARNING k-sweep {0,3,6,12} (4h) → `k_stable_live_selection_signal`.** Mandatory confirmation-buffer sweep (live-only), locked prominence-FAMILY survival rule (powered AND CI excludes 0 vs **every** §6 baseline — magnitude + prominence A/B). **k=0 degenerate** (0 candidates, reachable 0.0, unpowered — *not interpretable*, excluded); **k=3/6/12 all powered and survive** the locked family (`p_one_sided lift≤0 = 0/2000` throughout; lowest CI floor k=12 vs prom-sum 0.025). ≥2 survivors → cross-k verdict **`k_stable_live_selection_signal`**: the lead is **not** a narrow-buffer artifact. **Modest framing holds:** `cleanliness` still dominates (~0.20) at every powered k; at k=12 `scale_confluence` enters at ~0.13 only as a **secondary hint** (causally available there), not a second pillar; AP rises only 0.057→0.066, far under the 0.83 ceiling — **still single-feature, NOT a reproduction, no edge/behaviour/backtest/Genesis claim**; 1M/1w/1d **underpowered, not refuted**. Code+tests `ea6c2ea` (gates green). [Results](reviews/btc-fib-selection-learning-results-20260618.md).
