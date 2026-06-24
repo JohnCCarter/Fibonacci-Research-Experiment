@@ -36,8 +36,10 @@ append-only trail lives in [log.md](log.md).
   not the trivial baseline) on 4h live k=3? Blind verdict (`enrichment_helps` / `no_enrichment_signal →
   park modeling + grow facit`); honest prior **low** (4 features already ~0 at k=3). Scope OUT:
   scale_confluence/HTF, more mechanics, matched-null, new universe, Genesis/1H/ETH/refresh. Reuses
-  Stage-2 universe/ε/split/AP/bootstrap verbatim; new module `selection_learning_enrich.py`. Commit 2
-  needs a separate GO. [Enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md).
+  Stage-2 universe/ε/split/AP/bootstrap verbatim; new module `selection_learning_enrich.py`.
+  **⏸ PAUSED HERE (2026-06-24).** Resume = either **GO Commit 2** (build/run the exclusivity shot per
+  the lock) **or** route to **labeling** (lock §E8 / reset §5: grow/improve the facit). No code started.
+  [Enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md).
 - **2026-06-24 Fib SELECTION-LEARNING — MAIN-QUEST RESET (docs-only).** Stop the mechanics drift,
   re-anchor to the north star (above). Controls/mechanics (artifact-probe, snapping/net-path mechanics,
   flip) are **DONE; matched-null / detector-geometry side-quests PARKED.** Next step only if it improves

@@ -16,6 +16,25 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-24] decision | Fib SELECTION-LEARNING — line PAUSED at model-enrichment lock
+
+Checkpoint for the selection-learning side-quest. After the Stage-2 headline (modest single-feature
+`cleanliness` lead, 4h), the line ran a chain of **controls** — prominence-family + k-sweep
+(`k_stable_live_selection_signal`), W-gap (`no_causal_gap`), Stage-1 per-pivot
+(`no_pivot_signal_above_prominence`), the `cleanliness` artifact-probe (inflationary detector-artifact
+**unsupported** on 4h; direction guards → investigate), and a descriptive mechanics + snapping-flip pass
+(span/duration confound + net-vs-path/candle-granularity). A **main-quest reset** then stopped the
+mechanics drift and re-anchored the north star (*learn how the human selects meaningful fib legs/ranges;
+facit = truth*) with a binding no-drift guardrail. The single open crux (`cleanliness` genuine vs
+artifact) stays **OPEN**.
+
+**Now PAUSED** at the **model-enrichment LOCK** (`bc85a69`, blind Commit-1): one lean shot — does a
+single causal **leg-completeness / `exclusivity`** feature raise pooled OOS AP **over the current
+Stage-2 model** (nested baseline) on 4h live k=3? Verdict `enrichment_helps` / `no_enrichment_signal →
+park modeling + grow facit`; honest prior **low**. **Resume = GO Commit 2 (build/run) or route to
+labeling (§E8).** No code started; matched-null/new-universe/Genesis/1H/ETH/refresh all out.
+[Enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md).
+
 ## [2026-06-22] decision | Fib SELECTION-LEARNING retrospective W / causal-availability-gap LOCK (docs-only, gated)
 
 Commit-1 lock for side-quest #1, **blind** (no retrospective model built, no gap value ever
