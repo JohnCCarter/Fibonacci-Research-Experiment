@@ -88,8 +88,11 @@ steeply with span (Spearman −0.69), reached legs are longer (median 5 vs 3 bar
 **vanishes when conditioning on span** (short-span +0.003, long-span −0.017): a composition effect, not
 a detector cleanliness-preference. 4H snapping deflates because detector pivots sit **outside** the
 human anchors (span extends, 33% vs 1.6%); the 1D flip is a **TF-dependent geometry** (1D shrinks more,
-10%, **and** the span↔cleanliness relationship flips sign, −0.19→+0.18) — *why* the local relationship
-reverses by TF stays an **open investigate-target**. None of this resolves the crux either way.
+10%, **and** the span↔cleanliness relationship flips sign, −0.19→+0.18). A follow-up
+[flip note](btc-fib-selection-learning-artifact-mechanics-flip-20260624.md) now **mechanically
+attributes** that reversal (descriptive) to a **net-vs-path channel flip** consistent with **candle
+granularity**: on the moved-snap domain, 4H grows path > net (rel_path 0.231 > rel_net 0.181) →
+cleanliness down; 1D grows net > path (0.063 > 0.025) → up. None of this resolves the crux either way.
 
 **Secondary loose end:** set-level **`exclusivity`** (`k*=3`) was specced in the
 [§12 addendum](btc-fib-selection-learning-addendum-20260618.md) but the Stage-2 live whitelist actually

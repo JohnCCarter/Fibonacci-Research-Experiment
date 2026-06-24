@@ -120,6 +120,12 @@ class ArtifactRow:
     span_bars: int = 0  # |pos_b - pos_a| (duration proxy)
     magnitude_atr: float | None = None  # |close[b] - close[a]| / causal ATR at anchor_b
     snap_span_delta: int | None = None  # |snapped span| - |exact span| (reached, non-degenerate)
+    snap_a_idx: int | None = (
+        None  # snapped (detector-pivot) bar index at anchor_a (reached non-deg)
+    )
+    snap_b_idx: int | None = (
+        None  # snapped (detector-pivot) bar index at anchor_b (reached non-deg)
+    )
 
 
 def _quarter_of(ts: pd.Timestamp) -> str:
@@ -158,6 +164,7 @@ def build_artifact_rows(
             else None
         )
         reached, snapped, drop, snap_span_delta = False, None, None, None
+        snap_a_idx, snap_b_idx = None, None
         if atr_at_b > 0 and np.isfinite(atr_at_b):  # fail-closed on degenerate ATR
             price_tol = cfg.eps_price_atr * atr_at_b
             pivots = detect_pivots(df_t, pivot_cfg)
@@ -174,6 +181,7 @@ def build_artifact_rows(
                 else:
                     snapped = _cleanliness_idx(closes, piv_a.index, piv_b.index)
                     snap_span_delta = abs(piv_b.index - piv_a.index) - span_bars  # descriptive (P3)
+                    snap_a_idx, snap_b_idx = int(piv_a.index), int(piv_b.index)
         rows.append(
             ArtifactRow(
                 quarter=_quarter_of(leg.anchor_b_ts),
@@ -186,6 +194,8 @@ def build_artifact_rows(
                 span_bars=span_bars,
                 magnitude_atr=magnitude_atr,
                 snap_span_delta=snap_span_delta,
+                snap_a_idx=snap_a_idx,
+                snap_b_idx=snap_b_idx,
             )
         )
     return rows

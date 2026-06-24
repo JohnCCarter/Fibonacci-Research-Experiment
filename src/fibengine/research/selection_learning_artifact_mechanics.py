@@ -89,6 +89,61 @@ def _median_iqr(vals: list[float]) -> dict[str, Any] | None:
     }
 
 
+# --- the 4H↔1D snapping FLIP: net-vs-path channel decomposition (DESCRIPTIVE) -----------------
+
+
+def _net_path_idx(closes: np.ndarray, i: int, j: int) -> tuple[float | None, float | None]:
+    """(net, path) over the bar-index span [lo,hi] — the two ingredients of cleanliness=net/path."""
+    lo, hi = sorted((int(i), int(j)))
+    seg = closes[lo : hi + 1]
+    if len(seg) < 2:
+        return None, None
+    return float(abs(seg[-1] - seg[0])), float(np.abs(np.diff(seg)).sum())
+
+
+def _flip_decomposition(rows: list, closes: np.ndarray) -> dict[str, Any]:
+    """Why snapping changes cleanliness, and why the sign flips 4H↔1D. cleanliness=net/path, so
+    d_clean is governed by whether snapping changes NET or PATH more (rel_net − rel_path is an
+    arithmetic identity — flagged). Non-trivial content = WHICH channel dominates per TF (median
+    rel_net vs rel_path). DESCRIPTIVE — no verdict/claim."""
+    rel_net, rel_path, npmp, dclean = [], [], [], []
+    n_total = 0
+    for r in rows:
+        if not (r.reached and r.snap_a_idx is not None and r.snapped_clean is not None):
+            continue
+        n_total += 1
+        # MOVED domain only: legs where snapping actually changed the span. Unmoved snaps have
+        # d_clean=0 by construction (the majority here) and are irrelevant to "why snapping changes
+        # cleanliness" — excluding them is the question's support, NOT a post-hoc bin.
+        if sorted((r.snap_a_idx, r.snap_b_idx)) == sorted((r.pos_a, r.pos_b)):
+            continue
+        en, ep = _net_path_idx(closes, r.pos_a, r.pos_b)
+        sn, sp = _net_path_idx(closes, r.snap_a_idx, r.snap_b_idx)
+        if None in (en, ep, sn, sp) or en <= 0 or ep <= 0:
+            continue
+        rn, rp = (sn - en) / en, (sp - ep) / ep
+        rel_net.append(rn)
+        rel_path.append(rp)
+        npmp.append(rn - rp)
+        dclean.append(r.snapped_clean - r.exact_clean)
+    n = len(dclean)
+    if n == 0:
+        return {"n_total": n_total, "n_moved": 0}
+    return {
+        "n_total": n_total,  # all reached non-degenerate snaps
+        "n_moved": n,  # snaps that actually changed the span (the analysis domain)
+        "median_rel_net": float(np.median(rel_net)),  # relative net change from snapping
+        "median_rel_path": float(np.median(rel_path)),  # relative path change from snapping
+        "median_net_minus_path": float(np.median(npmp)),  # >0 → net-dominated (clean up); <0 → path
+        "frac_net_dominates": float(np.mean(np.asarray(npmp) > 0)),
+        "spearman_dclean_vs_net_minus_path_IDENTITY": _spearman(
+            npmp, dclean
+        ),  # ≈+1 by construction
+        "spearman_dclean_vs_rel_net": _spearman(rel_net, dclean),
+        "spearman_dclean_vs_rel_path": _spearman(rel_path, dclean),
+    }
+
+
 # --- per-cell descriptive mechanics (PLAN P2/P3; NO verdict) -----------------------------------
 
 
@@ -162,6 +217,9 @@ def run_mechanics_cell(timeframe: str, cfg: SelectionConfig, settings: Any) -> d
         _spearman([float(p[0]) for p in pairs], [float(p[1]) for p in pairs]) if pairs else None
     )
 
+    # FLIP — net-vs-path channel decomposition explaining the 4H↔1D snapping sign flip
+    flip = _flip_decomposition(rows, df["close"].to_numpy())
+
     return {
         "timeframe": timeframe,
         "k": cfg.k,
@@ -171,6 +229,7 @@ def run_mechanics_cell(timeframe: str, cfg: SelectionConfig, settings: Any) -> d
         "M1_size_length_confound": m1,
         "M3_snap_span_delta_asymmetry": m3,  # headline descriptive object (PLAN P3)
         "M2_span_vs_cleanliness_spearman_PARTLY_ARITHMETIC": m2_spearman,
+        "FLIP_net_path_decomposition": flip,  # why snapping->cleanliness flips sign 4H<->1D
         "note": "DESCRIPTIVE ONLY — no verdict/claim; artifact-probe reading unchanged (PLAN P4)",
     }
 
@@ -225,6 +284,12 @@ def print_mechanics(report: dict, path: Any) -> None:
         )
         print(
             f"    M2(arithmetic) spearman={r['M2_span_vs_cleanliness_spearman_PARTLY_ARITHMETIC']}"
+        )
+        fl = r["FLIP_net_path_decomposition"]
+        print(
+            f"    FLIP moved={fl.get('n_moved')}/{fl.get('n_total')} "
+            f"rel_net={fl.get('median_rel_net')} rel_path={fl.get('median_rel_path')} "
+            f"frac_net_dom={fl.get('frac_net_dominates')}"
         )
     print(f"DESCRIPTIVE-ONLY (no verdict)  summary={path}")
 

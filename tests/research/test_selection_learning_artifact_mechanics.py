@@ -14,7 +14,9 @@ from fibengine.research import selection_learning_artifact as art
 from fibengine.research import selection_learning_artifact_mechanics as mech
 
 
-def _row(reached, exact, span, mag=None, snap_delta=None, snapped=None, q="2020Q1"):
+def _row(
+    reached, exact, span, mag=None, snap_delta=None, snapped=None, q="2020Q1", sa=None, sb=None
+):
     return art.ArtifactRow(
         quarter=q,
         pos_a=0,
@@ -25,6 +27,8 @@ def _row(reached, exact, span, mag=None, snap_delta=None, snapped=None, q="2020Q
         span_bars=span,
         magnitude_atr=mag,
         snap_span_delta=snap_delta,
+        snap_a_idx=sa,
+        snap_b_idx=sb,
     )
 
 
@@ -50,11 +54,52 @@ def test_median_iqr_and_empty():
     assert mech._median_iqr([None, None]) is None
 
 
+def test_net_path_idx():
+    closes = np.array([100.0, 110.0, 105.0, 115.0])
+    net, path = mech._net_path_idx(closes, 0, 3)
+    assert net == pytest.approx(15.0) and path == pytest.approx(25.0)  # |15|, 10+5+10
+    assert mech._net_path_idx(closes, 2, 2) == (None, None)  # <2 bars
+
+
+def test_flip_decomposition_net_vs_path_channel():
+    # closes laid out in 3 regions so two snaps are PATH-dominated (clean down) and one is
+    # NET-dominated (clean up) — the decomposition must recover that split.
+    closes = np.array([100.0, 110.0, 108.0, 100.0, 130.0, 128.0, 130.0, 100.0, 110.0, 107.0])
+    rows = [
+        # A: extend [0,1]->[0,2] adds path -> clean down (path-dominated)
+        _row(True, 1.0, span=1, snapped=8.0 / 12.0, sa=0, sb=2),
+        # B: shrink [3,6]->[3,4] removes a wiggle -> clean up (net-dominated)
+        _row(True, 30.0 / 34.0, span=3, snapped=1.0, sa=3, sb=4, q="2020Q2"),
+        # C: extend [7,8]->[7,9] adds path -> clean down (path-dominated)
+        _row(True, 1.0, span=1, snapped=7.0 / 13.0, sa=7, sb=9, q="2020Q3"),
+    ]
+    # row B's pos_a/pos_b must point at region B (3,6); _row uses pos_a=0,pos_b=span, so fix span=3
+    rows[1].pos_a, rows[1].pos_b = 3, 6
+    rows[2].pos_a, rows[2].pos_b = 7, 8
+    f = mech._flip_decomposition(rows, closes)
+    assert f["n_moved"] == 3 and f["n_total"] == 3
+    # the d_clean <-> (rel_net - rel_path) link is the arithmetic identity → Spearman ≈ +1
+    assert f["spearman_dclean_vs_net_minus_path_IDENTITY"] == pytest.approx(1.0)
+    # two of three snaps are path-dominated (net_minus_path < 0) → overall path-dominated, frac=1/3
+    assert f["median_net_minus_path"] < 0
+    assert f["frac_net_dominates"] == pytest.approx(1.0 / 3.0)
+    assert f["median_rel_path"] > f["median_rel_net"]
+    assert mech._flip_decomposition([], closes) == {"n_total": 0, "n_moved": 0}
+
+
 # --- per-cell descriptive mechanics (no verdict) ----------------------------------------------
 
 
 class _NonEmpty:
     empty = False
+
+    def __getitem__(self, key):  # df["close"] → object with .to_numpy() (flip needs closes)
+        return _Col()
+
+
+class _Col:
+    def to_numpy(self):
+        return np.zeros(0)
 
 
 def _patch_cell(monkeypatch, rows):

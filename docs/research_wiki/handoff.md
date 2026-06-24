@@ -131,6 +131,14 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   Population guard: M1 ≠ Stage-2 lead (different population). No matched-null/new universe/Genesis/1H/
   ETH/refresh. [Mechanics note](reviews/btc-fib-selection-learning-artifact-mechanics-20260624.md);
   mechanics_summary.json gitignored/regenerable.
+- **2026-06-24 Fib SELECTION-LEARNING snapping FLIP mechanics — BUILT + RUN (descriptive, no verdict).**
+  Narrow follow-up: *why does snapping↔cleanliness flip sign 4H↔1D*. Extended the mechanics module
+  (+net/path decomposition, 2 more `ArtifactRow` fields, +2 tests). On the moved-snap domain it is a
+  **net-vs-path channel reversal** consistent with **candle granularity**: 4H grows **path** > net
+  (rel_path 0.231 > rel_net 0.181, 63% path-dominated → clean down); 1D grows **net** > path (0.063 >
+  0.025, 60% net-dominated → clean up). Explains the **measurement geometry**, kept apart from any
+  selection-claim; **no verdict, no lock change, crux OPEN**. No matched-null/universe/Genesis/1H/ETH/
+  refresh. [Flip note](reviews/btc-fib-selection-learning-artifact-mechanics-flip-20260624.md).
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
 may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal
