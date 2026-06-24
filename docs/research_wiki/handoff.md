@@ -152,17 +152,20 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   behaviour/Genesis/1H/ETH. [Results](reviews/btc-fib-selection-learning-artifact-results-20260624.md);
   summary + `cells/*.json` gitignored/regenerable. Re-run (deterministic, frozen data, no `--refresh`):
   `PYTHONUNBUFFERED=1 uv run --no-sync python -u -m fibengine.research.selection_learning_artifact --artifact`.
-- **2026-06-24 Fib SELECTION-LEARNING artifact-MECHANICS investigation — PLAN locked (docs-only),
-  RUN PENDING separate GO.** Door (i) from the checkpoint: explain the *mechanics* behind the
-  artifact-probe (why 4H reached-legs less clean; why 4H snapping lowers cleanliness; why snapping
-  flips sign on 1D), **descriptive-only on frozen data — NO verdict, NO claim, no lock change**. Plan
-  [artifact-mechanics PLAN](reviews/btc-fib-selection-learning-artifact-mechanics-plan-20260624.md):
-  feasible cleanly (deterministic from frozen data + locked detection) but NOT answerable from existing
-  aggregates → needs a small descriptive pass recording per-leg {span_bars, magnitude_atr,
-  snap_span_delta}. Headline object = the **4H↔1D `snap_span_delta` asymmetry** (detector granularity
-  vs human-anchoring precision), not the partly-arithmetic span↔cleanliness correlation. Pre-locked
-  stats (P3) + population guard (M1 reached/unreached ≠ Stage-2 lead) + marginal-gap caveat. No
-  matched-null/new universe/Genesis/1H/ETH/refresh. Commit 2 needs a separate GO.
+- **2026-06-24 Fib SELECTION-LEARNING artifact-MECHANICS — BUILT + RUN (descriptive-only, NO verdict).**
+  Commit 2 of the [mechanics PLAN](reviews/btc-fib-selection-learning-artifact-mechanics-plan-20260624.md)
+  (`70174df`), executed verbatim. New sibling `research/selection_learning_artifact_mechanics.py`
+  (+`--artifact-mechanics` CLI, 3 descriptive fields on `ArtifactRow`, +8 tests). Findings (descriptive,
+  no claim): **(M1)** the 4H "reached less clean" gap is a **span/duration confound** — Spearman(clean,
+  span)=**−0.69**, reached longer (median 5 vs 3 bars), and the −0.056 gap **vanishes when conditioning
+  on span** (short-span +0.003, long-span −0.017): composition effect, not detector cleanliness-
+  preference. **(M3)** 4H snapping deflates because pivots sit **outside** human anchors → span extends
+  (33% extend vs 1.6% shrink); the **1D flip** is a TF-dependent geometry (1D shrinks 10% **and** the
+  span-delta↔clean Spearman flips −0.19→+0.18) — *why* the local relationship reverses stays an **open
+  investigate-target**. **No verdict, no lock change; artifact-probe reading unchanged; crux OPEN.**
+  Population guard: M1 ≠ Stage-2 lead (different population). No matched-null/new universe/Genesis/1H/
+  ETH/refresh. [Mechanics note](reviews/btc-fib-selection-learning-artifact-mechanics-20260624.md);
+  mechanics_summary.json gitignored/regenerable.
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
 may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal

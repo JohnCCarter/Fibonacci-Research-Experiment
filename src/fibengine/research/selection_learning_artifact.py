@@ -116,6 +116,10 @@ class ArtifactRow:
         None  # cleanliness on the ε-matched detector pivots (reached only)
     )
     drop: str | None = None  # snapping-contrast drop reason (degenerate snap), logged not imputed
+    # Descriptive-only mechanics fields (mechanics PLAN P3) — NOT used by any contrast/verdict.
+    span_bars: int = 0  # |pos_b - pos_a| (duration proxy)
+    magnitude_atr: float | None = None  # |close[b] - close[a]| / causal ATR at anchor_b
+    snap_span_delta: int | None = None  # |snapped span| - |exact span| (reached, non-degenerate)
 
 
 def _quarter_of(ts: pd.Timestamp) -> str:
@@ -147,7 +151,13 @@ def build_artifact_rows(
         df_t = df.iloc[: cutoff + 1]
         atr_t = atr(df_t, period=cfg.atr_period).to_numpy()
         atr_at_b = float(atr_t[pos_b]) if 0 <= pos_b < len(atr_t) else float("nan")
-        reached, snapped, drop = False, None, None
+        span_bars = abs(int(pos_b) - int(pos_a))  # descriptive (mechanics P3)
+        magnitude_atr = (
+            abs(float(closes[pos_b]) - float(closes[pos_a])) / atr_at_b
+            if atr_at_b > 0 and np.isfinite(atr_at_b)
+            else None
+        )
+        reached, snapped, drop, snap_span_delta = False, None, None, None
         if atr_at_b > 0 and np.isfinite(atr_at_b):  # fail-closed on degenerate ATR
             price_tol = cfg.eps_price_atr * atr_at_b
             pivots = detect_pivots(df_t, pivot_cfg)
@@ -163,6 +173,7 @@ def build_artifact_rows(
                     drop = "degenerate_snap_pa_eq_pb"
                 else:
                     snapped = _cleanliness_idx(closes, piv_a.index, piv_b.index)
+                    snap_span_delta = abs(piv_b.index - piv_a.index) - span_bars  # descriptive (P3)
         rows.append(
             ArtifactRow(
                 quarter=_quarter_of(leg.anchor_b_ts),
@@ -172,6 +183,9 @@ def build_artifact_rows(
                 reached=reached,
                 snapped_clean=snapped,
                 drop=drop,
+                span_bars=span_bars,
+                magnitude_atr=magnitude_atr,
+                snap_span_delta=snap_span_delta,
             )
         )
     return rows
