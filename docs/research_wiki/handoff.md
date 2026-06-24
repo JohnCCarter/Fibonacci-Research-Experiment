@@ -36,47 +36,12 @@ append-only trail lives in [log.md](log.md).
   uncertainty-ordered worklist (`--by-uncertainty`), fail-closed swing-label validation. SENARE gated.
   Review fixes: P1 windowed-save facit-safety, P2 level-events now log-scale. Sec (PR #34):
   cryptography→49.0.0 (GHSA-537c-gmf6-5ccf). No facit/signal/auto-fib touch.
-- **2026-06-16 BTC/Fib studies — BOTH NULL, reviewed PASS / CLOSED** (commit `f4e96f1`, Lean Fib).
-  **(1) Behaviour event study:** fib ≈ placebo ≈ swing (4h reject 0.78/0.80/0.84, p=0.63/0.19).
-  **(2) Context-conditioned** (continuous MFE−MAE, rank-perm + Holm; contexts trend + deep
-  0.618/0.786): no context passes — fib beats *random placebo* only nominally (p=0.042/0.056, fails
-  Holm) and **never beats swing**. **Insight:** any faint level-reaction is generic horizontal
-  structure, not Fibonacci. Both gates fail → **no strategy work.** Code:
-  `fib_behaviour_event_study.py` (19 tests) + `fib_context_conditioned_study.py` (17); preregs +
-  results `reviews/btc-fib-*-20260616.md`.
-- **2026-06-16 Fib → Genesis V2 Phase 2.5 feature nullability policy — reviewed PASS / CLOSED**
-  (docs-only) — pins how the future bar feature table represents empty values (3 states; distances
-  null not 0/inf; empty-meta ⇔ no-known-zone; dense-table + no-imputation consumer rules).
-  Precondition for any real export. **Open (non-blocking):** is `has_robust_4tf_zone_nearby`
-  log-price- or ATR-thresholded (latter ⇒ warmup-null / availability flag).
-  [Policy](reviews/btc-fib-to-genesis-v2-feature-nullability-policy-20260616.md).
-- **2026-06-16 Fib → Genesis V2 Phase 2 dummy contract test — reviewed PASS / CLOSED** —
-  mechanical contract/dummy test **inside Fib only** (not export, not Genesis integration).
-  `research/feature_contract.py` (stdlib) validates two committed dummy CSVs vs the Phase 1
-  schema (join keys, causality, knowability floor, 1H + feature/metadata fail-closed). No fib
-  computation, no Genesis touch. 20 tests; gates green. Commit `68dc006`; **human review PASS**
-  2026-06-16. Follow-up for any *real* export: define a **nullability policy** for feature
-  columns. [Report](reviews/btc-fib-to-genesis-v2-phase2-dummy-contract-20260616.md).
-- **2026-06-15 MTF confluence CP1–CP3 CLOSED + interpretation/decision note** — first atlas
-  pack done (5 cards, 3 archetypes, all **human-approved**): c001 robust fixed-band 4-TF; c002
-  chaining-dependent contrast (NOT tight); c004/c006/c007 zero-span exact-price 3-TF.
-  [Decision note](reviews/btc-mtf-confluence-interpretation-decision-20260615.md): confluence
-  is **geometry, not edge proof** → **rec: stop MTF track**; next = pause Fib or new question.
-- **2026-06-15 Structural chart-contract snapshots (#F)** — `research/render_summary.py`
-  (stdlib): stable text summaries of map/zoom/gallery renders + golden JSON under
-  `tests/research/snapshots/`. Automatic structural regression; no PNG baselines/deps.
-- **2026-06-15 20171228 source fib corrected** — preview-first flow: anchor_a moved
-  2017-12-28T20:00 @ 13611 → 2017-12-28T08:00 @ 13145 (candidate_1). Only anchor_a + levels
-  changed; anchor_b/fib_id unchanged; guard PASS; ledger candidate → corrected. Closes the
-  declutter→correction→ledger track. [Report](reviews/btc-4h-fib-20171228-correction-20260615.md).
-- **2026-06-15 Issue #32 top-ROI tooling — DONE** (declutter edit-mode, overlap detector, review
-  ledger, artifact gallery; all stdlib). Detail in [log part 1](log-archive-btc-postreset-part1.md).
-- **2026-06-15 4H Tier 1 + Tier 2 visual reviews — complete** (11 groups; `20171228` corrected;
-  corpus clean). Archived to [log part 1](log-archive-btc-postreset-part1.md).
-- **2026-06-08→06-12 source-fib milestones (archived)** — 1M/1W/1D/4H source phases, reaction
-  reviews (1816 interactions), 4H Tier 1 maps, Addendum 2 golden-zone retirement (#30), log-scale
-  + profile fix + monthly-first reset. Detail: [log post-reset part 1](log-archive-btc-postreset-part1.md)
-  + [log.md](log.md); current counts in Verification Snapshot below.
+- **Earlier 2026-06-15/06-16 changes — archived** (kept lean for the 400-line bound): behaviour +
+  context studies **NULL/CLOSED** (`f4e96f1`); Fib→Genesis V2 Phase 2 + 2.5 nullability **PASS/CLOSED**
+  (`68dc006`); MTF confluence CP1–CP3 **CLOSED** (geometry, not edge); #32 tooling DONE + `20171228`
+  correction + chart-contract snapshots; 2026-06-08→06-12 source-fib milestones. **All preserved** in
+  the **PAUSED/CLOSED status sections below** + [log.md](log.md) /
+  [log part 1](log-archive-btc-postreset-part1.md); current counts in the Verification Snapshot.
 
 ## Status — Fib SELECTION-LEARNING line (2026-06-18, slice committed `ea6c2ea`)
 

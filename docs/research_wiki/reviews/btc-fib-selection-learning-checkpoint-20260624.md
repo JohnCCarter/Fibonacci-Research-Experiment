@@ -29,6 +29,7 @@ positive claim. Decision needs a separate explicit GO.
 | 4 | W-gap causal-availability (06-23) | **`no_causal_gap`** | gap(k=3) **−0.0045**, CI [−0.070, +0.031] incl. 0 | `b515b08`↩`61c41d1` |
 | 5 | Stage-1 per-pivot (06-24) | **`no_pivot_signal_above_prominence`** | recall **0.902**; ranking lift +0.0228, CI [−0.035, +0.079] incl. 0 | `b515b08` |
 | 6 | `cleanliness` artifact-probe (06-24) | direction guards **`inverse_surfacing`** + **`snapping_deflates`** (A7-unregistered combined → `meta:` status, NOT a verdict) | surfacing gap **−0.0557** CI [−0.1150, −0.00095]; snapping gap **−0.0219** CI [−0.0320, −0.0102]; both exclude 0 **below** | `1573b56` |
+| 7 | artifact-MECHANICS (06-24) | **DESCRIPTIVE — no verdict** | 4H reached-less-clean = **span confound** (Spearman(clean,span) **−0.69**; gap **vanishes** at equal span: +0.003 / −0.017); snapping asymmetry 4H extends (33%/1.6%) vs 1D shrinks (10%) + span↔clean Spearman flips −0.19→+0.18 | `33a4dfc` |
 
 ## What we KNOW (positive, scoped to 4h + the frozen eight features)
 
@@ -79,6 +80,16 @@ swing" question is **out of scope** (matched-null gated, A8 — **not built**; i
 `detector_artifact_supported` on the primary was **not** met, so it stays unjustified). The crux is now
 **narrowed** (the inflationary mechanism is unsupported) with a sharper investigate-target: *why
 reached/snapped legs are less clean, and why snapping flips sign by TF.*
+
+**What the MECHANICS pass added** ([note](btc-fib-selection-learning-artifact-mechanics-20260624.md),
+`33a4dfc`, **descriptive — no verdict, no claim, crux unchanged**): that investigate-target is now
+partly answered. The 4H "reached less clean" gap is a **span/duration confound** — cleanliness falls
+steeply with span (Spearman −0.69), reached legs are longer (median 5 vs 3 bars), and the gap
+**vanishes when conditioning on span** (short-span +0.003, long-span −0.017): a composition effect, not
+a detector cleanliness-preference. 4H snapping deflates because detector pivots sit **outside** the
+human anchors (span extends, 33% vs 1.6%); the 1D flip is a **TF-dependent geometry** (1D shrinks more,
+10%, **and** the span↔cleanliness relationship flips sign, −0.19→+0.18) — *why* the local relationship
+reverses by TF stays an **open investigate-target**. None of this resolves the crux either way.
 
 **Secondary loose end:** set-level **`exclusivity`** (`k*=3`) was specced in the
 [§12 addendum](btc-fib-selection-learning-addendum-20260618.md) but the Stage-2 live whitelist actually
