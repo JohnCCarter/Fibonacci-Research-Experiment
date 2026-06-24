@@ -152,6 +152,17 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   behaviour/Genesis/1H/ETH. [Results](reviews/btc-fib-selection-learning-artifact-results-20260624.md);
   summary + `cells/*.json` gitignored/regenerable. Re-run (deterministic, frozen data, no `--refresh`):
   `PYTHONUNBUFFERED=1 uv run --no-sync python -u -m fibengine.research.selection_learning_artifact --artifact`.
+- **2026-06-24 Fib SELECTION-LEARNING artifact-MECHANICS investigation — PLAN locked (docs-only),
+  RUN PENDING separate GO.** Door (i) from the checkpoint: explain the *mechanics* behind the
+  artifact-probe (why 4H reached-legs less clean; why 4H snapping lowers cleanliness; why snapping
+  flips sign on 1D), **descriptive-only on frozen data — NO verdict, NO claim, no lock change**. Plan
+  [artifact-mechanics PLAN](reviews/btc-fib-selection-learning-artifact-mechanics-plan-20260624.md):
+  feasible cleanly (deterministic from frozen data + locked detection) but NOT answerable from existing
+  aggregates → needs a small descriptive pass recording per-leg {span_bars, magnitude_atr,
+  snap_span_delta}. Headline object = the **4H↔1D `snap_span_delta` asymmetry** (detector granularity
+  vs human-anchoring precision), not the partly-arithmetic span↔cleanliness correlation. Pre-locked
+  stats (P3) + population guard (M1 reached/unreached ≠ Stage-2 lead) + marginal-gap caveat. No
+  matched-null/new universe/Genesis/1H/ETH/refresh. Commit 2 needs a separate GO.
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
 may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal
