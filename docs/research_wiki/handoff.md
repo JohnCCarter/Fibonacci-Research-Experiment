@@ -109,16 +109,23 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   `cells/*.json` gitignored/regenerable; gates green (ruff/format/557 pytest cov 74.83%/bounds).
   Re-run (deterministic, resume-able, frozen data — do **NOT** `data.fetch --refresh`):
   `PYTHONUNBUFFERED=1 uv run python -u -m fibengine.research.selection_learning --w-gap`.
-- **Stage-1 per-pivot diagnostic — LOCKED (Commit 1, 2026-06-24), RUN PENDING separate GO.** Is the
-  endpoint/pivot choice itself learnable *given the detector's pivot universe*? Frozen blind in the
-  [Stage-1 LOCK](reviews/btc-fib-selection-learning-stage1-lock-20260624.md): per-pivot unit, label =
-  pivot within ε of any human anchor (a/b pooled), baseline = detector prominence ranking, pooled OOS
-  AP, structural-chunk bootstrap, `k`-sweep {0,3,6,12} (k=0 degenerate, primary k=3). Key design fact:
-  the per-pivot feature subset is thin (`{prominence, structure_alignment}`@k=3, +`scale_confluence`
-  @k=12) — leg features (`magnitude/cleanliness/duration/exclusivity`) are structurally absent, so the
-  Stage-2 `cleanliness` lead **cannot** appear; Stage-1's primary value is the detection/coverage
-  decomposition. **Diagnostic floor, not headline; no reproduction/edge claim.** Commit 2 (build+run)
-  needs a separate GO and `selection_learning_stage1.py` (new module — byte cap blocks `selection_learning.py`).
+- **Stage-1 per-pivot diagnostic — BUILT + RUN → `no_pivot_signal_above_prominence` (2026-06-24).**
+  Commit 2 of the [Stage-1 LOCK](reviews/btc-fib-selection-learning-stage1-lock-20260624.md) (`00a97d7`),
+  executed verbatim. New `research/selection_learning_stage1.py` (+12 tests) — own `--stage1` CLI, **no
+  code added to byte-capped `selection_learning.py`**. The decomposition answers cleanly:
+  **DETECTION is NOT the bottleneck** (4h recall **= 0.902**; ≥0.90 at every TF) but **RANKING adds
+  nothing over prominence** at the live `k=3` headline (lift **= +0.0228, 95% CI [−0.0354, +0.0790]
+  includes 0**, p=0.22). Powered (117 test-pos), R≥0.50, CI includes 0 → per S7
+  **`no_pivot_signal_above_prominence`**: the **lone pivot** carries no OOS ranking signal above
+  prominence; the Stage-2 ceiling is a **selection/gestalt** problem (the leg-level `cleanliness` is
+  structurally absent here), not a coverage one. The incidentally-powered 1d context cell agrees (lift
+  negative −0.162, CI includes 0). **Sensitivity (honest):** at `k=12`, `scale_confluence` (wider-frame
+  `k*=12`) lifts +0.0690, CI [+0.0029, +0.1335] excludes 0 — **not** the locked primary, does **not**
+  change the verdict; same wider-frame phenomenon W-gap flagged at k=12. **Diagnostic floor, not
+  headline; no reproduction/edge/behaviour claim** (S8). 1M/1w underpowered (9/1 test-pos), context.
+  [Results](reviews/btc-fib-selection-learning-stage1-results-20260624.md); summary + `cells/*.json`
+  gitignored/regenerable. Re-run (deterministic, frozen data, **no `--refresh`**):
+  `PYTHONUNBUFFERED=1 uv run --no-sync python -u -m fibengine.research.selection_learning_stage1 --stage1`.
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
 may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal
