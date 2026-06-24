@@ -95,7 +95,7 @@ run ≈ 3.5 h, per-cell checkpointed; deterministic (`gap(k=3) = −0.00448` rep
 
 - **Observed (verified):** the numbers above; on 4h every gap point estimate is ≤ 0 and every 95% CI
   includes 0 (none excludes 0 above); `gap(k=3) = −0.0045`, CI [−0.070, +0.031], p=0.61; pipeline
-  causal (embargo=`W` both sides, identical rows, models held fixed); 565 unit tests green incl. 8 new
+  causal (embargo=`W` both sides, identical rows, models held fixed); 557 unit tests green incl. new
   gap/checkpoint tests; run deterministic and resume-safe.
 - **Inferred:** at the 4h scale, the **right-edge / look-ahead information gap is not material** — the
   live-equivalent view at `k=3` captures as much of the human's leg-selection signal (via these
