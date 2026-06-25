@@ -16,6 +16,23 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-25] review | Top-down MTF nesting premise check → facit does NOT nest (different eras)
+
+User reframed toward a top-down "sniper" idea: model the SAME swing decomposed 1M→1W→1D (parent TF as
+the relational context that makes a leg "yours"), a few deliberately-nested labels instead of hundreds
+of flat ones — operationalizing "context, not geometry" (`duration` & `magnitude` both ~0 weight;
+candle-count A→B median 5, range 1–272). Cheap premise check on frozen facit (descriptive, no lock):
+strict nesting (child swing within parent A→B window) = **1W-in-1M 5%** (1 of 21), **1D-in-1W 46%**
+(price 85%), 1D-in-1M 25%. Date-range check (advisor-prompted) is decisive: the TFs are **different
+eras** — 1W anchors mostly 2017–18, 1M anchors 2020+; they barely overlap. So the corpus was never
+drawn as nested decompositions and CANNOT test the idea; pursuing it needs **new deliberately-nested
+labels on ONE era** (user redraws LATER, not today), not re-analysis of these 97 HTF legs. Secondary:
+the labeling tool's `same_candle_mtf_resolution` (flag ON) resolves 1w→1d anchors to the exact day but
+has **no 1M→1w entry**, so monthly anchors stay coarse (whole month) — the user's felt imprecision;
+must extend `RESOLUTION_TIMEFRAME` before the redraw. Also recorded: **matched-null crux REJECTED**
+(artifact LOCK A8 trigger not met / A11 asymmetric-weak / A9 out-of-scope). Descriptive only, no claim,
+no code.
+
 ## [2026-06-25] review | Learning-curve diagnostic RUN → marginally `saturated` (4h k=3)
 
 Blind Commit-2 of the [learning-curve LOCK](reviews/btc-fib-selection-learning-learning-curve-lock-20260625.md)

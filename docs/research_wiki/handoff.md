@@ -27,19 +27,19 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — learning curve DONE (marginally `saturated`); leverage = feature/crux, not labeling
+## Next Step — top-down "sniper" nesting (user will redraw, not today)
 
-Learning-curve diagnostic **RUN** (Commit 2, 4h k=3): parity OK (`ap_full_facit`=Stage-2 0.0567,
-n_test_pos=65); verdict **`saturated` — but marginally** (means rise monotonically; only the last 5 %
-increment +0.0008 sits inside the f=0.95 ±0.0030 band). Per the locked asymmetric read this is
-**expected** for a ≈1-feature model → **the bottleneck is the feature side, not 4h data.** Grinding
-hundreds more 4h labels is **low-leverage for this model** (marginal gain within noise, ceiling ~0.057)
-— but the gently-rising curve does **not** license "never label". [Results](reviews/btc-fib-selection-learning-learning-curve-results-20260625.md).
+Learning curve DONE → marginally `saturated`; lever is the feature side, not 4h data
+([results](reviews/btc-fib-selection-learning-learning-curve-results-20260625.md)). **Matched-null crux
+REJECTED** (not built): artifact-LOCK A8 gated it to `detector_artifact_supported` (the probe returned
+the opposite), A11 judged it asymmetric-weak, and it answers an A9 out-of-scope question.
 
-**GO-fork (user's call):** (a) **resolve the `cleanliness` crux** — matched-null (A8, NEW lock): is the
-one signal genuine or a detector artifact? the real lever; (b) **A′ decorrelated `exclusivity`** (NEW
-lock, low prior); (c) grow facit anyway via `--by-uncertainty` (now known low-leverage for this model).
-**No code/run/build until a separate explicit GO.**
+New direction (user): **top-down nesting** — model the SAME swing decomposed 1M→1W→1D (parent TF = the
+context that makes a leg "yours"); a few deliberately-nested labels, not hundreds of flat ones.
+**Premise check (frozen facit): does NOT nest** — the TFs are different eras (1W mostly 2017-18 vs 1M
+2020+; strict nest 1W-in-1M 5%, 1D-in-1W 46%). So it needs **new nested labels on ONE era → user
+redraws LATER.** **Prerequisite:** `same_candle_mtf_resolution` covers 1w→1d but not 1M→1w (monthly
+anchors stay coarse) — extend `RESOLUTION_TIMEFRAME` first. **No build until a separate explicit GO.**
 
 ## Recent Changes
 
