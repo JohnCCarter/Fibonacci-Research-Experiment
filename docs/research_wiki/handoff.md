@@ -27,32 +27,32 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step (consolidated — requires explicit GO)
+## Next Step (requires explicit GO)
 
-Selection-learning is **paused at the enrichment lock** (Commit 1, docs-only; no code). Next is a
-**GO-fork** — direction is the user's call (AGENTS.md §1); recommendation: **A first**, then B.
+Enrichment shot **DONE** (Commit 2, 4h k=3): blind verdict **`enriched_worse_check`** — `exclusivity`
+is significantly *worse* than Stage-2 (AP-lift CI [−0.070, −0.0019]); validity checks pass (not a bug).
+**Per-leg-feature line is CLOSED.** Next is a **GO-fork** — direction is the user's call (AGENTS.md §1);
+recommendation: **B**.
 
-- **A — enrichment Commit 2:** build/run the `exclusivity` / leg-completeness shot
-  (`selection_learning_enrich.py`) — nested AP-lift vs the current Stage-2 model, 4h k=3, per the
-  [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md). Prior **low**;
-  a clean `no_enrichment_signal` routes pre-committed to B (§E8). Cheap/locked/blind → run first.
-- **B — grow facit:** park modeling, return to the main quest — more/better human labels
-  ([main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md) §5).
+- **B — grow facit (recommended):** park modeling, return to the main quest — more/better human labels
+  ([main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md) §5). Binding
+  constraint is now **data, not features**.
+- **A′ — decorrelated exclusivity (low prior, NEW lock):** `exclusivity` was 0.80 collinear with
+  `cleanliness`; an orthogonalized variant needs its **own** Commit-1 lock (reopens a closed line). Not free.
 
-**No code/run/build until a separate explicit GO** (discriminator = appetite: close per-leg features via A → then B, or pivot straight to B).
+**No code/run/build until a separate explicit GO.**
 
 ## Recent Changes
 
-- **2026-06-24 Fib SELECTION-LEARNING model-ENRICHMENT — LOCKED (Commit 1, docs-only); ⏸ PAUSED.**
-  Blind lock for one lean shot: does a causal **leg-completeness / `exclusivity`** feature
-  (pivot-structural, k*=3, distinct from `cleanliness`) raise pooled OOS AP **over the current Stage-2
-  model** (nested) on 4h k=3? Prior **low**; clean null routes to facit growth (§E8). Resume/fork now
-  under **## Next Step** above. No code started. [Enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md).
+- **2026-06-25 Fib SELECTION-LEARNING model-ENRICHMENT — RUN → `enriched_worse_check` (4h k=3); line
+  CLOSED.** Blind Commit-2 of the [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md)
+  (`c80acb0`). Parity: AP-baseline = Stage-2 headline 0.0567, n_test_pos=65, excl=0 (no look-ahead).
+  Causal `exclusivity` *lowers* pooled OOS AP 0.0567→0.0387; AP-lift −0.018, CI [−0.070, −0.0019],
+  p(lift≤0)=0.994. Mechanism (Inferred): 0.80 collinear with `cleanliness`. Per-leg-feature line
+  **closed** → grow-facit (fork under **## Next Step**). [Results](reviews/btc-fib-selection-learning-enrichment-results-20260625.md).
 - **2026-06-24 Fib SELECTION-LEARNING — MAIN-QUEST RESET (docs-only).** Stop the mechanics drift,
   re-anchor to the north star (above). Controls/mechanics (artifact-probe, snapping/net-path mechanics,
-  flip) are **DONE; matched-null / detector-geometry side-quests PARKED.** Next step only if it improves
-  the model's human-like leg/range selection vs facit (behind a blind lock); else park the modeling and
-  return to the human BTC top-down labeling main quest.
+  flip) **DONE; matched-null / detector-geometry side-quests PARKED.**
   [Main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md).
 
 - **2026-06-22 Fib SELECTION-LEARNING W-gap study — BUILT + module split, RUN PENDING (home).** Commit 2 of side-quest #1, built to the [W-gap LOCK](reviews/btc-fib-selection-learning-w-gap-lock-20260622.md) (`4f47d8e`): `gap(k)=AP(retro-W)−AP(live-k)` on identical rows, embargo=W, L5 verdict. New `research/selection_learning_gap.py` (+5 tests); W-gap code split out to keep `selection_learning.py` under the §6 size cap (was 995 lines); flushed-stderr `_progress` logging in `build_candidates`+`build_retro_features` so a long run is never blind (result-neutral). **Run NOT executed** — inherent ~2-3h per-endpoint-detect cost on the ~20k-bar 4h frame (leakage-bearing truncation, no legal shortcut); to run at home (see Next tracks). No gap results, no verdict. Commit `884d4c0`, gates green (pytest 549, cov 75%).

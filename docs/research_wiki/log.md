@@ -16,6 +16,25 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-25] review | Fib SELECTION-LEARNING model-enrichment RUN → `enriched_worse_check`; line CLOSED
+
+Blind Commit-2 of the [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md)
+(Track A; harness `c80acb0`, seed 20260618, frozen-data parity, preflight READY). **Parity gate passed:**
+`ap_baseline_stage2` (4h k=3) = **0.056737** = the Stage-2 headline 0.0567, `n_test_pos` = 65, `excl=0`
+(every row reconstructs causally, no look-ahead) — the nested baseline IS the current model. Spec note:
+the pre-run "n_candidates ≈ 24852" was a label mix-up (24852 = n_test; full universe 86244).
+
+**Verdict (4h primary, powered):** adding causal `exclusivity` *lowers* pooled OOS AP 0.0567→0.0387;
+AP-lift −0.018, decision-point cluster bootstrap CI95 **[−0.070, −0.0019]** (excludes 0 below),
+p(lift≤0)=0.994 → **`enriched_worse_check`**. Direction-guard checks (parity, excl=0, bootstrap unit,
+power) all pass → **not a bug**. Mechanism (Inferred, per E1): `corr(exclusivity, cleanliness)` = 0.80
+on train — near-proxy, variance cost on 65 positives. **Per-leg-feature modeling line CLOSED**;
+substantive north-star implication = the E8 route (grow the facit). The `enriched_worse_check` branch
+is not pre-committed to a direction, so the fork (B = grow facit, recommended; A′ = decorrelated
+exclusivity under a NEW lock, low prior) is surfaced to the user — no direction chosen by the agent.
+No edge/behaviour/PnL/Genesis/auto-fib claim. Artifacts gitignored.
+[Results](reviews/btc-fib-selection-learning-enrichment-results-20260625.md).
+
 ## [2026-06-25] maintenance | Consolidated the A/B next-step into a handoff `## Next Step` block
 
 Docs-only. The next step (the enrichment-lock GO-fork: **A** = build/run the `exclusivity` Commit 2,
