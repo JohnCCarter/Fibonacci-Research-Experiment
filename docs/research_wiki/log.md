@@ -25,9 +25,11 @@ behaviour/horizontal nulls, MTF-confluence, and Genesis-V2 docs; no status overv
 [reference/research-line-status.md](reference/research-line-status.md) — one row per LINE with status
 (active / pending-input / complete / closed / parked / dormant / superseded) + open issues; linked it
 from `index.md` (Wiki Operations + Reviews) and added a status banner to `reviews/README.md`. Issue
-state confirmed via `gh`: only **#31** (fractal anchor detection — now relevant) and **#37** (agent
-principle, likely a stale duplicate of closed #35) are open; flagged #37 for the human to close.
-Docs-only, no code, no claim change.
+state confirmed via `gh`: only **#31** (fractal anchor detection — now relevant, user resumes with new
+fibs next day) and **#37** were open. **#37 verified a verbatim duplicate of closed #35** (byte-identical
+body; #35 closed with "Done — principle added to AGENTS.md commit 27232cb"; principle present at
+AGENTS.md) → **closed #37** as a stale tracking dup. Also created root **[/STATUS.md](../../STATUS.md)**
+(at-a-glance snapshot pointing to the registry). Docs-only, no code, no claim change.
 
 ## [2026-06-25] review | Top-down MTF nesting premise check → facit does NOT nest (different eras)
 

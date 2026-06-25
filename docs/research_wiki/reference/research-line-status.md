@@ -1,9 +1,10 @@
 # Research-line status registry
 
 One row per research **line** (not per doc): is it open, in-progress, closed, parked, dormant, or
-deprecated. Source of truth for "where does X stand". Per-result detail lives in
-[reviews/](../reviews/); current focus in [handoff.md](../handoff.md); do-not-rerun nulls in
-[closed-questions.md](closed-questions.md). **Last swept: 2026-06-25.**
+deprecated. Source of truth for "where does X stand". Root-level snapshot:
+[/STATUS.md](../../../STATUS.md). Per-result detail lives in [reviews/](../reviews/); current focus in
+[handoff.md](../handoff.md); do-not-rerun nulls in [closed-questions.md](closed-questions.md).
+**Last swept: 2026-06-25.**
 
 Status legend: 🔬 **active** (work in flight) · ⏳ **pending-input** (waiting on a human action) ·
 ✅ **complete** (delivered, nothing pending) · ⛔ **closed** (null/answered, do not re-run) ·
@@ -48,8 +49,10 @@ Status legend: 🔬 **active** (work in flight) · ⏳ **pending-input** (waitin
 
 | # | Title | State | Note |
 |---|-------|-------|------|
-| **#31** | Investigate fractal-based anchor detection against human source-fib labels | 🔬 **open — now relevant** | Upstream of the ranking model (does the detector even propose the human's A/B?). Connects directly to the MTF-nesting redirect. |
-| **#37** | Add agent principle: Intent Alignment over Plan Inertia | ⚠️ **open — likely duplicate** | Same title as **closed #35**; #36 (commands) closed. Probably a stale tracking dup → candidate to close (confirm with human). |
+| **#31** | Investigate fractal-based anchor detection against human source-fib labels | 🔬 **open — now relevant** | Upstream of the ranking model (does the detector even propose the human's A/B?). Connects directly to the MTF-nesting redirect. **User resumes with new fibs (next day).** |
+
+*(#37 **closed 2026-06-25** — verified verbatim duplicate of #35; the principle is a binding agent
+principle in [AGENTS.md](../../../AGENTS.md) (commit 27232cb).)*
 
 > 🗄 **Superseded:** pre-BTC-monthly-reset descriptive reads are archived under
 > `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/` — not current evidence
