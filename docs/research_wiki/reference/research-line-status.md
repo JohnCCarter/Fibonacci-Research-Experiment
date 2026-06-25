@@ -1,0 +1,56 @@
+# Research-line status registry
+
+One row per research **line** (not per doc): is it open, in-progress, closed, parked, dormant, or
+deprecated. Source of truth for "where does X stand". Per-result detail lives in
+[reviews/](../reviews/); current focus in [handoff.md](../handoff.md); do-not-rerun nulls in
+[closed-questions.md](closed-questions.md). **Last swept: 2026-06-25.**
+
+Status legend: 🔬 **active** (work in flight) · ⏳ **pending-input** (waiting on a human action) ·
+✅ **complete** (delivered, nothing pending) · ⛔ **closed** (null/answered, do not re-run) ·
+⏸ **parked** (paused by decision, resumable) · 💤 **dormant** (docs-only prereg, never executed) ·
+🗄 **superseded** (archived, not current evidence).
+
+## Active / current
+
+| Line | Status | Where it stands | Key docs |
+|------|--------|-----------------|----------|
+| **Selection-learning** (can a model select legs like the human; facit = source-fibs) | 🔬 **active** | Main line. Stage-2 = modest single-feature (`cleanliness`) lead, AP 0.057 vs 0.83 ceiling, **not a reproduction**. Controls all done; enrichment **closed**; learning-curve **saturated** (feature side is the lever, not 4h data). Now redirected to **top-down MTF nesting**. | [north-star](../north-star.md), [prereg](../reviews/btc-fib-selection-learning-prereg-20260617.md), [Stage-2 results](../reviews/btc-fib-selection-learning-results-20260618.md), [learning-curve results](../reviews/btc-fib-selection-learning-learning-curve-results-20260625.md) |
+| **Top-down "sniper" MTF nesting** (model the same swing decomposed 1M→1W→1D) | ⏳ **pending-input** | Premise check: current facit does **NOT** nest (TFs are different eras). Needs **new deliberately-nested labels on one era** → **user will redraw later**. Prerequisite: extend `RESOLUTION_TIMEFRAME` (1M→1w) in `same_candle_mtf_resolution.py`. | [handoff Next Step](../handoff.md), [log 2026-06-25](../log.md) |
+
+## Complete
+
+| Line | Status | Outcome | Key docs |
+|------|--------|---------|----------|
+| **BTC source-fib labeling** (1M→1W→1D→4H top-down) | ✅ **complete** | 9 / 21 / 67 / 365 human source fibs; reaction-review approved. **1H deferred** (cache not fetched). | [protocol](../../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md), [1M review](../reviews/btc-1m-reaction-review-cycle-20260611.md), [1D review](../reviews/btc-1d-reaction-review-cycle-20260612.md) |
+| **Corpus integrity / dedup / corrections** | ✅ **complete** | Corpus declared clean (counts, conventions, caveats); 20171228 correction + 20250506 dedup (4H 366→365). | [corpus integrity](../reviews/btc-source-fib-corpus-integrity-20260615.md) |
+| **Selection-learning controls** (w-gap, stage-1, artifact + mechanics) | ✅ **complete** | `no_causal_gap` (W-gap); stage-1 per-pivot diagnostic; artifact-probe → detector-inflation **not supported** (investigate, not a finding). Crux stays open but cheaply unresolvable. | [w-gap results](../reviews/btc-fib-selection-learning-w-gap-results-20260623.md), [stage-1 results](../reviews/btc-fib-selection-learning-stage1-results-20260624.md), [artifact results](../reviews/btc-fib-selection-learning-artifact-results-20260624.md) |
+| **Tooling / ecosystem** (#25, #30, #32) | ✅ **complete** | Ecosystem scan + review-ledger + overlap detector + HTML gallery direction. Issues closed. | [tooling scan](../reviews/fib-tooling-ecosystem-scan-20260615.md) |
+
+## Closed (null / do-not-rerun)
+
+| Line | Status | Outcome | Key docs |
+|------|--------|---------|----------|
+| **Fib behaviour event study (B-1) + context-conditioned** | ⛔ **closed** | All NULL. Registered in [closed-questions](closed-questions.md) — do not re-run. | [behaviour results](../reviews/btc-fib-behaviour-event-study-results-20260616.md), [context-conditioned results](../reviews/btc-fib-context-conditioned-study-results-20260616.md) |
+| **Horizontal-structure event study** | ⛔ **closed** | Generic structure not special vs a random walk (`any_robust=False`). | [results](../reviews/btc-horizontal-structure-event-study-results-20260617.md) |
+| **Selection-learning enrichment** (`exclusivity`) | ⛔ **closed** | `enriched_worse_check` — per-leg-feature line closed (0.80 collinear with `cleanliness`). | [enrichment results](../reviews/btc-fib-selection-learning-enrichment-results-20260625.md) |
+| **`cleanliness` matched-null crux** | ⛔ **closed (rejected)** | Gated out by artifact-LOCK A8 (trigger not met), A11 asymmetric-weak, A9 out-of-scope. Not built. | [artifact lock A8/A11](../reviews/btc-fib-selection-learning-artifact-lock-20260624.md) |
+
+## Parked / dormant
+
+| Line | Status | Why | Key docs |
+|------|--------|-----|----------|
+| **MTF confluence atlas** (CP1–CP3) | ⏸ **parked** | Confluence exists as geometry, **not edge**. Recommendation: stop the track. | [interpretation decision](../reviews/btc-mtf-confluence-interpretation-decision-20260615.md), [CP3 capstone](../reviews/btc-mtf-confluence-atlas-cp3-20260615.md) |
+| **Selection-learning mechanics** (snapping / net-vs-path / artifact-mechanics) | ⏸ **parked** | Descriptive geometry done; detector-geometry side-quests parked at the [main-quest reset](../reviews/btc-fib-selection-learning-main-quest-reset-20260624.md). | [mechanics](../reviews/btc-fib-selection-learning-artifact-mechanics-20260624.md) |
+| **Fib → Genesis-V2** (phase 0 / 1 / 2, nullability policy) | 💤 **dormant** | Docs-only prereg/spec for the eventual edge→Genesis step; **never executed**. The path runs through selection-learning (step 1) first — see [north-star](../north-star.md). | [phase 0 prereg](../reviews/btc-fib-to-genesis-v2-phase0-prereg-20260615.md), [phase 1 spec](../reviews/btc-fib-to-genesis-v2-phase1-feature-export-spec-20260615.md) |
+| **Chart regression strategy** | ⏸ **deferred** | Structural-first; pixel/golden snapshots deferred (follow-up issue #F drafted). | [strategy spike](../reviews/chart-regression-strategy-20260615.md) |
+
+## Open GitHub issues
+
+| # | Title | State | Note |
+|---|-------|-------|------|
+| **#31** | Investigate fractal-based anchor detection against human source-fib labels | 🔬 **open — now relevant** | Upstream of the ranking model (does the detector even propose the human's A/B?). Connects directly to the MTF-nesting redirect. |
+| **#37** | Add agent principle: Intent Alignment over Plan Inertia | ⚠️ **open — likely duplicate** | Same title as **closed #35**; #36 (commands) closed. Probably a stale tracking dup → candidate to close (confirm with human). |
+
+> 🗄 **Superseded:** pre-BTC-monthly-reset descriptive reads are archived under
+> `archive/research_superseded/2026-06-08_pre_btc_monthly_reset/` — not current evidence
+> ([reviews/README](../reviews/README.md)).

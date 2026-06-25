@@ -1,4 +1,12 @@
-# Wiki reviews (superseded)
+# Wiki reviews
+
+> **Status of every research line** (which reviews are current vs closed / parked / superseded):
+> [reference/research-line-status.md](../reference/research-line-status.md) — start there.
+> This folder also holds the full **selection-learning arc** (2026-06-17→), the behaviour /
+> horizontal-structure nulls, the MTF-confluence atlas, and the Genesis-V2 prereg docs; they are
+> classified in the status registry rather than re-listed here.
+
+## Pre-reset (superseded)
 
 Descriptive review pages from the **pre-BTC-monthly** research track were archived
 on 2026-06-08. They are **not** current evidence.

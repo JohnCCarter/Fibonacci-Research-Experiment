@@ -16,6 +16,19 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-25] maintenance | Status sweep — research-line status registry + stale-index fix
+
+Semantic-lint pass (stale docs / status drift). Finding: `index.md` and `reviews/README.md` had not
+kept up with the whole selection-learning arc (06-17→06-25) — `index.md` Reviews section pointed only
+to "superseded", `reviews/README.md` was titled "(superseded)" yet omitted selection-learning,
+behaviour/horizontal nulls, MTF-confluence, and Genesis-V2 docs; no status overview existed. Created
+[reference/research-line-status.md](reference/research-line-status.md) — one row per LINE with status
+(active / pending-input / complete / closed / parked / dormant / superseded) + open issues; linked it
+from `index.md` (Wiki Operations + Reviews) and added a status banner to `reviews/README.md`. Issue
+state confirmed via `gh`: only **#31** (fractal anchor detection — now relevant) and **#37** (agent
+principle, likely a stale duplicate of closed #35) are open; flagged #37 for the human to close.
+Docs-only, no code, no claim change.
+
 ## [2026-06-25] review | Top-down MTF nesting premise check → facit does NOT nest (different eras)
 
 User reframed toward a top-down "sniper" idea: model the SAME swing decomposed 1M→1W→1D (parent TF as

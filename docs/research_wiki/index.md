@@ -13,6 +13,8 @@ disagree, the source wins — see [source-authority.md](reference/source-authori
 ## Wiki Operations
 
 - [README](README.md) — rules, page types, and maintenance loop.
+- [**Research-line status**](reference/research-line-status.md) — open / in-progress / complete /
+  closed / parked / dormant per line + open issues (swept 2026-06-25).
 - [**Source authority**](reference/source-authority.md) — which layer wins when
   evidence and wiki disagree.
 - [Log](log.md) — append-only trail of ingests, decisions, reviews, questions.
@@ -82,8 +84,11 @@ Accumulated external methodology so agents read instead of re-derive (see
 
 ## Reviews
 
-- [Reviews (superseded)](reviews/README.md) — pre-reset descriptive reads archived
-  2026-06-08; not current evidence.
+- [**Research-line status**](reference/research-line-status.md) — status of every line + which
+  reviews are current vs closed/parked/superseded (start here).
+- [Reviews index](reviews/README.md) — active BTC/USD review pages + the pre-reset superseded set.
+- The selection-learning arc (2026-06-17→), behaviour/horizontal nulls, MTF confluence, and
+  Genesis-V2 prereg docs all live under [reviews/](reviews/) — classified in the status registry.
 
 ## Canonical Source Docs
 
