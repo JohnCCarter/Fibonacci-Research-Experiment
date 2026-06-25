@@ -16,6 +16,14 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-25] maintenance | Consolidated the A/B next-step into a handoff `## Next Step` block
+
+Docs-only. The next step (the enrichment-lock GO-fork: **A** = build/run the `exclusivity` Commit 2,
+**B** = grow the facit) was spread across several handoff bullets without one clear record. Added a
+single `## Next Step` block (fork + discriminator + recommendation "A first, then B" + "requires
+explicit GO"); trimmed the enrichment-lock and checkpoint bullets to absorb it under the 400-line
+bound. **No new claim, no code, no direction chosen — GO stays with the user.**
+
 ## [2026-06-24] decision | Fib SELECTION-LEARNING — line PAUSED at model-enrichment lock
 
 Checkpoint for the selection-learning side-quest. After the Stage-2 headline (modest single-feature

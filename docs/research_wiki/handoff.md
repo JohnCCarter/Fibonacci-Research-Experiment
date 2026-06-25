@@ -27,19 +27,27 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
+## Next Step (consolidated — requires explicit GO)
+
+Selection-learning is **paused at the enrichment lock** (Commit 1, docs-only; no code). Next is a
+**GO-fork** — direction is the user's call (AGENTS.md §1); recommendation: **A first**, then B.
+
+- **A — enrichment Commit 2:** build/run the `exclusivity` / leg-completeness shot
+  (`selection_learning_enrich.py`) — nested AP-lift vs the current Stage-2 model, 4h k=3, per the
+  [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md). Prior **low**;
+  a clean `no_enrichment_signal` routes pre-committed to B (§E8). Cheap/locked/blind → run first.
+- **B — grow facit:** park modeling, return to the main quest — more/better human labels
+  ([main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md) §5).
+
+**No code/run/build until a separate explicit GO** (discriminator = appetite: close per-leg features via A → then B, or pivot straight to B).
+
 ## Recent Changes
 
-- **2026-06-24 Fib SELECTION-LEARNING model-ENRICHMENT — LOCKED (Commit 1, docs-only), RUN PENDING
-  separate GO.** One lean north-star-aligned shot: does a single causal **leg-completeness /
-  `exclusivity`** feature (is the leg the *dominant complete* impulse, not a sub-leg — pivot-structural,
-  k*=3, **distinct** from `cleanliness`) raise pooled OOS AP **over the CURRENT Stage-2 model** (nested,
-  not the trivial baseline) on 4h live k=3? Blind verdict (`enrichment_helps` / `no_enrichment_signal →
-  park modeling + grow facit`); honest prior **low** (4 features already ~0 at k=3). Scope OUT:
-  scale_confluence/HTF, more mechanics, matched-null, new universe, Genesis/1H/ETH/refresh. Reuses
-  Stage-2 universe/ε/split/AP/bootstrap verbatim; new module `selection_learning_enrich.py`.
-  **⏸ PAUSED HERE (2026-06-24).** Resume = either **GO Commit 2** (build/run the exclusivity shot per
-  the lock) **or** route to **labeling** (lock §E8 / reset §5: grow/improve the facit). No code started.
-  [Enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md).
+- **2026-06-24 Fib SELECTION-LEARNING model-ENRICHMENT — LOCKED (Commit 1, docs-only); ⏸ PAUSED.**
+  Blind lock for one lean shot: does a causal **leg-completeness / `exclusivity`** feature
+  (pivot-structural, k*=3, distinct from `cleanliness`) raise pooled OOS AP **over the current Stage-2
+  model** (nested) on 4h k=3? Prior **low**; clean null routes to facit growth (§E8). Resume/fork now
+  under **## Next Step** above. No code started. [Enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md).
 - **2026-06-24 Fib SELECTION-LEARNING — MAIN-QUEST RESET (docs-only).** Stop the mechanics drift,
   re-anchor to the north star (above). Controls/mechanics (artifact-probe, snapping/net-path mechanics,
   flip) are **DONE; matched-null / detector-geometry side-quests PARKED.** Next step only if it improves
@@ -116,13 +124,10 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   [Results](reviews/btc-fib-selection-learning-stage1-results-20260624.md); summary + `cells/*.json`
   gitignored/regenerable. Re-run (deterministic, frozen data, **no `--refresh`**):
   `PYTHONUNBUFFERED=1 uv run --no-sync python -u -m fibengine.research.selection_learning_stage1 --stage1`.
-- **2026-06-24 Fib SELECTION-LEARNING campaign CHECKPOINT (docs-only, no new claim).** Consolidates
-  the five committed runs (Stage-2 → prominence-family → k-sweep → W-gap `no_causal_gap` → Stage-1
-  `no_pivot_signal_above_prominence`): what we KNOW (modest, OOS, live-available, buffer-stable,
-  baseline-robust `cleanliness` lead in the leg gestalt; low absolute AP; 4h-only powered) and the
-  single open CRUX (is `cleanliness` a genuine signal or a **detector/anchoring artifact**?). Frames
-  the next-step choice A (exclusivity / artifact diagnostic) / B (detector-independent anchor-probe) /
-  C (pause + theory) — **none started**. [Checkpoint](reviews/btc-fib-selection-learning-checkpoint-20260624.md).
+- **2026-06-24 Fib SELECTION-LEARNING campaign CHECKPOINT (docs-only).** Consolidates the five runs
+  (Stage-2 → prominence-family → k-sweep → W-gap `no_causal_gap` → Stage-1 `no_pivot_signal_above_prominence`):
+  modest OOS baseline-robust `cleanliness` lead (low AP; 4h-only powered) + the open CRUX — genuine
+  signal vs **detector/anchoring artifact**? [Checkpoint](reviews/btc-fib-selection-learning-checkpoint-20260624.md).
 - **2026-06-24 Fib SELECTION-LEARNING `cleanliness` artifact-probe — BUILT + RUN → inflationary
   artifact NOT supported on 4h, but marginal/non-replicating → "investigate, not a finding".**
   Commit 2 of the [artifact LOCK](reviews/btc-fib-selection-learning-artifact-lock-20260624.md)
