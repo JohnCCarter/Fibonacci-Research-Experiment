@@ -24,9 +24,17 @@ och **integreras i Genesis-V2**. Det mänskliga urvalet är *fundamentet* — in
 
 1. **Steg 1 — mänskligt urval (hela jobbet just nu, ej i mål):** motorn väljer/ritar Fib som
    människan. "Gör den det så hamnar allt på plats."
-2. **Steg 2 — deskriptiv nivå-avläsning:** när candles når nivåerna: touch / break / hold / fail,
-   och vilka nivåer som får mest interaktion. Först meningsfullt när steg 1:s nivåer faktiskt är
-   människans nivåer.
+2. **Steg 2 — deskriptiv nivå-avläsning:** när candles når nivåerna klassificeras varje touch.
+   Taxonomin finns redan i [`level_events.py`](../../src/fibengine/research/level_events.py) som fyra
+   **post-hoc** `*_candidate`-typer (efterhandsannotation via ett `forward_window`, *aldrig* en
+   live-signal):
+   - **continuation** — bröt igenom nivån och fortsatte.
+   - **rejection** — touch och reject tillbaka till approach-sidan.
+   - **failure** — accepterade bortom nivån, vände sedan tillbaka över den (falsk break).
+   - **reaction** — reagerade vid nivån utan tydlig break/reject.
+
+   Plus: vilka nivåer som får mest interaktion. Först meningsfullt när steg 1:s nivåer faktiskt är
+   människans nivåer (kvaliteten ärvs uppåt från steg 1).
 3. **Steg 3 — edge-hypotes + backtest:** testa OOS, utan leakage, mot matchade kontroller.
 4. **Steg 4 — integration i Genesis-V2.**
 
