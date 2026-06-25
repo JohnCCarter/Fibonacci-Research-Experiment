@@ -16,6 +16,18 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-25] decision | North-star vision documented (canonical [north-star.md](north-star.md))
+
+Docs-only. Captured the user's original intent verbatim: *lär maskinen att se chartet som människan*
+— chart → meaningful high/low → rätt leg/range → rita Fib som Chamoun (facit = manuella source-fibs).
+Key correction recorded: this is **step 1 of a staged path** whose destination IS an edge / trading-
+signal → backtest → **Genesis-V2 integration**. The repo's standing "no edge/behaviour/PnL/backtest/
+Genesis claim" is therefore a **validity gate** ("not yet / not from this sub-study"), **not** a cap —
+it protects the future edge from inheriting a leaked/overfit signal. Selection-learning was NOT the
+drift; the drift was the detector-mechanics side-quest inside it. Honest status: step 1 not in goal
+(AP 0.057, ranks > chance but no reproduction). Handoff NORTH STAR block re-pointed to the canonical
+doc and its "not an edge" lean corrected to the staircase. No code, no claim change.
+
 ## [2026-06-25] review | Fib SELECTION-LEARNING model-enrichment RUN → `enriched_worse_check`; line CLOSED
 
 Blind Commit-2 of the [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md)

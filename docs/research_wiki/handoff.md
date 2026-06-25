@@ -5,12 +5,12 @@ append-only trail lives in [log.md](log.md).
 
 ## Current Focus
 
-> **NORTH STAR (binding — no drift):** the selection-learning line exists to *learn how the human
-> selects meaningful fib legs/ranges and draws Fib like a human analyst (facit = ground truth)* — **not**
-> to explain detector/snapping/measurement geometry. Every selection-learning step must first answer
-> *"does this improve the model's ability to select human-like legs/ranges vs the facit?"* — if no,
-> don't start it; park it. Controls + mechanics are **DONE/PARKED**
-> ([main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md)).
+> **NORTH STAR (binding — canonical: [north-star.md](north-star.md)):** *learn how the human selects
+> meaningful fib legs/ranges and draws Fib like the analyst (facit = ground truth)* — this is **step 1**
+> of a staged path (selection → descriptive level-reads → edge/backtest → **Genesis-V2**). "No edge
+> claim" = *not yet / not from this sub-study* (a validity gate protecting the future edge), **not** a
+> cap. Every step first answers *"does this improve human-like leg/range selection vs the facit?"* — if
+> no, park it. Mechanics drift **DONE/PARKED** ([reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md)).
 
 **BTC monthly-first top-down protocol** — re-labeling on BTC/USD only after the
 **2026-06-09 log-scale + profile reset** (prior linear / 0.236 labels archived).
