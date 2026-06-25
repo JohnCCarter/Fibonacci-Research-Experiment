@@ -16,6 +16,23 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-25] review | Learning-curve diagnostic RUN → marginally `saturated` (4h k=3)
+
+Blind Commit-2 of the [learning-curve LOCK](reviews/btc-fib-selection-learning-learning-curve-lock-20260625.md)
+(harness `c4bd330`, seed 20260618, frozen-data parity, preflight READY). **Parity OK:** `ap_full_facit`
+(4h k=3) = 0.0567 = Stage-2 headline, n_test_pos=65, n_train_legs=246. Curve (mean AP over R=64
+train-subsamples): 0.0501 → 0.0522 → 0.0541 → 0.0545 → 0.0551 → 0.0560 → 0.0567 at
+f=0.25/.5/.75/.8/.9/.95/1.0. **Verdict `saturated` — but marginally** (advisor-flagged): means rise
+**monotonically**, no clean plateau; the label rests only on the last 5 % increment (+0.0008) sitting
+inside the tightest f=0.95 band (±0.0030) — "marginal label within noise", not "curve flattened". AUC
+flat ~0.914 throughout. Per the locked ASYMMETRIC rule this is **expected** for a ≈1-effective-param
+(`cleanliness`-dominated) model → **bottleneck is the feature side, not 4h data**. Honest bound:
+grinding more 4h labels is low-leverage *for this model* (and ceiling is low ~0.057), but a
+monotone-rising curve does NOT license "never label". Context 1M/1w/1d underpowered (1d shape rising
+but 7 test pos, not interpretable). Diagnostic only — no edge/behaviour/PnL/Genesis; does NOT resolve
+the cleanliness crux (matched-null A8 still unbuilt). Fork surfaced (crux / A′ / label-anyway) under
+handoff Next Step. [Results](reviews/btc-fib-selection-learning-learning-curve-results-20260625.md).
+
 ## [2026-06-25] decision | Learning-curve diagnostic LOCKED (Commit 1, docs-only); awaiting GO
 
 User picked "learning curve first" as the next step toward [north-star](north-star.md) step 1 (does

@@ -27,18 +27,19 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — learning-curve diagnostic LOCKED, awaiting GO to build
+## Next Step — learning curve DONE (marginally `saturated`); leverage = feature/crux, not labeling
 
-Per-leg-feature line is **CLOSED** (`enriched_worse_check`). Toward [north-star](north-star.md) step 1,
-the user picked **learning curve first** (measure before investing in labeling). **Commit 1 lock
-written** — [learning-curve LOCK](reviews/btc-fib-selection-learning-learning-curve-lock-20260625.md):
-is the Stage-2 model **data-starved or saturated** w.r.t. facit size? Reuse Stage-2 verbatim, fixed
-test set, vary only training-facit fraction (whole legs), build-once-vary-labels, R=64, finer grid near
-f=1.0. **ASYMMETRIC verdict** (model ≈1-effective-param → saturation expected; flat ⇒ feature/crux,
-**not** "don't grow facit"); `inconclusive` is a likely branch (65 test pos). Diagnostic only, no claim.
+Learning-curve diagnostic **RUN** (Commit 2, 4h k=3): parity OK (`ap_full_facit`=Stage-2 0.0567,
+n_test_pos=65); verdict **`saturated` — but marginally** (means rise monotonically; only the last 5 %
+increment +0.0008 sits inside the f=0.95 ±0.0030 band). Per the locked asymmetric read this is
+**expected** for a ≈1-feature model → **the bottleneck is the feature side, not 4h data.** Grinding
+hundreds more 4h labels is **low-leverage for this model** (marginal gain within noise, ceiling ~0.057)
+— but the gently-rising curve does **not** license "never label". [Results](reviews/btc-fib-selection-learning-learning-curve-results-20260625.md).
 
-**Awaiting separate explicit GO for Commit 2 (build harness + tests + run).** Then: results doc +
-handoff/log. Other open fork if this routes there: A′ decorrelated `exclusivity` (NEW lock, low prior).
+**GO-fork (user's call):** (a) **resolve the `cleanliness` crux** — matched-null (A8, NEW lock): is the
+one signal genuine or a detector artifact? the real lever; (b) **A′ decorrelated `exclusivity`** (NEW
+lock, low prior); (c) grow facit anyway via `--by-uncertainty` (now known low-leverage for this model).
+**No code/run/build until a separate explicit GO.**
 
 ## Recent Changes
 
