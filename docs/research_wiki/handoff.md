@@ -27,20 +27,18 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step (requires explicit GO)
+## Next Step — learning-curve diagnostic LOCKED, awaiting GO to build
 
-Enrichment shot **DONE** (Commit 2, 4h k=3): blind verdict **`enriched_worse_check`** — `exclusivity`
-is significantly *worse* than Stage-2 (AP-lift CI [−0.070, −0.0019]); validity checks pass (not a bug).
-**Per-leg-feature line is CLOSED.** Next is a **GO-fork** — direction is the user's call (AGENTS.md §1);
-recommendation: **B**.
+Per-leg-feature line is **CLOSED** (`enriched_worse_check`). Toward [north-star](north-star.md) step 1,
+the user picked **learning curve first** (measure before investing in labeling). **Commit 1 lock
+written** — [learning-curve LOCK](reviews/btc-fib-selection-learning-learning-curve-lock-20260625.md):
+is the Stage-2 model **data-starved or saturated** w.r.t. facit size? Reuse Stage-2 verbatim, fixed
+test set, vary only training-facit fraction (whole legs), build-once-vary-labels, R=64, finer grid near
+f=1.0. **ASYMMETRIC verdict** (model ≈1-effective-param → saturation expected; flat ⇒ feature/crux,
+**not** "don't grow facit"); `inconclusive` is a likely branch (65 test pos). Diagnostic only, no claim.
 
-- **B — grow facit (recommended):** park modeling, return to the main quest — more/better human labels
-  ([main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md) §5). Binding
-  constraint is now **data, not features**.
-- **A′ — decorrelated exclusivity (low prior, NEW lock):** `exclusivity` was 0.80 collinear with
-  `cleanliness`; an orthogonalized variant needs its **own** Commit-1 lock (reopens a closed line). Not free.
-
-**No code/run/build until a separate explicit GO.**
+**Awaiting separate explicit GO for Commit 2 (build harness + tests + run).** Then: results doc +
+handoff/log. Other open fork if this routes there: A′ decorrelated `exclusivity` (NEW lock, low prior).
 
 ## Recent Changes
 

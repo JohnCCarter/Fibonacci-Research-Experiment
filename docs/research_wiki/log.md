@@ -16,6 +16,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-25] decision | Learning-curve diagnostic LOCKED (Commit 1, docs-only); awaiting GO
+
+User picked "learning curve first" as the next step toward [north-star](north-star.md) step 1 (does
+the engine select like the human). Lean blind lock for a cheap data-sensitivity shot: is the Stage-2
+model **data-starved or saturated** w.r.t. facit size? Reuses Stage-2 verbatim, fixes the held-out
+test set, varies only the **training-facit fraction** (whole human legs dropped), build-once-vary-
+labels. Advisor-refined before lock: **(1) ASYMMETRIC verdict** — model is ≈1-effective-parameter
+(`cleanliness` carries the lift) so saturation is the EXPECTED default; a flat curve means "this
+1-feature model is capacity-bound → back to the feature/crux", **NOT** "don't grow facit". (2) finer
+grid near f=1.0 + R=64 (build is once, relabel+refit is cheap). (3) `inconclusive_underpowered` is a
+LIKELY branch with 65 test positives. (4) report addable-supply (365 labeled vs ~86k candidates;
+if starved but little history left → more history/symbols, not grind same chart). Diagnostic only —
+no edge/behaviour/PnL/Genesis; does NOT resolve the cleanliness crux. Commit 2 (build/run) needs a
+separate explicit GO. [Lock](reviews/btc-fib-selection-learning-learning-curve-lock-20260625.md).
+
 ## [2026-06-25] decision | North-star vision documented (canonical [north-star.md](north-star.md))
 
 Docs-only. Captured the user's original intent verbatim: *lär maskinen att se chartet som människan*
