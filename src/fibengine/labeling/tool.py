@@ -16,6 +16,11 @@ Controls:
 - r: clear current picks
 - f: toggle fib levels (includes read-only HTF overlays on lower TFs: parent fib
      level lines + parent swing H/L anchor markers in time+price, for nesting)
+- HTF overlays default to fibs drawn THIS session only (clean nesting view): draw on
+  1M, save (w), drop to 1w/1d and your 1M/1w lines follow down — the frozen corpus stays hidden
+- b: toggle frozen-corpus overlays (off = session fibs only, on = all saved fibs)
+- c: nesting focus — cycle through parent fibs overlapping the current view; shows
+     only that parent's H/L and fits the view to it (press again to step / clear)
 - g: toggle high-low range shading
 - w: write active fib as a human ground-truth annotation (data/labels/human_fib/...)
 - s: save label (all legs) for the active symbol/timeframe
@@ -47,7 +52,14 @@ from fibengine.core.config import DataConfig, Settings, load_settings
 from fibengine.core.fib import fib_from_prices
 from fibengine.data.loader import load_candles
 from fibengine.labeling.hover import HoverReadout
-from fibengine.labeling.htf_fib_overlay import draw_htf_overlays, load_htf_overlays
+from fibengine.labeling.htf_fib_overlay import (
+    cycle_focus_id,
+    draw_htf_overlays,
+    filter_to_session,
+    load_htf_overlays,
+    overlays_in_view,
+    select_focused,
+)
 from fibengine.labeling.human_fib import (
     HumanFibAnnotation,
     anchors_from_picks,
@@ -296,6 +308,30 @@ def _window_from_anchors(
     return lo - pad, hi + pad
 
 
+def _view_time_range(df: pd.DataFrame, x0: float, x1: float) -> tuple[pd.Timestamp, pd.Timestamp]:
+    """Map positional x-axis limits to the df timestamps they bracket (clamped)."""
+    n = len(df)
+    i0 = max(0, min(n - 1, int(x0)))
+    i1 = max(0, min(n - 1, int(x1)))
+    lo, hi = sorted((i0, i1))
+    return df.index[lo], df.index[hi]
+
+
+def _focus_view_for_parent(df: pd.DataFrame, ann: HumanFibAnnotation) -> tuple:
+    """View limits ``(xlim, ylim)`` framing a parent fib's A→B span on the child chart.
+
+    Positional x-bar limits with context padding + log-aware price limits, so focusing
+    a parent swing zooms to it. Touches neither df nor picks (view-only, index-based).
+    """
+    ia = _nearest_timestamp_bar(df, ann.anchor_a.time)
+    ib = _nearest_timestamp_bar(df, ann.anchor_b.time)
+    lo_i, hi_i = sorted((ia, ib))
+    xpad = max(3, (hi_i - lo_i) // 4)
+    prices = [float(ann.anchor_a.price), float(ann.anchor_b.price)]
+    pmin, pmax = min(prices), max(prices)
+    return ((lo_i - xpad, hi_i + xpad), (pmin * 0.85, pmax * 1.15))
+
+
 def _preload_fib_picks(workspace: LabelWorkspace, ann: HumanFibAnnotation) -> None:
     """Load a fib's exact anchors as the active high/low picks (in-memory only).
 
@@ -367,6 +403,12 @@ class LabelWorkspace:
     window_start: pd.Timestamp | None = None
     window_end: pd.Timestamp | None = None
     single_fib_mode: bool = False
+    # Nesting focus: fib_id of the one parent fib whose H/L to show (None = show all).
+    focus_parent_id: str | None = None
+    # HTF overlays show only fibs drawn this session by default (clean nesting view);
+    # session_fib_ids persists across TF switches so a 1M draw stays visible on 1w/1d.
+    session_fib_ids: set[str] = field(default_factory=set)
+    show_frozen_overlays: bool = False
     _htf_overlays: list | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
@@ -431,6 +473,16 @@ class LabelWorkspace:
             )
         return self._htf_overlays
 
+    def parent_overlays(self) -> list:
+        """HTF overlays scoped to this nesting session (or the whole corpus if frozen shown)."""
+        return filter_to_session(
+            self.get_htf_overlays(), self.session_fib_ids, self.show_frozen_overlays
+        )
+
+    def focused_overlays(self) -> list:
+        """Session-scoped overlays, narrowed to the focused parent fib if one is set."""
+        return select_focused(self.parent_overlays(), self.focus_parent_id)
+
     def set_market(self, symbol: str | None = None, timeframe: str | None = None) -> None:
         next_data = self.settings.data.model_copy(
             update={
@@ -459,6 +511,7 @@ class LabelWorkspace:
         self.settings.data = next_data
         self.df = display_df
         self._htf_overlays = None
+        self.focus_parent_id = None
         self.picks.clear()
         self.history.clear()
         self.legs.clear()
@@ -724,6 +777,8 @@ class LabelWorkspace:
             levels_profile=self.settings.fib.levels_profile,
         )
         path = save_annotation(annotation)
+        # Track as a session fib so it shows as an HTF overlay on lower TFs (nesting).
+        self.session_fib_ids.add(annotation.fib_id)
         print(f"Saved human fib annotation ({annotation.direction}) -> {path}")
 
 
@@ -877,23 +932,35 @@ def run_label_tool(args: argparse.Namespace | None = None):
         is_dirty = flag
 
     def update_title():
+        nest = (
+            f"| nest={workspace.focus_parent_id.split('_')[-1]} "
+            if workspace.focus_parent_id
+            else ""
+        )
+        overlay_scope = "all" if workspace.show_frozen_overlays else "session"
         ax.set_title(
             f"{workspace.data.symbol} {workspace.data.timeframe} "
             f"| active={workspace.active_kind.upper()} "
             f"| fib={'on' if workspace.show_fib else 'off'} "
             f"range={'on' if workspace.show_range else 'off'} "
+            f"| overlays={overlay_scope} "
+            f"{nest}"
             f"| {queue_labeled_count()}/{len(queue)} labeled "
             f"| {queue_index() + 1}/{len(queue)} "
             f"| legs={len(workspace.legs)} "
             f"| {'unsaved' if is_dirty else 'saved'} "
-            "| h/l p push-leg j/k leg fib g w fib-annot s save d delete q quit",
+            "| h/l p push-leg j/k leg fib b frozen c focus g w fib-annot s save d delete q quit",
             color="#d6d9e0",
         )
 
-    def redraw(*, reset_view: bool = False, lightweight: bool = False) -> None:
+    def redraw(
+        *, reset_view: bool = False, set_view: tuple | None = None, lightweight: bool = False
+    ) -> None:
         nonlocal view_limits, chart_drawn
         if reset_view:
             view_limits = None
+        elif set_view is not None:
+            view_limits = set_view
         elif chart_drawn:
             view_limits = (ax.get_xlim(), ax.get_ylim())
 
@@ -908,7 +975,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
         draw_review_candles(ax, df, candlestick=True, dark_theme=True)
 
-        draw_htf_overlays(ax, df, workspace.get_htf_overlays(), show=workspace.show_fib)
+        draw_htf_overlays(ax, df, workspace.focused_overlays(), show=workspace.show_fib)
 
         if workspace.show_range:
             ax.fill_between(
@@ -1131,6 +1198,30 @@ def run_label_tool(args: argparse.Namespace | None = None):
             goto_market(workspace.data.symbol, _cycle(timeframes, workspace.data.timeframe, -1))
         elif key == "n":
             goto_next_unlabeled()
+        elif key == "b":
+            workspace.show_frozen_overlays = not workspace.show_frozen_overlays
+            workspace.focus_parent_id = None
+            print(
+                "Frozen-corpus overlays "
+                f"{'ON (all fibs)' if workspace.show_frozen_overlays else 'OFF (session only)'}."
+            )
+        elif key == "c":
+            overlays = workspace.parent_overlays()
+            if not overlays:
+                print("No parent overlays to focus (top timeframe, or none drawn this session).")
+                return
+            t0, t1 = _view_time_range(workspace.df, *ax.get_xlim())
+            candidates = overlays_in_view(overlays, t0, t1)
+            cand_ids = [ann.fib_id for _, ann in candidates]
+            workspace.focus_parent_id = cycle_focus_id(workspace.focus_parent_id, cand_ids)
+            if workspace.focus_parent_id is None:
+                print(f"Nesting focus: OFF ({len(cand_ids)} parent fib(s) in view).")
+                redraw()
+            else:
+                ann = next(a for _, a in candidates if a.fib_id == workspace.focus_parent_id)
+                print(f"Nesting focus: {ann.fib_id} — H/L only, view fitted.")
+                redraw(set_view=_focus_view_for_parent(workspace.df, ann))
+            return
         elif key == "z":
             redraw(reset_view=True)
             return

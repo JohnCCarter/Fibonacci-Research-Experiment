@@ -93,3 +93,47 @@ def test_htf_anchor_markers_empty_df_returns_nothing():
     empty = pd.DataFrame({"high": [], "low": []}, index=pd.DatetimeIndex([], tz="UTC"))
 
     assert overlay.htf_anchor_markers(empty, [("1M", ann)]) == []
+
+
+def test_overlays_in_view_keeps_only_overlapping_spans():
+    ann = _sample_ann(timeframe="1M")  # span 2018-01-01 .. 2018-06-01
+    overlays = [("1M", ann)]
+    t = pd.Timestamp
+
+    # view overlapping the span -> kept
+    assert overlay.overlays_in_view(overlays, t("2018-03-01", tz="UTC"), t("2018-04-01", tz="UTC"))
+    # view entirely after the span -> dropped
+    assert (
+        overlay.overlays_in_view(overlays, t("2019-01-01", tz="UTC"), t("2019-06-01", tz="UTC"))
+        == []
+    )
+
+
+def test_cycle_focus_id_wraps_through_none():
+    ids = ["a", "b", "c"]
+    assert overlay.cycle_focus_id(None, ids) == "a"
+    assert overlay.cycle_focus_id("a", ids) == "b"
+    assert overlay.cycle_focus_id("c", ids) is None  # past last -> no focus
+    assert overlay.cycle_focus_id("x", ids) == "a"  # unknown current -> first
+    assert overlay.cycle_focus_id(None, []) is None  # nothing to focus
+
+
+def test_select_focused_filters_to_one_parent():
+    a = _sample_ann(timeframe="1M")
+    b = _sample_ann(timeframe="1w")
+    overlays = [("1M", a), ("1w", b)]
+
+    assert overlay.select_focused(overlays, None) == overlays
+    assert overlay.select_focused(overlays, a.fib_id) == [("1M", a)]
+    assert overlay.select_focused(overlays, "nonexistent") == []
+
+
+def test_filter_to_session_shows_only_session_fibs_by_default():
+    a = _sample_ann(timeframe="1M")
+    b = _sample_ann(timeframe="1w")
+    overlays = [("1M", a), ("1w", b)]
+    session = {a.fib_id}
+
+    assert overlay.filter_to_session(overlays, session, show_frozen=False) == [("1M", a)]
+    assert overlay.filter_to_session(overlays, session, show_frozen=True) == overlays
+    assert overlay.filter_to_session(overlays, set(), show_frozen=False) == []

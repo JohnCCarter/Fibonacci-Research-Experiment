@@ -134,6 +134,70 @@ def htf_anchor_markers(
     return markers
 
 
+def overlays_in_view(
+    overlays: list[tuple[str, HumanFibAnnotation]],
+    view_start: pd.Timestamp,
+    view_end: pd.Timestamp,
+) -> list[tuple[str, HumanFibAnnotation]]:
+    """Overlays whose A→B span overlaps the visible time range ``[view_start, view_end]``.
+
+    Scopes the nesting-focus cycle to the parent swings actually on screen, so
+    stepping does not have to walk every HTF fib in the corpus. Pure helper.
+    """
+    out: list[tuple[str, HumanFibAnnotation]] = []
+    for htf, ann in overlays:
+        ta = pd.to_datetime(ann.anchor_a.time, utc=True)
+        tb = pd.to_datetime(ann.anchor_b.time, utc=True)
+        lo, hi = (ta, tb) if ta <= tb else (tb, ta)
+        if hi >= view_start and lo <= view_end:
+            out.append((htf, ann))
+    return out
+
+
+def cycle_focus_id(current_id: str | None, candidate_ids: list[str]) -> str | None:
+    """Advance the nesting focus through ``candidate_ids``: None → first → … → last → None.
+
+    ``None`` means "no focus" (show all overlays). If the current id is not among the
+    candidates (e.g. the view changed), start at the first candidate. Pure helper.
+    """
+    if not candidate_ids:
+        return None
+    if current_id is None or current_id not in candidate_ids:
+        return candidate_ids[0]
+    nxt = candidate_ids.index(current_id) + 1
+    return candidate_ids[nxt] if nxt < len(candidate_ids) else None
+
+
+def select_focused(
+    overlays: list[tuple[str, HumanFibAnnotation]],
+    focus_id: str | None,
+) -> list[tuple[str, HumanFibAnnotation]]:
+    """All overlays when ``focus_id`` is None, else only the parent fib with that id.
+
+    Focusing one parent swing removes the clutter of every HTF anchor at once so a
+    child leg can be nested onto a single swing. Pure helper.
+    """
+    if focus_id is None:
+        return overlays
+    return [(htf, ann) for htf, ann in overlays if ann.fib_id == focus_id]
+
+
+def filter_to_session(
+    overlays: list[tuple[str, HumanFibAnnotation]],
+    session_ids: set[str],
+    show_frozen: bool,
+) -> list[tuple[str, HumanFibAnnotation]]:
+    """Overlays drawn this session only, unless ``show_frozen`` keeps the whole corpus.
+
+    The default nesting view shows just the fibs the user is drawing now (their session),
+    so the frozen corpus does not clutter the child chart while building a nested set.
+    Pure helper.
+    """
+    if show_frozen:
+        return overlays
+    return [(htf, ann) for htf, ann in overlays if ann.fib_id in session_ids]
+
+
 def draw_htf_overlays(
     ax,
     df: pd.DataFrame,
