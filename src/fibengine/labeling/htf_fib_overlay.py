@@ -103,6 +103,37 @@ def _label_level(ann: HumanFibAnnotation) -> tuple[float, float]:
     return 0.0, 0.0
 
 
+def htf_anchor_markers(
+    df: pd.DataFrame,
+    overlays: list[tuple[str, HumanFibAnnotation]],
+) -> list[tuple[int, float, str, str]]:
+    """``(bar_index, price, label, color)`` for HTF anchor H/L points visible in ``df``.
+
+    Each higher-timeframe fib contributes its two anchors tagged ``H`` (higher price)
+    and ``L`` (lower price), placed at the **nearest bar to the anchor's own timestamp**
+    so the parent swing's high/low are visible in *time* (not just price) on the child
+    chart — the cue needed to nest a leg onto the same swing. Anchors whose timestamp
+    falls outside the chart's visible span are skipped to keep the focus on that swing.
+    Pure helper — no plotting.
+    """
+    if df.empty or not overlays:
+        return []
+    t0, t1 = df.index[0], df.index[-1]
+    markers: list[tuple[int, float, str, str]] = []
+    for htf, ann in overlays:
+        color = HTF_OVERLAY_COLORS.get(htf, "#9aa3b2")
+        high_first = ann.anchor_a.price >= ann.anchor_b.price
+        hi = ann.anchor_a if high_first else ann.anchor_b
+        lo = ann.anchor_b if high_first else ann.anchor_a
+        for anchor, role in ((hi, "H"), (lo, "L")):
+            ts = pd.to_datetime(anchor.time, utc=True)
+            if ts < t0 or ts > t1:
+                continue
+            idx = int(df.index.get_indexer([ts], method="nearest")[0])
+            markers.append((idx, float(anchor.price), f"{htf}·{role}", color))
+    return markers
+
+
 def draw_htf_overlays(
     ax,
     df: pd.DataFrame,
@@ -110,7 +141,7 @@ def draw_htf_overlays(
     *,
     show: bool,
 ) -> None:
-    """Draw read-only HTF fib level lines (no picks, no drag targets)."""
+    """Draw read-only HTF fib level lines + parent anchor H/L markers (no drag targets)."""
     if not show or not overlays or df.empty:
         return
     label_x = len(df) - 1
@@ -134,4 +165,29 @@ def draw_htf_overlays(
             fontsize=7,
             alpha=0.75,
             zorder=2,
+        )
+    # Parent swing H/L anchors in time+price (hollow diamonds — distinct from the
+    # filled ^/v picks), only for anchors inside the visible window.
+    for idx, price, label, color in htf_anchor_markers(df, overlays):
+        ax.scatter(
+            [idx],
+            [price],
+            marker="D",
+            s=44,
+            facecolors="none",
+            edgecolors=color,
+            linewidths=1.1,
+            alpha=0.9,
+            zorder=3,
+        )
+        ax.text(
+            idx,
+            price,
+            f" {label}",
+            color=color,
+            fontsize=7,
+            alpha=0.95,
+            zorder=3,
+            va="bottom",
+            ha="left",
         )

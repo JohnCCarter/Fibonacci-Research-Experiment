@@ -14,7 +14,8 @@ Controls:
 - h / l: next click sets high / low
 - u/backspace: undo latest high/low edit
 - r: clear current picks
-- f: toggle fib levels (includes read-only HTF human-fib overlays on lower TFs)
+- f: toggle fib levels (includes read-only HTF overlays on lower TFs: parent fib
+     level lines + parent swing H/L anchor markers in time+price, for nesting)
 - g: toggle high-low range shading
 - w: write active fib as a human ground-truth annotation (data/labels/human_fib/...)
 - s: save label (all legs) for the active symbol/timeframe
