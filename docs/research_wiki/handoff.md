@@ -27,7 +27,7 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — top-down "sniper" nesting (user will redraw, not today)
+## Next Step — top-down "sniper" nesting (first cohort drawn 2026-06-26; build still gated)
 
 Learning curve DONE → marginally `saturated`; lever is the feature side, not 4h data
 ([results](reviews/btc-fib-selection-learning-learning-curve-results-20260625.md)). **Matched-null crux
@@ -37,12 +37,19 @@ the opposite), A11 judged it asymmetric-weak, and it answers an A9 out-of-scope 
 New direction (user): **top-down nesting** — model the SAME swing decomposed 1M→1W→1D (parent TF = the
 context that makes a leg "yours"); a few deliberately-nested labels, not hundreds of flat ones.
 **Premise check (frozen facit): does NOT nest** — the TFs are different eras (1W mostly 2017-18 vs 1M
-2020+; strict nest 1W-in-1M 5%, 1D-in-1W 46%). So it needs **new nested labels on ONE era → user
-redraws LATER.** **Prerequisite:** `same_candle_mtf_resolution` covers 1w→1d but not 1M→1w (monthly
-anchors stay coarse) — extend `RESOLUTION_TIMEFRAME` first. **No build until a separate explicit GO.**
+2020+; strict nest 1W-in-1M 5%, 1D-in-1W 46%) → needs NEW nested labels. **DONE (2026-06-26,
+`b9a7aa2`):** first cohort drawn — 8 `human_fib`, 3 eras (2017-18 / 2019 / 2020-21), kept SEPARATE from
+the frozen corpus (premise recommended ONE era — user spanned 3; `1w_20180614` nests loosely, confirm).
+**Next (still gated):** extend `RESOLUTION_TIMEFRAME` so `same_candle_mtf_resolution` covers 1M→1w (now
+1w→1d only) before any model. **No build/run until a separate explicit GO.**
 
 ## Recent Changes
 
+- **2026-06-26 Top-down nesting — FIRST nested facit cohort committed (`b9a7aa2`).** User drew the SAME
+  swing decomposed 1M→1w→1d over 3 eras (2017-18 down / 2019 up / 2020-21 up): **8 new `human_fib`**,
+  SEPARATE from the frozen corpus (schema 9/9 PASS via `load_annotation`; frozen `1w_20171214`
+  timestamp-only touch reverted; Layer-A swing-labels untracked). Watch `1w_20180614` (6560→64829,
+  loose per-era nest). **Gated:** no build/run; `RESOLUTION_TIMEFRAME` 1M→1w prereq + GO remain.
 - **2026-06-25 Fib SELECTION-LEARNING model-ENRICHMENT — RUN → `enriched_worse_check` (4h k=3); line
   CLOSED.** Blind Commit-2 of the [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md)
   (`c80acb0`). Parity: AP-baseline = Stage-2 headline 0.0567, n_test_pos=65, excl=0 (no look-ahead).
@@ -55,19 +62,10 @@ anchors stay coarse) — extend `RESOLUTION_TIMEFRAME` first. **No build until a
   [Main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md).
 
 - **2026-06-22 Fib SELECTION-LEARNING W-gap study — BUILT + module split, RUN PENDING (home).** Commit 2 of side-quest #1, built to the [W-gap LOCK](reviews/btc-fib-selection-learning-w-gap-lock-20260622.md) (`4f47d8e`): `gap(k)=AP(retro-W)−AP(live-k)` on identical rows, embargo=W, L5 verdict. New `research/selection_learning_gap.py` (+5 tests); W-gap code split out to keep `selection_learning.py` under the §6 size cap (was 995 lines); flushed-stderr `_progress` logging in `build_candidates`+`build_retro_features` so a long run is never blind (result-neutral). **Run NOT executed** — inherent ~2-3h per-endpoint-detect cost on the ~20k-bar 4h frame (leakage-bearing truncation, no legal shortcut); to run at home (see Next tracks). No gap results, no verdict. Commit `884d4c0`, gates green (pytest 549, cov 75%).
-- **2026-06-18 Fib SELECTION-LEARNING k-sweep {0,3,6,12} (4h) → `k_stable_live_selection_signal`.** Mandatory confirmation-buffer sweep (live-only), locked prominence-FAMILY survival rule (powered AND CI excludes 0 vs **every** §6 baseline — magnitude + prominence A/B). **k=0 degenerate** (0 candidates, reachable 0.0, unpowered — *not interpretable*, excluded); **k=3/6/12 all powered and survive** the locked family (`p_one_sided lift≤0 = 0/2000` throughout; lowest CI floor k=12 vs prom-sum 0.025). ≥2 survivors → cross-k verdict **`k_stable_live_selection_signal`**: the lead is **not** a narrow-buffer artifact. **Modest framing holds:** `cleanliness` still dominates (~0.20) at every powered k; at k=12 `scale_confluence` enters at ~0.13 only as a **secondary hint** (causally available there), not a second pillar; AP rises only 0.057→0.066, far under the 0.83 ceiling — **still single-feature, NOT a reproduction, no edge/behaviour/backtest/Genesis claim**; 1M/1w/1d **underpowered, not refuted**. Code+tests `ea6c2ea` (gates green). [Results](reviews/btc-fib-selection-learning-results-20260618.md).
-- **2026-06-18 Fib SELECTION-LEARNING prominence-baseline sensitivity (4h) → `survives_prominence_family`.** Locked pre-run (A=summed endpoint prominence = `prominence` feature col; B=max endpoint prominence) + locked verdict rule. Same universe/viewport/k/ε/split/model — only baseline rule differs. Model AP-lift robust vs **all three** §6 baselines: magnitude [0.023,0.120], prominence-A +0.043 [0.018,0.104], prominence-B +0.049 [0.021,0.116]; every CI excludes 0, 0/2000 ≤ 0. Sanity: prominence baselines beat magnitude (as expected); model beats both. Weights unchanged → **`cleanliness` still carries the lift** (0.20). So the lead is **not** a magnitude- or prominence-artifact — but still single-feature, low absolute AP (0.057 vs 0.83 ceiling), **not a reproduction**, no edge claim; 1M/1w/1d underpowered. Open: is `cleanliness` a detection/anchoring artifact? [Results](reviews/btc-fib-selection-learning-results-20260618.md).
-- **2026-06-18 Fib SELECTION-LEARNING Stage-2 headline + AP-lift inference → MODEST single-feature lead on 4h (not a reproduction).** `research/selection_learning.py` (+18 tests): causal truncate-and-whitelist at `anchor_b+k`, re-detected candidate universe, ε-match, purged split, numpy logreg vs §6 **magnitude** baseline, pooled-AP (A5.1). **Only 4h powered.** Decision-point cluster bootstrap (2000×, by `anchor_b` group): lift +0.052, **95% CI [0.023, 0.120] excludes 0** (0/2000 ≤ 0) — robust vs magnitude, OOS. **But** the interpretable weights show the lift is **carried almost entirely by `cleanliness`** (0.20 vs prominence 0.07, structure_alignment ≈ 0): human legs are *cleaner/more efficient*, **not** a multi-feature reproduction. Beats **magnitude only** (prominence baseline untested); AP 0.057 vs 0.83 ceiling = low agreement; 1M/1w/1d **underpowered, not refuted**. **Recommended next: prominence-baseline sensitivity on 4h** (does the cleanliness lift survive a stronger §6 rule?). [Results](reviews/btc-fib-selection-learning-results-20260618.md). Artifacts gitignored.
-- **2026-06-18 Fib SELECTION-LEARNING §12 addendum FROZEN (docs-only, blind to output).** Step-2 of the two-step gate: reuses the engine's **8 existing interpretable features** (no new ones), tags each with a **minimum confirmation buffer `k*`** (0 / 3 / 12 / ∞) — refining §5's binary so the mandatory `k`-sweep isn't vacuous; `recency` dropped from the live model (`k*=∞`, dataset-end ref); exclusivity #4 = set-level over `structure_window=6` base-pivot chunks (`k*=3`, no parent-degree boundaries); ε **reused** from `EvaluationConfig` (`time_tol=3`, `price_tol=0.5` ATR, blindness defense); `k`-sweep {0,3,6,12} + `W` per TF + **single primary cell at `k=3`** (base detector confirmation). **Still gated: §12.3 separate explicit go before any build/run.** [Addendum](reviews/btc-fib-selection-learning-addendum-20260618.md).
+- **2026-06-18 Fib SELECTION-LEARNING 4h slices (`ea6c2ea`) — Stage-2 headline + prominence-family `survives_prominence_family` + k-sweep `k_stable_live_selection_signal` + §12 addendum.** Modest single-feature `cleanliness` lead; 4h-only powered; low AP (0.057–0.066 vs 0.83 ceiling); not a reproduction; 1M/1w/1d underpowered. Full detail: Status section below + [results](reviews/btc-fib-selection-learning-results-20260618.md).
 - **2026-06-17 NEW LINE pre-registered — Fib SELECTION-LEARNING (docs-only, gated).** Different question from the closed behaviour/B-1 nulls: *can a model reproduce how the human selects swings/ranges* (labels as facit, **no edge/backtest/Genesis**). Stage 2 leg/range gestalt (5 components) = target, Stage 1 per-pivot = diagnostic; live-equivalent vs **bounded** retrospective viewport → causal-availability gap; binding feature-provenance rule; one primary cell + coverage ceiling. Two-step gate. [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md).
 - **2026-06-17 B-1 horizontal-structure study — BUILT + RUN → NULL (closed).** SENARE-1 e-value (conditional 2×2 safe test) + 3-subject harness (swing/round/prior-extreme vs matched random-walk null), all pins locked pre-run. `any_robust=False` on all 12 cells; only swing edges the null (e=1.70 — not even marginal; e-Holm needed E≈240 → low power). Generic structure not special vs a random walk; §10 sanity-check not run. Commits `474f320`→`44e63fa`. [Results](reviews/btc-horizontal-structure-event-study-results-20260617.md).
-- **2026-06-17 External-pattern-scan absorption — landed on `main`** (PR #33→main, merge-commit;
-  plan `clever-yawning-catmull.md`). NU (docs): standing
-  [prereg addendum](reviews/horizontal-structure-prereg-addendum-20260617.md) (random-walk control /
-  anytime-valid re-looks / embargo named as purged-CV). DELAR (code): synthetic RW baseline,
-  uncertainty-ordered worklist (`--by-uncertainty`), fail-closed swing-label validation. SENARE gated.
-  Review fixes: P1 windowed-save facit-safety, P2 level-events now log-scale. Sec (PR #34):
-  cryptography→49.0.0 (GHSA-537c-gmf6-5ccf). No facit/signal/auto-fib touch.
+- **2026-06-17 External-pattern-scan absorption — landed on `main`** (PR #33→main; #34 sec cryptography→49.0.0). Standing [prereg addendum](reviews/horizontal-structure-prereg-addendum-20260617.md) (RW control / anytime-valid re-looks / purged-CV embargo) + code (synthetic RW baseline, `--by-uncertainty` worklist, fail-closed swing-label validation). No facit/signal/auto-fib touch.
 - **Earlier 2026-06-15/06-16 changes — archived** (kept lean for the 400-line bound): behaviour +
   context studies **NULL/CLOSED** (`f4e96f1`); Fib→Genesis V2 Phase 2 + 2.5 nullability **PASS/CLOSED**
   (`68dc006`); MTF confluence CP1–CP3 **CLOSED** (geometry, not edge); #32 tooling DONE + `20171228`

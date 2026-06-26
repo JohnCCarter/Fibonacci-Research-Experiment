@@ -16,6 +16,28 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-26] review | Top-down nesting — first nested facit cohort drawn + committed
+
+User opened the labeling tool on BTC/USD 1M (preflight: 1M/1w/1d/4h cache OK; 1h still deferred, no
+cache) and drew the first deliberately-nested labels for the top-down line: the SAME swing decomposed
+1M→1w→1d over three eras — 2017-18 (down), 2019 (up), 2020-21 (up). **8 new `human_fib` annotations**
+committed as a SEPARATE cohort (`b9a7aa2`, 8 files / +376 lines), deliberately kept apart from the
+frozen 1M/1w/1d/4h source-fib corpus — new nesting data, **not** a corpus revision.
+
+Schema/integrity 9/9 PASS via a one-off check that loads each file through `load_annotation` and
+verifies: `scale_mode=log`, profile `tradingview_log_chamoun`, ratio-set `{0,0.382,0.5,0.618,0.786,1}`
+(no 0.236), levels equal the log-interpolation of the anchors, and `direction` consistent with anchors.
+
+Hygiene: a timestamp-only re-save of the frozen `1w_20171214` (geometry unchanged) was reverted with
+explicit user confirmation, so the locked corpus stays bit-identical. Layer-A swing-labels under
+`data/labels/bitfinex/` were left untracked — incomplete by-product (only the last active swing per TF).
+
+Watch item (open, user to confirm): `1w_20180614` is an up-leg 6560→64829 spanning 2018→2021; it does
+not nest as cleanly per-era as the other pairs (possible deliberate parent swing or a stray multi-leg).
+
+**Still gated:** no model/build/run on this cohort. The `RESOLUTION_TIMEFRAME` 1M→1w prerequisite
+(`same_candle_mtf_resolution` covers only 1w→1d) and the separate explicit GO both remain.
+
 ## [2026-06-25] maintenance | Status sweep — research-line status registry + stale-index fix
 
 Semantic-lint pass (stale docs / status drift). Finding: `index.md` and `reviews/README.md` had not
