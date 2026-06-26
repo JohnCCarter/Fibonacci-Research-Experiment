@@ -16,6 +16,30 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-26] decision | Top-down nesting — tool support built, cohort v2 drawn + committed
+
+After deleting v1 (entry below), built the tool support nesting actually needed, then redrew. Three
+additions to `htf_fib_overlay.py` + `tool.py`, all behind pure helpers (+7 tests, suite 619 green):
+- **anchor markers** (`htf_anchor_markers`, `f79d7d2`): each parent fib's H/L as hollow diamonds at their
+  own (time, price) on the child chart — shows *where in time* the parent swing sits, not just price lines.
+- **session-only overlay** (`filter_to_session`, `3f3dc05`): HTF overlays default to fibs drawn THIS
+  session, so the frozen corpus (9 1M + 21 1w) does not clutter the child chart; `b` toggles frozen back
+  on. `session_fib_ids` persists across TF switches so a 1M draw stays visible on 1w/1d.
+- **nesting focus** (`c`, `3f3dc05`): cycle parent fibs overlapping the current view, show only that
+  parent's H/L and fit the view to it (new `redraw(set_view=...)` param; advisor caught that the naive
+  version would no-op the zoom).
+
+Workflow now: draw on 1M, `w`/`s`; drop to 1w/1d and your own 1M/1w lines follow down, clean. User redrew
+**cohort v2** (`ed98dc4`): 12 nested `human_fib` (1M/1w/1d × four eras — 2017 bull, 2017-18 bear, 2019,
+2020-21), consistently nested per era (unlike v1's wrong-candle anchors), schema 12/12 PASS.
+
+**fib_id collision (resolved, user kept new):** the new 2017-bull 1w starts 2017-03-16, same as a frozen
+`1w_20170316` (a short 2017-03→05 swing, top 2444.9), so it replaced that frozen file. Frozen corpus is
+otherwise intact but **no longer 100% the analysed set** — and the shared namespace (filename = TF +
+start date) means nesting swings starting on a frozen swing's date will clash again. If frequent, build a
+separate nesting namespace. Layer-A swing-labels left untracked. Still gated: `RESOLUTION_TIMEFRAME`
+1M→1w prereq + explicit GO before any model/run.
+
 ## [2026-06-26] decision | Top-down nesting — tool fix (parent anchor markers) + cohort deleted (clean slate)
 
 Reviewing the first nested cohort (entry below) against candle data showed several child-TF anchors on

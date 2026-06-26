@@ -27,7 +27,7 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — top-down "sniper" nesting (cohort drawn+DELETED 2026-06-26; redraw with new anchor markers)
+## Next Step — top-down "sniper" nesting (cohort v2 DRAWN+committed 2026-06-26; model still gated)
 
 Learning curve DONE → marginally `saturated`; lever is the feature side, not 4h data
 ([results](reviews/btc-fib-selection-learning-learning-curve-results-20260625.md)). **Matched-null crux
@@ -37,20 +37,21 @@ the opposite), A11 judged it asymmetric-weak, and it answers an A9 out-of-scope 
 New direction (user): **top-down nesting** — model the SAME swing decomposed 1M→1W→1D (parent TF = the
 context that makes a leg "yours"); a few deliberately-nested labels, not hundreds of flat ones.
 **Premise check (frozen facit): does NOT nest** — the TFs are different eras (1W mostly 2017-18 vs 1M
-2020+; strict nest 1W-in-1M 5%, 1D-in-1W 46%) → needs NEW nested labels on ONE era. First attempt
-(`b9a7aa2`) had H/L on wrong child-TF candles → built parent-anchor markers in the tool (`f79d7d2`) and
-**deleted the cohort for a clean slate** (`879b754`; human_fib == frozen `f0f4b8d`). **Now: redraw**
-nested labels with markers on (`f`); then extend `RESOLUTION_TIMEFRAME` for 1M→1w (`same_candle_mtf_
-resolution` covers only 1w→1d) before any model. **No build/run until a separate explicit GO.**
+2020+; strict nest 1W-in-1M 5%, 1D-in-1W 46%) → needs NEW nested labels. Tool now supports it
+(parent-anchor markers + session-only overlay + `c` focus, `f79d7d2`/`3f3dc05`); v1 (`b9a7aa2`, wrong
+candles) deleted (`879b754`), **v2 drawn** (`ed98dc4`): 12 fibs, 4 eras, consistently nested, schema
+12/12 PASS. **Collision:** new 2017-bull 1w replaced frozen `1w_20170316` (user kept new; frozen no
+longer 100% intact). **Next (gated):** extend `RESOLUTION_TIMEFRAME` for 1M→1w before any model. No GO yet.
 
 ## Recent Changes
 
-- **2026-06-26 Top-down nesting — first cohort drawn → DELETED (clean slate); tool improved.** Drew 8
-  nested `human_fib` 1M→1w→1d (`b9a7aa2`), but several had H/L on the wrong child-TF candle (e.g. 1w low
-  2018-06 vs 2020-09) — the tool showed only HTF *price* lines, not *where in time* parent H/L sat. Built
-  **parent-anchor markers** in the HTF overlay (`f79d7d2`, `htf_anchor_markers`, toggle `f`); then removed
-  the whole cohort (`879b754`; human_fib == frozen `f0f4b8d` again). Frozen corpus untouched. **Redraw
-  pending** with markers on; `RESOLUTION_TIMEFRAME` 1M→1w prereq + GO still apply for any model/run.
+- **2026-06-26 Top-down nesting — tool-assisted cohort v2 DRAWN + committed (`ed98dc4`).** v1 (`b9a7aa2`,
+  8 fibs) had H/L on wrong child-TF candles (tool showed only HTF price lines, not *where in time* parent
+  H/L sat) → built tool support: anchor markers + session-only overlay (frozen corpus hidden by default,
+  `b` toggles) + `c` nesting-focus (`f79d7d2`/`3f3dc05`, +7 tests). Deleted v1 (`879b754`), redrew **v2**:
+  12 fibs (1M/1w/1d × 4 eras), consistently nested, schema 12/12 PASS. **fib_id collision:** new 2017-bull
+  1w replaced frozen `1w_20170316` (user kept new) — frozen corpus no longer 100% intact; namespace clash
+  is a known risk. Swing-labels untracked.
 - **2026-06-25 Fib SELECTION-LEARNING model-ENRICHMENT — RUN → `enriched_worse_check` (4h k=3); line
   CLOSED.** Blind Commit-2 of the [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md)
   (`c80acb0`). Parity: AP-baseline = Stage-2 headline 0.0567, n_test_pos=65, excl=0 (no look-ahead).
