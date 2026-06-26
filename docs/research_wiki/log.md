@@ -16,6 +16,63 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-26] review | Nesting REFRAME (within-TF, not cross-TF) + two honest nulls
+
+Session headline is **not** a feature win — it is a **corrected model of how the human selects**:
+he decomposes a single trend into **successive impulse legs on the SAME timeframe**, he does **not**
+nest a parent-TF swing into the child TF. Established from facit screenshots (user-supplied): each
+chosen leg's endpoint **extends** the trend (breaks the prior extreme) and its start is the
+**retracement extreme**; multiple fibs step down a trend in sequence. Anchor convention verified
+against source JSON (both dirs): `anchor_b` = ratio-0 = later-in-time = endpoint; `anchor_a` =
+ratio-1 = retracement extreme.
+
+Two pre-registered tests, both **NULL**, both leakage-disciplined (no redefinition after results):
+
+1. **Cross-TF nesting prediction (1w→1d) — NULL, directional, N=9.**
+   [Prereg](reviews/btc-fib-nesting-prediction-prereg-1w1d-20260626.md). Question: does 1w parent
+   context predict the blind 1d leg beyond prominence? Cohort v2 (`ed98dc4`) was **disqualified**
+   (drawn with parent markers visible → leakage by construction); only the **frozen** corpus is
+   blind. **Method was re-locked before any run:** a feasibility count showed the first locked method
+   (temporal split + logreg + cluster bootstrap) returns **null by construction** (all 42 positives
+   pre-split, test positives = 0), so it was retracted and replaced — *before* seeing any result —
+   with a within-window **rank** test (per window: does `parent_alignment` rank the human's actual 1d
+   pick above `prominence`? paired sign test over the 9 windows with a reachable pick). Degeneracy
+   gate PASSED first (alignment ≠ most-prominent in 9/10 reconstructible windows). Result: **6/9
+   positive, median d_w +0.067, sign-test p=0.51** → `no_parent_context_signal`. The two data-richest
+   windows (2017/2020 bull, 10+11 legs) ran *strongest against* H1 — the human picked prominent legs
+   that do **not** reconstruct the 1w parent. So the cross-TF axis was simply the wrong model (see
+   reframe above); the null is the *right* answer, not a setback. `scratchpad/nesting_rank_test.py`,
+   summary `experiments/review/fib_nesting_prediction/summary.json` (gitignored).
+
+2. **`impulse_leg` feature enrichment (4h) — clean NULL, POWERED.**
+   [Prereg](reviews/btc-fib-impulse-leg-feature-prereg-20260626.md). The within-TF axis operationalized
+   as a leg-aware, leakage-free feature: `impulse_leg = (endpoint_BOS + start_dominance)/2`
+   (endpoint breaks prior same-kind extreme; start is the dominant opposite swing in the retracement
+   zone). Pre-lock sonder (train-only, do not touch target): orthogonal to the baseline it must beat
+   (corr prominence +0.19, magnitude +0.08, cleanliness +0.36, structure_alignment +0.14 — all <0.5),
+   and leg-aware on **5132/5132** multi-start endpoints (solves the within-decision-point blindness
+   that gave `structure_alignment` ~0 weight). Run = enrichment harness mirrored verbatim (per-endpoint
+   causal truncate at `anchor_b+k`, nested AP-lift vs full Stage-2, decision-point cluster bootstrap),
+   4h k=3, powered (65 test-pos). **AP 0.0567→0.0619, lift +0.0052, bootstrap CI [−0.032, +0.027]
+   straddles 0, p=0.34 → `impulse_leg_no_signal`.** Verdict is final; the per-leg-feature line stays
+   closed. **Framing (advisor, binding):** the +0.119 model weight is the *in-sample* association the
+   OOS test just refuted — it is **not** independent evidence and must not be cited as "plausibly
+   informative" (that double-counts what the test threw out). Honest reading = "consistent with no
+   effect at this power," **not** "a likely-real effect we couldn't confirm." One firewalled factual
+   difference from `exclusivity`: this is a **clean** null (CI straddles 0), not `enriched_worse` (CI
+   excluded 0 below) — recorded only as forward-pointer hypothesis (*if test-positives ever grow, the
+   feature most worth re-testing*), **never** as a finding. `scratchpad/impulse_enrich.py`, summary
+   `experiments/review/fib_impulse_leg/summary.json` (gitignored).
+
+**Side diagnostic — HTF is intrinsically data-starved, not detector-broken.** Reachability per TF
+(can the candidate universe even produce the human's legs?): 1M **1.00**, 1w 0.88, 1d 0.87, 4h 0.85,
+**no epoch gaps**. So 1M/1w underpowered = too few swings exist (1M has 13 legs total), **not** a
+candidate-gen crux — no detector/feature fix buys power there; top-down-on-HTF is data-starved by
+nature. Powered selection signal lives on **4h** (N=365). `scratchpad/reachability_diag.py`.
+
+Net for the day: two honest nulls + a corrected process model, no p-hacking, no leakage survived.
+Durable win = the within-TF reframe (stands on the facit images regardless of either run).
+
 ## [2026-06-26] decision | Top-down nesting — tool support built, cohort v2 drawn + committed
 
 After deleting v1 (entry below), built the tool support nesting actually needed, then redrew. Three
