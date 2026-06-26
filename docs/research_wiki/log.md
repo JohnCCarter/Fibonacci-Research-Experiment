@@ -16,6 +16,26 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-26] decision | Top-down nesting — tool fix (parent anchor markers) + cohort deleted (clean slate)
+
+Reviewing the first nested cohort (entry below) against candle data showed several child-TF anchors on
+the WRONG candle: `1w_20180614` had its low on 2018-06 (6560) instead of the 2020-09 bottom (~9882 on
+1M/1d, 10010 on the 1w candle), and `1d_20181215` used the dec-2018 low (3215) while 1M/1w used the
+jan-2019 low (3405). Root cause: the labeling tool's HTF overlay drew only higher-TF *price* lines, so
+when switching down to 1w/1d you could not see *where in time* the 1M H/L sat — near-in-price bottoms
+were easy to confuse.
+
+Fix (`f79d7d2`): new `htf_anchor_markers()` in `htf_fib_overlay.py` draws each parent fib's H/L as hollow
+diamonds at their own (time, price) on the child chart (only anchors inside the visible window), toggled
+with the existing `f`. +3 pure-helper tests; full suite 615 green, cov 74%. Doc note: anchors are
+TF-specific candles, so "same swing" gives slightly different prices per TF (9882 vs 10010) — expected.
+
+Then, at the user's request, deleted the entire cohort for a clean redraw (`879b754`): the 8 committed
+nesting fibs + untracked extras + Layer-A swing-labels removed; frozen `1M_20211101` (timestamp-touched
+today) restored. Verified `human_fib` is now bit-identical to frozen `f0f4b8d` (1M=9, 1w=21, 1d=67,
+4h=365). Next: user redraws nested labels with the markers on; `RESOLUTION_TIMEFRAME` 1M→1w prereq and
+the explicit GO still gate any model/run.
+
 ## [2026-06-26] review | Top-down nesting — first nested facit cohort drawn + committed
 
 User opened the labeling tool on BTC/USD 1M (preflight: 1M/1w/1d/4h cache OK; 1h still deferred, no
