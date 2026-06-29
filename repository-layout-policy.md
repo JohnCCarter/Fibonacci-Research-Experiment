@@ -43,6 +43,7 @@ If repository reality changes, update this policy first, then move files.
 | `docs/` | Long-lived documentation (`agent/`, `labeling/`, `research/`, `validate/`, `tooling/`, `research_wiki/`) | Yes |
 | `premortem/` | Premortem and reflections | Yes |
 | `archive/` | Historical/legacy material (local blobs) | Stubs/manifests only (§7) |
+| `.claude/` | Agent config: slash commands (`commands/`), hooks (`hooks/`), `settings.json` | Shared parts **Yes** (portable across machines); `settings.local.json` **No** (machine-local) |
 | `tmp/` | Temporary work | Optional |
 
 ---
@@ -118,17 +119,24 @@ Missing required docs should be created as lightweight stubs.
 
 Enforced by `scripts/check_repo_bounds.py`.
 
+This table mirrors `RULES` in `check_repo_bounds.py` (the **code is source of truth**;
+**first match wins**, so specific paths precede broad ones — keep this order):
+
 | Pattern | Max lines | Max bytes |
 |---|---:|---:|
 | `premortem/reflections/*.md` | 80 | 8 KiB |
 | `src/fibengine/research/*.py` | 750 | 32 KiB |
 | `src/fibengine/labeling/*.py` | 600 | 32 KiB |
 | `tests/research/*.py` | 300 | 20 KiB |
-| `docs/research_wiki/log.md` | 500 | 28 KiB |
+| `docs/research_wiki/index.md` | 400 | 32 KiB |
+| `docs/research_wiki/handoff.md` | 400 | 32 KiB |
+| `docs/research_wiki/log.md` | 1500 | 120 KiB |
+| `docs/research_wiki/log-archive-*.md` | 1500 | 120 KiB |
+| `docs/research_wiki/*.md` | 600 | 48 KiB |
 | `src/fibengine/**/*.py` | 450 | 28 KiB |
 | `tests/**/*.py` | 280 | 18 KiB |
 | `docs/**/*.md` | 300 | 20 KiB |
-| `scripts/*.py` | 120 | 8 KiB |
+| `scripts/*.py` | 160 | 12 KiB |
 
 A small grandfather list in `scripts/check_repo_bounds.py` covers legacy GUI/CLI
 monoliths only; they should not grow without a split plan.

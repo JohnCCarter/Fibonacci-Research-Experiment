@@ -7,7 +7,7 @@ description: Pick work suited to the SONAR-sensitive job machine (read-only/docs
 **Purpose:** select work suited to the job machine — limited permissions, SEP/SONAR sensitivity,
 resource limits.
 **When to use:** when picking what to do on the work computer, or scoping a session there.
-**Codifies:** the SONAR / endpoint-protection discipline in [CLAUDE.md](../../../CLAUDE.md).
+**Codifies:** the SONAR / endpoint-protection discipline in [CLAUDE.md](../../CLAUDE.md).
 
 ## Output (the work plan)
 

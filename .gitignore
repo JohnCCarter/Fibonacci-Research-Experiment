@@ -218,9 +218,11 @@ __marimo__/
 .streamlit/secrets.toml
 
 # --- Fibonacci-engine projekt-specifikt ---
-# Local agent/tool config — never project truth (source-authority.md). Versioned
-# schema lives in CLAUDE.md / AGENTS.md, not here.
-.claude/
+# .claude/: shared portable parts (commands/, hooks/, settings.json) ARE versioned so they
+# follow across machines (home/work/iPhone/web). Only machine-local bits stay out:
+# settings.local.json (per-machine perms/abs paths) and stray scratch files.
+.claude/settings.local.json
+.claude/Untitled
 # Temp screenshots / scale probes dumped at repo root.
 ._*.png
 # Ephemeral markdown for `gh issue create` / `gh pr edit --body-file` (not project docs)

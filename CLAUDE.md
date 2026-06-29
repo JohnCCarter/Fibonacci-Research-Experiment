@@ -30,9 +30,11 @@ CLI-moduler + valfri Matplotlib-labeling-GUI. Ingen webbserver/databas. Mer i
 - Äldre mixed-symbol/MTF-resultat ligger i `archive/` — **inte** aktuell evidens
 - **Arkiv:** lokalt på disk; committa **inte** arkivblobs om inte användaren ber om det
   ([`repository-layout-policy.md`](repository-layout-policy.md) §7)
-- **Lokal config ≠ källa:** `CLAUDE.md`/`AGENTS.md` är versionerad schema; `.claude/`,
-  `.env`, cache, `data/raw/`, temp-charts/loggar är lokala och får aldrig bli
-  wiki-minne eller källsanning (`scripts/check_repo_bounds.py` vaktar detta)
+- **Lokal config ≠ källa:** `CLAUDE.md`/`AGENTS.md` är versionerad schema. `.claude/`s
+  delade delar (`commands/`, `hooks/`, `settings.json`) versioneras och **följer med** mellan
+  maskiner; endast `.claude/settings.local.json` (maskin-perms/abs-sökvägar), `.env`, cache,
+  `data/raw/`, temp-charts/loggar är lokala och får aldrig bli wiki-minne eller källsanning
+  (`scripts/check_repo_bounds.py` vaktar detta)
 
 ## Paket (`src/fibengine/`)
 

@@ -49,7 +49,7 @@ GRANDFATHERED: dict[str, str] = {
 # Local/private artifacts that must never be tracked (they pollute repo memory).
 POLLUTION_GLOBS = (
     ".env .venv/* .coverage .coverage.* .pytest_cache/* "
-    ".ruff_cache/* dist/* .claude/* *.log ._*.png"
+    ".ruff_cache/* dist/* .claude/settings.local.json *.log ._*.png"
 ).split()
 
 # LLM Wiki contract: schema + wiki spine + source authority must exist.

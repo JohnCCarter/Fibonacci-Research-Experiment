@@ -34,6 +34,11 @@ Binding operating principles (not hints) — read with §1.
   ceremony — *not* mini-Genesis). Make *promotion to truth* expensive: a result becomes facit, a
   claim, or an edge only via pre-registration, OOS + matched controls, and explicit human sign-off.
   Low friction to explore; high bar to assert. Null results are first-class outcomes.
+  **Locking mechanics:** when a prereg is signed off, add the `<!-- prereg:locked -->` sentinel to
+  it and move all post-lock material (run results, addenda, status) into a `*-postlock.md` sibling
+  so the registration itself stays immutable. A `PreToolUse` hook
+  ([`.claude/hooks/guard-locked-prereg.sh`](.claude/hooks/guard-locked-prereg.sh)) asks before any
+  Edit/Write to a sentinel-bearing file.
 - **Validity over convenience.** When a decision admits ≥2 plausible baselines / controls / null
   models / feature definitions / tolerances / confirmation buffers / split or power rules, do **not**
   silently pick the easiest-to-code or result-convenient one. Name the alternatives, state the
@@ -71,7 +76,7 @@ purpose: [decisions/2026-06-17-wiki-is-agent-native.md](docs/research_wiki/decis
 | `*_candidate` ≠ facit | Machine suggestions stay candidates until human promotion |
 | Wiki = agent memory | `docs/research_wiki/` is agent-native warm context (navigation + accumulated knowledge); **source code and docs** are behavior truth |
 | Source authority | When wiki and source evidence disagree, **source wins** — fix or flag the wiki |
-| Local config ≠ truth | `.claude/`, `.env`, caches, `data/raw/`, temp charts/logs are local-only — never wiki memory or source truth |
+| Local config ≠ truth | `.claude/settings.local.json`, `.env`, caches, `data/raw/`, temp charts/logs are local-only — never wiki memory or source truth. `.claude/{commands,hooks,settings.json}` ARE versioned (portable across machines) |
 | No auto-fib as truth | Do not promote automated fib selection to facit |
 | No trading signals | Research engine only — no signal/edge claims in agent output |
 | Tracks | Research → Validate → Promotion — see [TRACKS.md](docs/TRACKS.md) |

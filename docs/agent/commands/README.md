@@ -1,26 +1,22 @@
-# Project command playbooks
+# Project command playbooks → moved to `.claude/commands/`
 
-Repo-specific agent commands for the Fibonacci research workflow — **versioned, agent-agnostic**
-(Claude Code, Cursor, any agent reads them). Design rationale + the location decision:
-[decisions/2026-06-22-project-command-playbooks.md](../../research_wiki/decisions/2026-06-22-project-command-playbooks.md).
+The repo-specific agent command playbooks are now **canonical and versioned** under
+[`.claude/commands/`](../../../.claude/commands/) — they travel via `git pull` across machines and
+are invoked literally as `/command` in Claude Code. No more local `cp` mirror step.
+
+Design rationale + the source-of-truth flip:
+[decisions/2026-06-22-project-command-playbooks.md](../../research_wiki/decisions/2026-06-22-project-command-playbooks.md)
+(the original "`.claude/` is local-only" model was **superseded 2026-06-29** when `.claude/`'s shared
+parts — `commands/`, `hooks/`, `settings.json` — became versioned-portable).
+
+| Command | Purpose |
+|---------|---------|
+| `/fib-scope-check` | Verify the next step is intent-valid, not just technically valid. |
+| `/absorb-patterns` | Scan external work for patterns that strengthen — never replace — this repo. |
+| `/prepare-home-computer` | Complete handoff for continuation at home. |
+| `/prepare-job-computer` | Pick work suited to the SONAR-sensitive job machine. |
+| `/chamoun-fib-style-distiller` | Distill the human's daily fib drawing style into Observed/Inferred/Unverified rules (#38/#39). |
 
 These **codify existing constitution principles** ([AGENTS.md](../../../AGENTS.md),
 [CLAUDE.md](../../../CLAUDE.md)) — they add no new research behavior. Each is a short playbook, not a
 governance gate (Lean Fib Research).
-
-| Command | Purpose |
-|---------|---------|
-| [`/fib-scope-check`](fib-scope-check.md) | Verify the next step is intent-valid, not just technically valid. |
-| [`/absorb-patterns`](absorb-patterns.md) | Scan external work for patterns that strengthen — never replace — this repo. |
-| [`/prepare-home-computer`](prepare-home-computer.md) | Complete handoff for continuation at home. |
-| [`/prepare-job-computer`](prepare-job-computer.md) | Pick work suited to the SONAR-sensitive job machine. |
-
-> **Local slash-command mirror:** to get literal `/command` invocation in Claude Code, materialize
-> these playbooks into `.claude/commands/` (gitignored — **local per machine, never committed**;
-> the docs here stay the source of truth). One-liner, run from the repo root on any machine:
->
-> ```bash
-> mkdir -p .claude/commands && cp docs/agent/commands/{absorb-patterns,fib-scope-check,prepare-home-computer,prepare-job-computer}.md .claude/commands/
-> ```
->
-> The four commands then appear in the `/` picker (restart the session if not picked up at once).

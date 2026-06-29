@@ -7,7 +7,7 @@ description: Verify the next step is intent-valid, not just technically valid (#
 **Purpose:** verify the proposed next step is *intent-valid*, not merely *technically valid*.
 **When to use:** before starting or continuing any research / implementation / audit path —
 especially after repeated nulls, a plan that has run a while, or a "this isn't what I meant".
-**Codifies:** [AGENTS.md](../../../AGENTS.md) *Intent alignment over plan inertia* + *Research easy,
+**Codifies:** [AGENTS.md](../../AGENTS.md) *Intent alignment over plan inertia* + *Research easy,
 authority hard*.
 
 ## Steps

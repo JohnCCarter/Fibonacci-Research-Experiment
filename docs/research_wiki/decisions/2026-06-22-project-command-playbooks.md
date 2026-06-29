@@ -1,5 +1,16 @@
 # Decision: project command playbooks live as versioned docs, not `.claude/` (2026-06-22)
 
+> **SUPERSEDED 2026-06-29 (location flipped).** The premise below — that `.claude/` is deliberately
+> *local / gitignored / never committed* — no longer holds. `.claude/`'s shared parts (`commands/`,
+> `hooks/`, `settings.json`) are now **versioned and portable** (they travel via `git pull` across
+> machines; only `settings.local.json` stays machine-local). So the playbooks are now **canonical
+> under [`.claude/commands/`](../../../.claude/commands/)** (versioned, travel directly, literal `/`
+> invocation), and the `docs/agent/commands/` copies + `cp` mirror step are retired —
+> [`docs/agent/commands/README.md`](../../agent/commands/README.md) is now a pointer. The *content
+> contracts* for each command (below) are unchanged; only the canonical location moved. Boundary
+> guarded by [`check_repo_bounds.py`](../../../scripts/check_repo_bounds.py) (`settings.local.json`
+> only) and `.gitignore`.
+
 Design for [#36](https://github.com/) — a small set of repo-specific agent commands for the
 Fibonacci research workflow. **Design only**; the files themselves land in a separate PR (no
 research-code behavior change).
