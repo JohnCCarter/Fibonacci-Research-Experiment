@@ -38,7 +38,7 @@ for the **metric functions** but not literally:
 This diff is reported plainly in the run writeup; the locked Method wording is **not** edited to hide
 it.
 
-### A3 — Run result: `wick_pair_no_better` (2026-06-29, awaiting sign-off)
+### A3 — Run result: `wick_pair_no_better` (2026-06-29, SIGNED OFF — see Status)
 
 Run `experiments/results/chamoun_wick_pair_accuracy.jsonl` (wick_frac=0.5 a priori, k=3, **N=71**):
 
@@ -105,4 +105,9 @@ fractal 0.90).
 both arms (same `cut`), so it cannot differentially bias the control-vs-wick comparison — symmetric,
 no leakage. Recorded for completeness; no verdict impact.
 
-**Status:** run output + B-closure — **awaiting human sign-off** before it becomes "truth".
+**Status:** **SIGNED OFF 2026-06-29 (human).** Run output + B-closure accepted →
+`wick_pair_no_better` is now the **confirmed descriptive result**: the wick-pair philosophy is not
+justified on daily BTC/USD, and **#31's fractal line stays the candidate** anchor-detection approach
+(fractal control `both_hit` 0.90 vs wick-pair 0.08, N=71). Scope of the confirmed claim is the
+**strong form** only (A3); the rank-form `wick_frac` sweep remains separately open. No edge/OOS/PnL
+claim. This is a null/descriptive result — no new facit JSON is created by this sign-off.

@@ -44,7 +44,7 @@ data saturated / HTF starved, signal living in the modest 4h `cleanliness` lead.
 **step 2 (descriptive level-reads)** rather than more selection features. Cohort v2 (`ed98dc4`) stays
 drawn but **unused** (prediction-disqualified); `RESOLUTION_TIMEFRAME` 1M→1w no longer on the path.
 
-**2026-06-29: #38 daily wick-pair anchor accuracy tested → `wick_pair_no_better` (awaiting sign-off).**
+**2026-06-29: #38 daily wick-pair anchor accuracy → `wick_pair_no_better` (SIGNED OFF 2026-06-29).**
 The **strong-form** rejection-wick premise (anchors sit on ≥50%-wick candles) is **not supported** at
 `wick_frac=0.5` a priori: coverage 0.08 vs control 0.90, despite the selector picking a pair in 44/71
 cases (dominant-wick pivots sit at *different* bars than the human's anchors). **#31's fractal line
@@ -54,7 +54,8 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
 
 ## Recent Changes
 
-- **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (awaiting sign-off).** Pre-reg
+- **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (SIGNED OFF 2026-06-29; fractal
+  control 0.90 confirmed via B-closure, postlock A5).** Pre-reg
   [locked 2026-06-29](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md) (selector-only,
   addendum A1). New [`strategies/chamoun_daily_wick_pair.py`](../../src/fibengine/strategies/chamoun_daily_wick_pair.py)
   + run harness [`research/chamoun_wick_pair_accuracy.py`](../../src/fibengine/research/chamoun_wick_pair_accuracy.py)
