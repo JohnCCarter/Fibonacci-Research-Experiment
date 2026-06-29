@@ -73,4 +73,36 @@ and **did not** run the floor. Both are **moot for a null**: the wick-pair faile
 claim** — flagged here rather than silently omitted (validity over convenience). Not re-run (no
 verdict impact; saves redundant interpreter launches).
 
-**Status:** run output — **awaiting human sign-off** before it becomes "truth".
+### A5 — Fractal control WAS run; A4's mode label corrected (B-closure, 2026-06-29)
+
+Pre-sign-off validity review (`leakage-validity-reviewer`) flagged that A4's "#31 fractal stays the
+candidate" rests on a control mode A4 said was never run. **B-closure**
+([`scratchpad/fractal_control_coverage.py`](../../../scratchpad/fractal_control_coverage.py)) re-runs
+the control coverage under **both** modes — expansion config, k=3, same N=71 facit, only `pivots.mode`
+flipped:
+
+| control mode | `both_hit` coverage | median candidates |
+|---|---|---|
+| window | 0.7887 | 175 |
+| **fractal** (`fractal_n=1`) | **0.9014** | 394 |
+| wick-pair (recorded) | 0.08 | — |
+
+**The recorded 0.90 control reproduces under FRACTAL (0.9014), not window (0.7887).** Both
+`config/settings.yaml` and `config/settings.expansion.yaml` set `pivots.mode: fractal`, and only the
+expansion config covers all 71 facit (history_start 2016) — so the recorded run used the **fractal**
+control.
+
+→ **A4 is corrected:** the control ran in **fractal mode**, not "window only"; and A4's directional
+note ("fractal is stricter → lower control coverage") is **wrong** for `fractal_n=1` here — fractal
+yields *more* candidates (394 vs 175) and *higher* coverage (0.90 vs 0.79). The substantive conclusion
+is unchanged and now **directly supported**: wick-pair (0.08) loses to the fractal control — i.e. to
+**#31's own line** — so "#31's fractal line remains the candidate" is empirically earned, not assumed.
+The null `wick_pair_no_better` is **robust under both control modes** (wick 0.08 ≪ window 0.79, ≪
+fractal 0.90).
+
+**k=3 reconciliation** (review nit): the locked Method says "index ≤ B"; the harness truncates at
+`b_bar + k + 1` with k=3 (an a-priori confirmation lag, not tuned). It is applied **identically** to
+both arms (same `cut`), so it cannot differentially bias the control-vs-wick comparison — symmetric,
+no leakage. Recorded for completeness; no verdict impact.
+
+**Status:** run output + B-closure — **awaiting human sign-off** before it becomes "truth".
