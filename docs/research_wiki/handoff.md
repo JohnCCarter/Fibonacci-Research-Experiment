@@ -54,6 +54,17 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
 
 ## Recent Changes
 
+- **2026-06-29 Leg-agreement RULER — built + SIGNED OFF (north-star step-1 measurement instrument).**
+  The free facit-checker the selection campaign lacked (#38 `agreement` floored: `compare_label`/
+  `select_swing` not localized to the facit leg). [Locked prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md)
+  + [postlock](reviews/btc-fib-leg-agreement-ruler-prereg-20260629-postlock.md); new
+  [`evaluation/leg_agreement.py`](../../src/fibengine/evaluation/leg_agreement.py) (`mean(s_high,s_low)`,
+  `s=max(0,1−Δbar/W)`, absolute **W=2**, direction-gated; +21 tests). Knobs set by selector-independent
+  pre-lock calibration (spacing guard rejected W=5). **leakage-review caught a real overclaim** → hard-
+  null + bucket histogram → re-scoped: a **valid strict selection-scorer** with a narrow coverage-capped
+  range (ceiling mean ~0.79; sub-1.0 = detector-coverage artifacts, not near-misses; binary for
+  selection). Usable as **eval**, NOT a graded **training objective** → the learned-selector prereg must
+  confront the narrow range. Descriptive step-1, no edge/OOS. [log.md](log.md) top.
 - **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (SIGNED OFF 2026-06-29; fractal
   control 0.90 confirmed via B-closure, postlock A5).** Pre-reg
   [locked 2026-06-29](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md) (selector-only,
