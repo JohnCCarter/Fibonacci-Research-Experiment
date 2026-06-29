@@ -19,7 +19,7 @@ Long-lived documentation. Start here, then open a category folder.
 | [research/](research/) | MTF, level events, fib pipelines, handoff |
 | [validate/](validate/) | Backtest plan, Genesis/Bitfinex validate |
 | [tooling/](tooling/) | Tooling recommendation report (#25) |
-| [research_wiki/](research_wiki/) | LLM-maintained wiki (index, log, handoff, reviews) |
+| [research_wiki/](research_wiki/) | Agent-native warm context: navigation + accumulated knowledge (index, log, handoff, concepts, reviews) |
 
 ## Active label surfaces
 

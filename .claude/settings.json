@@ -1,0 +1,22 @@
+{
+  "defaultShell": "bash",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-locked-prereg.sh\""
+          },
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-human-fib-facit.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

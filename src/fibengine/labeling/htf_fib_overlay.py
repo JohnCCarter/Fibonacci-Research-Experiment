@@ -103,6 +103,101 @@ def _label_level(ann: HumanFibAnnotation) -> tuple[float, float]:
     return 0.0, 0.0
 
 
+def htf_anchor_markers(
+    df: pd.DataFrame,
+    overlays: list[tuple[str, HumanFibAnnotation]],
+) -> list[tuple[int, float, str, str]]:
+    """``(bar_index, price, label, color)`` for HTF anchor H/L points visible in ``df``.
+
+    Each higher-timeframe fib contributes its two anchors tagged ``H`` (higher price)
+    and ``L`` (lower price), placed at the **nearest bar to the anchor's own timestamp**
+    so the parent swing's high/low are visible in *time* (not just price) on the child
+    chart — the cue needed to nest a leg onto the same swing. Anchors whose timestamp
+    falls outside the chart's visible span are skipped to keep the focus on that swing.
+    Pure helper — no plotting.
+    """
+    if df.empty or not overlays:
+        return []
+    t0, t1 = df.index[0], df.index[-1]
+    markers: list[tuple[int, float, str, str]] = []
+    for htf, ann in overlays:
+        color = HTF_OVERLAY_COLORS.get(htf, "#9aa3b2")
+        high_first = ann.anchor_a.price >= ann.anchor_b.price
+        hi = ann.anchor_a if high_first else ann.anchor_b
+        lo = ann.anchor_b if high_first else ann.anchor_a
+        for anchor, role in ((hi, "H"), (lo, "L")):
+            ts = pd.to_datetime(anchor.time, utc=True)
+            if ts < t0 or ts > t1:
+                continue
+            idx = int(df.index.get_indexer([ts], method="nearest")[0])
+            markers.append((idx, float(anchor.price), f"{htf}·{role}", color))
+    return markers
+
+
+def overlays_in_view(
+    overlays: list[tuple[str, HumanFibAnnotation]],
+    view_start: pd.Timestamp,
+    view_end: pd.Timestamp,
+) -> list[tuple[str, HumanFibAnnotation]]:
+    """Overlays whose A→B span overlaps the visible time range ``[view_start, view_end]``.
+
+    Scopes the nesting-focus cycle to the parent swings actually on screen, so
+    stepping does not have to walk every HTF fib in the corpus. Pure helper.
+    """
+    out: list[tuple[str, HumanFibAnnotation]] = []
+    for htf, ann in overlays:
+        ta = pd.to_datetime(ann.anchor_a.time, utc=True)
+        tb = pd.to_datetime(ann.anchor_b.time, utc=True)
+        lo, hi = (ta, tb) if ta <= tb else (tb, ta)
+        if hi >= view_start and lo <= view_end:
+            out.append((htf, ann))
+    return out
+
+
+def cycle_focus_id(current_id: str | None, candidate_ids: list[str]) -> str | None:
+    """Advance the nesting focus through ``candidate_ids``: None → first → … → last → None.
+
+    ``None`` means "no focus" (show all overlays). If the current id is not among the
+    candidates (e.g. the view changed), start at the first candidate. Pure helper.
+    """
+    if not candidate_ids:
+        return None
+    if current_id is None or current_id not in candidate_ids:
+        return candidate_ids[0]
+    nxt = candidate_ids.index(current_id) + 1
+    return candidate_ids[nxt] if nxt < len(candidate_ids) else None
+
+
+def select_focused(
+    overlays: list[tuple[str, HumanFibAnnotation]],
+    focus_id: str | None,
+) -> list[tuple[str, HumanFibAnnotation]]:
+    """All overlays when ``focus_id`` is None, else only the parent fib with that id.
+
+    Focusing one parent swing removes the clutter of every HTF anchor at once so a
+    child leg can be nested onto a single swing. Pure helper.
+    """
+    if focus_id is None:
+        return overlays
+    return [(htf, ann) for htf, ann in overlays if ann.fib_id == focus_id]
+
+
+def filter_to_session(
+    overlays: list[tuple[str, HumanFibAnnotation]],
+    session_ids: set[str],
+    show_frozen: bool,
+) -> list[tuple[str, HumanFibAnnotation]]:
+    """Overlays drawn this session only, unless ``show_frozen`` keeps the whole corpus.
+
+    The default nesting view shows just the fibs the user is drawing now (their session),
+    so the frozen corpus does not clutter the child chart while building a nested set.
+    Pure helper.
+    """
+    if show_frozen:
+        return overlays
+    return [(htf, ann) for htf, ann in overlays if ann.fib_id in session_ids]
+
+
 def draw_htf_overlays(
     ax,
     df: pd.DataFrame,
@@ -110,7 +205,7 @@ def draw_htf_overlays(
     *,
     show: bool,
 ) -> None:
-    """Draw read-only HTF fib level lines (no picks, no drag targets)."""
+    """Draw read-only HTF fib level lines + parent anchor H/L markers (no drag targets)."""
     if not show or not overlays or df.empty:
         return
     label_x = len(df) - 1
@@ -134,4 +229,29 @@ def draw_htf_overlays(
             fontsize=7,
             alpha=0.75,
             zorder=2,
+        )
+    # Parent swing H/L anchors in time+price (hollow diamonds — distinct from the
+    # filled ^/v picks), only for anchors inside the visible window.
+    for idx, price, label, color in htf_anchor_markers(df, overlays):
+        ax.scatter(
+            [idx],
+            [price],
+            marker="D",
+            s=44,
+            facecolors="none",
+            edgecolors=color,
+            linewidths=1.1,
+            alpha=0.9,
+            zorder=3,
+        )
+        ax.text(
+            idx,
+            price,
+            f" {label}",
+            color=color,
+            fontsize=7,
+            alpha=0.95,
+            zorder=3,
+            va="bottom",
+            ha="left",
         )

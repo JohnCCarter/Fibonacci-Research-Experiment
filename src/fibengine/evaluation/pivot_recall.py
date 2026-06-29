@@ -10,7 +10,10 @@ Run:
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from datetime import UTC, datetime
+
+import pandas as pd
 
 from fibengine.core.config import REPO_ROOT, Settings, load_settings
 from fibengine.core.logging_conf import setup_logging
@@ -40,8 +43,14 @@ def evaluate_label_recall(
     settings: Settings,
     label: SwingLabel,
     tol_bars: int | None = None,
+    pivot_producer: Callable[[pd.DataFrame], list[Pivot]] | None = None,
 ) -> dict:
-    """Return pivot-recall metrics for one manual swing label."""
+    """Return pivot-recall metrics for one manual swing label.
+
+    ``pivot_producer`` injicerar kandidat-pivots (t.ex. en alternativ detektor som
+    trunkerar ramen kausalt). None → default ``detect_pivots`` (alla befintliga
+    anropare oförändrade).
+    """
     data_cfg = settings.data.model_copy(
         update={
             "exchange": label.exchange,
@@ -56,7 +65,11 @@ def evaluate_label_recall(
         pivot_df = load_candles(
             data_cfg.model_copy(update={"timeframe": endpoints.time_df_timeframe})
         )
-    pivots = detect_pivots(pivot_df, settings.pivots)
+    pivots = (
+        pivot_producer(pivot_df)
+        if pivot_producer is not None
+        else detect_pivots(pivot_df, settings.pivots)
+    )
     tol = tol_bars if tol_bars is not None else max(1, settings.pivots.lookback)
 
     if endpoints.skip_evaluation:

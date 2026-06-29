@@ -16,9 +16,17 @@ repos:
         entry: uv run python scripts/check_repo_bounds.py
         language: system
         pass_filenames: true
+      - id: wiki-lint
+        name: wiki lint (dead links / orphan pages)
+        entry: uv run python scripts/wiki_lint.py
+        language: system
+        pass_filenames: false
+        files: ^docs/research_wiki/.*\.md$
       - id: pytest
         name: pytest
         entry: uv run pytest -q
         language: system
         pass_filenames: false
-        always_run: true
+        # Run only when code/tests change; docs-only commits skip the full
+        # suite (CI still runs full pytest on push — the authoritative gate).
+        files: ^(src/|tests/).*\.py$

@@ -4,7 +4,8 @@ Copilot in this repo should behave as a **repo-aware coding agent**, not a gener
 
 ## Source of truth
 
-- [AGENTS.md](../AGENTS.md) — **constitution** (agents, subagents, workflow, guardrails)
+- [AGENTS.md](../AGENTS.md) — **constitution** (agents, subagents, workflow, guardrails); see its
+  **Agent epistemic principles** (research easy / authority hard; validity over convenience)
 - [docs/research_wiki/reference/source-authority.md](../docs/research_wiki/reference/source-authority.md) — when wiki and evidence disagree, **source wins**
 - [docs/agent/AGENT_RESPONSE_STYLE.md](../docs/agent/AGENT_RESPONSE_STYLE.md) — compact replies unless user asks for depth
 - [docs/research_wiki/index.md](../docs/research_wiki/index.md) — research context map

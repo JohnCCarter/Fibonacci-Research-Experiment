@@ -41,14 +41,16 @@ When sources disagree:
 - Stale counts and claims surviving in the wiki after a reset (see the BTC
   monthly-first reset: prior 1w/1d/4h labels were archived, not current).
 - Machine candidates hardening into "facts" by repetition.
-- Local tool config, caches, or scratch output (`.claude/`, `.venv/`, `.env`,
+- Local tool config, caches, or scratch output (`.claude/settings.local.json`, `.venv/`, `.env`,
   `._*.png`, debug logs) leaking into wiki memory or source truth. These are
   local-only and are kept out of git (`.gitignore`,
-  [check_repo_bounds.py](../../../scripts/check_repo_bounds.py)).
+  [check_repo_bounds.py](../../../scripts/check_repo_bounds.py)). Note: `.claude/`'s shared parts
+  (`commands/`, `hooks/`, `settings.json`) **are** versioned-portable — only `settings.local.json`
+  is machine-local.
 
 ## Enforcement
 
 - [check_repo_bounds.py](../../../scripts/check_repo_bounds.py) fails CI if a
   required wiki/schema file is missing or a local/private artifact is tracked.
-- [AGENTS.md](../../../AGENTS.md) §6 and
+- [AGENTS.md](../../../AGENTS.md) §2 (source authority) + §3 (maintenance) and
   [CLAUDE.md](../../../CLAUDE.md) carry the short version of this rule.
