@@ -44,8 +44,23 @@ data saturated / HTF starved, signal living in the modest 4h `cleanliness` lead.
 **step 2 (descriptive level-reads)** rather than more selection features. Cohort v2 (`ed98dc4`) stays
 drawn but **unused** (prediction-disqualified); `RESOLUTION_TIMEFRAME` 1M→1w no longer on the path.
 
+**2026-06-29: #38 daily wick-pair anchor accuracy tested → `wick_pair_no_better` (awaiting sign-off).**
+The **strong-form** rejection-wick premise (anchors sit on ≥50%-wick candles) is **not supported** at
+`wick_frac=0.5` a priori: coverage 0.08 vs control 0.90, despite the selector picking a pair in 44/71
+cases (dominant-wick pivots sit at *different* bars than the human's anchors). **#31's fractal line
+stays the candidate.** The **rank-form** question (does wick geometry help *rank* candidates?) is
+**left open** — `agreement` was uninformative (floor for both arms) — for a *separately-registered*
+`wick_frac` sweep (not a rescue). Does **not** reopen the closed per-leg-feature line. [log.md](log.md) top.
+
 ## Recent Changes
 
+- **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (awaiting sign-off).** Pre-reg
+  [locked 2026-06-29](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md) (selector-only,
+  addendum A1). New [`strategies/chamoun_daily_wick_pair.py`](../../src/fibengine/strategies/chamoun_daily_wick_pair.py)
+  + run harness [`research/chamoun_wick_pair_accuracy.py`](../../src/fibengine/research/chamoun_wick_pair_accuracy.py)
+  (+`pivot_recall` producer-injection, +4 tests). Result (N=71): coverage 0.08 vs control 0.90 →
+  **`wick_pair_no_better`**; #31 stays the candidate. Gates green (623 pytest, 74% cov, ruff, bounds).
+  [log.md](log.md) top.
 - **2026-06-26 Nesting REFRAME + two nulls.** Within-TF (not cross-TF) impulse-leg decomposition (facit);
   cross-TF 1w→1d [`no_parent_context_signal`](reviews/btc-fib-nesting-prediction-prereg-1w1d-20260626.md) (N=9) +
   [`impulse_leg`](reviews/btc-fib-impulse-leg-feature-prereg-20260626.md) 4h **clean POWERED null** (CI [−0.032,+0.027]); per-leg line closed; HTF data-starved. [log.md](log.md).
@@ -269,16 +284,7 @@ not have the current working tree.
 
 ### On the new machine
 
-**Bash:**
 ```bash
-git pull
-uv sync --extra dev
-uv run pytest -q
-uv run python scripts/check_repo_bounds.py
-```
-
-**PowerShell:**
-```powershell
 git pull
 uv sync --extra dev
 uv run pytest -q
@@ -331,41 +337,15 @@ Expected: 1M/1w/1d/4h pass; 1h FAIL (cache not fetched yet — deferred).
 
 ### Optional: restore local review artifacts
 
-`experiments/review/` is gitignored. The completed 1M review packages can be
-restored from the ZIP if you want the charts and CSV files locally:
-
-**Bash:**
-```bash
-unzip btc-1m-reaction-review-artifacts-20260611.zip -d .
-```
-
-**PowerShell:**
-```powershell
-Expand-Archive -Path btc-1m-reaction-review-artifacts-20260611.zip -DestinationPath .
-```
-
-This is **optional**. The committed repo files (`fib_*.json`, `review_windows.yaml`,
-`btc-1m-reaction-review-cycle-20260611.md`) remain the source of truth.
-Artifacts under `experiments/review/` are local convenience files only.
+`experiments/review/` is gitignored (regenerable charts/CSVs). The completed 1M packages can
+be restored locally from `btc-1m-reaction-review-artifacts-20260611.zip` (`unzip … -d .`) if
+wanted — **optional**; committed `fib_*.json` + `review_windows.yaml` are the source of truth.
 
 ### Windows / Symantec SEP note
 
-Plain `uv run` triggers a full `.venv` rebuild scan on each invocation when
-Symantec Auto-Protect is active. Mitigate:
-
-- Prefer `uv run --no-sync` for all run commands after the initial `uv sync`.
-- Set `PYTHONDONTWRITEBYTECODE=1` (user-scope env var) to suppress `.pyc`
-  generation and reduce scan surface.
-
-**PowerShell — set env var for current session:**
-```powershell
-$env:PYTHONDONTWRITEBYTECODE = "1"
-```
-
-**PowerShell — set permanently (user scope):**
-```powershell
-[System.Environment]::SetEnvironmentVariable("PYTHONDONTWRITEBYTECODE", "1", "User")
-```
+Use `uv run --no-sync` after the initial `uv sync` and set `PYTHONDONTWRITEBYTECODE=1`
+(user-scope) to cut SEP scan surface. Full SONAR / Auto-Protect discipline + the env-var
+commands: [CLAUDE.md](../../CLAUDE.md) Gotchas.
 
 ### Resume point
 

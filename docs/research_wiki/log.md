@@ -16,6 +16,84 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-29] maintenance | `.claude/` portability + locked-prereg guard + command source flip
+
+Tooling/process work (no research-code or conclusion change). Three coupled changes:
+
+1. **`.claude/` is now versioned-portable.** The blanket `.claude/` gitignore + `POLLUTION_GLOBS`
+   entry were narrowed to **`.claude/settings.local.json`** only; shared parts (`commands/`, `hooks/`,
+   `settings.json`) travel via git across machines (home/work/web). Stale machine-perms were dropped,
+   not migrated. Updated: `.gitignore`, [`check_repo_bounds.py`](../../scripts/check_repo_bounds.py)
+   (`POLLUTION_GLOBS`), [CLAUDE.md](../../CLAUDE.md), [AGENTS.md](../../AGENTS.md) §2 table,
+   [source-authority.md](reference/source-authority.md), [layout-policy](../../repository-layout-policy.md) §2.
+2. **Locked pre-registration discipline + guard.** On human sign-off a prereg gets the
+   `<!-- prereg:locked -->` sentinel and becomes immutable; all post-lock material moves to a
+   `*-postlock.md` sibling. A `PreToolUse` hook
+   ([`.claude/hooks/guard-locked-prereg.sh`](../../.claude/hooks/guard-locked-prereg.sh), perl/JSON::PP,
+   Git-Bash → SONAR-safe) **asks** before any Edit/Write to a sentinel-bearing file (fail-open if
+   unlocked, fail-closed on grep error). Registered in `.claude/settings.json` (`shell:"bash"`).
+   Carried as a binding rule in AGENTS.md *Research easy, authority hard*. First applied to the #38
+   prereg (split into `…-prereg-20260629.md` + `…-postlock.md`). Note: a mid-session hook is inactive
+   until the next Claude Code restart.
+3. **Command playbooks: source-of-truth flipped to `.claude/commands/`.** The 2026-06-22 decision
+   placed playbooks in `docs/agent/commands/` *because* `.claude/` was local-only; with `.claude/` now
+   portable that premise is **superseded**. The 4 duplicate `.md` were removed from
+   `docs/agent/commands/` (kept: README as pointer), `chamoun-fib-style-distiller.md` moved into
+   `.claude/commands/`, and the `cp`-mirror ceremony retired. Decision doc carries a SUPERSEDED banner;
+   `index.md` updated.
+
+**Pre-existing, NOT fixed here (flag):** [layout-policy](../../repository-layout-policy.md) §6 size
+table has drifted from `check_repo_bounds.py` (e.g. log.md 500/28K in policy vs 1500/120K in code) —
+separate source-wins cleanup. `handoff.md` is also 415 lines (>400 cap) — pre-existing breach.
+
+## [2026-06-29] review | #38 daily wick-pair anchor accuracy — clean NULL (awaiting sign-off)
+
+Pre-reg [locked 2026-06-29](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md) (build scope =
+A/B **selector** only, post-lock addendum A1; eval-infra diff in A2). Question: does a daily
+**wick-pair** A/B selector recover the human's `anchor_a`/`anchor_b` **at least as well** as the
+existing pivot control? Descriptive only — **no edge/OOS/PnL claim**; small-N (N=71) reported.
+
+**Result (`experiments/results/chamoun_wick_pair_accuracy.jsonl`, wick_frac=0.5 a priori, k=3, N=71):**
+
+| metric | control (pivot) | wick-pair |
+|---|---|---|
+| coverage `both_hit` | **0.90** | **0.08** |
+| mean agreement | 0.078 | 0.006 |
+| pairs selected | 32/71 | 44/71 |
+
+→ **`wick_pair_no_better`** (locked decision rule, one-shot, no redefinition). Coverage **and**
+agreement are far below the control, so the wick-pair detection philosophy is **not justified on
+daily**; **#31's fractal line remains the candidate** anchor-detection approach. The selector +
+candidate universe live in [`strategies/chamoun_daily_wick_pair.py`](../../src/fibengine/strategies/chamoun_daily_wick_pair.py);
+the run harness in [`research/chamoun_wick_pair_accuracy.py`](../../src/fibengine/research/chamoun_wick_pair_accuracy.py).
+
+**Why it failed (honest read):** the wick universe is **not** sparse — the selector picked a pair in
+**44/71** cases, yet coverage is 0.08. So the dominant-wick pivots sit at **different bars** than the
+human's anchors ("detector found nothing" is ruled out). The `wick_frac=0.5` filter requires the
+swing extreme to sit on a candle whose rejection wick is ≥ half the range; the human's daily anchors
+are mostly **not** such candles. The sonde's earlier "94% on the wick extreme" meant the price sits
+on bar high/low (tool snap), **not** that the candle has a long wick.
+
+**What is falsified (scope — calibrated):** this cleanly falsifies the **strong form** — *"the
+human's daily anchors sit on ≥50%-range rejection-wick candles"* — at the a-priori threshold. It says
+**little about the weak/rank form** (*"wick geometry helps rank among candidates"*): `agreement` is
+floor-level for **both** arms (control's `select_swing` is non-localized), and a coverage gate
+structurally favors the 811-pivot control over any restrictive filter. Rank-form **left open** for a
+separately-registered `wick_frac` sweep.
+
+**Honesty caveats (binding):**
+- `wick_frac=0.5` set **a priori**, **not** re-tuned against facit (that would be redefinition). The
+  sensitivity sweep is a *separate, newly-registered* probe, not a rescue.
+- `agreement` near-floor for **both** arms (control mean 0.078, median 0.0) → **coverage is the
+  meaningful discriminator**, and it is unambiguous (0.90 vs 0.08).
+- **Locked baselines not fully run** (prereg addendum A4): control ran in **window mode only**;
+  `fractal` mode + the **trivial floor** were **not** executed. Moot for a null (wick lost to the
+  *more-permissive* window control; floor only contextualizes a positive) — **required before any
+  positive claim**. Flagged, not silently omitted.
+- Daily is data-thin (N=71); descriptive accuracy, not a powered/OOS claim.
+
+**Status:** run output — **awaiting human sign-off** before it becomes "truth" (per the locked gate).
+
 ## [2026-06-26] review | Nesting REFRAME (within-TF, not cross-TF) + two honest nulls
 
 Session headline is **not** a feature win — it is a **corrected model of how the human selects**:
