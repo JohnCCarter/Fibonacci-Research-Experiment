@@ -16,6 +16,22 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-29] decision | LOCK leg-agreement ruler prereg (north-star step 1 measurement)
+
+Locked the **measurement instrument** for "does X improve human-like leg selection vs facit" — the
+free facit-checker the selection campaign lacked (in #38 `agreement` floored for both arms;
+`compare_label`/`select_swing` not localized to the facit leg). **Ruler only**; the learned selector
+is a separate later prereg. Knobs fixed by selector-independent **pre-lock calibration** (not guessed):
+`leg_agreement = mean(s_high, s_low)`, `s = max(0, 1 − Δbar/W)`, absolute **W=2**, direction-gated.
+Calibration (`scratchpad/calibrate_leg_agreement_ruler.py`, seed 20260629; 365 4h facit legs, 7215
+fractal pivots): inter-pivot spacing median **2.0 bars** → W must stay below it; **W=5 rejected**
+despite higher AUC (neighbour-matching leniency); at the spacing-safe W=2 only `mean` clears
+**AUC(ceiling vs null) ≥ 0.90** (0.968). Gate rests on [synthetic sanity] + [ceiling-vs-null AUC];
+reference selector = descriptive colour only (resolves the ruler-broken-vs-selector-bad confound).
+Build of `evaluation/leg_agreement.py` authorized under the lock — descriptive, step-1, no edge/OOS.
+[Prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md) /
+[postlock](reviews/btc-fib-leg-agreement-ruler-prereg-20260629-postlock.md).
+
 ## [2026-06-29] maintenance | `.claude/` portability + locked-prereg guard + command source flip
 
 Tooling/process work (no research-code or conclusion change). Three coupled changes:
