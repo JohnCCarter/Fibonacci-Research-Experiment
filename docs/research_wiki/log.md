@@ -16,6 +16,22 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-30] maintenance | owner interview — preferences captured + `/owner-interview` command
+
+Ran a button-driven owner interview (no research-code/conclusion change). Two coupled additions:
+**(1)** new versioned command [`/owner-interview`](../../.claude/commands/owner-interview.md) — the
+shared interview script adapted to this repo (`[[…]]` → markdown links, persist target = git-synced
+wiki, wiki-lint orphan-awareness, guardrail that working-style never overrides
+[AGENTS.md](../../AGENTS.md)/validity). **(2)** new synced page
+[owner-preferences.md](owner-preferences.md), linked from [index.md](index.md).
+
+Changes vs prior run: tech-pull broadened (+ Architecture/AI); success sharpened to **live
+Trader-agent only**; "frontend" redefined as the **labeling tool** (his real fib-drawing surface),
+not a separate app; *teach-me-as-we-go* added; **all four** frictions checked (bottleneck · too much
+text · things-break · unclear-what-changed) → run autonomously but always leave a short readable trail
+of what changed + that gates are green. Forks: recommendation-first + `AskUserQuestion`, **no
+shortcuts** (simple path only if significantly more value).
+
 ## [2026-06-29] decision | LOCK leg-agreement ruler prereg (north-star step 1 measurement)
 
 Locked the **measurement instrument** for "does X improve human-like leg selection vs facit" — the

@@ -19,6 +19,8 @@ disagree, the source wins — see [source-authority.md](reference/source-authori
   evidence and wiki disagree.
 - [Log](log.md) — append-only trail of ingests, decisions, reviews, questions.
 - [Current handoff](handoff.md) — current working context and next action.
+- [Owner preferences](owner-preferences.md) — who the owner is + how he wants to be worked with
+  (git-synced; refreshed by [`/owner-interview`](../../.claude/commands/owner-interview.md)).
 - [Glossary](glossary.md) — compact definitions and links.
 
 ## Schema And Concepts
