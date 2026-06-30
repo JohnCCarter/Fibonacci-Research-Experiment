@@ -4,7 +4,8 @@
 # model-discretion invocation of /pre-compact-checkpoint proved unreliable (docs/research_wiki/log.md
 # 2026-06-30).
 #
-# Thresholds = WINDOW_TOKENS * each PCT / 100. Default PCTS="25 35" of a 1M window (250k, 350k). Each
+# Thresholds = WINDOW_TOKENS * each PCT / 100. PCTS="35 40" of a 1M window (350k save-point, 400k
+# MUST-compact). The fired ping is RELAYED to Chamoun by the agent (a hook can't post to his chat). Each
 # threshold pings AT MOST ONCE per session; a jump past several at once pings only the highest (no
 # double-nag). A /compact or /clear (detected as a big ctx drop vs the last turn) RE-ARMS the pings so
 # they fire again in the same session. Tune PCTS / WINDOW_TOKENS below (lower on a smaller-window model). The
@@ -16,7 +17,7 @@
 
 set -o pipefail
 WINDOW_TOKENS=1000000
-PCTS="25 35"               # sweet-spot reminders, % of the window; each fires once per session
+PCTS="35 40"               # Chamoun's thresholds: 350k save-point, 400k = MUST-compact (% of 1M); fire once each/session
 
 input=$(cat)
 
@@ -76,12 +77,20 @@ for pct in $PCTS; do
 done
 
 pct_now=$(( ctx * 100 / WINDOW_TOKENS ))
+if [ "$fire" -ge 40 ] 2>/dev/null; then
 cat <<MSG
-[checkpoint reminder] Context is ~${pct_now}% of a 1M window (${ctx} tokens) — past the ${fire}% sweet spot.
-Run /pre-compact-checkpoint now (full steps in .claude/skills/pre-compact-checkpoint/SKILL.md) —
-emit the six sections and refresh docs/research_wiki/handoff.md, leaving the tree green:
-  - Observed / Inferred / Unverified
-  - Repo state (branch . HEAD . gates) . User constraints . Next smallest safe step
-Reminders fire at ${PCTS// /%, }% of the window, once each per session.
+[COMPACT NOW — RELAY TO CHAMOUN] Context is ~${pct_now}% of a 1M window (${ctx} tokens) — past the 400k
+hard ceiling Chamoun set. ACTION: (1) make us compact-safe — refresh docs/research_wiki/handoff.md (the six
+sections), commit, leave the tree green; (2) in your reply, tell Chamoun IN PLAIN TEXT that we hit 400k and
+it is time to run /compact (compaction now required). A hook cannot run /compact — only Chamoun can; your
+job is to make it safe and say so to him.
 MSG
+else
+cat <<MSG
+[checkpoint reminder — RELAY TO CHAMOUN] Context is ~${pct_now}% of a 1M window (${ctx} tokens) — past the
+350k save-point Chamoun set. ACTION: (1) save state — refresh docs/research_wiki/handoff.md (six sections:
+Observed/Inferred/Unverified . repo state . constraints . next step), commit, gates green; (2) in your
+reply, tell Chamoun the 350k checkpoint fired and state is saved. Next ping at 400k = mandatory compact.
+MSG
+fi
 exit 0

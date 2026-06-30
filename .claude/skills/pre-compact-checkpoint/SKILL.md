@@ -41,14 +41,15 @@ band and is **invisible in `/context`**. A focused 600k session holds the thread
 The fix is the checkpoint's own job: restating the salient state **last** (so recency works *for* you)
 and keeping superseded material out of the window (`archive/`, `.rgignore`, no broad reads).
 
-### 2. Capacity — the hook pings at the sweet spots (~25%, ~35%)
+### 2. Capacity — the hook pings at 350k (save) and 400k (MUST compact)
 A `UserPromptSubmit` hook ([`pre-compact-checkpoint.sh`](../../hooks/pre-compact-checkpoint.sh)) reads
 the transcript's latest usage (`input + cache_read + cache_creation` = real tokens sent — the figure
-`/context` shows) and **auto-injects a reminder when context crosses ~25% and again at ~35% of a 1M
-window (250k / 350k)** — the sweet spots to checkpoint *in time*, before drift/compaction lose detail.
-Each threshold fires **once per session** (a jump past both pings only the higher) — but a `/compact`
-or `/clear` **re-arms** them (the hook detects the context drop), so the sweet spots ping again after a
-compact in the same session. It is a reminder only — it never invokes this skill, so you still run it.
+`/context` shows) and **auto-injects a reminder at 350k (35%) = save-point, and again at 400k (40%) =
+mandatory compact** (Chamoun's thresholds, 2026-06-30). The fired ping is **relayed to Chamoun by the
+agent in its reply** (a hook can't post to his chat). At 400k: make the tree compact-safe, then tell him
+to run `/compact` (only he can). Each threshold fires **once per session** (a jump past both pings only
+the higher) — but a `/compact` or `/clear` **re-arms** them, so they ping again after a compact in the
+same session. It is a reminder only — it never invokes this skill, so you still run it.
 Tune the `PCTS` / `WINDOW_TOKENS` constants in the script (lower `WINDOW_TOKENS` on a smaller-window
 model; reason in **%**, not absolute tokens).
 
