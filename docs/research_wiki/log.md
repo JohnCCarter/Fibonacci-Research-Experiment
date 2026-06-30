@@ -16,6 +16,36 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-30] decision | GROW-FACIT 4h — +6 source fibs via screenshot transcription (1 dropped, 1 nudged)
+
+North-star grow-facit on **4h** (the only powered cell), per the 2026-06-30 direction set in
+[handoff.md](handoff.md). Chamoun supplied 8 cropped 4h TradingView screenshots, then 5 full-view
+re-shots when price-only `n_within_near` snapping proved ambiguous on the cropped set. Flow: read anchor
+prices off the on-chart labels (obscured top anchors reconstructed via log-interpolation from the
+visible levels, then snapped to the candle extreme) →
+[`fib_transcribe`](../../src/fibengine/labeling/fib_transcribe.py) candidates in
+`data/labels/candidates/bitfinex/BTC-USD/4h/` → human review+promote via
+[`--review-candidate`](../../src/fibengine/labeling/tool.py) `w`.
+
+**Result: 4h facit 365 → 371 (+6).** Promoted ids `20240223T120000` (50,227→73,666), `20240501T160000`
+(56,711→65,628), `20251006T160000` (103,332→126,110, all-time-high top, `n_within_near=1`),
+`20251102T120000` (99,129→111,360), `20260114T200000` (60,060→97,850), `20260202T160000`
+(60,100→79,408). All `created_by=human`, `source=manual_screenshot_transcription_reviewed`.
+
+**Two review-step saves (why the human gate matters):** (1) candidate **C** (~108,100/66,880, 2024-11→12,
+`n_within_near=38`) was **dropped** — too ambiguous to confirm against the drawing; its candidate removed
+so the set matches facit. (2) candidate **E** snapped the low to 2024-05-01 **12:00**; Chamoun **nudged**
+it to **16:00** at review (the near=23 heuristic bar was one candle off). The full-view re-shots also
+corrected a transcription error the cropped guess made (a swing first placed in 2026 is really **Feb–Mar
+2024**), and replaced a reconstructed ~122,670 top with the true all-time-high **126,110**.
+
+**Discipline:** frozen 4h cache (no `data.fetch --refresh`; every anchor is a historical extreme
+2024-05→2026-02, none in the live ~63k tail). Transcription is an ingestion aid, **never** auto-fib —
+the human supplies both prices and confirms every bar; the tool refuses `human_fib/` writes. 6
+pre-review candidates kept as audit trail (E's is the pre-nudge 12:00 version). Gates green
+(ruff/format/bounds/wiki-lint; pytest skipped — no `*.py` changed). Screenshots stayed in-chat (not
+committed); provenance rests on each candidate's `_transcription` audit block.
+
 ## [2026-06-30] decision | checkpoint reminder hook wired — early ~25% ping (UserPromptSubmit)
 
 Resolves the `ACTION for another agent` below (thread-health drift / invocation gap, same date). Built

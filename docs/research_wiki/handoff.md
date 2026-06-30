@@ -22,7 +22,7 @@ append-only trail lives in [log.md](log.md).
 | 1 | **1M** | **Complete** — 9× source fibs, 1D + 4H reaction review approved (2026-06-11) |
 | 2 | **1W** | **Complete** — 21× source fibs verified; combined map + per-fib 4H zoom (2026-06-11) |
 | 3 | **1D** | **Complete** — 67× source fibs + 4H reaction-review (2026-06-12); 1816 events, 90-day window |
-| 4 | **4H** | **Complete** — 365 active source fibs (366 drawn; 1 superseded 20250506 dedup) |
+| 4 | **4H** | **Complete** — 371 active source fibs (365 + 6 grow-facit 2024–2026; 1 superseded 20250506 dedup) |
 | 5 | 1H | Deferred — 1h cache not fetched yet |
 
 **ETH/USD:** blocked until BTC protocol approved.
@@ -56,15 +56,16 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
 
 ## Recent Changes
 
+- **2026-06-30 GROW-FACIT (screenshot transcription → facit).** Daily 2025–26 gap filled (5 fibs) **and**
+  4h **+6** (365 → **371**): `fib_transcribe` candidates → human-reviewed via
+  [`--review-candidate`](../../src/fibengine/labeling/tool.py) (`created_by=human`,
+  `source=manual_screenshot_transcription_reviewed`); 4h **C dropped** (near=38), **E nudged** 12:00→16:00.
+  Frozen cache (anchors historical). Full detail [log.md](log.md) top.
+
 - **2026-06-30 Checkpoint reminder hook wired** — `UserPromptSubmit` hook auto-pings once at ~25%
   context (the in-time sweet spot); model-discretion invocation was unreliable, `PreCompact` rejected as
   too late. [log.md](log.md) top.
 
-- **2026-06-30 GROW-FACIT started — daily 2025–26 gap filled.** 5 source fibs transcribed from the
-  2026-06-29 chamoun TradingView screenshots, human-reviewed to facit via labeling-tool
-  [`--review-candidate`](../../src/fibengine/labeling/tool.py) (`created_by=human`,
-  `source=manual_screenshot_transcription_reviewed`); ids `20251006, 20251027, 20251111, 20260114,
-  20260601`. North-star grow-facit bridge now live. [log.md](log.md) top.
 - **2026-06-29 Leg-agreement RULER — built + SIGNED OFF (north-star step-1 measurement instrument).**
   The free facit-checker the selection campaign lacked (#38 `agreement` floored: `compare_label`/
   `select_swing` not localized to the facit leg). [Locked prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md)
@@ -100,10 +101,7 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
   [Main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md).
 
 - **2026-06-22 Fib SELECTION-LEARNING W-gap study — BUILT + module split, RUN PENDING (home).** Commit 2 of side-quest #1, built to the [W-gap LOCK](reviews/btc-fib-selection-learning-w-gap-lock-20260622.md) (`4f47d8e`): `gap(k)=AP(retro-W)−AP(live-k)` on identical rows, embargo=W, L5 verdict. New `research/selection_learning_gap.py` (+5 tests); W-gap code split out to keep `selection_learning.py` under the §6 size cap (was 995 lines); flushed-stderr `_progress` logging in `build_candidates`+`build_retro_features` so a long run is never blind (result-neutral). **Run NOT executed** — inherent ~2-3h per-endpoint-detect cost on the ~20k-bar 4h frame (leakage-bearing truncation, no legal shortcut); to run at home (see Next tracks). No gap results, no verdict. Commit `884d4c0`, gates green (pytest 549, cov 75%).
-- **2026-06-18 Fib SELECTION-LEARNING 4h slices (`ea6c2ea`) — Stage-2 headline + prominence-family `survives_prominence_family` + k-sweep `k_stable_live_selection_signal` + §12 addendum.** Modest single-feature `cleanliness` lead; 4h-only powered; low AP (0.057–0.066 vs 0.83 ceiling); not a reproduction; 1M/1w/1d underpowered. Full detail: Status section below + [results](reviews/btc-fib-selection-learning-results-20260618.md).
-- **2026-06-17 NEW LINE pre-registered — Fib SELECTION-LEARNING (docs-only, gated).** Different question from the closed behaviour/B-1 nulls: *can a model reproduce how the human selects swings/ranges* (labels as facit, **no edge/backtest/Genesis**). Stage 2 leg/range gestalt (5 components) = target, Stage 1 per-pivot = diagnostic; live-equivalent vs **bounded** retrospective viewport → causal-availability gap; binding feature-provenance rule; one primary cell + coverage ceiling. Two-step gate. [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md).
-- **2026-06-17 B-1 horizontal-structure study — BUILT + RUN → NULL (closed).** SENARE-1 e-value (conditional 2×2 safe test) + 3-subject harness (swing/round/prior-extreme vs matched random-walk null), all pins locked pre-run. `any_robust=False` on all 12 cells; only swing edges the null (e=1.70 — not even marginal; e-Holm needed E≈240 → low power). Generic structure not special vs a random walk; §10 sanity-check not run. Commits `474f320`→`44e63fa`. [Results](reviews/btc-horizontal-structure-event-study-results-20260617.md).
-- **2026-06-17 External-pattern-scan absorption — landed on `main`** (PR #33→main; #34 sec cryptography→49.0.0). Standing [prereg addendum](reviews/horizontal-structure-prereg-addendum-20260617.md) (RW control / anytime-valid re-looks / purged-CV embargo) + code (synthetic RW baseline, `--by-uncertainty` worklist, fail-closed swing-label validation). No facit/signal/auto-fib touch.
+- **2026-06-17/06-18 changes — archived** (lean; all in [log.md](log.md) + Status below): SELECTION-LEARNING prereg + 4h slices; B-1 horizontal-structure **NULL/CLOSED**; external-pattern-scan on `main`.
 - **Earlier 2026-06-15/06-16 changes — archived** (kept lean for the 400-line bound): behaviour +
   context studies **NULL/CLOSED** (`f4e96f1`); Fib→Genesis V2 Phase 2 + 2.5 nullability **PASS/CLOSED**
   (`68dc006`); MTF confluence CP1–CP3 **CLOSED** (geometry, not edge); #32 tooling DONE + `20171228`
@@ -215,9 +213,8 @@ branches in `selection_learning.py:118-142` (currently uncovered — see audit).
 - `data/labels/human_fib/bitfinex/BTC-USD/1w/` — **21** base `fib_*.json` (log scale).
 - `data/labels/human_fib/bitfinex/BTC-USD/1d/` — **67** base `fib_*.json` (log scale);
   source-facit complete, verified 2026-06-11.
-- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **365** active base `fib_*.json` (log scale;
-  366 drawn 2026-06-12, 1 superseded via 20250506 dedup 2026-06-15). Coverage 2017-01-05 →
-  2026-06-05.
+- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **371** active base `fib_*.json` (log scale; 365 + 6
+  grow-facit 2026-06-30; 1 superseded 20250506 dedup). Coverage 2017-01-05 → 2026-06-05.
 - `experiments/review/weekly_source_fib_map/` and `…/weekly_source_fib_zoom/` —
   generated charts (gitignored; regenerate via the two new CLIs).
 - `data/raw/bitfinex/BTC-USD/1M/limit_500.csv` — 115 bars (2016-12 .. 2026-06),
