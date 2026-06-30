@@ -16,6 +16,22 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-30] decision | labeling tool: `--review-candidate` promote mode (transcription → facit)
+
+Built the missing candidate→facit promote path so screenshot-transcribed daily fibs can become
+human-reviewed facit. New `--review-candidate <path>` mode in
+[`labeling/tool.py`](../../src/fibengine/labeling/tool.py) reuses the `--edit-fib-id` single-fib
+machinery: loads a candidate's anchors (read-only), shows a scrutiny banner flagging the guessed
+bars (`n_within_near>1`) / `near` matches, and on `w` saves to `human_fib` as facit. **Provenance is
+preserved, not erased** (leakage-validity review): selection is human → `created_by="human"`, but
+`source="manual_screenshot_transcription_reviewed"` records the method (still contains `"manual"` so
+the source-fib-map guards accept it; avoids the `candidate`/`auto`/`inferred` forbidden tokens). The
+candidate JSON (with `_transcription` audit incl. `n_within_near`) travels via git. Overwrite of an
+existing facit needs a second `w` (confirm guard). Fail-closed: refuses non-candidate files. +7 tests
+([`test_review_candidate_mode.py`](../../tests/labeling/test_review_candidate_mode.py)). Gates green
+(669 pytest, 74% cov). Drives north-star **grow-facit**: daily facit had **no** 2025–26 fibs; the two
+2026-06-29 chamoun screenshots fill that gap (5 candidates transcribed, all anchor-prices exact).
+
 ## [2026-06-30] maintenance | new `pre-compact-checkpoint` skill (adapted to this repo)
 
 Added skill [`.claude/skills/pre-compact-checkpoint/SKILL.md`](../../.claude/skills/pre-compact-checkpoint/SKILL.md)

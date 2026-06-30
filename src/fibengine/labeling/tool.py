@@ -43,7 +43,9 @@ Hover: crosshair price (mouse Y) + bar OHLC readout. See docs/labeling/LABELING_
 from __future__ import annotations
 
 import argparse
+import json
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -63,7 +65,9 @@ from fibengine.labeling.htf_fib_overlay import (
 from fibengine.labeling.human_fib import (
     HumanFibAnnotation,
     anchors_from_picks,
+    annotation_path,
     find_annotation,
+    load_annotation,
     make_annotation,
     save_annotation,
 )
@@ -290,6 +294,18 @@ def _parse_args() -> argparse.Namespace:
             "Read-only on load — nothing is saved unless you press 'w'."
         ),
     )
+    parser.add_argument(
+        "--review-candidate",
+        dest="review_candidate",
+        default=None,
+        help=(
+            "Promote a screenshot-transcription candidate JSON: preload its anchors for "
+            "visual review against the chart; press 'w' to save to human_fib as facit "
+            "(created_by=human, source=manual_screenshot_transcription_reviewed). The "
+            "candidate's market + scale are read from the file. Mutually exclusive with "
+            "--edit-fib-id. Refuses non-candidate files. Nothing saved unless you press 'w'."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -306,6 +322,56 @@ def _window_from_anchors(
     lo, hi = min(ta, tb), max(ta, tb)
     pad = max(hi - lo, pd.Timedelta(days=min_pad_days))
     return lo - pad, hi + pad
+
+
+def _load_candidate_for_review(path: Path) -> tuple[HumanFibAnnotation, dict]:
+    """Load a transcription candidate for review-and-promote (read-only).
+
+    Returns the facit-shaped annotation plus its ``_transcription`` audit block so the
+    caller can surface guessed/near anchors for scrutiny. Fail-closed: refuses anything
+    that is not a candidate, so this mode can never silently re-save existing facit.
+    """
+    if not path.exists():
+        raise SystemExit(f"--review-candidate: file not found: {path}")
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise SystemExit(f"--review-candidate: cannot read {path}: {exc}") from exc
+    if not raw.get("_candidate"):
+        raise SystemExit(
+            f"--review-candidate: {path} is not a candidate (missing _candidate flag). "
+            "Use --edit-fib-id to edit saved facit."
+        )
+    ann = load_annotation(path)  # tolerates the extra _candidate / _transcription keys
+    return ann, raw.get("_transcription", {})
+
+
+def _print_review_candidate_banner(ann: HumanFibAnnotation, audit: dict) -> None:
+    """Tell the reviewer what to scrutinise before promoting (press 'w').
+
+    The transcription recovers the *bar* heuristically when an anchor price repeats on
+    several candles (``n_within_near > 1``) or only matches *near* a candle extreme — those
+    are exactly the bars a human must confirm before the candidate becomes facit.
+    """
+    conf = audit.get("confidence", "?")
+    print(
+        f"Review-candidate mode: {ann.fib_id} ({ann.direction}) — anchors preloaded "
+        f"(transcription confidence: {conf}).\n"
+        "  Verify against the screenshot, nudge a bar if wrong, then 'w' to PROMOTE to "
+        "human_fib (facit; source=manual_screenshot_transcription_reviewed).\n"
+        "  Nothing is saved unless you press 'w'."
+    )
+    for m in audit.get("matches", []):
+        if m.get("n_within_near", 1) > 1:
+            print(
+                f"  ! {m.get('role')} {m.get('price')}: price repeats on "
+                f"{m.get('n_within_near')} bars — BAR WAS GUESSED, verify x-position."
+            )
+        elif m.get("confidence") != "exact":
+            print(
+                f"  ! {m.get('role')} {m.get('price')}: {m.get('confidence')} match "
+                f"(delta={m.get('rel_delta')}) — verify the price/bar."
+            )
 
 
 def _view_time_range(df: pd.DataFrame, x0: float, x1: float) -> tuple[pd.Timestamp, pd.Timestamp]:
@@ -409,7 +475,12 @@ class LabelWorkspace:
     # session_fib_ids persists across TF switches so a 1M draw stays visible on 1w/1d.
     session_fib_ids: set[str] = field(default_factory=set)
     show_frozen_overlays: bool = False
+    # Review-candidate promote mode: when set, 'w' saves with this source (provenance: the
+    # fib was transcribed from a screenshot then human-reviewed) instead of the default
+    # manual_labeling_tool, and overwriting an existing facit needs a second 'w' to confirm.
+    promote_source: str | None = None
     _htf_overlays: list | None = field(default=None, init=False, repr=False)
+    _pending_overwrite: bool = field(default=False, init=False, repr=False)
 
     def __post_init__(self):
         self.df = self._load_chart_candles()
@@ -776,6 +847,20 @@ class LabelWorkspace:
             scale_mode=self.settings.fib.scale_mode,
             levels_profile=self.settings.fib.levels_profile,
         )
+        if self.promote_source:
+            # Promoting a reviewed transcription: the selection (prices) is human, so
+            # created_by stays "human"; record the real method in source instead of plain
+            # manual labeling so the guessed-bar provenance is not erased (validity).
+            annotation.source = self.promote_source
+            target = annotation_path(annotation)
+            if target.exists() and not self._pending_overwrite:
+                self._pending_overwrite = True
+                print(
+                    f"WARNING: facit already exists at {target}.\n"
+                    "  Press 'w' again to overwrite it, or move on to leave it untouched."
+                )
+                return
+            self._pending_overwrite = False
         path = save_annotation(annotation)
         # Track as a session fib so it shows as an HTF overlay on lower TFs (nesting).
         self.session_fib_ids.add(annotation.fib_id)
@@ -816,6 +901,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
         label_year=None,
         buffer_months=3,
         edit_fib_id=None,
+        review_candidate=None,
     )
     settings = _apply_cli_overrides(load_settings(cli.config or None), cli)
     window_start, window_end = _resolve_window(cli)
@@ -832,6 +918,30 @@ def run_label_tool(args: argparse.Namespace | None = None):
             )
         except (FileNotFoundError, ValueError) as exc:
             raise SystemExit(f"--edit-fib-id: {exc}") from exc
+        if window_start is None and window_end is None:
+            window_start, window_end = _window_from_anchors(selected_fib)
+
+    review_candidate = getattr(cli, "review_candidate", None)
+    review_audit: dict = {}
+    if review_candidate:
+        if edit_fib_id:
+            raise SystemExit("--edit-fib-id and --review-candidate are mutually exclusive")
+        selected_fib, review_audit = _load_candidate_for_review(Path(review_candidate))
+        # Use the candidate's own market + geometry so promotion is correct regardless of
+        # which --config was passed (the candidate carries scale_mode / levels_profile).
+        settings.data = settings.data.model_copy(
+            update={
+                "exchange": selected_fib.exchange,
+                "symbol": selected_fib.symbol,
+                "timeframe": selected_fib.timeframe,
+            }
+        )
+        settings.fib = settings.fib.model_copy(
+            update={
+                "scale_mode": selected_fib.scale_mode,
+                "levels_profile": selected_fib.levels_profile,
+            }
+        )
         if window_start is None and window_end is None:
             window_start, window_end = _window_from_anchors(selected_fib)
     args = args or argparse.Namespace(symbols=None, timeframes=None)
@@ -854,10 +964,14 @@ def run_label_tool(args: argparse.Namespace | None = None):
     )
     if selected_fib is not None:
         _preload_fib_picks(workspace, selected_fib)
-        print(
-            f"Single-fib edit mode: {selected_fib.fib_id} ({selected_fib.direction}) "
-            "— HTF overlays hidden, anchors preloaded. Nothing saved unless you press 'w'."
-        )
+        if review_candidate:
+            workspace.promote_source = "manual_screenshot_transcription_reviewed"
+            _print_review_candidate_banner(selected_fib, review_audit)
+        else:
+            print(
+                f"Single-fib edit mode: {selected_fib.fib_id} ({selected_fib.direction}) "
+                "— HTF overlays hidden, anchors preloaded. Nothing saved unless you press 'w'."
+            )
     else:
         workspace.load_existing_label()
 
