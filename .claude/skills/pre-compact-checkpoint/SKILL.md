@@ -41,15 +41,20 @@ band and is **invisible in `/context`**. A focused 600k session holds the thread
 The fix is the checkpoint's own job: restating the salient state **last** (so recency works *for* you)
 and keeping superseded material out of the window (`archive/`, `.rgignore`, no broad reads).
 
-### 2. Capacity — the hook pings at the sweet spot (~25%)
+### 2. Capacity — the hook pings at the sweet spots (~25%, ~35%)
 A `UserPromptSubmit` hook ([`pre-compact-checkpoint.sh`](../../hooks/pre-compact-checkpoint.sh)) reads
-the transcript's latest usage (`input + cache_read + cache_creation` = real tokens sent — the same
-figure `/context` shows) and **auto-injects one reminder when context crosses ~25% of a 1M window
-(250k)** — the sweet spot to checkpoint *in time*, before drift/compaction lose detail. **When that
-ping arrives, do the checkpoint.** It is a reminder only — it never invokes this skill, so you still run
-it; it fires **once per session**. Tune the single `CONTEXT_THRESHOLD` constant in the script (lower it
-on a smaller-window model — `/context` shows the live %); use **%**, not an absolute count, when
-reasoning about it, since 250k is ~25% on 1M but the whole window on a 256k model.
+the transcript's latest usage (`input + cache_read + cache_creation` = real tokens sent — the figure
+`/context` shows) and **auto-injects a reminder when context crosses ~25% and again at ~35% of a 1M
+window (250k / 350k)** — the sweet spots to checkpoint *in time*, before drift/compaction lose detail.
+Each threshold fires **once per session** (a jump past both pings only the higher). It is a reminder
+only — it never invokes this skill, so you still run it. Tune the `PCTS` / `WINDOW_TOKENS` constants in
+the script (lower `WINDOW_TOKENS` on a smaller-window model; reason in **%**, not absolute tokens).
+
+**What to do when a ping arrives:**
+1. **Finish the current atomic step** — no half-edit, leave the tree green.
+2. **Run `/pre-compact-checkpoint`** — emit the six sections (below).
+3. **Overwrite [`handoff.md`](../../../docs/research_wiki/handoff.md)** with the snapshot.
+4. Then it is safe to keep going (the threshold won't nag again) or to compact.
 
 **Hard stop:** near **~90%** (autocompact imminent) **stop implementing**, refresh
 [`handoff.md`](../../../docs/research_wiki/handoff.md), and hand off rather than push a big change

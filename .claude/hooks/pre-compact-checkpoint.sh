@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
-# UserPromptSubmit hook: ping ONCE when the context window crosses the sweet spot, so a checkpoint
-# happens IN TIME — before thread-drift/compaction loses detail. The EARLY trigger; model-discretion
-# invocation of /pre-compact-checkpoint proved unreliable (docs/research_wiki/log.md 2026-06-30).
+# UserPromptSubmit hook: ping when the context window crosses each sweet-spot threshold, so a
+# checkpoint happens IN TIME — before thread-drift/compaction loses detail. The EARLY trigger;
+# model-discretion invocation of /pre-compact-checkpoint proved unreliable (docs/research_wiki/log.md
+# 2026-06-30).
 #
-# Sweet spot = CONTEXT_THRESHOLD tokens (~25% of a 1M window = 250k). Tune the one constant below;
-# lower it on a smaller-window model. The figure is READ from the transcript's latest usage
-# (input + cache_read + cache_creation = tokens actually sent = current window occupancy) — the same
-# number /context shows, not a turn-count guess.
+# Thresholds = WINDOW_TOKENS * each PCT / 100. Default PCTS="25 35" of a 1M window (250k, 350k). Each
+# threshold pings AT MOST ONCE per session; a jump past several at once pings only the highest (no
+# double-nag). Tune PCTS / WINDOW_TOKENS below (lower WINDOW_TOKENS on a smaller-window model). The
+# context figure is READ from the transcript's latest usage (input + cache_read + cache_creation =
+# tokens actually sent = current window occupancy) — the same number /context shows, not a turn guess.
 #
-# A hook can only REMIND, never invoke a skill. Fires once per session (temp state file). SONAR: pure
-# bash + perl (Git Bash core, JSON::PP) — never python.exe / powershell.exe. exit 0 always (never blocks).
+# A hook can only REMIND, never invoke a skill. SONAR: pure bash + perl (Git Bash core, JSON::PP) —
+# never python.exe / powershell.exe. exit 0 always (never blocks).
 
 set -o pipefail
-CONTEXT_THRESHOLD=250000   # sweet spot: ~25% of a 1M window — the moment to checkpoint
+WINDOW_TOKENS=1000000
+PCTS="25 35"               # sweet-spot reminders, % of the window; each fires once per session
 
 input=$(cat)
 
@@ -41,19 +44,34 @@ ctx=$(perl -MJSON::PP -ne '
 ' "$transcript" 2>/dev/null)
 
 [ -z "$ctx" ] && exit 0
-[ "$ctx" -lt "$CONTEXT_THRESHOLD" ] 2>/dev/null && exit 0
 
-# Ping once per session.
 state_dir="${TEMP:-${TMPDIR:-/tmp}}"
-state="${state_dir}/fibengine-checkpoint-pinged-${session}"
-[ -f "$state" ] && exit 0
-: > "$state" 2>/dev/null
 
-pct=$(( ctx * 100 / 1000000 ))
+# Pick the HIGHEST crossed-but-unpinged threshold (one ping per turn).
+fire=""
+for pct in $PCTS; do
+  thr=$(( WINDOW_TOKENS * pct / 100 ))
+  if [ "$ctx" -ge "$thr" ] 2>/dev/null; then
+    [ -f "${state_dir}/fibengine-checkpoint-${session}-${pct}" ] || fire="$pct"
+  fi
+done
+[ -z "$fire" ] && exit 0
+
+# Mark the fired threshold and every lower crossed one, so a jump past several pings only once.
+for pct in $PCTS; do
+  thr=$(( WINDOW_TOKENS * pct / 100 ))
+  if [ "$ctx" -ge "$thr" ] 2>/dev/null && [ "$pct" -le "$fire" ] 2>/dev/null; then
+    : > "${state_dir}/fibengine-checkpoint-${session}-${pct}" 2>/dev/null
+  fi
+done
+
+pct_now=$(( ctx * 100 / WINDOW_TOKENS ))
 cat <<MSG
-[checkpoint reminder] Context is ~${pct}% of a 1M window (${ctx} tokens) — at the sweet spot.
-Run /pre-compact-checkpoint now: capture Observed / Inferred / Unverified + repo state + user
-constraints + next smallest safe step, refresh docs/research_wiki/handoff.md, and leave the tree green.
-This fires once per session — you will not be nagged again.
+[checkpoint reminder] Context is ~${pct_now}% of a 1M window (${ctx} tokens) — past the ${fire}% sweet spot.
+Run /pre-compact-checkpoint now (full steps in .claude/skills/pre-compact-checkpoint/SKILL.md) —
+emit the six sections and refresh docs/research_wiki/handoff.md, leaving the tree green:
+  - Observed / Inferred / Unverified
+  - Repo state (branch . HEAD . gates) . User constraints . Next smallest safe step
+Reminders fire at ${PCTS// /%, }% of the window, once each per session.
 MSG
 exit 0
