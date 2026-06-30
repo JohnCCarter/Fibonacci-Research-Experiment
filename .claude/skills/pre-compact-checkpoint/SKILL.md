@@ -21,13 +21,32 @@ snapshot, not a ceremony. Reuse what already exists — the durable home is
 > the hard, heavy thing it's meant to prevent. (Full guardrails:
 > [`owner-preferences.md`](../../../docs/research_wiki/owner-preferences.md).)
 
-## When to act (measure with `/context`)
-**Measure, don't guess.** In this surface `/context` reports exact window usage (e.g.
-`263.2k / 1.0M — 26%`, with a per-category breakdown), so trigger on a real **% of the context window**.
-Use **%**, not an absolute token count — 20k is critical on a 200k window and nothing on 1M; the
-fraction holds on any window size (and travels to the home machine's model). Autocompact fires near the
-top (~90%+), so checkpoint with headroom below it. If a surface has no `/context`, fall back to a
-compaction warning or the user's word.
+## When to act — two triggers, whichever fires first
+
+**Capacity and thread-health are different risks.** The window can sit at 26% and the agent already be
+drifting. Checkpoint on **whichever** comes first — and the first one is usually *not* the percentage.
+
+### 1. Thread health (usually earlier — the real reason to checkpoint)
+A 1M window is capacity to *read*, not a guarantee everything is *weighted equally*. The thread frays
+from **noise, not size**: *lost-in-the-middle* (facts in the middle of a long context get buried),
+*recency bias* (early constraints fade as later turns dominate), and *context rot* (superseded plans,
+null results, and changed decisions resurface as if still live). This sets in **well before** any %
+band and is **invisible in `/context`**. A focused 600k session holds the thread better than a sprawling
+150k one — judge by **clutter, not %**. Checkpoint + re-anchor when you notice any of:
+- several topic switches, or a long-abandoned plan still sitting in context;
+- large stale tool-output dumps competing with the live state;
+- you are re-deriving or re-confirming something already settled this session;
+- a contradiction between an earlier decision and the current one.
+
+The fix is the checkpoint's own job: restating the salient state **last** (so recency works *for* you)
+and keeping superseded material out of the window (`archive/`, `.rgignore`, no broad reads).
+
+### 2. Capacity (measure with `/context`)
+`/context` reports exact window usage (e.g. `263.2k / 1.0M — 26%`, with a per-category breakdown).
+Trigger on **% of the window**, not an absolute count — 20k is critical on a 200k window and nothing on
+1M; the fraction holds on any window size (and travels to the home machine's model). Autocompact fires
+near the top (~90%+), so leave headroom. No `/context` on a surface → fall back to a compaction warning
+or the user's word.
 
 - **~70% used (getting long):** finish the current **atomic** step (leave the tree green, no half-edit —
   see [atomic-runnable-artifacts](../../../docs/research_wiki/concepts/atomic-runnable-artifacts.md)),
@@ -38,9 +57,9 @@ compaction warning or the user's word.
   ([`handoff.md`](../../../docs/research_wiki/handoff.md)) and hand off rather than pushing a big change
   through a strained context.
 
-> Note: the *measured* figure is the **window snapshot** (`/context`), not cumulative session spend.
-> A long session can read tens of millions of *cache* tokens (cheap) while the window sits at 26% — so
-> pace checkpoints on the window %, not on a scary-looking cumulative total.
+> The `/context` figure is the **window snapshot**, not cumulative session spend — a long session reads
+> tens of millions of cheap *cache* tokens while the window sits low. Pace on window % **and** thread
+> health, never on the scary cumulative total.
 
 ## The checkpoint (six sections — keep each to a few lines)
 Use the repo's honesty ladder (AGENTS.md *Facts vs assumptions*; same Observed/Inferred/Unverified
