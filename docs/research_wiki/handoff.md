@@ -27,32 +27,34 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — open (nesting tested → within-TF reframe; per-leg-feature line stays closed)
+## Next Step — STRUCTURE-ENGINE pivot (Chamoun's method → explicit detector, 1h substrate)
 
-**2026-06-26 settled the nesting question** (full detail: [log.md](log.md) top entry). The human nests
-**within-TF** — successive impulse legs on one timeframe — **not cross-TF** (no parent→child swing).
-Two pre-registered, leakage-disciplined **nulls**: cross-TF prediction 1w→1d `no_parent_context_signal`
-(directional, N=9; cohort v2 leakage-disqualified, frozen corpus used; method re-locked before run when
-a feasibility count showed the first method null-by-construction); the within-TF axis as a feature
-`impulse_leg` → **clean POWERED null** (4h, AP-lift CI [−0.032,+0.027] straddles 0, p=0.34) → the
-per-leg-feature line **stays closed** (`exclusivity` + `impulse_leg`, both null). The +0.119 weight is
-in-sample only (OOS-refuted) — **not** evidence. Reachability diag: HTF (1M 1.00 … 4h 0.85, no epoch
-gaps) is **intrinsically data-starved**, not detector-broken — no feature/detector fix powers 1M/1w.
+**2026-06-30 reframe (Chamoun): stop testing edges before the engine represents the structure.**
+Feature-ML selection line stays **closed** (nulls: `impulse_leg` 4h POWERED null, `exclusivity`,
+Stage-1; nesting is within-TF not cross-TF; HTF data-starved). New approach is **distinct**: encode
+Chamoun's *stated* drawing method as an **explicit rule-based structure-detector** (not learned
+weights), measured vs facit with the leg-agreement RULER (eval, signed off). Descriptive, no edge.
 
-**No active model track. 2026-06-30 direction set (Chamoun): continue GROW-FACIT on 4h** — feeds the
-ruler's 4h-leg calibration + north-star step 2; per-leg features exhausted, signal in the modest 4h
-`cleanliness` lead. **Awaiting Chamoun's 4h TradingView screenshots**; on resume run `data.fetch
---timeframes 4h` if cache missing, then transcribe → `--review-candidate` → 'w' promote (same loop as
-daily). Step 2 (descriptive level-reads) stays the modeling candidate. Cohort v2 (`ed98dc4`) stays
-drawn but **unused** (prediction-disqualified); `RESOLUTION_TIMEFRAME` 1M→1w no longer on the path.
+**The rule (Observed from his examples + words):** anchor 1 = the swing-high wick the decline
+*originated from* (last failed push), chosen by **volume + clarity of the following move**, NOT highest;
+anchor 0 = a long lower-wick rejection, **waited** for to confirm; structure **active until broken**
+(close beyond 0/1). Discriminator = **liquidity, proxied by volume** (OHLCV vol only; no order-flow —
+honest ceiling). Golden-zone (0.5/0.618) rejection is his **Unverified hypothesis**, tested separately
+later, never encoded as truth (generic behaviour-edge already nulled).
 
-**2026-06-29: #38 daily wick-pair anchor accuracy → `wick_pair_no_better` (SIGNED OFF 2026-06-29).**
-The **strong-form** rejection-wick premise (anchors sit on ≥50%-wick candles) is **not supported** at
-`wick_frac=0.5` a priori: coverage 0.08 vs control 0.90, despite the selector picking a pair in 44/71
-cases (dominant-wick pivots sit at *different* bars than the human's anchors). **#31's fractal line
-stays the candidate.** The **rank-form** question (does wick geometry help *rank* candidates?) is
-**left open** — `agreement` was uninformative (floor for both arms) — for a *separately-registered*
-`wick_frac` sweep (not a rescue). Does **not** reopen the closed per-leg-feature line. [log.md](log.md) top.
+**Substrate = 1h** (his native TF; the two-wick choice is sub-4h detail). 1h cache fetched bounded-recent
+(`config/variants/settings.1h_recent.yaml`, 20k bars → dense 2024-2026; full history rate-limits
+Bitfinex). **Progress (v1/v2 prototype, scratchpad):** detector encodes the rule + ranks structures;
+GEOMETRY (origin→opposite rejection) captured — pinned #2 (2024-06-24) + #4 (2026-03-23), both anchors
+matched. **Discriminator = move CLARITY, not volume** (Chamoun-confirmed "a clear move"; converges with the
+closed line's lone survivor `cleanliness`); v2 clarity metric still naive (1-bar wick artifacts → needs
+min-bars). Price-only transcription stays hopeless on 1h (anchors recur 13-105×). **Underpowered at 4
+examples vs ~2300 candidates** → next: Chamoun draws ~6-10 more 1h structures (incl. borderline) to
+calibrate, then fix metric + promote detector to a module. No edge/PnL/1h-facit promoted.
+
+**2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise
+unsupported (coverage 0.08 vs control 0.90); #31 fractal line stays the candidate; rank-form `wick_frac`
+sweep left open (separately registered). Does not reopen the closed per-leg-feature line. [log.md](log.md) top.
 
 ## Recent Changes
 
