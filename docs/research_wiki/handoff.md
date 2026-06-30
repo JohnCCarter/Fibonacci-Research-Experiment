@@ -39,9 +39,11 @@ per-leg-feature line **stays closed** (`exclusivity` + `impulse_leg`, both null)
 in-sample only (OOS-refuted) — **not** evidence. Reachability diag: HTF (1M 1.00 … 4h 0.85, no epoch
 gaps) is **intrinsically data-starved**, not detector-broken — no feature/detector fix powers 1M/1w.
 
-**No active model track.** Open question for the user: where next, given per-leg features exhausted,
-data saturated / HTF starved, signal living in the modest 4h `cleanliness` lead. Candidate: north-star
-**step 2 (descriptive level-reads)** rather than more selection features. Cohort v2 (`ed98dc4`) stays
+**No active model track. 2026-06-30 direction set (Chamoun): continue GROW-FACIT on 4h** — feeds the
+ruler's 4h-leg calibration + north-star step 2; per-leg features exhausted, signal in the modest 4h
+`cleanliness` lead. **Awaiting Chamoun's 4h TradingView screenshots**; on resume run `data.fetch
+--timeframes 4h` if cache missing, then transcribe → `--review-candidate` → 'w' promote (same loop as
+daily). Step 2 (descriptive level-reads) stays the modeling candidate. Cohort v2 (`ed98dc4`) stays
 drawn but **unused** (prediction-disqualified); `RESOLUTION_TIMEFRAME` 1M→1w no longer on the path.
 
 **2026-06-29: #38 daily wick-pair anchor accuracy → `wick_pair_no_better` (SIGNED OFF 2026-06-29).**
