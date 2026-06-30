@@ -54,6 +54,13 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
 
 ## Recent Changes
 
+- **2026-06-30 GROW-FACIT started — daily 2025–26 gap filled (5 source fibs).** Daily facit had **no**
+  2025–26 fibs; transcribed 5 from the 2026-06-29 chamoun TradingView screenshots
+  ([`fib_transcribe`](../../src/fibengine/labeling/fib_transcribe.py)) and promoted them to facit via
+  the new labeling-tool [`--review-candidate`](../../src/fibengine/labeling/tool.py) mode (human-reviewed
+  in GUI; `created_by=human`, `source=manual_screenshot_transcription_reviewed` — provenance preserved,
+  not erased). New 1d facit: `20251006, 20251027, 20251111, 20260114, 20260601`. This is the north-star
+  **grow-facit** bridge (more/better human labels > more features) now operational. [log.md](log.md) top.
 - **2026-06-29 Leg-agreement RULER — built + SIGNED OFF (north-star step-1 measurement instrument).**
   The free facit-checker the selection campaign lacked (#38 `agreement` floored: `compare_label`/
   `select_swing` not localized to the facit leg). [Locked prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md)
