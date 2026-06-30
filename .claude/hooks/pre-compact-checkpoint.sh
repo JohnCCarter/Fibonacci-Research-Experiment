@@ -6,7 +6,8 @@
 #
 # Thresholds = WINDOW_TOKENS * each PCT / 100. Default PCTS="25 35" of a 1M window (250k, 350k). Each
 # threshold pings AT MOST ONCE per session; a jump past several at once pings only the highest (no
-# double-nag). Tune PCTS / WINDOW_TOKENS below (lower WINDOW_TOKENS on a smaller-window model). The
+# double-nag). A /compact or /clear (detected as a big ctx drop vs the last turn) RE-ARMS the pings so
+# they fire again in the same session. Tune PCTS / WINDOW_TOKENS below (lower on a smaller-window model). The
 # context figure is READ from the transcript's latest usage (input + cache_read + cache_creation =
 # tokens actually sent = current window occupancy) — the same number /context shows, not a turn guess.
 #
@@ -46,6 +47,15 @@ ctx=$(perl -MJSON::PP -ne '
 [ -z "$ctx" ] && exit 0
 
 state_dir="${TEMP:-${TMPDIR:-/tmp}}"
+last_file="${state_dir}/fibengine-checkpoint-lastctx-${session}"
+
+# Compaction reset: ctx only ever grows within a session, so a big DROP vs the last turn means a
+# /compact (or /clear) just happened. Re-arm all pings so the sweet spots fire again post-compact.
+prev=$(cat "$last_file" 2>/dev/null)
+if [ -n "$prev" ] && [ "$prev" -gt 0 ] 2>/dev/null && [ "$ctx" -lt $(( prev * 70 / 100 )) ] 2>/dev/null; then
+  for pct in $PCTS; do rm -f "${state_dir}/fibengine-checkpoint-${session}-${pct}" 2>/dev/null; done
+fi
+printf '%s' "$ctx" > "$last_file" 2>/dev/null
 
 # Pick the HIGHEST crossed-but-unpinged threshold (one ping per turn).
 fire=""

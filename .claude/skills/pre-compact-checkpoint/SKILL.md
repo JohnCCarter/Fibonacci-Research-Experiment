@@ -46,9 +46,11 @@ A `UserPromptSubmit` hook ([`pre-compact-checkpoint.sh`](../../hooks/pre-compact
 the transcript's latest usage (`input + cache_read + cache_creation` = real tokens sent — the figure
 `/context` shows) and **auto-injects a reminder when context crosses ~25% and again at ~35% of a 1M
 window (250k / 350k)** — the sweet spots to checkpoint *in time*, before drift/compaction lose detail.
-Each threshold fires **once per session** (a jump past both pings only the higher). It is a reminder
-only — it never invokes this skill, so you still run it. Tune the `PCTS` / `WINDOW_TOKENS` constants in
-the script (lower `WINDOW_TOKENS` on a smaller-window model; reason in **%**, not absolute tokens).
+Each threshold fires **once per session** (a jump past both pings only the higher) — but a `/compact`
+or `/clear` **re-arms** them (the hook detects the context drop), so the sweet spots ping again after a
+compact in the same session. It is a reminder only — it never invokes this skill, so you still run it.
+Tune the `PCTS` / `WINDOW_TOKENS` constants in the script (lower `WINDOW_TOKENS` on a smaller-window
+model; reason in **%**, not absolute tokens).
 
 **What to do when a ping arrives:**
 1. **Finish the current atomic step** — no half-edit, leave the tree green.
