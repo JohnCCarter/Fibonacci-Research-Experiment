@@ -36,6 +36,7 @@ UI-omtanke hör hemma *där*: tydlighet och flöde i själva fib-ritningen, inte
 - **Friktion att aktivt motverka** (alla fyra kryssade 2026-06-30): blir flaskhalsen · för mycket text
   · saker går sönder · oklart vad som ändrades → kör autonomt **men** lämna ett kort, läsbart spår av
   *vad* som ändrades och *att* gates är gröna.
+- **Tilltal:** adressera honom **Chamoun** — i *varje mening* (uttrycklig preferens 2026-06-30).
 
 ## Ändringar fångade 2026-06-30 (diff mot tidigare körning)
 

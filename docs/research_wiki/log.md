@@ -16,6 +16,35 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-30] maintenance | thread-health drift observed + checkpoint-invocation gap (ACTION for another agent)
+
+**Observed (this session, live):** the conversation drifted across ~7 topic switches (owner interview →
+script adaptation → pre-compact skill → grow-facit → transcription → review loop → token accounting →
+skill refinement) while the context window sat at only ~26% (`/context`: 263k/1M). That is a textbook
+**early thread-health** case — *lost-in-the-middle*, *recency bias*, *context rot* — which is **invisible
+in `/context`** and arrives **well before** the capacity bands.
+
+**The gap (why this matters):** the [`pre-compact-checkpoint`](../../.claude/skills/pre-compact-checkpoint/SKILL.md)
+skill's only triggers today are (1) **model discretion** (the agent invokes it when its description
+matches) and (2) the manual `/pre-compact-checkpoint` command. (1) **failed here** — the agent expected
+to notice the drift *is* the drifting agent (self-defeating); there is **no automatic trigger**. A
+`PreCompact` hook does **not** fix this: it fires only at compaction (the late ~90% *capacity* case),
+and hooks are shell commands that can only **inject a reminder**, never *invoke* a model skill.
+
+**ACTION (for another agent — pure tooling, no research-code/conclusion change):** add hook-driven
+reminders in [`.claude/settings.json`](../../.claude/settings.json) (versioned, travels via git):
+1. **Early trigger (the observed case):** a `UserPromptSubmit` (or `PostToolUse`) hook that, after **N
+   user turns or M tool-calls**, injects a reminder to consider `/pre-compact-checkpoint`. Caveat:
+   turn/tool count is a **proxy**, not a thread-health *measurement* — present it as a reliable nudge,
+   not a metric.
+2. **Late trigger (capacity):** a `PreCompact` hook that injects a reminder to run the checkpoint (six
+   sections → [handoff.md](handoff.md)) before compaction summarises.
+
+**Constraints/acceptance:** hooks only *remind*, never invoke a skill — say so in the nudge text;
+thread-health is qualitative — never claim it is auto-measured; keep nudges non-spammy (cooldown / once
+per threshold; verify no spurious firing); flip the skill's "Future option" note from *deferred* to
+*done* with the chosen design once wired.
+
 ## [2026-06-30] decision | labeling tool: `--review-candidate` promote mode (transcription → facit)
 
 Built the missing candidate→facit promote path so screenshot-transcribed daily fibs can become

@@ -52,15 +52,18 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
 **left open** — `agreement` was uninformative (floor for both arms) — for a *separately-registered*
 `wick_frac` sweep (not a rescue). Does **not** reopen the closed per-leg-feature line. [log.md](log.md) top.
 
+## Open Agent-Process Action (not research)
+
+- **Wire checkpoint-reminder hooks** (`.claude/settings.json`): early turn/tool-count nudge + late
+  `PreCompact`; hooks only *remind*, thread-health isn't auto-measurable. Full spec: [log.md](log.md) top.
+
 ## Recent Changes
 
-- **2026-06-30 GROW-FACIT started — daily 2025–26 gap filled (5 source fibs).** Daily facit had **no**
-  2025–26 fibs; transcribed 5 from the 2026-06-29 chamoun TradingView screenshots
-  ([`fib_transcribe`](../../src/fibengine/labeling/fib_transcribe.py)) and promoted them to facit via
-  the new labeling-tool [`--review-candidate`](../../src/fibengine/labeling/tool.py) mode (human-reviewed
-  in GUI; `created_by=human`, `source=manual_screenshot_transcription_reviewed` — provenance preserved,
-  not erased). New 1d facit: `20251006, 20251027, 20251111, 20260114, 20260601`. This is the north-star
-  **grow-facit** bridge (more/better human labels > more features) now operational. [log.md](log.md) top.
+- **2026-06-30 GROW-FACIT started — daily 2025–26 gap filled.** 5 source fibs transcribed from the
+  2026-06-29 chamoun TradingView screenshots, human-reviewed to facit via labeling-tool
+  [`--review-candidate`](../../src/fibengine/labeling/tool.py) (`created_by=human`,
+  `source=manual_screenshot_transcription_reviewed`); ids `20251006, 20251027, 20251111, 20260114,
+  20260601`. North-star grow-facit bridge now live. [log.md](log.md) top.
 - **2026-06-29 Leg-agreement RULER — built + SIGNED OFF (north-star step-1 measurement instrument).**
   The free facit-checker the selection campaign lacked (#38 `agreement` floored: `compare_label`/
   `select_swing` not localized to the facit leg). [Locked prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md)
@@ -83,10 +86,7 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
 - **2026-06-26 Nesting REFRAME + two nulls.** Within-TF (not cross-TF) impulse-leg decomposition (facit);
   cross-TF 1w→1d [`no_parent_context_signal`](reviews/btc-fib-nesting-prediction-prereg-1w1d-20260626.md) (N=9) +
   [`impulse_leg`](reviews/btc-fib-impulse-leg-feature-prereg-20260626.md) 4h **clean POWERED null** (CI [−0.032,+0.027]); per-leg line closed; HTF data-starved. [log.md](log.md).
-- **2026-06-26 Top-down nesting — tool support (anchor markers + session overlay + `c` focus,
-  `f79d7d2`/`3f3dc05`, +7 tests) + cohort v2 drawn (`ed98dc4`, 12 fibs, schema 12/12); v1 deleted
-  (`879b754`, wrong candles). fib_id collision: 2017-bull 1w replaced frozen `1w_20170316`.** Now
-  **unused** (prediction-disqualified — see reframe entry above). Detail: [log.md](log.md).
+- **2026-06-26 Top-down nesting tool support** (anchor markers, session overlay, `c` focus; cohort v2 drawn, v1 deleted) — now **unused** (prediction-disqualified). [log.md](log.md).
 - **2026-06-25 Fib SELECTION-LEARNING model-ENRICHMENT — RUN → `enriched_worse_check` (4h k=3); line
   CLOSED.** Blind Commit-2 of the [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md)
   (`c80acb0`). Parity: AP-baseline = Stage-2 headline 0.0567, n_test_pos=65, excl=0 (no look-ahead).
