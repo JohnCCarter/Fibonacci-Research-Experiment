@@ -16,6 +16,16 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-30] maintenance | new `pre-compact-checkpoint` skill (adapted to this repo)
+
+Added skill [`.claude/skills/pre-compact-checkpoint/SKILL.md`](../../.claude/skills/pre-compact-checkpoint/SKILL.md)
+— captures the verified frontier (Observed/Inferred/Unverified + repo state + user constraints + next
+smallest safe step) before context compaction. Adapted from a shared script: paths point to this
+repo's [handoff.md](handoff.md) / [log.md](log.md) / [owner-preferences.md](owner-preferences.md),
+honesty ladder tied to AGENTS.md *Facts vs assumptions*, and a SONAR-economy note (reuse the last
+green `/run-gates`; don't re-run gates per checkpoint). Distinct from `/prepare-home-computer`
+(cross-machine) — this is in-session, pre-compaction.
+
 ## [2026-06-30] maintenance | owner interview — preferences captured + `/owner-interview` command
 
 Ran a button-driven owner interview (no research-code/conclusion change). Two coupled additions:
