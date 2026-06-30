@@ -21,18 +21,26 @@ snapshot, not a ceremony. Reuse what already exists — the durable home is
 > the hard, heavy thing it's meant to prevent. (Full guardrails:
 > [`owner-preferences.md`](../../../docs/research_wiki/owner-preferences.md).)
 
-## When to act (bands are *guidance*, not measured)
-Don't claim an exact token count — the harness rarely gives one. Use the band you can infer, a
-compaction warning, or the user's word. The point is the *behaviour* at each rough stage:
+## When to act (measure with `/context`)
+**Measure, don't guess.** In this surface `/context` reports exact window usage (e.g.
+`263.2k / 1.0M — 26%`, with a per-category breakdown), so trigger on a real **% of the context window**.
+Use **%**, not an absolute token count — 20k is critical on a 200k window and nothing on 1M; the
+fraction holds on any window size (and travels to the home machine's model). Autocompact fires near the
+top (~90%+), so checkpoint with headroom below it. If a surface has no `/context`, fall back to a
+compaction warning or the user's word.
 
-- **Getting long:** finish the current **atomic** step (leave the tree green, no half-edit — see
-  [atomic-runnable-artifacts](../../../docs/research_wiki/concepts/atomic-runnable-artifacts.md)),
+- **~70% used (getting long):** finish the current **atomic** step (leave the tree green, no half-edit —
+  see [atomic-runnable-artifacts](../../../docs/research_wiki/concepts/atomic-runnable-artifacts.md)),
   write a checkpoint, then it's safe to compact before starting anything larger.
-- **Heavy work pending:** do **not** begin a new large edit / refactor / prereg-affecting change before
-  a checkpoint + compact. Small, reversible steps only until then.
-- **Long:** **stop implementing.** Refresh the fresh-session resume note
+- **~80% (heavy work pending):** do **not** begin a new large edit / refactor / prereg-affecting change
+  before a checkpoint + compact. Small, reversible steps only until then.
+- **~90% (near autocompact):** **stop implementing.** Refresh the fresh-session resume note
   ([`handoff.md`](../../../docs/research_wiki/handoff.md)) and hand off rather than pushing a big change
   through a strained context.
+
+> Note: the *measured* figure is the **window snapshot** (`/context`), not cumulative session spend.
+> A long session can read tens of millions of *cache* tokens (cheap) while the window sits at 26% — so
+> pace checkpoints on the window %, not on a scary-looking cumulative total.
 
 ## The checkpoint (six sections — keep each to a few lines)
 Use the repo's honesty ladder (AGENTS.md *Facts vs assumptions*; same Observed/Inferred/Unverified
