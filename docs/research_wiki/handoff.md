@@ -52,12 +52,11 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
 **left open** — `agreement` was uninformative (floor for both arms) — for a *separately-registered*
 `wick_frac` sweep (not a rescue). Does **not** reopen the closed per-leg-feature line. [log.md](log.md) top.
 
-## Open Agent-Process Action (not research)
-
-- **Wire checkpoint-reminder hooks** (`.claude/settings.json`): early turn/tool-count nudge + late
-  `PreCompact`; hooks only *remind*, thread-health isn't auto-measurable. Full spec: [log.md](log.md) top.
-
 ## Recent Changes
+
+- **2026-06-30 Checkpoint reminder hook wired** — `UserPromptSubmit` hook auto-pings once at ~25%
+  context (the in-time sweet spot); model-discretion invocation was unreliable, `PreCompact` rejected as
+  too late. [log.md](log.md) top.
 
 - **2026-06-30 GROW-FACIT started — daily 2025–26 gap filled.** 5 source fibs transcribed from the
   2026-06-29 chamoun TradingView screenshots, human-reviewed to facit via labeling-tool

@@ -16,6 +16,18 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-30] decision | checkpoint reminder hook wired — early ~25% ping (UserPromptSubmit)
+
+Resolves the `ACTION for another agent` below (thread-health drift / invocation gap, same date). Built
+[`pre-compact-checkpoint.sh`](../../.claude/hooks/pre-compact-checkpoint.sh) + a `UserPromptSubmit` hook
+in [`settings.json`](../../.claude/settings.json) (`db439c1`): reads the transcript's latest usage
+(`input + cache_read + cache_creation` = real tokens sent — the `/context` figure) and auto-injects one
+reminder when context crosses **~25% of a 1M window (250k, tunable `CONTEXT_THRESHOLD`)** — the owner's
+chosen sweet spot, *in time* before drift/compaction lose detail. Fires **once per session**; a reminder
+only (never invokes the skill). **The late `PreCompact` event was rejected** — it fires only at
+compaction, too late for the sweet spot. Live-fired in-session at ~35%. Pure bash + perl, `exit 0`
+(SONAR-safe). Skill "When to act" + "Future option" updated to match.
+
 ## [2026-06-30] maintenance | thread-health drift observed + checkpoint-invocation gap (ACTION for another agent)
 
 **Observed (this session, live):** the conversation drifted across ~7 topic switches (owner interview →

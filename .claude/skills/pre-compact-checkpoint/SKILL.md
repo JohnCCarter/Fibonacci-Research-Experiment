@@ -41,24 +41,22 @@ band and is **invisible in `/context`**. A focused 600k session holds the thread
 The fix is the checkpoint's own job: restating the salient state **last** (so recency works *for* you)
 and keeping superseded material out of the window (`archive/`, `.rgignore`, no broad reads).
 
-### 2. Capacity (measure with `/context`)
-`/context` reports exact window usage (e.g. `263.2k / 1.0M — 26%`, with a per-category breakdown).
-Trigger on **% of the window**, not an absolute count — 20k is critical on a 200k window and nothing on
-1M; the fraction holds on any window size (and travels to the home machine's model). Autocompact fires
-near the top (~90%+), so leave headroom. No `/context` on a surface → fall back to a compaction warning
-or the user's word.
+### 2. Capacity — the hook pings at the sweet spot (~25%)
+A `UserPromptSubmit` hook ([`pre-compact-checkpoint.sh`](../../hooks/pre-compact-checkpoint.sh)) reads
+the transcript's latest usage (`input + cache_read + cache_creation` = real tokens sent — the same
+figure `/context` shows) and **auto-injects one reminder when context crosses ~25% of a 1M window
+(250k)** — the sweet spot to checkpoint *in time*, before drift/compaction lose detail. **When that
+ping arrives, do the checkpoint.** It is a reminder only — it never invokes this skill, so you still run
+it; it fires **once per session**. Tune the single `CONTEXT_THRESHOLD` constant in the script (lower it
+on a smaller-window model — `/context` shows the live %); use **%**, not an absolute count, when
+reasoning about it, since 250k is ~25% on 1M but the whole window on a 256k model.
 
-- **~70% used (getting long):** finish the current **atomic** step (leave the tree green, no half-edit —
-  see [atomic-runnable-artifacts](../../../docs/research_wiki/concepts/atomic-runnable-artifacts.md)),
-  write a checkpoint, then it's safe to compact before starting anything larger.
-- **~80% (heavy work pending):** do **not** begin a new large edit / refactor / prereg-affecting change
-  before a checkpoint + compact. Small, reversible steps only until then.
-- **~90% (near autocompact):** **stop implementing.** Refresh the fresh-session resume note
-  ([`handoff.md`](../../../docs/research_wiki/handoff.md)) and hand off rather than pushing a big change
-  through a strained context.
+**Hard stop:** near **~90%** (autocompact imminent) **stop implementing**, refresh
+[`handoff.md`](../../../docs/research_wiki/handoff.md), and hand off rather than push a big change
+through a strained context.
 
-> The `/context` figure is the **window snapshot**, not cumulative session spend — a long session reads
-> tens of millions of cheap *cache* tokens while the window sits low. Pace on window % **and** thread
+> The token figure is the **window snapshot**, not cumulative session spend — a long session reads tens
+> of millions of cheap *cache* tokens while the window sits low. Pace on the window % **and** thread
 > health, never on the scary cumulative total.
 
 ## The checkpoint (six sections — keep each to a few lines)
@@ -97,6 +95,9 @@ changed since the last green run, and batch them in the one `/run-gates` call.
 
 ## Done = verified state captured · `handoff.md` refreshed · tree left green · no big step taken on a strained context.
 
-_Future option (out of scope here): a `PreCompact` hook in `.claude/settings.json` (hooks live in
-[`.claude/hooks/`](../../hooks/)) could auto-suggest this skill near compaction — wire it only if the
-manual trigger proves too easy to forget._
+_Wired (2026-06-30): the manual trigger proved too easy to forget (a long session drifted ~7 topic
+switches without a checkpoint), so a `UserPromptSubmit` hook
+([`pre-compact-checkpoint.sh`](../../hooks/pre-compact-checkpoint.sh), registered in
+[`.claude/settings.json`](../../settings.json)) now auto-pings once at ~25% context — the early/in-time
+trigger. A hook can only **remind**, never invoke this skill, so you still run it. The late `PreCompact`
+event was rejected: it fires only at compaction, too late for the sweet spot._
