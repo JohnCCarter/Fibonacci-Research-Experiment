@@ -159,3 +159,20 @@ def test_normal_labeling_source_unaffected(monkeypatch, tmp_path):
         assert d["source"] == "manual_labeling_tool"  # default unchanged
     finally:
         store.set_labels_dir(None)
+
+
+# --- windowed view fits Y to the window (readable review) --------------------------------
+
+
+def test_window_fit_view_brackets_window_prices():
+    df = pd.DataFrame(
+        {"high": [126110.0, 110000.0, 103310.0], "low": [120000.0, 104000.0, 103310.0]},
+        index=pd.to_datetime(
+            ["2025-10-06T00:00:00+00:00", "2025-10-08T00:00:00+00:00", "2025-10-10T00:00:00+00:00"],
+            utc=True,
+        ),
+    )
+    (x0, x1), (y0, y1) = tool._window_fit_view(df)
+    assert (x0, x1) == (-0.5, 2.5)  # n=3 candles framed
+    assert y0 < 103310.0 and y1 > 126110.0  # brackets the window low/high
+    assert y1 / y0 < 1.5  # tight to the window, not the full-history squish

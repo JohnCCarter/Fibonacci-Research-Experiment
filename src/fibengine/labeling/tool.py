@@ -398,6 +398,19 @@ def _focus_view_for_parent(df: pd.DataFrame, ann: HumanFibAnnotation) -> tuple:
     return ((lo_i - xpad, hi_i + xpad), (pmin * 0.85, pmax * 1.15))
 
 
+def _window_fit_view(df: pd.DataFrame, *, pad: float = 0.03) -> tuple:
+    """Initial ``(xlim, ylim)`` framing the (already windowed) candles.
+
+    Without this a date-windowed view autoscales the log price axis to the *full* price
+    history, squishing a narrow recent band against the top (unreadable for review). Fit
+    Y to the window's low/high with a small multiplicative pad (log-friendly). Pure helper.
+    """
+    n = len(df)
+    lo = float(df["low"].min())
+    hi = float(df["high"].max())
+    return ((-0.5, n - 0.5), (lo / (1 + pad), hi * (1 + pad)))
+
+
 def _preload_fib_picks(workspace: LabelWorkspace, ann: HumanFibAnnotation) -> None:
     """Load a fib's exact anchors as the active high/low picks (in-memory only).
 
@@ -1348,7 +1361,14 @@ def run_label_tool(args: argparse.Namespace | None = None):
     fig.canvas.mpl_connect("motion_notify_event", on_motion)
     fig.canvas.mpl_connect("button_release_event", on_release)
     fig.canvas.mpl_connect("key_press_event", on_key)
-    redraw()
+    # A date-windowed view (review/edit single-fib, or --label-year) must fit Y to the
+    # window, else the log axis autoscales to full history and squishes the band (unreadable).
+    initial_view = (
+        _window_fit_view(workspace.df)
+        if (window_start is not None or window_end is not None) and len(workspace.df)
+        else None
+    )
+    redraw(set_view=initial_view)
     plt.show()
 
 
