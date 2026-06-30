@@ -49,8 +49,8 @@ GEOMETRY (origin→opposite rejection) captured — pinned #2 (2024-06-24) + #4 
 matched. **Discriminator = move CLARITY, not volume** (Chamoun-confirmed "a clear move"; converges with the
 closed line's lone survivor `cleanliness`); v2 clarity metric still naive (1-bar wick artifacts → needs
 min-bars). Price-only transcription stays hopeless on 1h (anchors recur 13-105×). **Underpowered at 4
-examples vs ~2300 candidates** → next: Chamoun draws ~6-10 more 1h structures (incl. borderline) to
-calibrate, then fix metric + promote detector to a module. No edge/PnL/1h-facit promoted.
+examples vs ~2300 candidates** → next (post-/compact): **batch-2 = 6 1h structures received 2026-06-30**
+(`scratchpad/chamoun_1h_batch2.txt`); recalibrate v2 (min-bars) on batch1+2, then promote to module. No edge/PnL.
 
 **2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise
 unsupported (coverage 0.08 vs control 0.90); #31 fractal line stays the candidate; rank-form `wick_frac`
