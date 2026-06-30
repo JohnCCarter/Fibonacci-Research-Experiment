@@ -23,40 +23,41 @@ append-only trail lives in [log.md](log.md).
 | 2 | **1W** | **Complete** — 21× source fibs verified; combined map + per-fib 4H zoom (2026-06-11) |
 | 3 | **1D** | **Complete** — 67× source fibs + 4H reaction-review (2026-06-12); 1816 events, 90-day window |
 | 4 | **4H** | **Complete** — 371 active source fibs (365 + 6 grow-facit 2024–2026; 1 superseded 20250506 dedup) |
-| 5 | 1H | Deferred — 1h cache not fetched yet |
+| 5 | 1H | Structure-engine substrate (1h cache fetched bounded-recent 2024–2026); source-labeling deferred |
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — STRUCTURE-ENGINE pivot (Chamoun's method → explicit detector, 1h substrate)
+## Next Step — STRUCTURE-ENGINE (Chamoun's method → explicit 1h detector) — v1 LANDED
 
-**2026-06-30 reframe (Chamoun): stop testing edges before the engine represents the structure.**
-Feature-ML selection line stays **closed** (nulls: `impulse_leg` 4h POWERED null, `exclusivity`,
-Stage-1; nesting is within-TF not cross-TF; HTF data-starved). New approach is **distinct**: encode
-Chamoun's *stated* drawing method as an **explicit rule-based structure-detector** (not learned
-weights), measured vs facit with the leg-agreement RULER (eval, signed off). Descriptive, no edge.
+**2026-06-30 (Chamoun): stop testing edges before the engine represents the structure.** Feature-ML
+selection line stays **closed**. Encode his *stated* drawing method as an explicit rule-based detector
+on **1h** (his native TF) — descriptive, no edge.
 
-**The rule (Observed from his examples + words):** anchor 1 = the swing-high wick the decline
-*originated from* (last failed push), chosen by **volume + clarity of the following move**, NOT highest;
-anchor 0 = a long lower-wick rejection, **waited** for to confirm; structure **active until broken**
-(close beyond 0/1). Discriminator = **liquidity, proxied by volume** (OHLCV vol only; no order-flow —
-honest ceiling). Golden-zone (0.5/0.618) rejection is his **Unverified hypothesis**, tested separately
-later, never encoded as truth (generic behaviour-edge already nulled).
+**v1 origin engine SHIPPED** — [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py)
+(+9 tests, commit `24a3bb5`). Rule: **origin ("1") = the #1 most-prominent swing high at a ~3-day
+(72-bar) scale**; the structure runs to the first close back above the origin; reached ("0") = the
+lowest low over that span. **Frozen v1** params (local_scale=72, min_move=2%, max_horizon=480,
+min_bars=3), DOWN-only. Validated on **7 dated 1h facit** (Chamoun's screenshots 2026-06-30,
+`scratchpad/chamoun_1h_batch2.txt`): his 4 clean down-origins are each #1-prominence at ±72 bars
+(neutral / non-circular) and re-found by the engine; he passes the higher highs that sit farther away
+(confirms his "both" answer, pins the scale). Eyeball pass — "snarlikt + rätt region = vinst" is the
+**acceptance bar**, not tick-exact (owner-prefs).
 
-**Substrate = 1h** (his native TF; the two-wick choice is sub-4h detail). 1h cache fetched bounded-recent
-(`config/variants/settings.1h_recent.yaml`, 20k bars → dense 2024-2026; full history rate-limits
-Bitfinex). **Progress (v1/v2 prototype, scratchpad):** detector encodes the rule + ranks structures;
-GEOMETRY (origin→opposite rejection) captured — pinned #2 (2024-06-24) + #4 (2026-03-23), both anchors
-matched. **Discriminator = move CLARITY, not volume** (Chamoun-confirmed "a clear move"; converges with the
-closed line's lone survivor `cleanliness`); v2 clarity metric still naive (1-bar wick artifacts → needs
-min-bars). Price-only transcription stays hopeless on 1h (anchors recur 13-105×). **Underpowered at 4
-examples vs ~2300 candidates** → next (post-/compact): **batch-2 = 6 1h structures received 2026-06-30**
-(`scratchpad/chamoun_1h_batch2.txt`); recalibrate v2 (min-bars) on batch1+2, then promote to module. No edge/PnL.
+**Deferred next layers (each its own GO):** (1) "0" **sustained-low** rule (Chamoun Q2 — current a0
+takes the lowest low → sits on early spikes); (2) UP-structures; (3) volume/clarity tie-break for
+near-tie higher wicks. **Owed before trusting beyond n=4:** validate the frozen engine on a few
+**fresh / held-out** structures. No edge/PnL.
 
 **2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise
 unsupported (coverage 0.08 vs control 0.90); #31 fractal line stays the candidate; rank-form `wick_frac`
 sweep left open (separately registered). Does not reopen the closed per-leg-feature line. [log.md](log.md) top.
 
 ## Recent Changes
+
+- **2026-06-30 STRUCTURE-ENGINE v1 — origin proposer landed as a module.** Chamoun's drawing method →
+  [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py)
+  (+9 tests, `24a3bb5`); frozen v1, DOWN-only, re-finds his 4 dated-1h origins (#1-prominence @ ~3-day
+  scale). a0 sustained-low / up / volume tie-break deferred; validate on fresh structures next. [log.md](log.md) top.
 
 - **2026-06-30 GROW-FACIT (screenshot transcription → facit).** Daily 2025–26 gap filled (5 fibs) **and**
   4h **+6** (365 → **371**): `fib_transcribe` candidates → human-reviewed via

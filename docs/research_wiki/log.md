@@ -16,6 +16,28 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-06-30] decision | Chamoun structure engine v1 — origin proposer landed as a module
+
+Pivot executed (set 2026-06-30): **stop testing edges; build an engine that represents Chamoun's drawing
+structure first.** Chamoun supplied dated 1h TradingView screenshots — 7 structures with date axes after
+an initial undated batch. Gated anchor identity against the recurrence ambiguity (each anchor price
+recurs 11–54× over 60–800 days; the dates resolved the instance) — **origins pinned to the exact candle**,
+"0" approximate. Non-circular test (neutral ±-bar windows, not his framing): each of his **4 clean DOWN
+origins is the #1 most-prominent swing high at a ~3-day (72-bar) scale**; they drop to #2–#4 at ±144 bars
+(he passes the higher highs that sit farther away — confirms his own "bägge" answer and pins the scale).
+
+Promoted to [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py)
+(+9 tests) — `propose_structures(df, pivots, StructureConfig)`; **frozen v1** params (local_scale=72,
+min_move=2%, max_horizon=480, min_bars=3), DOWN-only, descriptive proposer. Re-finds all 4 calibration
+origins; proposed 115 down-structures over 2024–2026. Chamoun eyeballed a sample → "inte perfekta, men
+inte dåliga … snarlikt och träffa rätt är en bra vinst": **acceptance bar = recognizably-similar + right
+region**, not tick-exact. Gates green (679 pytest, 74% cov, ruff/format/bounds/wiki). Commit `24a3bb5`.
+
+**Deferred next layers (each its own GO):** "0" sustained-low rule (his Q2 — current a0 takes the lowest
+low, so it sits on early spikes), UP-structures, volume/clarity tie-break for near-tie higher wicks.
+**Owed:** validate the frozen engine on a few FRESH / held-out structures before trusting beyond n=4.
+No edge/PnL. Details: `scratchpad/chamoun_1h_batch2.txt`.
+
 ## [2026-06-30] decision | GROW-FACIT 4h — +6 source fibs via screenshot transcription (1 dropped, 1 nudged)
 
 North-star grow-facit on **4h** (the only powered cell), per the 2026-06-30 direction set in

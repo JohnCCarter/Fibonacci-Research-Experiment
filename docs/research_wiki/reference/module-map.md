@@ -18,9 +18,11 @@ High-level map of `src/fibengine`. This is navigation, not an API contract.
 - `labeling/` — label storage, GUI, worklists, human fib, behavior facit, and
   candidate layers.
 - `research/` — level-event detector, review package generation, interactive
-  review tooling, MTF-confluence, and the **selection-learning** family
+  review tooling, MTF-confluence, the **selection-learning** family
   (`selection_learning{,_gap,_stage1,_artifact,_artifact_mechanics,_enrich,_curve}.py` — can a
-  model select legs like the human; see [research-line-status](research-line-status.md)).
+  model select legs like the human; see [research-line-status](research-line-status.md)), and the
+  **`chamoun_structure_engine.py`** rule-based 1h down-structure proposer (frozen v1: origin = most
+  prominent swing high at ~3-day scale; descriptive, no edge).
 
 ## Decoupled Layer
 
