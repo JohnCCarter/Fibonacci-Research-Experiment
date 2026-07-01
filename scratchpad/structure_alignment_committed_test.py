@@ -45,17 +45,42 @@ GOOD_SOURCE = {"manual_labeling_tool", "manual_screenshot_transcription_reviewed
 
 
 def load_origins(tf):
-    """Committed human facit → list of (fib_id, direction, kind, anchor_a_time, anchor_a_price)."""
+    """Committed facit → (fib_id, direction, kind, a_time, a_price, b_time, b_price) tuples."""
     out = []
     for fp in sorted((FACIT / tf).glob("fib_*.json")):
         d = json.loads(fp.read_text(encoding="utf-8"))
         if d.get("created_by") != "human" or d.get("source") not in GOOD_SOURCE:
             continue
-        a = d["anchor_a"]  # ratio 1.0 = origin
+        a, b = d["anchor_a"], d["anchor_b"]  # a = ratio 1.0 origin, b = ratio 0.0 reached
         direc = d["direction"]
         kind = "high" if direc == "down" else "low"
-        out.append((d["fib_id"], direc, kind, pd.Timestamp(a["time"]), float(a["price"])))
+        out.append(
+            (
+                d["fib_id"],
+                direc,
+                kind,
+                pd.Timestamp(a["time"]),
+                float(a["price"]),
+                pd.Timestamp(b["time"]),
+                float(b["price"]),
+            )
+        )
     return out
+
+
+def facit_move_thresholds(tf):
+    """Neutral plausible-origin thresholds LOCKED to his facit at this tf: M = median drawn-move
+    fraction |a-b|/max(a,b); H = median duration in bars. A 'plausible origin' = any same-kind pivot
+    whose forward move over H bars is >= M (a swing that launches a his-sized leg), so the null is
+    'among plausible origins', not all pivots."""
+    df = CTX[tf]["df"]
+    fracs, durs = [], []
+    for _fid, _direc, _kind, ta, pa, tb, pb in load_origins(tf):
+        fracs.append(abs(pa - pb) / max(pa, pb))
+        ia = df.index.get_indexer([ta], method="nearest")[0]
+        ib = df.index.get_indexer([tb], method="nearest")[0]
+        durs.append(abs(ib - ia))
+    return float(np.median(fracs)), int(max(1, np.median(durs)))
 
 
 CTX = {}
@@ -93,6 +118,33 @@ for tf, path in CACHE.items():
         "binof": binof,
     }
 
+# plausible-origin flag per pivot (forward move >= his median facit move over his median duration).
+# Advisor's discriminating check: restrict the null to swings that launch a his-size leg, so we ask
+# 'among plausible origins does he prefer low-alignment ones', not the ~definitional 'fib origins
+# are trend-terminating vs random mid-trend pivots'.
+for tf in CACHE:
+    df = CTX[tf]["df"]
+    hi = df["high"].to_numpy()
+    lo = df["low"].to_numpy()
+    n = len(df)
+    m_frac, h_bars = facit_move_thresholds(tf)
+    plausible = set()
+    for kind, idxs in CTX[tf]["idx_by_kind"].items():
+        for i in idxs:
+            end = min(n, i + h_bars + 1)
+            if end <= i + 1:
+                continue
+            if kind == "high":
+                drop = (hi[i] - lo[i + 1 : end].min()) / hi[i]
+                if drop >= m_frac:
+                    plausible.add(i)
+            else:
+                rise = (hi[i + 1 : end].max() - lo[i]) / lo[i]
+                if rise >= m_frac:
+                    plausible.add(i)
+    CTX[tf]["plausible"] = plausible
+    CTX[tf]["thr"] = (m_frac, h_bars)
+
 
 def snap_to_pivot(tf, kind, t0):
     """Map an origin anchor time to a DETECTED pivot bar of `kind` within +/-SNAP_TOL; else None."""
@@ -111,37 +163,49 @@ def snap_to_pivot(tf, kind, t0):
 rng = np.random.default_rng(SEED)
 
 
-def collect(tfs):
-    """Gather swing-origins across tfs → per-origin (tf, kind, bin, obs_align) + bookkeeping."""
-    origins = []
+def collect(tfs, use_b=False):
+    """Swing anchors → per-anchor (tf, kind, j=pivot index) + counts. use_b picks anchor_b (reached,
+    OPPOSITE kind) instead of anchor_a (origin)."""
+    anchors = []
     n_total = n_swing = 0
     for tf in tfs:
-        for _fid, _direc, kind, t0, _price in load_origins(tf):
+        for _fid, _direc, kind, ta, _pa, tb, _pb in load_origins(tf):
             n_total += 1
-            j = snap_to_pivot(tf, kind, t0)
+            k = ({"high": "low", "low": "high"}[kind]) if use_b else kind
+            j = snap_to_pivot(tf, k, tb if use_b else ta)
             if j is not None:
                 n_swing += 1
-                origins.append((tf, kind, CTX[tf]["binof"][j], CTX[tf]["align"][j]))
-    return origins, n_total, n_swing
+                anchors.append((tf, k, j))
+    return anchors, n_total, n_swing
 
 
-def perm(origins, matched, defined_only=False):
-    """Permutation mean-alignment null. matched=True → draw within same (tf,kind,prom-bin);
-    defined_only=True → drop the neutral 0.5 fallback from BOTH origins and pools (artifact guard).
-    Returns (obs_mean, null_mean, p_high, p_low, n_used) or None if too few defined origins."""
-    kept = [(tf, kind, b, a) for tf, kind, b, a in origins if not (defined_only and a == 0.5)]
+def perm(anchors, matched, defined_only=False, plausible_only=False, caliper=None):
+    """Permutation mean-alignment null. matched → draw within same prom-quantile-bin;
+    caliper (float) → draw within |prom-prom_anchor|<=caliper instead (tighter prom match);
+    defined_only → drop 0.5-fallback both sides; plausible_only → null from plausible-origin pivots.
+    Returns (obs, null_mean, p_high, p_low, n) or None if too few defined anchors."""
+    kept = []
+    for tf, kind, j in anchors:
+        a = CTX[tf]["align"][j]
+        if defined_only and a == 0.5:
+            continue
+        kept.append((tf, kind, j, a, CTX[tf]["prom"][j], CTX[tf]["binof"][j]))
     if len(kept) < 3:
         return None
-    obs = np.mean([a for *_, a in kept])
+    obs = np.mean([a for *_, a, _p, _b in kept])
     pools = []
-    for tf, kind, b, _a in kept:
+    for tf, kind, _j, a, prom_a, b in kept:
         idxs = CTX[tf]["idx_by_kind"][kind]
-        if matched:
+        if plausible_only:
+            idxs = [i for i in idxs if i in CTX[tf]["plausible"]]
+        if caliper is not None:
+            idxs = [i for i in idxs if abs(CTX[tf]["prom"][i] - prom_a) <= caliper]
+        elif matched:
             idxs = [i for i in idxs if CTX[tf]["binof"][i] == b]
         vals = [CTX[tf]["align"][i] for i in idxs]
         if defined_only:
             vals = [v for v in vals if v != 0.5]
-        pools.append(vals if vals else [_a])  # degenerate guard
+        pools.append(vals if vals else [a])  # degenerate guard
     null = np.zeros(B)
     for k in range(B):
         null[k] = np.mean([pool[rng.integers(len(pool))] for pool in pools])
@@ -150,47 +214,44 @@ def perm(origins, matched, defined_only=False):
     return obs, null.mean(), p_high, p_low, len(kept)
 
 
-def report(label, tfs):
-    origins, n_total, n_swing = collect(tfs)
+def _line(tag, res):
+    if res is None:
+        print(f"  {tag}: too few defined anchors")
+        return
+    obs, nmean, p_high, p_low, nu = res
+    star = "***" if min(p_high, p_low) < 0.05 else ""
     print(
-        f"[{label}]  swing-origins {n_swing}/{n_total}  (non-pivot excluded: {n_total - n_swing})"
+        f"  {tag}: obs {obs:.3f}  null {nmean:.3f}  "
+        f"p(hi)={p_high:.4f}  p(lo)={p_low:.4f}  n={nu}  {star}"
+    )
+
+
+def report(label, tfs, use_b=False):
+    anchors, n_total, n_swing = collect(tfs, use_b)
+    print(
+        f"[{label}]  swing-anchors {n_swing}/{n_total}  (non-pivot excluded: {n_total - n_swing})"
     )
     if n_swing < 3:
-        print("  too few swing-origins to test\n")
+        print("  too few swing-anchors to test\n")
         return
-    # 0.5-fallback diagnostic: neutral fraction among his origins vs the whole pivot pool
-    frac_o = np.mean([a == 0.5 for *_, a in origins])
-    allvals = [
-        CTX[tf]["align"][i]
-        for tf in tfs
-        for k in ("high", "low")
-        for i in CTX[tf]["idx_by_kind"][k]
-    ]
-    frac_p = np.mean([v == 0.5 for v in allvals])
-    print(f"  neutral(0.5) share: origins {frac_o:.0%}  pivot-pool {frac_p:.0%}")
-    rows = (
-        (False, False, "raw null       "),
-        (True, False, "prom-matched   "),
-        (True, True, "prom+defined   "),  # artifact guard: 0.5-fallback removed
-    )
-    for matched, defined, tag in rows:
-        res = perm(origins, matched, defined)
-        if res is None:
-            print(f"  {tag}: too few defined origins")
-            continue
-        obs, nmean, p_high, p_low, nu = res
-        star = "***" if min(p_high, p_low) < 0.05 else ""
-        print(
-            f"  {tag}: obs {obs:.3f}  null {nmean:.3f}  "
-            f"p(hi)={p_high:.4f}  p(lo)={p_low:.4f}  n={nu}  {star}"
-        )
+    _line("raw null            ", perm(anchors, False, False, False))
+    _line("prom-q4             ", perm(anchors, True, False, False))
+    _line("prom-q4+def+plaus   ", perm(anchors, True, True, True))
+    # DECISIVE: tighten the prominence match via caliper. If the low-align gap collapses as the
+    # caliper narrows, it is coarse-binning prominence leakage (→ reconciles Stage-1's null); if it
+    # holds at a tight caliper, it is incremental over prominence.
+    for cal in (2.0, 1.0, 0.5, 0.25):
+        _line(f"prom-caliper<={cal:<4}    ", perm(anchors, False, False, False, caliper=cal))
     print()
 
 
 print(f"structure_alignment SELECTION test  window={WINDOW}  B={B}  seed={SEED}  Qbins={QBINS}")
 print("PRIMARY = committed M/W/D; 4h = context. Verdict = prominence-matched null.\n")
-report("PRIMARY  M/W/D pooled", ["1M", "1w", "1d"])
+report("PRIMARY  M/W/D pooled  (anchor_a = ORIGIN)", ["1M", "1w", "1d"])
 report("  1M", ["1M"])
 report("  1w", ["1w"])
 report("  1d", ["1d"])
 report("CONTEXT  4h", ["4h"])
+print("=== a-vs-b reconciliation: same test on anchor_b (REACHED) — Stage-1 pooled a+b ===\n")
+report("REACHED  M/W/D pooled  (anchor_b)", ["1M", "1w", "1d"], use_b=True)
+report("CONTEXT  4h  (anchor_b)", ["4h"], use_b=True)
