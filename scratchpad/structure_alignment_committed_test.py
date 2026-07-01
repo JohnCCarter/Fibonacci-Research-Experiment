@@ -128,21 +128,26 @@ for tf in CACHE:
     lo = df["low"].to_numpy()
     n = len(df)
     m_frac, h_bars = facit_move_thresholds(tf)
-    plausible = set()
+    plausible = set()  # forward move >= M (advisor v1: leaves backward move unconstrained)
+    plausible2 = set()  # TWO-SIDED: backward AND forward move >= M (advisor v2: drawable reversals)
     for kind, idxs in CTX[tf]["idx_by_kind"].items():
         for i in idxs:
             end = min(n, i + h_bars + 1)
-            if end <= i + 1:
+            start = max(0, i - h_bars)
+            if end <= i + 1 or start >= i:
                 continue
             if kind == "high":
-                drop = (hi[i] - lo[i + 1 : end].min()) / hi[i]
-                if drop >= m_frac:
-                    plausible.add(i)
+                fwd = (hi[i] - lo[i + 1 : end].min()) / hi[i]  # drop after
+                bwd = (hi[i] - lo[start:i].min()) / hi[i]  # rise into the high
             else:
-                rise = (hi[i + 1 : end].max() - lo[i]) / lo[i]
-                if rise >= m_frac:
-                    plausible.add(i)
+                fwd = (hi[i + 1 : end].max() - lo[i]) / lo[i]  # rise after
+                bwd = (hi[start:i].max() - lo[i]) / lo[i]  # drop into the low
+            if fwd >= m_frac:
+                plausible.add(i)
+            if fwd >= m_frac and bwd >= m_frac:
+                plausible2.add(i)
     CTX[tf]["plausible"] = plausible
+    CTX[tf]["plausible2"] = plausible2
     CTX[tf]["thr"] = (m_frac, h_bars)
 
 
@@ -179,10 +184,11 @@ def collect(tfs, use_b=False):
     return anchors, n_total, n_swing
 
 
-def perm(anchors, matched, defined_only=False, plausible_only=False, caliper=None):
+def perm(anchors, matched, defined_only=False, plausible_only=False, caliper=None, two_sided=False):
     """Permutation mean-alignment null. matched → draw within same prom-quantile-bin;
     caliper (float) → draw within |prom-prom_anchor|<=caliper instead (tighter prom match);
-    defined_only → drop 0.5-fallback both sides; plausible_only → null from plausible-origin pivots.
+    defined_only → drop 0.5-fallback both sides; plausible_only → null from plausible pivots
+    (two_sided → the TWO-SIDED plausible set: other drawable reversal extremes — the real check).
     Returns (obs, null_mean, p_high, p_low, n) or None if too few defined anchors."""
     kept = []
     for tf, kind, j in anchors:
@@ -193,11 +199,12 @@ def perm(anchors, matched, defined_only=False, plausible_only=False, caliper=Non
     if len(kept) < 3:
         return None
     obs = np.mean([a for *_, a, _p, _b in kept])
+    pkey = "plausible2" if two_sided else "plausible"
     pools = []
     for tf, kind, _j, a, prom_a, b in kept:
         idxs = CTX[tf]["idx_by_kind"][kind]
         if plausible_only:
-            idxs = [i for i in idxs if i in CTX[tf]["plausible"]]
+            idxs = [i for i in idxs if i in CTX[tf][pkey]]
         if caliper is not None:
             idxs = [i for i in idxs if abs(CTX[tf]["prom"][i] - prom_a) <= caliper]
         elif matched:
@@ -234,14 +241,16 @@ def report(label, tfs, use_b=False):
     if n_swing < 3:
         print("  too few swing-anchors to test\n")
         return
-    _line("raw null            ", perm(anchors, False, False, False))
-    _line("prom-q4             ", perm(anchors, True, False, False))
-    _line("prom-q4+def+plaus   ", perm(anchors, True, True, True))
-    # DECISIVE: tighten the prominence match via caliper. If the low-align gap collapses as the
-    # caliper narrows, it is coarse-binning prominence leakage (→ reconciles Stage-1's null); if it
-    # holds at a tight caliper, it is incremental over prominence.
-    for cal in (2.0, 1.0, 0.5, 0.25):
-        _line(f"prom-caliper<={cal:<4}    ", perm(anchors, False, False, False, caliper=cal))
+    _line("raw null              ", perm(anchors, False, False, False))
+    _line("prom-q4               ", perm(anchors, True, False, False))
+    _line("prom-q4 + 1side-plaus ", perm(anchors, True, True, True))
+    # caliper tightness (residual-prominence leakage check — effect is not local prominence)
+    _line("prom-caliper<=0.5     ", perm(anchors, False, False, False, caliper=0.5))
+    # DECISIVE (advisor): two-sided plausible null = other DRAWABLE reversal extremes (backward AND
+    # forward move >= his median). If the gap collapses here, the low-align is the trend-termination
+    # tautology (every fib anchor bounds a real move), not a selection preference among candidates.
+    _line("TWO-SIDED plausible   ", perm(anchors, False, False, True, two_sided=True))
+    _line("TWO-SIDED + defined   ", perm(anchors, False, True, True, two_sided=True))
     print()
 
 
