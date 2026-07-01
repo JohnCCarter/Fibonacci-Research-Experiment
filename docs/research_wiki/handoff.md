@@ -42,9 +42,15 @@ Machine-local detail: memory `project_structure_engine_topdown.md`. Scratchpad: 
 - **structure_alignment on the powered COMMITTED corpus (1M13/1w24/1d76 + 4h context) → NULL.** Apparent low-alignment (his anchors 0.40 vs prom-matched 0.47, 4h p<1e-4, survives tight prominence caliper) was the **trend-termination TAUTOLOGY** — it collapses against a **two-sided-plausible null** (other drawable reversal extremes: 4h 0.400 vs 0.398, p=0.55) and anchor_b collapses with anchor_a. Consistent with Stage-1.
 - **Prominence itself** already the survivor (Stage-1/Stage-2 leg family); structure adds nothing over it.
 
-**Unaddressed (the real gap):** ~15-40% of his origins are **continuation-mode / non-pivot** (mid-structure) —
-every structure test is *silent* on them. **20 transcribed M/W/D facit** (`newfacit_topdown.py`) still NOT promoted.
-**1w** is the consistent null cell across tests. **TZ (locked):** screenshots = Europe/Stockholm (DST); cache UTC → snap by **price**.
+**NEW productive thread (2026-07-01, `impulse_leg_generator_coverage.py`) — Chamoun's own rule as a GENERATOR.**
+His stated rule: leg = retracement extreme (1) → fresh impulse endpoint (0), a *clean directed impulse* (=
+`cleanliness` net/path, Stage-2's dominant weight). Reframed (advisor) from ranking (known: weak, span-confound)
+to **generation**: his anchors — origin AND endpoint, **incl. continuation-mode origins** — are **fine-scale
+(fractal_n=1) local extrema at 96-100%** → the continuation gap is a **SCALE issue** (finer than the major-pivot
+detector), not un-findable. Coverage high at magnitude-only (83-89%) but **precision poor** (10-44 cand/fib) and
+**cleanliness only a weak generative filter**. **Next:** a *selective* proposer (cut cand/fib without losing his
+legs) — selection/precision is still the hard part. **1w** the consistent null cell. **Open:** 20 transcribed M/W/D
+facit NOT promoted; **TZ (locked):** screenshots = Europe/Stockholm (DST), cache UTC → snap by **price**.
 
 **Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
 [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
@@ -53,8 +59,7 @@ close back above origin; reached ("0") = lowest low. Frozen v1 (local_scale=72, 
 max_horizon=480, min_bars=3), DOWN-only. **1h held-out (this session):** HO-C/HO-D origins re-found
 #1-prom (provisional; 2 of 4 calibration origins unrecoverable from repo); **HO-B = origin-scale
 disagreement** (engine picks the prominent parent swing, human the tighter last-push high, same reached
-low). "0" sustained-low gap confirmed. **Deferred layers (each own GO):** sustained-low "0", UP-structures,
-volume/clarity tie-break.
+low). "0" sustained-low gap confirmed. **Deferred layers (each own GO):** sustained-low "0", UP, tie-break.
 
 **2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise
 unsupported (coverage 0.08 vs control 0.90); #31 fractal line stays the candidate; rank-form `wick_frac`

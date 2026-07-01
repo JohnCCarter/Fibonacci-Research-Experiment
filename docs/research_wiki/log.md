@@ -34,6 +34,23 @@ detected pivots. **Lesson (echoes Stage-1): detection is not the bottleneck, SEL
 lever = **BOS/CHoCH structure-context** as a *selection* signal (next). No edge/PnL; nothing committed;
 scratchpad only. TZ note locked: screenshots = Europe/Stockholm (DST), cache = UTC → snap by price.
 
+## [2026-07-01] direction | Chamoun's rule as a GENERATOR — continuation gap is a SCALE issue
+
+Chamoun articulated his selection rule in his own words: leg = retracement/swing extreme (1) → next
+fresh impulse endpoint (0), and the leg must be a **clean directed impulse, not chop**. That is
+`cleanliness` (net/path) verbatim — and `cleanliness` is Stage-2's dominant weight (0.9), the one leg
+feature that survived. Every failed test this session was **per-pivot** (structure); his criterion is
+**per-leg** (impulse quality), which a single pivot cannot even express (Stage-1 excluded leg features).
+Advisor reframed it from a ranking test (redundant: Stage-2 weak + the 2026-06-24 artifact-mechanics
+span-confound) to a **generator/coverage** question (`impulse_leg_generator_coverage.py`). Result on
+committed M/W/D: his anchors — origin AND endpoint, **including the continuation-mode origins** every
+pivot test was blind to — are **fine-scale (fractal_n=1) local extrema at 96-100%**. So the continuation
+gap is a **SCALE issue** (finer than the major-pivot detector), not un-findable. Coverage high at
+magnitude-only (83-89%) but **precision poor** (10-44 candidates/fib) and **cleanliness only a weak
+generative filter** (raising C drops coverage nearly as fast as candidates; his legs span a wide
+close-to-close cleanliness range). **Containment achievable; selection/precision remains the hard part.**
+Descriptive, no edge, nothing promoted. Next = a *selective* proposer.
+
 ## [2026-07-01] decision | STRUCTURE-MEMBERSHIP thread CLOSED — structure_alignment also NULL (committed corpus)
 
 Ran the new tools on the powered COMMITTED facit corpus (Chamoun's ask), not the 20 transcriptions.
