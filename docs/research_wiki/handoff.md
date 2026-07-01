@@ -46,13 +46,13 @@ fractal_n=1 extrema 96-100% → continuation gap = **SCALE issue**; coverage 83-
 **origin (CRUX)** `origin_rank_probe.py` (apparent "last-push" **COLLAPSED to clean-impulse admissibility**:
 last-push ⟺ k_between=0 ⟺ his cleanliness rule by identity; residual = continuation origin NON-maximal, marginal
 p≈0.04, = the known scale finding, partly definitional).
-**LANDING (precise):** his stated *admissibility* rules hold on **BOTH** anchors (fresh/clean impulse) — real but
-definitional. The **positive** rule for WHICH admissible extreme he picks is **weak-to-absent**: endpoint depth a
-modest lift, **origin flat-null** (neither height nor recency, p≈0.45/0.59) — NOT "prominence". Six probes **bound
-what selection is NOT** (DC, BOS/CHoCH, structure_align, most-extreme, first-fresh); the question shrank to a sharp
-one: *given the clean/fresh-admissible extremes, which one, by what (likely NON-geometric) signal?* **Geometric
-anchor-conditioned selection characterized; positive selector OPEN** (untested: round numbers, HTF, volume, time).
-**Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
+**LANDING:** his *admissibility* rules hold on **BOTH** anchors (fresh/clean impulse) — real but definitional; the
+**positive** rule for WHICH admissible extreme he picks is **weak-to-absent** (endpoint depth modest; **origin
+flat-null**, p≈0.45/0.59 — NOT "prominence"). Six probes **bound what selection is NOT** → open question is NON-geometric.
+**NEXT (his signal = CASCADE, from free-text 2026-07-01):** committed facit too sparse to chain (1d 9 links/76,
+longest run 2) → Chamoun draws ONE continuous **1w** trend leg-by-leg (screenshot → price-snap, working set, NOT
+committed); probe = **scale-consistency** (mag/dur CV) of his chain vs independently-placed clean legs, chaining
+conditioned out. **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
 **Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
 [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
