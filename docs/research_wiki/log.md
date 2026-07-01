@@ -34,6 +34,20 @@ detected pivots. **Lesson (echoes Stage-1): detection is not the bottleneck, SEL
 lever = **BOS/CHoCH structure-context** as a *selection* signal (next). No edge/PnL; nothing committed;
 scratchpad only. TZ note locked: screenshots = Europe/Stockholm (DST), cache = UTC → snap by price.
 
+## [2026-07-01] decision | BOS/CHoCH structure-context → FRAGILE POSITIVE (continuation, not reversal)
+
+Ran the untested lever (`bos_choch_selection_test.py`). Reimplemented SMC swings + BOS/CHoCH in-repo
+(no dep). **Design A** (advisor, avoids the DC artifact): null drawn from **SMC swings** (not
+`detect_pivots`), scoped to the swing-origin subset, **CHoCH (reversal) vs BOS (continuation) split**,
+swing_length **LOCKED=3** (= repo `pivots.lookback`) + **=5** robustness echo; origin mapped to the
+leg-launching extreme (down-origin = the swing high that launches the fall), not the break bar.
+**Result @ n=3:** his swing-origins enrich on **BOS/continuation 75% (9/12) vs 33% null, p=0.003**
+(Daily 86%, p=0.003; Weekly 60%, p=0.27); **CHoCH/reversal flat** (p=0.79). **Read:** he draws fibs on
+*continuation-impulse* launches, not trend-reversals. **BUT does NOT survive n=5** (BOS 50%, p=0.27;
+usable subset 12→6) → **scale-dependent + underpowered**, the same p-fragility DC hit. Descriptive
+pattern-note, **no verdict**; continuation-mode (non-swing) origins still unaddressed; no edge/PnL,
+nothing committed to facit.
+
 ## [2026-06-30] decision | Chamoun structure engine v1 — origin proposer landed as a module
 
 Pivot executed (set 2026-06-30): **stop testing edges; build an engine that represents Chamoun's drawing

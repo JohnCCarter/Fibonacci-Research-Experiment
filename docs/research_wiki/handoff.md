@@ -36,18 +36,18 @@ local detail in memory `project_structure_engine_topdown.md`; scratchpad probes:
 
 **State (in-flight, exploratory — nothing committed):**
 - Chamoun drew **20 NEW M/W/D facit** (4M/7W/9D, 10 down/10 up), transcribed 2026-07-01 into a scratchpad
-  working set (`newfacit_topdown.py` FIBS). **NOT yet promoted** to committed `fib_*.json`. Screenshots
-  pasted in chat (not on disk).
+  working set (`newfacit_topdown.py` FIBS). **NOT yet promoted** to committed `fib_*.json`.
 - **Single-scale prominence** captures his new origins only partially: 1M **1/4**, 1w **5/7**, 1d **6/9**
   — a large fraction are continuation-mode anchors (mid-structure, not local extrema).
-- **Absorb (web-verified): Directional-Change multi-scale + SMC BOS/CHoCH** (reimplement in-repo, no dep).
-  DC multi-scale looked like 18/20 but that was **saturation**; permutation test (B=20k, seed 20260701)
-  vs a **fair null (random same-kind detected pivots)** → pooled W+D **p=0.099**, per-TF p=0.17–0.50 →
-  **DC-scale does NOT survive**. DC-θ swings ≈ our detected pivots. **Lesson (echoes Stage-1): detection
-  is not the bottleneck, SELECTION is.**
-- **Next smallest step:** test **BOS/CHoCH structure-context** as a *selection* signal — do his origins
-  sit on structure-defining swings (CHoCH reversal / BOS-start) more than random pivots? Descriptive,
-  conservative pivot null. **TODO later (Chamoun):** test the new tools against the existing labeling tool.
+- **Absorb (web-verified, in-repo, no dep): Directional-Change multi-scale → NULL.** Looked like 18/20 but
+  that was **saturation**; permutation (B=20k) vs fair null (random same-kind detected pivots) → pooled W+D
+  **p=0.099** → **does NOT survive**. **Lesson (echoes Stage-1): detection is not the bottleneck, SELECTION is.**
+- **BOS/CHoCH structure-context (2026-07-01, `bos_choch_selection_test.py`) — FRAGILE POSITIVE.** Design A
+  (null drawn from SMC swings, split CHoCH vs BOS). Locked `swing_length=3`: his swing-origins enrich on
+  **BOS/continuation 75% vs 33% null, p=0.003** (Daily 86%, p=0.003); CHoCH/reversal flat (p=0.79). But it
+  **does NOT survive** the robustness echo `swing_length=5` (BOS 50%, p=0.27; subset 12→6). Read: he draws
+  fibs on *continuation-impulse* launches, not reversals — but scale-dependent + underpowered; continuation-
+  mode (non-swing) origins still unaddressed. **TODO later (Chamoun):** test the new tools vs the labeling tool.
 - **TZ (locked):** Chamoun's screenshots are Europe/Stockholm (DST-aware); the cache is UTC — snap by
   **price**, quote back in local time.
 
