@@ -16,6 +16,26 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-01] handoff | Cascade probe opened → PAUSED on a snapping blocker (1w facit dating)
+
+After the LANDING (below), asked Chamoun what his eye actually uses to pick among clean candidate legs.
+His free-text answer was 100% **trend-sequential cascade** ("nästa rena impuls i sekvensen … eget ben i
+trenden, inte chop inne i ett större ben"); he also ticked volume/volatility + visual gestalt. Advisor:
+lead with cascade, NOT volume — volume-among-candidates is the same per-leg anchor-conditioned family that
+returned null six times (feature #7); cascade is the one structurally-new (multi-leg) family and the way
+into the unconditioned bottleneck. Power check: committed facit is too sparse to chain (1d 9 links/76,
+longest run 2), so cascade is **not powered on the committed corpus**.
+
+**Chamoun drew a fresh 1w BTC cascade on TradingView** (screenshot in chat, not on disk). Prices +
+his clarifications saved to `scratchpad/cascade_1w_working.py` (two fib structures bottom-left {16,838/
+19,592} & {24,240/30,968}; leg corrected 58,943→108,100; **two separate cascades**; "dem längst bort är
+nedgång"). **BLOCKER (why paused):** a price-only snap to the 1w cache scrambles the chronology — BTC hit
+the low levels (16-30k) more than once (~2020-21 AND ~2022-23), so nearest-price matching mis-dates the
+early legs (one ran backward in time); unique highs (125,710) snap fine. **Resume needs:** rough YEARS per
+cascade + direction confirm, then window the snap. **Probe (advisor-designed, when dated):** scale-
+consistency (CV of leg magnitude + duration) of his chain vs independently-placed clean legs, chaining
+conditioned out (the k_between trap on the sequence side). Descriptive, no edge.
+
 ## [2026-07-01] decision | Rule decomposed generate→select; BOTH halves done → LANDED (no selector beats prominence)
 
 **Origin half — the CRUX** (`origin_rank_probe.py`, advisor-guarded, mirror of the endpoint probe).

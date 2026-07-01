@@ -43,16 +43,16 @@ His rule: leg = retracement extreme "1" → *next fresh* impulse endpoint "0", a
 Probes (scratchpad): **generator** `impulse_leg_generator_coverage.py` (anchors incl. continuation are fine-scale
 fractal_n=1 extrema 96-100% → continuation gap = **SCALE issue**; coverage 83-89%, precision poor); **endpoint**
 `endpoint_rank_probe.py` ("0" fresh-break 100%; fresh-conditioned depth modest 47% vs 36% p=0.019, recency DEAD);
-**origin (CRUX)** `origin_rank_probe.py` (apparent "last-push" **COLLAPSED to clean-impulse admissibility**:
-last-push ⟺ k_between=0 ⟺ his cleanliness rule by identity; residual = continuation origin NON-maximal, marginal
-p≈0.04, = the known scale finding, partly definitional).
+**origin (CRUX)** `origin_rank_probe.py` (apparent "last-push" **COLLAPSED to admissibility**: last-push ⟺
+k_between=0 ⟺ his cleanliness rule; residual = continuation origin NON-maximal, marginal p≈0.04 = the scale finding).
 **LANDING:** his *admissibility* rules hold on **BOTH** anchors (fresh/clean impulse) — real but definitional; the
-**positive** rule for WHICH admissible extreme he picks is **weak-to-absent** (endpoint depth modest; **origin
-flat-null**, p≈0.45/0.59 — NOT "prominence"). Six probes **bound what selection is NOT** → open question is NON-geometric.
-**NEXT (his signal = CASCADE, from free-text 2026-07-01):** committed facit too sparse to chain (1d 9 links/76,
-longest run 2) → Chamoun draws ONE continuous **1w** trend leg-by-leg (screenshot → price-snap, working set, NOT
-committed); probe = **scale-consistency** (mag/dur CV) of his chain vs independently-placed clean legs, chaining
-conditioned out. **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
+**positive** rule for WHICH admissible extreme he picks is **weak-to-absent** (**origin flat-null** p≈0.45/0.59 — NOT
+"prominence"). Six probes **bound what selection is NOT** → the open question is NON-geometric.
+**NEXT — CASCADE probe PAUSED 2026-07-01 (his top signal, from free-text).** Facit too sparse to chain → he DREW a
+1w BTC cascade (TV screenshot in chat; prices in `scratchpad/cascade_1w_working.py`; two cascades, "furthest=downtrend",
+leg 58,943→108,100). **BLOCKER:** price-only snap scrambles chronology (BTC hit 16-30k twice) → need rough YEARS/cascade
++ directions to window the snap. **Probe (when dated):** scale-consistency (mag/dur CV) vs independently-placed clean
+legs, chaining conditioned out. **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
 **Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
 [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
