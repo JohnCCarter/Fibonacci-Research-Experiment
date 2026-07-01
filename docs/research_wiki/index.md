@@ -29,6 +29,8 @@ disagree, the source wins — see [source-authority.md](reference/source-authori
 - [Module map](reference/module-map.md) — `src/fibengine` packages and roles.
 - [Data conventions](reference/data-conventions.md) — label, human-fib, and
   experiment path shapes.
+- [Chamoun daily-fib style](reference/chamoun-daily-fib-style.md) — distilled daily fib-drawing
+  rules (Observed / Inferred / Unverified) + cascade-input template.
 - [CLI commands](reference/cli-commands.md) — common commands for fetch,
   experiment, review, tests, and build.
 - [Guardrails](concepts/guardrails.md) — research-only invariants and promotion

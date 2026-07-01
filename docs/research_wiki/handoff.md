@@ -67,19 +67,22 @@ unsupported (coverage 0.08 vs control 0.90); #31 fractal stays the candidate; ra
 
 ## Recent Changes
 
-- **2026-06-30 STRUCTURE-ENGINE v1 — origin proposer landed as a module.** Chamoun's drawing method →
-  [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py)
-  (+9 tests, `24a3bb5`); frozen v1, DOWN-only, re-finds his 4 dated-1h origins (#1-prominence @ ~3-day
-  scale). a0 sustained-low / up / volume tie-break deferred; validate on fresh structures next. [log.md](log.md) top.
+- **2026-07-01 Chamoun daily-fib STYLE distilled (docs-only) →
+  [reference/chamoun-daily-fib-style.md](reference/chamoun-daily-fib-style.md).** `/chamoun-fib-style-distiller`
+  over 76 daily facit + #38 prereg/postlock (Observed/Inferred/Unverified, source-tagged). **Reconcile flags (in doc):**
+  daily base count is **76** not 67 (grow-facit — Verification Snapshot stale); `20210907` degenerate leg=0;
+  U3 body/close intent carried. Cascade-input template included to unblock the paused CASCADE probe below.
 
-- **2026-06-30 GROW-FACIT (screenshot transcription → facit).** Daily 2025–26 gap filled (5 fibs) **and**
-  4h **+6** (365 → **371**): `fib_transcribe` candidates → human-reviewed via
-  [`--review-candidate`](../../src/fibengine/labeling/tool.py) (`created_by=human`,
-  `source=manual_screenshot_transcription_reviewed`); 4h **C dropped** (near=38), **E nudged** 12:00→16:00.
-  Frozen cache (anchors historical). Full detail [log.md](log.md) top.
+- **2026-06-30 STRUCTURE-ENGINE v1 — origin proposer landed as a module.**
+  [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py)
+  (+9 tests, `24a3bb5`); frozen v1, DOWN-only, re-finds his 4 dated-1h origins (#1-prominence @ ~3-day scale); sustained-low/up/volume tie-break deferred. [log.md](log.md) top.
+
+- **2026-06-30 GROW-FACIT (screenshot transcription → facit).** Daily 2025–26 gap filled (5 fibs) +
+  4h **+6** (365 → **371**) via human-reviewed [`--review-candidate`](../../src/fibengine/labeling/tool.py)
+  (`created_by=human`); 4h C dropped, E nudged. Frozen cache. Full detail [log.md](log.md) top.
 
 - **2026-06-30 Checkpoint reminder hook wired** (`UserPromptSubmit`, auto-pings on capacity; hardened
-  2026-07-01 with a turn-count/thread-health ladder + relay banner). [log.md](log.md) top.
+  2026-07-01 with turn-count/thread-health ladder). [log.md](log.md) top.
 
 - **2026-06-29 Leg-agreement RULER — built + SIGNED OFF (north-star step-1 measurement instrument).**
   The free facit-checker the selection campaign lacked (#38 `agreement` floored: `compare_label`/
@@ -92,14 +95,11 @@ unsupported (coverage 0.08 vs control 0.90); #31 fractal stays the candidate; ra
   range (ceiling mean ~0.79; sub-1.0 = detector-coverage artifacts, not near-misses; binary for
   selection). Usable as **eval**, NOT a graded **training objective** → the learned-selector prereg must
   confront the narrow range. Descriptive step-1, no edge/OOS. [log.md](log.md) top.
-- **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (SIGNED OFF 2026-06-29; fractal
-  control 0.90 confirmed via B-closure, postlock A5).** Pre-reg
-  [locked 2026-06-29](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md) (selector-only,
-  addendum A1). New [`strategies/chamoun_daily_wick_pair.py`](../../src/fibengine/strategies/chamoun_daily_wick_pair.py)
-  + run harness [`research/chamoun_wick_pair_accuracy.py`](../../src/fibengine/research/chamoun_wick_pair_accuracy.py)
-  (+`pivot_recall` producer-injection, +4 tests). Result (N=71): coverage 0.08 vs control 0.90 →
-  **`wick_pair_no_better`**; #31 stays the candidate. Gates green (623 pytest, 74% cov, ruff, bounds).
-  [log.md](log.md) top.
+- **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (SIGNED OFF; fractal control 0.90
+  via B-closure, postlock A5).** [Locked prereg](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md)
+  (selector-only); new [`strategies/chamoun_daily_wick_pair.py`](../../src/fibengine/strategies/chamoun_daily_wick_pair.py)
+  + harness `research/chamoun_wick_pair_accuracy.py` (+4 tests). N=71: coverage 0.08 vs 0.90 →
+  **`wick_pair_no_better`**; #31 stays the candidate. Gates green. [log.md](log.md) top.
 - **2026-06-26 Nesting REFRAME + two nulls.** Within-TF (not cross-TF) impulse-leg decomposition (facit);
   cross-TF 1w→1d [`no_parent_context_signal`](reviews/btc-fib-nesting-prediction-prereg-1w1d-20260626.md) (N=9) +
   [`impulse_leg`](reviews/btc-fib-impulse-leg-feature-prereg-20260626.md) 4h **clean POWERED null** (CI [−0.032,+0.027]); per-leg line closed; HTF data-starved. [log.md](log.md).
