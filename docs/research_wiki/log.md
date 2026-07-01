@@ -34,6 +34,25 @@ detected pivots. **Lesson (echoes Stage-1): detection is not the bottleneck, SEL
 lever = **BOS/CHoCH structure-context** as a *selection* signal (next). No edge/PnL; nothing committed;
 scratchpad only. TZ note locked: screenshots = Europe/Stockholm (DST), cache = UTC → snap by price.
 
+## [2026-07-01] decision | STRUCTURE-MEMBERSHIP thread CLOSED — structure_alignment also NULL (committed corpus)
+
+Ran the new tools on the powered COMMITTED facit corpus (Chamoun's ask), not the 20 transcriptions.
+Used the repo's own `structure_alignment` (BOS/CHoCH is its coarse form) vs committed M/W/D origins
+(anchor_a), prominence-matched permutation (`structure_alignment_committed_test.py`). **First read looked
+like a real surprise:** his anchors sit at LOWER structure_alignment than prom-matched pivots (pooled
+0.40 vs 0.47; 4h n=300 p<1e-4), and it survived a **tight prominence caliper** (≤0.25 ATR, p=0.012), the
+0.5-fallback guard, a one-sided plausible-origin null, AND held on anchor_b — seeming to contradict
+Stage-1. **Adversarial verification killed it:** the a+b symmetry was the tell (anchor_b, which he does
+not select for structure, is *even more* low-align → it is the pure turning-point property). The
+discriminating check — a **two-sided-plausible null** (backward AND forward move ≥ his median = other
+DRAWABLE reversal extremes) — **collapses the gap** (4h 0.400 vs 0.398, p=0.55; anchor_b collapses too).
+So low-alignment was the **trend-termination TAUTOLOGY** (every fib anchor bounds a real move → lower-align
+than random locally-prominent pivots that include continuation highs), NOT a selection preference. Fully
+consistent with Stage-1 (its AP-lift asks the among-candidates question directly). **Thread CLOSED:** four
+features (DC, BOS/CHoCH, structure_alignment, + prominence-as-survivor) all say detection/structure-
+membership is not the bottleneck — **selection among plausible candidates is**, still uncracked.
+Continuation-mode / non-pivot origins remain unaddressed; 1w the consistent null cell. No edge; scratchpad only.
+
 ## [2026-07-01] decision | BOS/CHoCH structure-context → NULL on the selection question
 
 Ran the untested lever (`bos_choch_selection_test.py`). Reimplemented SMC swings + BOS/CHoCH in-repo

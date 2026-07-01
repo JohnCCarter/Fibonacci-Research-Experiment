@@ -27,29 +27,24 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — STRUCTURE-ENGINE top-down on M/W/D (1h parked — too noisy) — 2026-07-01
+## Next Step — STRUCTURE-MEMBERSHIP thread CLOSED (all 4 features null on selection) — 2026-07-01
 
-**2026-07-01 (Chamoun): 1h is too noisy — move the structure-engine work to top-down Monthly →
-Weekly → Daily** (the locked flow), validated against committed facit. Descriptive, no edge. Machine-
-local detail in memory `project_structure_engine_topdown.md`; scratchpad probes: `newfacit_topdown.py`,
-`dc_structure_proto.py`, `dc_permutation_test.py`.
+**2026-07-01: the structure-engine substrate question is answered — STOP the thread.** Four structure/
+detection features, each tested with a conservative null and adversarially verified, all say the same
+thing: **detection & structure-membership are NOT the bottleneck — SELECTION among plausible candidates
+is, and none of them cracks it** (echoes Stage-1 `no_pivot_signal_above_prominence`). Descriptive, no edge.
+Machine-local detail: memory `project_structure_engine_topdown.md`. Scratchpad: `dc_permutation_test.py`,
+`bos_choch_selection_test.py`, `structure_alignment_committed_test.py`.
 
-**State (in-flight, exploratory — nothing committed):**
-- Chamoun drew **20 NEW M/W/D facit** (4M/7W/9D, 10 down/10 up), transcribed 2026-07-01 into a scratchpad
-  working set (`newfacit_topdown.py` FIBS). **NOT yet promoted** to committed `fib_*.json`.
-- **Single-scale prominence** captures his new origins only partially: 1M **1/4**, 1w **5/7**, 1d **6/9**
-  — a large fraction are continuation-mode anchors (mid-structure, not local extrema).
-- **Absorb (web-verified, in-repo, no dep): Directional-Change multi-scale → NULL.** Looked like 18/20 but
-  that was **saturation**; permutation (B=20k) vs fair null (random same-kind detected pivots) → pooled W+D
-  **p=0.099** → **does NOT survive**. **Lesson (echoes Stage-1): detection is not the bottleneck, SELECTION is.**
-- **BOS/CHoCH structure-context (2026-07-01, `bos_choch_selection_test.py`) — NULL on the selection question.**
-  Design A (null from SMC swings, CHoCH-vs-BOS split, `swing_length=3`). Apparent "BOS 75% vs 33%, p=0.003" was a
-  **~definitional break-rate artifact** (his origins break structure 83% vs 45% null — a fib origin launches a
-  breaking move *by construction*). **Conditioning the null on breaking swings** (the real continuation-vs-reversal
-  cut) → BOS|broke 90% vs 71%, **p=0.16**, ≥0.27 elsewhere → **does NOT survive**. **Lesson (3rd time, DC + Stage-1):
-  structure-membership is not the bottleneck — SELECTION among swings is.** **TODO (Chamoun):** new tools vs labeling tool.
-- **TZ (locked):** Chamoun's screenshots are Europe/Stockholm (DST-aware); the cache is UTC — snap by
-  **price**, quote back in local time.
+**The four nulls (each survived adversarial verification):**
+- **Directional-Change multi-scale → NULL.** Apparent 18/20 was saturation; permutation vs fair pivot null → pooled W+D **p=0.099**.
+- **BOS/CHoCH structure-context → NULL.** Apparent BOS 75% vs 33% (p=0.003) was a **~definitional break-rate artifact**; conditioning the null on breaking swings → BOS|broke **p=0.16**.
+- **structure_alignment on the powered COMMITTED corpus (1M13/1w24/1d76 + 4h context) → NULL.** Apparent low-alignment (his anchors 0.40 vs prom-matched 0.47, 4h p<1e-4, survives tight prominence caliper) was the **trend-termination TAUTOLOGY** — it collapses against a **two-sided-plausible null** (other drawable reversal extremes: 4h 0.400 vs 0.398, p=0.55) and anchor_b collapses with anchor_a. Consistent with Stage-1.
+- **Prominence itself** already the survivor (Stage-1/Stage-2 leg family); structure adds nothing over it.
+
+**Unaddressed (the real gap):** ~15-40% of his origins are **continuation-mode / non-pivot** (mid-structure) —
+every structure test is *silent* on them. **20 transcribed M/W/D facit** (`newfacit_topdown.py`) still NOT promoted.
+**1w** is the consistent null cell across tests. **TZ (locked):** screenshots = Europe/Stockholm (DST); cache UTC → snap by **price**.
 
 **Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
 [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
