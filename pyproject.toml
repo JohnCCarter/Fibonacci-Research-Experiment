@@ -25,6 +25,13 @@ dev = [
     "pre-commit>=4.0",
     "hypothesis>=6.0",
 ]
+# Selection-learning ML lane (Issue #42). Kept OUT of default/dev install so the base stays light;
+# gated fail-closed in research/selection_ranker_ml.py until enough human data + a locked holdout.
+ml = [
+    "scikit-learn>=1.4",
+    "optuna>=3.6",
+    "joblib>=1.3",
+]
 
 [build-system]
 requires = ["hatchling"]

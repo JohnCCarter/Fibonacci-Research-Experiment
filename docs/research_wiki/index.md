@@ -92,6 +92,8 @@ Accumulated external methodology so agents read instead of re-derive (see
 - [**Research-line status**](reference/research-line-status.md) — status of every line + which
   reviews are current vs closed/parked/superseded (start here).
 - [Reviews index](reviews/README.md) — active BTC/USD review pages + the pre-reset superseded set.
+- [Fib Selection Learner v0](reviews/btc-fib-selection-learner-v0-20260701.md) — Issue #42 v0
+  scaffolding (contrastive annotation schema + baseline + gated ML); selection-learning, not edge.
 - The selection-learning arc (2026-06-17→), behaviour/horizontal nulls, MTF confluence, and
   Genesis-V2 prereg docs all live under [reviews/](reviews/) — classified in the status registry.
 
