@@ -16,6 +16,31 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-01] decision | Rule decomposed generate→select; BOTH halves done → LANDED (no selector beats prominence)
+
+**Origin half — the CRUX** (`origin_rank_probe.py`, advisor-guarded, mirror of the endpoint probe).
+Given his "0", rank his "1" among backward-running-max fine highs (the swing highs the fall retraced
+from) by **most-extreme** (prominence-like) vs **last-push** (nearest to "0"); guards pre-registered
+(neutral orderings, pooled continuation for power, fresh-conditioned Poisson-binomial null, admissibility
+reported not signal). **Pre-verify looked like a first positive:** last-push beat null (1d-continuation
+63% vs 38%, **p=0.002**; pooled-continuation p=0.005; 1w-major p=0.011) and most-extreme was rejected —
+the opposite of the endpoint (depth), matching HO-B (n=1). **Verification collapsed the exciting half
+(trap #5):** last-push-rank-1 ⟺ **k_between=0** (no fresh high between "1" and "0") ⟺ a **clean monotonic
+impulse = his cleanliness rule**, so P(last-push) ≡ P(k_between=0)=59% *by identity* — recency is
+admissibility, NOT a distinct selector. The **only non-circular residual: his continuation origin is
+NON-maximal** (not the towering prior peak) — most-extreme below null at every horizon (H×0.5/1/2),
+strengthening with H, but only **marginally significant** (lower-tail p≈0.04 at H×1/H×2); major-swing
+origin ~ null. This residual = the already-known scale/continuation finding, not a new mechanism.
+
+**LANDING (honest step-1 endpoint).** Six probes now converge — DC, BOS/CHoCH, structure_alignment,
+generator-coverage, endpoint-rank, origin-rank: **his leg selection ≈ prominence-ranked fresh/clean
+impulse legs.** The continuation residual (origins fine-scale + non-maximal) is real but below decisive
+power at this corpus; the unconditioned "which leg with nothing given" is likely out of reach at this n.
+**No novel geometric selector beats prominence.** This is a descriptive map, not a sixth-feature failure:
+we have localized where signal is (prominence + his own admissibility rules) and is not (a separate
+geometric selector). Descriptive, no edge. Scratchpad `origin_rank_probe.py`, `endpoint_rank_probe.py`,
+`impulse_leg_generator_coverage.py`. Gates green (ruff, bounds).
+
 ## [2026-07-01] decision | Rule decomposed generate→select; endpoint-half done → ORIGIN is the crux
 
 **Reframe (advisor-led):** split Chamoun's rule (retracement extreme "1" → next fresh impulse endpoint

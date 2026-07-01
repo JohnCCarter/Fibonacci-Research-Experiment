@@ -30,27 +30,27 @@ append-only trail lives in [log.md](log.md).
 ## Next Step — STRUCTURE-MEMBERSHIP thread CLOSED (all 4 features null on selection) — 2026-07-01
 
 **2026-07-01: the structure-engine substrate question is answered — STOP the thread.** Four structure/
-detection features, each tested with a conservative null and adversarially verified, all say the same
-thing: **detection & structure-membership are NOT the bottleneck — SELECTION among plausible candidates
-is, and none of them cracks it** (echoes Stage-1 `no_pivot_signal_above_prominence`). Descriptive, no edge.
-Machine-local detail: memory `project_structure_engine_topdown.md`. Scratchpad: `dc_permutation_test.py`,
+detection features, each with a conservative null + adversarial verification, all NULL on *selection*:
+**Directional-Change** (saturation → pooled W+D p=0.099), **BOS/CHoCH** (definitional break-rate → BOS|broke
+p=0.16), **structure_alignment on the powered COMMITTED corpus** (trend-termination TAUTOLOGY → collapses vs a
+two-sided-plausible null, 4h 0.400 vs 0.398 p=0.55, anchor_b too), **prominence** stays the Stage-1/2 survivor.
+**Detection & structure-membership are NOT the bottleneck — SELECTION is** (echoes `no_pivot_signal_above_prominence`).
+Machine-local: memory `project_structure_engine_topdown.md`. Scratchpad: `dc_permutation_test.py`,
 `bos_choch_selection_test.py`, `structure_alignment_committed_test.py`.
 
-**The four nulls (each survived adversarial verification):**
-- **Directional-Change multi-scale → NULL.** Apparent 18/20 was saturation; permutation vs fair pivot null → pooled W+D **p=0.099**.
-- **BOS/CHoCH structure-context → NULL.** Apparent BOS 75% vs 33% (p=0.003) was a **~definitional break-rate artifact**; conditioning the null on breaking swings → BOS|broke **p=0.16**.
-- **structure_alignment on the powered COMMITTED corpus (1M13/1w24/1d76 + 4h context) → NULL.** Apparent low-alignment (his anchors 0.40 vs prom-matched 0.47, 4h p<1e-4, survives tight prominence caliper) was the **trend-termination TAUTOLOGY** — collapses against a **two-sided-plausible null** (4h 0.400 vs 0.398, p=0.55), anchor_b collapses too. **Prominence** stays the Stage-1/Stage-2 survivor; structure adds nothing over it.
-
-**PRODUCTIVE thread (2026-07-01) — Chamoun's rule DECOMPOSED into generate → select; endpoint-half DONE.**
-His rule: leg = retracement extreme (1) → *next fresh* impulse endpoint (0), a *clean directed impulse*.
-**(1) Generator** (`impulse_leg_generator_coverage.py`): his anchors incl. continuation origins are **fine-scale
-(fractal_n=1) extrema 96-100%** → continuation gap is a **SCALE issue**, not un-findable; coverage 83-89%
-magnitude-only, precision poor (10-44 cand/fib). **(2) Endpoint-given-origin RANK** (`endpoint_rank_probe.py`):
-his "0" is a **fresh break 100%** (his own rule verbatim; cuts endpoints ~8-12→4), and **fresh-conditioned** (null
-= random fresh, Poisson-binomial) **depth survives** (1d 47% vs 36% p=0.019; 1w p=0.024) = **prominence again**,
-**recency/"first-fresh" DEAD** (p=0.79). ⇒ **endpoint is NOT the bottleneck — ORIGIN selection is** (continuation-
-hole lives there, untouched). **Next:** origin-selection probe (which fine extremum = "1" among plausible origins).
-**Open:** 20 M/W/D facit NOT promoted; **TZ:** screenshots Europe/Stockholm (DST), cache UTC → snap by **price**.
+**DECOMPOSITION thread (2026-07-01) — Chamoun's rule split generate → select; BOTH halves DONE, LANDED.**
+His rule: leg = retracement extreme "1" → *next fresh* impulse endpoint "0", a *clean directed impulse*.
+**(1) Generator** (`impulse_leg_generator_coverage.py`): anchors incl. continuation origins are fine-scale
+(fractal_n=1) extrema 96-100% → continuation gap = a **SCALE issue**; coverage 83-89%, precision poor.
+**(2) Endpoint** (`endpoint_rank_probe.py`): "0" is a fresh break 100% (his rule; cuts endpoints ~8-12→4);
+fresh-conditioned **depth survives** (1d p=0.019) = **prominence again**, recency DEAD. **(3) Origin, the CRUX**
+(`origin_rank_probe.py`): apparent "last-push wins" (1d-cont p=0.002) **COLLAPSED to clean-impulse admissibility**
+(last-push ⟺ k_between=0 ⟺ his cleanliness rule, by identity); only non-circular residual = his continuation origin
+is **NON-maximal** (not the prominent peak; most-extreme rejected, horizon-robust, marginal p≈0.04) = the scale finding.
+**LANDING:** six probes (DC, BOS/CHoCH, structure_align, generator, endpoint, origin) **converge** — his leg selection
+≈ **prominence-ranked fresh/clean impulse legs**; continuation residual is fine-scale + non-maximal but below decisive
+power at this n; unconditioned "which leg given nothing" likely out of reach at this corpus. **No novel geometric selector
+beats prominence — step-1 descriptive map COMPLETE.** **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
 **Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
 [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
