@@ -40,30 +40,30 @@ Machine-local: memory `project_structure_engine_topdown.md`. Scratchpad: `dc_per
 
 **DECOMPOSITION thread (2026-07-01) — Chamoun's rule split generate → select; BOTH halves DONE, LANDED.**
 His rule: leg = retracement extreme "1" → *next fresh* impulse endpoint "0", a *clean directed impulse*.
-**(1) Generator** (`impulse_leg_generator_coverage.py`): anchors incl. continuation origins are fine-scale
-(fractal_n=1) extrema 96-100% → continuation gap = a **SCALE issue**; coverage 83-89%, precision poor.
-**(2) Endpoint** (`endpoint_rank_probe.py`): "0" is a fresh break 100% (his rule; cuts endpoints ~8-12→4);
-fresh-conditioned **depth survives** (1d p=0.019) = **prominence again**, recency DEAD. **(3) Origin, the CRUX**
-(`origin_rank_probe.py`): apparent "last-push wins" (1d-cont p=0.002) **COLLAPSED to clean-impulse admissibility**
-(last-push ⟺ k_between=0 ⟺ his cleanliness rule, by identity); only non-circular residual = his continuation origin
-is **NON-maximal** (not the prominent peak; most-extreme rejected, horizon-robust, marginal p≈0.04) = the scale finding.
-**LANDING:** six probes (DC, BOS/CHoCH, structure_align, generator, endpoint, origin) **converge** — his leg selection
-≈ **prominence-ranked fresh/clean impulse legs**; continuation residual is fine-scale + non-maximal but below decisive
-power at this n; unconditioned "which leg given nothing" likely out of reach at this corpus. **No novel geometric selector
-beats prominence — step-1 descriptive map COMPLETE.** **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
+Probes (scratchpad): **generator** `impulse_leg_generator_coverage.py` (anchors incl. continuation are fine-scale
+fractal_n=1 extrema 96-100% → continuation gap = **SCALE issue**; coverage 83-89%, precision poor); **endpoint**
+`endpoint_rank_probe.py` ("0" fresh-break 100%; fresh-conditioned depth modest 47% vs 36% p=0.019, recency DEAD);
+**origin (CRUX)** `origin_rank_probe.py` (apparent "last-push" **COLLAPSED to clean-impulse admissibility**:
+last-push ⟺ k_between=0 ⟺ his cleanliness rule by identity; residual = continuation origin NON-maximal, marginal
+p≈0.04, = the known scale finding, partly definitional).
+**LANDING (precise):** his stated *admissibility* rules hold on **BOTH** anchors (fresh/clean impulse) — real but
+definitional. The **positive** rule for WHICH admissible extreme he picks is **weak-to-absent**: endpoint depth a
+modest lift, **origin flat-null** (neither height nor recency, p≈0.45/0.59) — NOT "prominence". Six probes **bound
+what selection is NOT** (DC, BOS/CHoCH, structure_align, most-extreme, first-fresh); the question shrank to a sharp
+one: *given the clean/fresh-admissible extremes, which one, by what (likely NON-geometric) signal?* **Geometric
+anchor-conditioned selection characterized; positive selector OPEN** (untested: round numbers, HTF, volume, time).
+**Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
 **Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
 [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
 tests, `24a3bb5`). Rule: origin ("1") = #1-prominent swing high at ~3-day (72-bar) scale; runs to first
 close back above origin; reached ("0") = lowest low. Frozen v1 (local_scale=72, min_move=2%,
-max_horizon=480, min_bars=3), DOWN-only. **1h held-out (this session):** HO-C/HO-D origins re-found
-#1-prom (provisional; 2 of 4 calibration origins unrecoverable from repo); **HO-B = origin-scale
-disagreement** (engine picks the prominent parent swing, human the tighter last-push high, same reached
-low). "0" sustained-low gap confirmed. **Deferred layers (each own GO):** sustained-low "0", UP, tie-break.
+max_horizon=480, min_bars=3), DOWN-only. **1h held-out:** HO-C/HO-D origins re-found #1-prom (provisional);
+**HO-B = origin-scale disagreement** (engine picks the prominent parent swing, human the tighter last-push
+high — now generalized by the origin probe above). **Deferred layers (each own GO):** sustained-low "0", UP.
 
 **2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise
-unsupported (coverage 0.08 vs control 0.90); #31 fractal line stays the candidate; rank-form `wick_frac`
-sweep left open (separately registered). Does not reopen the closed per-leg-feature line. [log.md](log.md) top.
+unsupported (coverage 0.08 vs control 0.90); #31 fractal stays the candidate; rank-form `wick_frac` left open. [log.md](log.md) top.
 
 ## Recent Changes
 

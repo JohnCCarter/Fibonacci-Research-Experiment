@@ -32,14 +32,18 @@ NON-maximal** (not the towering prior peak) — most-extreme below null at every
 strengthening with H, but only **marginally significant** (lower-tail p≈0.04 at H×1/H×2); major-swing
 origin ~ null. This residual = the already-known scale/continuation finding, not a new mechanism.
 
-**LANDING (honest step-1 endpoint).** Six probes now converge — DC, BOS/CHoCH, structure_alignment,
-generator-coverage, endpoint-rank, origin-rank: **his leg selection ≈ prominence-ranked fresh/clean
-impulse legs.** The continuation residual (origins fine-scale + non-maximal) is real but below decisive
-power at this corpus; the unconditioned "which leg with nothing given" is likely out of reach at this n.
-**No novel geometric selector beats prominence.** This is a descriptive map, not a sixth-feature failure:
-we have localized where signal is (prominence + his own admissibility rules) and is not (a separate
-geometric selector). Descriptive, no edge. Scratchpad `origin_rank_probe.py`, `endpoint_rank_probe.py`,
-`impulse_leg_generator_coverage.py`. Gates green (ruff, bounds).
+**LANDING (precise — advisor-tightened).** His stated *admissibility* rules hold on **both** anchors (his
+"0" is a fresh break, his "1" sits on a clean/fresh impulse) — real but definitional. The **positive** rule
+for WHICH admissible extreme he picks is **weak-to-absent:** endpoint depth is a modest lift (47% vs 36%),
+**origin is flat-null** (major-swing: neither height nor recency, p≈0.45/0.59) — so the honest landing is NOT
+"it's prominence" (prominence is null on the origin side too). Six probes (DC, BOS/CHoCH, structure_alignment,
+generator, endpoint, origin) **bound what his selection is NOT** (not DC/BOS/CHoCH/structure/most-extreme/
+first-fresh) and confirm his admissibility on both anchors. **Geometric, anchor-conditioned selection is
+characterized; the positive selector stays OPEN** — the question shrank to a sharp one: given the clean/fresh-
+admissible extremes, which one, by what (likely NON-geometric) signal? Untested territory = round numbers, HTF
+context, volume, time-since-swing, and the unconditioned "which leg from nothing" (likely out of reach at this
+n). Not a sixth-feature failure — a bounded descriptive map with a sharper open question. Descriptive, no edge.
+Scratchpad `origin_rank_probe.py`, `endpoint_rank_probe.py`, `impulse_leg_generator_coverage.py`. Gates green.
 
 ## [2026-07-01] decision | Rule decomposed generate→select; endpoint-half done → ORIGIN is the crux
 
