@@ -27,26 +27,39 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — STRUCTURE-ENGINE (Chamoun's method → explicit 1h detector) — v1 LANDED
+## Next Step — STRUCTURE-ENGINE top-down on M/W/D (1h parked — too noisy) — 2026-07-01
 
-**2026-06-30 (Chamoun): stop testing edges before the engine represents the structure.** Feature-ML
-selection line stays **closed**. Encode his *stated* drawing method as an explicit rule-based detector
-on **1h** (his native TF) — descriptive, no edge.
+**2026-07-01 (Chamoun): 1h is too noisy — move the structure-engine work to top-down Monthly →
+Weekly → Daily** (the locked flow), validated against committed facit. Descriptive, no edge. Machine-
+local detail in memory `project_structure_engine_topdown.md`; scratchpad probes: `newfacit_topdown.py`,
+`dc_structure_proto.py`, `dc_permutation_test.py`.
 
-**v1 origin engine SHIPPED** — [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py)
-(+9 tests, commit `24a3bb5`). Rule: **origin ("1") = the #1 most-prominent swing high at a ~3-day
-(72-bar) scale**; the structure runs to the first close back above the origin; reached ("0") = the
-lowest low over that span. **Frozen v1** params (local_scale=72, min_move=2%, max_horizon=480,
-min_bars=3), DOWN-only. Validated on **7 dated 1h facit** (Chamoun's screenshots 2026-06-30,
-`scratchpad/chamoun_1h_batch2.txt`): his 4 clean down-origins are each #1-prominence at ±72 bars
-(neutral / non-circular) and re-found by the engine; he passes the higher highs that sit farther away
-(confirms his "both" answer, pins the scale). Eyeball pass — "snarlikt + rätt region = vinst" is the
-**acceptance bar**, not tick-exact (owner-prefs).
+**State (in-flight, exploratory — nothing committed):**
+- Chamoun drew **20 NEW M/W/D facit** (4M/7W/9D, 10 down/10 up), transcribed 2026-07-01 into a scratchpad
+  working set (`newfacit_topdown.py` FIBS). **NOT yet promoted** to committed `fib_*.json`. Screenshots
+  pasted in chat (not on disk).
+- **Single-scale prominence** captures his new origins only partially: 1M **1/4**, 1w **5/7**, 1d **6/9**
+  — a large fraction are continuation-mode anchors (mid-structure, not local extrema).
+- **Absorb (web-verified): Directional-Change multi-scale + SMC BOS/CHoCH** (reimplement in-repo, no dep).
+  DC multi-scale looked like 18/20 but that was **saturation**; permutation test (B=20k, seed 20260701)
+  vs a **fair null (random same-kind detected pivots)** → pooled W+D **p=0.099**, per-TF p=0.17–0.50 →
+  **DC-scale does NOT survive**. DC-θ swings ≈ our detected pivots. **Lesson (echoes Stage-1): detection
+  is not the bottleneck, SELECTION is.**
+- **Next smallest step:** test **BOS/CHoCH structure-context** as a *selection* signal — do his origins
+  sit on structure-defining swings (CHoCH reversal / BOS-start) more than random pivots? Descriptive,
+  conservative pivot null. **TODO later (Chamoun):** test the new tools against the existing labeling tool.
+- **TZ (locked):** Chamoun's screenshots are Europe/Stockholm (DST-aware); the cache is UTC — snap by
+  **price**, quote back in local time.
 
-**Deferred next layers (each its own GO):** (1) "0" **sustained-low** rule (Chamoun Q2 — current a0
-takes the lowest low → sits on early spikes); (2) UP-structures; (3) volume/clarity tie-break for
-near-tie higher wicks. **Owed before trusting beyond n=4:** validate the frozen engine on a few
-**fresh / held-out** structures. No edge/PnL.
+**Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
+[`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
+tests, `24a3bb5`). Rule: origin ("1") = #1-prominent swing high at ~3-day (72-bar) scale; runs to first
+close back above origin; reached ("0") = lowest low. Frozen v1 (local_scale=72, min_move=2%,
+max_horizon=480, min_bars=3), DOWN-only. **1h held-out (this session):** HO-C/HO-D origins re-found
+#1-prom (provisional; 2 of 4 calibration origins unrecoverable from repo); **HO-B = origin-scale
+disagreement** (engine picks the prominent parent swing, human the tighter last-push high, same reached
+low). "0" sustained-low gap confirmed. **Deferred layers (each own GO):** sustained-low "0", UP-structures,
+volume/clarity tie-break.
 
 **2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise
 unsupported (coverage 0.08 vs control 0.90); #31 fractal line stays the candidate; rank-form `wick_frac`
@@ -65,9 +78,8 @@ sweep left open (separately registered). Does not reopen the closed per-leg-feat
   `source=manual_screenshot_transcription_reviewed`); 4h **C dropped** (near=38), **E nudged** 12:00→16:00.
   Frozen cache (anchors historical). Full detail [log.md](log.md) top.
 
-- **2026-06-30 Checkpoint reminder hook wired** — `UserPromptSubmit` hook auto-pings once at ~25%
-  context (the in-time sweet spot); model-discretion invocation was unreliable, `PreCompact` rejected as
-  too late. [log.md](log.md) top.
+- **2026-06-30 Checkpoint reminder hook wired** (`UserPromptSubmit`, auto-pings on capacity; hardened
+  2026-07-01 with a turn-count/thread-health ladder + relay banner). [log.md](log.md) top.
 
 - **2026-06-29 Leg-agreement RULER — built + SIGNED OFF (north-star step-1 measurement instrument).**
   The free facit-checker the selection campaign lacked (#38 `agreement` floored: `compare_label`/
@@ -183,28 +195,16 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   behaviour/Genesis/1H/ETH. [Results](reviews/btc-fib-selection-learning-artifact-results-20260624.md);
   summary + `cells/*.json` gitignored/regenerable. Re-run (deterministic, frozen data, no `--refresh`):
   `PYTHONUNBUFFERED=1 uv run --no-sync python -u -m fibengine.research.selection_learning_artifact --artifact`.
-- **2026-06-24 Fib SELECTION-LEARNING artifact-MECHANICS — BUILT + RUN (descriptive-only, NO verdict).**
-  Commit 2 of the [mechanics PLAN](reviews/btc-fib-selection-learning-artifact-mechanics-plan-20260624.md)
-  (`70174df`), executed verbatim. New sibling `research/selection_learning_artifact_mechanics.py`
-  (+`--artifact-mechanics` CLI, 3 descriptive fields on `ArtifactRow`, +8 tests). Findings (descriptive,
-  no claim): **(M1)** the 4H "reached less clean" gap is a **span/duration confound** — Spearman(clean,
-  span)=**−0.69**, reached longer (median 5 vs 3 bars), and the −0.056 gap **vanishes when conditioning
-  on span** (short-span +0.003, long-span −0.017): composition effect, not detector cleanliness-
-  preference. **(M3)** 4H snapping deflates because pivots sit **outside** human anchors → span extends
-  (33% extend vs 1.6% shrink); the **1D flip** is a TF-dependent geometry (1D shrinks 10% **and** the
-  span-delta↔clean Spearman flips −0.19→+0.18) — *why* the local relationship reverses stays an **open
-  investigate-target**. **No verdict, no lock change; artifact-probe reading unchanged; crux OPEN.**
-  Population guard: M1 ≠ Stage-2 lead (different population). No matched-null/new universe/Genesis/1H/
-  ETH/refresh. [Mechanics note](reviews/btc-fib-selection-learning-artifact-mechanics-20260624.md);
-  mechanics_summary.json gitignored/regenerable.
-- **2026-06-24 Fib SELECTION-LEARNING snapping FLIP mechanics — BUILT + RUN (descriptive, no verdict).**
-  Narrow follow-up: *why does snapping↔cleanliness flip sign 4H↔1D*. Extended the mechanics module
-  (+net/path decomposition, 2 more `ArtifactRow` fields, +2 tests). On the moved-snap domain it is a
-  **net-vs-path channel reversal** consistent with **candle granularity**: 4H grows **path** > net
-  (rel_path 0.231 > rel_net 0.181, 63% path-dominated → clean down); 1D grows **net** > path (0.063 >
-  0.025, 60% net-dominated → clean up). Explains the **measurement geometry**, kept apart from any
-  selection-claim; **no verdict, no lock change, crux OPEN**. No matched-null/universe/Genesis/1H/ETH/
-  refresh. [Flip note](reviews/btc-fib-selection-learning-artifact-mechanics-flip-20260624.md).
+- **2026-06-24 Fib SELECTION-LEARNING artifact-MECHANICS + snapping-FLIP — BUILT + RUN (descriptive,
+  NO verdict; full detail in [log.md](log.md)).** Two sibling runs (`70174df`) on
+  `research/selection_learning_artifact_mechanics.py` (+`--artifact-mechanics`, +10 tests): **(M1)** the
+  4H "reached less clean" gap is a **span/duration confound** (Spearman −0.69; gap vanishes conditioning
+  on span). **(M3)** snapping deflates because pivots sit outside human anchors → span extends; the **1D
+  flip** is TF-dependent geometry, a **net-vs-path channel reversal** consistent with candle granularity
+  (4H path-dominated → clean down; 1D net-dominated → clean up). **No verdict, no lock change; crux OPEN.**
+  No matched-null/universe/Genesis/1H/ETH/refresh.
+  [Mechanics](reviews/btc-fib-selection-learning-artifact-mechanics-20260624.md) ·
+  [Flip](reviews/btc-fib-selection-learning-artifact-mechanics-flip-20260624.md).
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
 may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal

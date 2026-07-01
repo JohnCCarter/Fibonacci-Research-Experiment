@@ -16,6 +16,24 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-01] decision | Structure-engine → top-down M/W/D (1h parked); DC multi-scale NULL
+
+**Pivot (Chamoun):** 1h too noisy → move the structure-engine to top-down **Monthly → Weekly → Daily**
+(locked flow), validated against committed facit. Chamoun drew **20 new M/W/D fibs** (4M/7W/9D, 10 down/
+10 up), transcribed to a scratchpad working set (`newfacit_topdown.py`) — **not promoted** to committed
+`fib_*.json`. Single-scale prominence captures his new origins only 1M 1/4, 1w 5/7, 1d 6/9 (rest are
+continuation-mode, mid-structure).
+
+**Absorb → test → NULL.** Web-verified two external patterns (reimplement in-repo, no dep): **Directional
+Change** multi-scale swings ([arxiv 2406.07354](https://arxiv.org/html/2406.07354v1)) + **SMC BOS/CHoCH**
+([smc.py](https://github.com/joshyattridge/smart-money-concepts/blob/master/smartmoneyconcepts/smc.py)).
+DC multi-scale *looked* like 18/20 coverage but that was **saturation** vs a weak all-bars null; a
+permutation test (B=20k, seed 20260701) vs a **fair null (random same-kind detected pivots)** gives
+pooled W+D **p=0.099**, per-TF p=0.17–0.50 → **DC-scale does NOT survive**. DC-θ swings ≈ our existing
+detected pivots. **Lesson (echoes Stage-1): detection is not the bottleneck, SELECTION is.** Untested
+lever = **BOS/CHoCH structure-context** as a *selection* signal (next). No edge/PnL; nothing committed;
+scratchpad only. TZ note locked: screenshots = Europe/Stockholm (DST), cache = UTC → snap by price.
+
 ## [2026-06-30] decision | Chamoun structure engine v1 — origin proposer landed as a module
 
 Pivot executed (set 2026-06-30): **stop testing edges; build an engine that represents Chamoun's drawing
