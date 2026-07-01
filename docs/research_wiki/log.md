@@ -16,6 +16,30 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-01] decision | Rule decomposed generate→select; endpoint-half done → ORIGIN is the crux
+
+**Reframe (advisor-led):** split Chamoun's rule (retracement extreme "1" → next fresh impulse endpoint
+"0") into a candidate **generator** and a **selector**, and probe the **endpoint-given-origin** half
+first — the one branch that is structurally neither prominence nor cleanliness.
+
+**(1) Generator** (`impulse_leg_generator_coverage.py`): his anchors, **including continuation-mode
+origins**, are **fine-scale (fractal_n=1) local extrema at 96-100%** → the continuation gap is a
+**SCALE issue** (finer than the major-pivot detector), not un-findable. Coverage 83-89% at
+magnitude-only, but precision poor (10-44 candidates/fib); cleanliness a weak generative filter.
+
+**(2) Endpoint RANK probe** (`endpoint_rank_probe.py`): given his origin, his "0" is a **fresh break
+100%** (1w 20/20, 1d 68/68) — but that is **his rule verbatim** (definitional), only a precision lever
+(cuts endpoints ~8-12 → ~4 losing none). The honest **fresh-conditioned** test (null = random fresh
+break, Poisson-binomial exact baseline `1/n_fresh`): **depth-among-fresh survives** (1d 47% vs 36%,
+z=+2.08, **p=0.019**; 1w 50% vs 34%, p=0.024) — but depth = magnitude = **prominence, the known
+survivor**, so real-but-not-novel. **Recency / "first-fresh" is DEAD** (1d 32% vs 36%, p=0.79 — his
+"0" is NOT literally the *next* fresh extreme). Continuation behaves like major-swing on the endpoint
+half (depth underpowered, n=20, p=0.35, but same kind). **Conclusion: endpoint-given-origin is NOT the
+bottleneck — ORIGIN selection is**, and the continuation hole lives there. That is the untouched crux.
+**Next:** an origin-selection probe (which fine extremum does he pick as "1" among plausible origins?).
+Descriptive, no edge. Method note: fresh-conditioning is trap #4 of the session's definitional-leak
+lesson (condition the null on the near-definitional property). Gates green (ruff, bounds).
+
 ## [2026-07-01] decision | Structure-engine → top-down M/W/D (1h parked); DC multi-scale NULL
 
 **Pivot (Chamoun):** 1h too noisy → move the structure-engine to top-down **Monthly → Weekly → Daily**

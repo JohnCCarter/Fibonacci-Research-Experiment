@@ -39,18 +39,18 @@ Machine-local detail: memory `project_structure_engine_topdown.md`. Scratchpad: 
 **The four nulls (each survived adversarial verification):**
 - **Directional-Change multi-scale → NULL.** Apparent 18/20 was saturation; permutation vs fair pivot null → pooled W+D **p=0.099**.
 - **BOS/CHoCH structure-context → NULL.** Apparent BOS 75% vs 33% (p=0.003) was a **~definitional break-rate artifact**; conditioning the null on breaking swings → BOS|broke **p=0.16**.
-- **structure_alignment on the powered COMMITTED corpus (1M13/1w24/1d76 + 4h context) → NULL.** Apparent low-alignment (his anchors 0.40 vs prom-matched 0.47, 4h p<1e-4, survives tight prominence caliper) was the **trend-termination TAUTOLOGY** — it collapses against a **two-sided-plausible null** (other drawable reversal extremes: 4h 0.400 vs 0.398, p=0.55) and anchor_b collapses with anchor_a. Consistent with Stage-1.
-- **Prominence itself** already the survivor (Stage-1/Stage-2 leg family); structure adds nothing over it.
+- **structure_alignment on the powered COMMITTED corpus (1M13/1w24/1d76 + 4h context) → NULL.** Apparent low-alignment (his anchors 0.40 vs prom-matched 0.47, 4h p<1e-4, survives tight prominence caliper) was the **trend-termination TAUTOLOGY** — collapses against a **two-sided-plausible null** (4h 0.400 vs 0.398, p=0.55), anchor_b collapses too. **Prominence** stays the Stage-1/Stage-2 survivor; structure adds nothing over it.
 
-**NEW productive thread (2026-07-01, `impulse_leg_generator_coverage.py`) — Chamoun's own rule as a GENERATOR.**
-His stated rule: leg = retracement extreme (1) → fresh impulse endpoint (0), a *clean directed impulse* (=
-`cleanliness` net/path, Stage-2's dominant weight). Reframed (advisor) from ranking (known: weak, span-confound)
-to **generation**: his anchors — origin AND endpoint, **incl. continuation-mode origins** — are **fine-scale
-(fractal_n=1) local extrema at 96-100%** → the continuation gap is a **SCALE issue** (finer than the major-pivot
-detector), not un-findable. Coverage high at magnitude-only (83-89%) but **precision poor** (10-44 cand/fib) and
-**cleanliness only a weak generative filter**. **Next:** a *selective* proposer (cut cand/fib without losing his
-legs) — selection/precision is still the hard part. **1w** the consistent null cell. **Open:** 20 transcribed M/W/D
-facit NOT promoted; **TZ (locked):** screenshots = Europe/Stockholm (DST), cache UTC → snap by **price**.
+**PRODUCTIVE thread (2026-07-01) — Chamoun's rule DECOMPOSED into generate → select; endpoint-half DONE.**
+His rule: leg = retracement extreme (1) → *next fresh* impulse endpoint (0), a *clean directed impulse*.
+**(1) Generator** (`impulse_leg_generator_coverage.py`): his anchors incl. continuation origins are **fine-scale
+(fractal_n=1) extrema 96-100%** → continuation gap is a **SCALE issue**, not un-findable; coverage 83-89%
+magnitude-only, precision poor (10-44 cand/fib). **(2) Endpoint-given-origin RANK** (`endpoint_rank_probe.py`):
+his "0" is a **fresh break 100%** (his own rule verbatim; cuts endpoints ~8-12→4), and **fresh-conditioned** (null
+= random fresh, Poisson-binomial) **depth survives** (1d 47% vs 36% p=0.019; 1w p=0.024) = **prominence again**,
+**recency/"first-fresh" DEAD** (p=0.79). ⇒ **endpoint is NOT the bottleneck — ORIGIN selection is** (continuation-
+hole lives there, untouched). **Next:** origin-selection probe (which fine extremum = "1" among plausible origins).
+**Open:** 20 M/W/D facit NOT promoted; **TZ:** screenshots Europe/Stockholm (DST), cache UTC → snap by **price**.
 
 **Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
 [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
