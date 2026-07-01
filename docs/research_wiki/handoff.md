@@ -35,37 +35,37 @@ detection features, each with a conservative null + adversarial verification, al
 p=0.16), **structure_alignment on the powered COMMITTED corpus** (trend-termination TAUTOLOGY → collapses vs a
 two-sided-plausible null, 4h 0.400 vs 0.398 p=0.55, anchor_b too), **prominence** stays the Stage-1/2 survivor.
 **Detection & structure-membership are NOT the bottleneck — SELECTION is** (echoes `no_pivot_signal_above_prominence`).
-Machine-local: memory `project_structure_engine_topdown.md`. Scratchpad: `dc_permutation_test.py`,
-`bos_choch_selection_test.py`, `structure_alignment_committed_test.py`.
+Machine-local memory `project_structure_engine_topdown.md`.
 
 **DECOMPOSITION thread (2026-07-01) — Chamoun's rule split generate → select; BOTH halves DONE, LANDED.**
-His rule: leg = retracement extreme "1" → *next fresh* impulse endpoint "0", a *clean directed impulse*.
-Probes (scratchpad): **generator** `impulse_leg_generator_coverage.py` (anchors incl. continuation are fine-scale
-fractal_n=1 extrema 96-100% → continuation gap = **SCALE issue**; coverage 83-89%, precision poor); **endpoint**
-`endpoint_rank_probe.py` ("0" fresh-break 100%; fresh-conditioned depth modest 47% vs 36% p=0.019, recency DEAD);
-**origin (CRUX)** `origin_rank_probe.py` (apparent "last-push" **COLLAPSED to admissibility**: last-push ⟺
-k_between=0 ⟺ his cleanliness rule; residual = continuation origin NON-maximal, marginal p≈0.04 = the scale finding).
-**LANDING:** his *admissibility* rules hold on **BOTH** anchors (fresh/clean impulse) — real but definitional; the
-**positive** rule for WHICH admissible extreme he picks is **weak-to-absent** (**origin flat-null** p≈0.45/0.59 — NOT
-"prominence"). Six probes **bound what selection is NOT** → the open question is NON-geometric.
+His rule: leg = retracement extreme "1" → *next fresh* impulse endpoint "0", a *clean directed impulse*. Probes
+(scratchpad `impulse_leg_generator_coverage.py`/`endpoint_rank_probe.py`/`origin_rank_probe.py`): admissibility
+(fresh/clean, k_between=0) holds on **BOTH** anchors but is **definitional**; the **positive** rule for WHICH
+admissible extreme is **weak-to-absent** (origin flat-null p≈0.45/0.59, NOT prominence; recency DEAD); continuation
+gap = **SCALE**. Six probes bound what selection is NOT → **NON-geometric**. Detail:
+[style doc](reference/chamoun-daily-fib-style.md).
 **NEXT — CASCADE probe PAUSED 2026-07-01 (his top signal, from free-text).** Facit too sparse to chain → he DREW a
 1w BTC cascade (TV screenshot in chat; prices in `scratchpad/cascade_1w_working.py`; two cascades, "furthest=downtrend",
 leg 58,943→108,100). **BLOCKER:** price-only snap scrambles chronology (BTC hit 16-30k twice) → need rough YEARS/cascade
 + directions to window the snap. **Probe (when dated):** scale-consistency (mag/dur CV) vs independently-placed clean
 legs, chaining conditioned out. **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
-**Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, kept):**
+**Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, `24a3bb5`):**
 [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
-tests, `24a3bb5`). Rule: origin ("1") = #1-prominent swing high at ~3-day (72-bar) scale; runs to first
-close back above origin; reached ("0") = lowest low. Frozen v1 (local_scale=72, min_move=2%,
-max_horizon=480, min_bars=3), DOWN-only. **1h held-out:** HO-C/HO-D origins re-found #1-prom (provisional);
-**HO-B = origin-scale disagreement** (engine picks the prominent parent swing, human the tighter last-push
-high — now generalized by the origin probe above). **Deferred layers (each own GO):** sustained-low "0", UP.
+tests). Origin ("1") = #1-prominent swing high @ ~3-day (72-bar) scale, DOWN-only; reached ("0") = lowest
+low. HO-B = origin-scale disagreement (engine=prominent parent, human=tighter last-push; generalized by the
+origin probe above). Deferred (each own GO): sustained-low "0", UP.
 
-**2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise
-unsupported (coverage 0.08 vs control 0.90); #31 fractal stays the candidate; rank-form `wick_frac` left open. [log.md](log.md) top.
+**2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise unsupported (coverage 0.08 vs control 0.90); #31 fractal stays the candidate; rank-form `wick_frac` left open. [log.md](log.md) top.
 
 ## Recent Changes
+
+- **2026-07-01 Fib Selection Learner v0 LANDED (#42, `afb5a5f`) → [reviews/btc-fib-selection-learner-v0-20260701.md](reviews/btc-fib-selection-learner-v0-20260701.md).**
+  Contrastive annotation schema (accepted/rejected/ambiguous + reason/tags, human-vs-fixture) + magnitude baseline
+  (Top-1/3, split-by-window) + **fail-closed ML/Optuna gate** (deps + ≥30 human windows + locked holdout);
+  `research/selection_{annotation,baseline,ranker_ml}.py`, fixture, `[ml]` extra; 697 pytest/74% cov. **NEXT: capture
+  real contrastive windows** (paused cascade = case #1) → test reasons vs baseline before lifting gate. **Same day:
+  pivot-point selector DISPROVEN** (continuity-controlled strict null: 0.667% *farther* than nearby extremes, p=0.997).
 
 - **2026-07-01 Chamoun daily-fib STYLE distilled (docs-only) →
   [reference/chamoun-daily-fib-style.md](reference/chamoun-daily-fib-style.md).** `/chamoun-fib-style-distiller`
