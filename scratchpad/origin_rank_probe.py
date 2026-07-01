@@ -158,46 +158,68 @@ def report(sub, label):
     )
 
 
+def collect(hmult, per_tf=False):
+    """Per-leg (rank_height, rank_recency, n_fresh) at horizon hmult*H, split major/cont."""
+    pool_major, pool_cont = [], []
+    for tf in CACHE:
+        legs = load_facit(tf)
+        if not legs:
+            continue
+        durs = [abs(bar_of(tf, b["time"]) - bar_of(tf, a["time"])) for _, a, b in legs]
+        horizon = int(max(2, hmult * np.percentile(durs, HPCT)))
+        rows_major, rows_cont, n_notfresh, n_excl = [], [], 0, 0
+        for direc, a, b in legs:
+            ia, ib = bar_of(tf, a["time"]), bar_of(tf, b["time"])
+            fresh, px = backward_fresh(tf, direc, ib, horizon)
+            cand = CTX[tf]["fine_highs"] if direc == "down" else CTX[tf]["fine_lows"]
+            near = cand[(np.abs(cand - ia) <= ATOL)]
+            if len(near) == 0:  # his "1" is not on a fine extremum in-scale — outside this test
+                n_excl += 1
+                continue
+            his_origin = int(near[np.argmin(np.abs(near - ia))])
+            is_fresh, rk_h, rk_r, nf = rank_origin(fresh, px, direc, his_origin)
+            if not is_fresh:
+                n_notfresh += 1
+                continue
+            (rows_cont if ia not in CTX[tf]["piv_bars"] else rows_major).append((rk_h, rk_r, nf))
+        pool_major += rows_major
+        pool_cont += rows_cont
+        if per_tf:
+            n_ok = len(rows_major) + len(rows_cont)
+            fr = n_ok / max(1, n_ok + n_notfresh)
+            print(
+                f"[{tf}]  H={horizon}b  origin-is-backward-fresh-high {fr:.0%} "
+                f"({n_notfresh} not-fresh, {n_excl} origin off-scale)"
+            )
+            report(rows_major + rows_cont, "ALL")
+            report(rows_major, "major-swing")
+            report(rows_cont, "continuation")
+            print()
+    return pool_major, pool_cont
+
+
 print("ORIGIN-SELECTION rank probe (CRUX) — his '1' = MOST-EXTREME or LAST-PUSH backward extreme?")
 print(f"fine fractal_n=1; origin snap tol={ATOL}b; backward horizon H=p{HPCT} of his durations\n")
 
-pool_cont = []  # (rank_height, rank_recency, n_fresh) across all TFs, continuation origins only
-for tf in CACHE:
-    legs = load_facit(tf)
-    if not legs:
-        continue
-    durs = [abs(bar_of(tf, b["time"]) - bar_of(tf, a["time"])) for _, a, b in legs]
-    horizon = int(max(2, np.percentile(durs, HPCT)))
-
-    rows_major, rows_cont, n_notfresh, n_excl = [], [], 0, 0
-    for direc, a, b in legs:
-        ia, ib = bar_of(tf, a["time"]), bar_of(tf, b["time"])
-        fresh, px = backward_fresh(tf, direc, ib, horizon)
-        cand = CTX[tf]["fine_highs"] if direc == "down" else CTX[tf]["fine_lows"]
-        near = cand[(np.abs(cand - ia) <= ATOL)]
-        if len(near) == 0:  # his "1" is not on a fine extremum in-scale — outside this test
-            n_excl += 1
-            continue
-        his_origin = int(near[np.argmin(np.abs(near - ia))])
-        is_fresh, rk_h, rk_r, nf = rank_origin(fresh, px, direc, his_origin)
-        if not is_fresh:
-            n_notfresh += 1
-            continue
-        cont = ia not in CTX[tf]["piv_bars"]
-        (rows_cont if cont else rows_major).append((rk_h, rk_r, nf))
-        if cont:
-            pool_cont.append((rk_h, rk_r, nf))
-
-    n_ok = len(rows_major) + len(rows_cont)
-    fresh_rate = n_ok / max(1, n_ok + n_notfresh)
-    print(
-        f"[{tf}]  H={horizon}b  origin-is-backward-fresh-high {fresh_rate:.0%} "
-        f"({n_notfresh} not-fresh, {n_excl} origin off-scale)"
-    )
-    report(rows_major + rows_cont, "ALL")
-    report(rows_major, "major-swing")
-    report(rows_cont, "continuation")
-    print()
-
+major, cont = collect(1.0, per_tf=True)
 print("POOLED continuation (across 1M+1w+1d) — the power-buy for the cell that matters (guard 2):")
-report(pool_cont, "continuation-pooled")
+report(cont, "continuation-pooled")
+
+# --- VERIFY (advisor): is 'last-push' selection, or just clean-impulse admissibility? ---
+# recency-rank-1 (last-push) <=> NO backward-fresh high strictly between his '1' and '0'
+# <=> k_between=0 <=> a clean monotonic impulse (his cleanliness rule). k_between = rank_recency-1,
+# so P(last-push) is IDENTICALLY P(k_between==0) — recency = admissibility, not a separate selector.
+kb_cont = [r[1] - 1 for r in cont]
+print(
+    f"\nVERIFY (1) last-push == admissibility: k_between (fresh highs between '1' and '0') "
+    f"mean={np.mean(kb_cont):.2f}, P(k_between==0)={np.mean([k == 0 for k in kb_cont]):.0%} "
+    f"== P(last-push) by identity → recency is his clean-impulse rule, not a separate selector.\n"
+)
+
+# --- VERIFY (2): the NON-circular half — 'most-extreme rejected' — must hold across horizon H.
+print("VERIFY (2) most-extreme-REJECTED is horizon-robust (advisor H-sensitivity):")
+for hm in (0.5, 1.0, 2.0):
+    mj, ct = collect(hm)
+    print(f"  H×{hm}:")
+    report(ct, "continuation-pooled")
+    report(mj, "major-pooled")
