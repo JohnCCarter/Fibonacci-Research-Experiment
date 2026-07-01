@@ -34,19 +34,22 @@ detected pivots. **Lesson (echoes Stage-1): detection is not the bottleneck, SEL
 lever = **BOS/CHoCH structure-context** as a *selection* signal (next). No edge/PnL; nothing committed;
 scratchpad only. TZ note locked: screenshots = Europe/Stockholm (DST), cache = UTC → snap by price.
 
-## [2026-07-01] decision | BOS/CHoCH structure-context → FRAGILE POSITIVE (continuation, not reversal)
+## [2026-07-01] decision | BOS/CHoCH structure-context → NULL on the selection question
 
 Ran the untested lever (`bos_choch_selection_test.py`). Reimplemented SMC swings + BOS/CHoCH in-repo
 (no dep). **Design A** (advisor, avoids the DC artifact): null drawn from **SMC swings** (not
 `detect_pivots`), scoped to the swing-origin subset, **CHoCH (reversal) vs BOS (continuation) split**,
-swing_length **LOCKED=3** (= repo `pivots.lookback`) + **=5** robustness echo; origin mapped to the
-leg-launching extreme (down-origin = the swing high that launches the fall), not the break bar.
-**Result @ n=3:** his swing-origins enrich on **BOS/continuation 75% (9/12) vs 33% null, p=0.003**
-(Daily 86%, p=0.003; Weekly 60%, p=0.27); **CHoCH/reversal flat** (p=0.79). **Read:** he draws fibs on
-*continuation-impulse* launches, not trend-reversals. **BUT does NOT survive n=5** (BOS 50%, p=0.27;
-usable subset 12→6) → **scale-dependent + underpowered**, the same p-fragility DC hit. Descriptive
-pattern-note, **no verdict**; continuation-mode (non-swing) origins still unaddressed; no edge/PnL,
-nothing committed to facit.
+swing_length **LOCKED=3** (= repo `pivots.lookback`) + **=5** echo; origin mapped to the leg-launching
+extreme (down-origin = the swing high that launches the fall), not the break bar.
+**First pass looked positive** (BOS 75% (9/12) vs 33% null, p=0.003) — but a second advisor pass caught it
+as a **~definitional break-rate artifact**: each swing carries one of {none,bos,choch}, so this mostly
+measured that his origins **break structure** (83% vs 45% null, p=0.008), which a fib origin does **by
+construction**. **The non-tautological question needs the null conditioned on breaking swings.**
+Conditional: **BOS|broke 90% (9/10) vs 71% null, p=0.16** (Daily 86% p=0.27, Weekly p=0.49; n=5 pooled
+75% p=0.55) → **no continuation-vs-reversal selection preference survives.** BOS/CHoCH adds no selection
+signal beyond the definitional break-rate. Lesson (3rd time — DC, Stage-1): structure-membership is not
+the bottleneck, **SELECTION among swings is**. Descriptive, no verdict; continuation-mode (non-swing)
+origins still unaddressed; no edge/PnL; nothing committed to facit.
 
 ## [2026-06-30] decision | Chamoun structure engine v1 — origin proposer landed as a module
 

@@ -42,12 +42,12 @@ local detail in memory `project_structure_engine_topdown.md`; scratchpad probes:
 - **Absorb (web-verified, in-repo, no dep): Directional-Change multi-scale → NULL.** Looked like 18/20 but
   that was **saturation**; permutation (B=20k) vs fair null (random same-kind detected pivots) → pooled W+D
   **p=0.099** → **does NOT survive**. **Lesson (echoes Stage-1): detection is not the bottleneck, SELECTION is.**
-- **BOS/CHoCH structure-context (2026-07-01, `bos_choch_selection_test.py`) — FRAGILE POSITIVE.** Design A
-  (null drawn from SMC swings, split CHoCH vs BOS). Locked `swing_length=3`: his swing-origins enrich on
-  **BOS/continuation 75% vs 33% null, p=0.003** (Daily 86%, p=0.003); CHoCH/reversal flat (p=0.79). But it
-  **does NOT survive** the robustness echo `swing_length=5` (BOS 50%, p=0.27; subset 12→6). Read: he draws
-  fibs on *continuation-impulse* launches, not reversals — but scale-dependent + underpowered; continuation-
-  mode (non-swing) origins still unaddressed. **TODO later (Chamoun):** test the new tools vs the labeling tool.
+- **BOS/CHoCH structure-context (2026-07-01, `bos_choch_selection_test.py`) — NULL on the selection question.**
+  Design A (null from SMC swings, CHoCH-vs-BOS split, `swing_length=3`). Apparent "BOS 75% vs 33%, p=0.003" was a
+  **~definitional break-rate artifact** (his origins break structure 83% vs 45% null — a fib origin launches a
+  breaking move *by construction*). **Conditioning the null on breaking swings** (the real continuation-vs-reversal
+  cut) → BOS|broke 90% vs 71%, **p=0.16**, ≥0.27 elsewhere → **does NOT survive**. **Lesson (3rd time, DC + Stage-1):
+  structure-membership is not the bottleneck — SELECTION among swings is.** **TODO (Chamoun):** new tools vs labeling tool.
 - **TZ (locked):** Chamoun's screenshots are Europe/Stockholm (DST-aware); the cache is UTC — snap by
   **price**, quote back in local time.
 

@@ -171,68 +171,79 @@ def nearest_labeled(by_kind_map, kind, j):
 rng = np.random.default_rng(SEED)
 
 
+def _perm(draw_cells, pools, obs_rate, pred):
+    """Permutation p for a rate: draw one matched-(tf,kind) label per cell from pools, apply pred,
+    measure the rate; p = P(null rate >= observed)."""
+    if not draw_cells or any(len(pools[c]) == 0 for c in draw_cells):
+        return None, None
+    null = np.zeros(B)
+    for b in range(B):
+        hit = 0
+        for cell in draw_cells:
+            lab = pools[cell][rng.integers(len(pools[cell]))]
+            hit += pred(lab)
+        null[b] = hit / len(draw_cells)
+    p = (np.sum(null >= obs_rate) + 1) / (B + 1)
+    return p, null.mean()
+
+
 def run(tfs, n, label):
-    """Descriptive + conservative permutation on the pooled tfs at swing_length n."""
-    # observed: his origins that ARE labeled swings, split by label and kind
-    obs_labels = {"high": [], "low": []}  # labels of his swing-origins, per kind
+    """Descriptive permutations at swing_length n. Two tests:
+    (1) UNCONDITIONAL break-rate vs random SMC swings. ~definitional (a fib origin launches a
+        structure-breaking move by construction) → NOT the selection question.
+    (2) CONDITIONAL on breaking: bos-vs-choch split vs random BREAKING swings. Removes the
+        definitional component → the actual continuation-vs-reversal selection question.
+    """
+    swing_origins = []  # (tf, kind, label) for each origin that IS a labeled swing
     n_origins = {"high": 0, "low": 0}
-    n_swing = {"high": 0, "low": 0}
-    pools = {}  # (tf, kind) -> list of labels for ALL labeled swings of that kind
-    kinds_needed = []
+    pool_all = {}  # (tf,kind) -> all labeled-swing labels ; pool_brk -> breaking-only labels
+    pool_brk = {}
     for tf in tfs:
         bk = build(tf, n)
-        pools[(tf, "high")] = list(bk["high"].values())
-        pools[(tf, "low")] = list(bk["low"].values())
+        for kind in ("high", "low"):
+            labs = list(bk[kind].values())
+            pool_all[(tf, kind)] = labs
+            pool_brk[(tf, kind)] = [x for x in labs if x in ("bos", "choch")]
         for _tag, kind, j in snap_origins(tf):
             n_origins[kind] += 1
             lab = nearest_labeled(bk, kind, j)
             if lab is not None:
-                n_swing[kind] += 1
-                obs_labels[kind].append(lab)
-                kinds_needed.append((tf, kind))
+                swing_origins.append((tf, kind, lab))
     tot_orig = n_origins["high"] + n_origins["low"]
-    tot_swing = n_swing["high"] + n_swing["low"]
-    all_obs = obs_labels["high"] + obs_labels["low"]
-    obs_choch = all_obs.count("choch")
-    obs_bos = all_obs.count("bos")
+    tot_swing = len(swing_origins)
+    obs_bos = sum(1 for _, _, x in swing_origins if x == "bos")
+    obs_choch = sum(1 for _, _, x in swing_origins if x == "choch")
     print(f"  [{label}  swing_length={n}]")
     print(
         f"    usable: {tot_swing}/{tot_orig} origins ARE labeled swings "
-        f"(excluded continuation-mode: {tot_orig - tot_swing})   "
-        f"[high {n_swing['high']}/{n_origins['high']}, low {n_swing['low']}/{n_origins['low']}]"
+        f"(excluded non-swing/continuation-mode: {tot_orig - tot_swing})"
     )
     if tot_swing == 0:
         print("    no swing-origins — nothing to test\n")
         return
-    obs_choch_rate = obs_choch / tot_swing
-    obs_bos_rate = obs_bos / tot_swing
 
-    # conservative permutation: for each of his swing-origins draw a RANDOM labeled swing of the
-    # SAME (tf,kind) pool; measure choch-rate / bos-rate. p = P(null rate >= observed).
-    null_choch = np.zeros(B)
-    null_bos = np.zeros(B)
-    draw_cells = kinds_needed  # one draw per observed swing-origin, matched (tf,kind)
-    valid = all(len(pools[c]) > 0 for c in draw_cells)
-    if not valid:
-        print("    a matched pool is empty — cannot build null\n")
-        return
-    for b in range(B):
-        cc = bb = 0
-        for cell in draw_cells:
-            lab = pools[cell][rng.integers(len(pools[cell]))]
-            cc += lab == "choch"
-            bb += lab == "bos"
-        null_choch[b] = cc / len(draw_cells)
-        null_bos[b] = bb / len(draw_cells)
-    p_choch = (np.sum(null_choch >= obs_choch_rate) + 1) / (B + 1)
-    p_bos = (np.sum(null_bos >= obs_bos_rate) + 1) / (B + 1)
+    # (1) UNCONDITIONAL — break-rate driven, ~definitional (report but do NOT read as selection).
+    cells_all = [(tf, kind) for tf, kind, _ in swing_origins]
+    obs_break = obs_bos + obs_choch
+    brk_rate = obs_break / tot_swing
+    p_brk, nm_brk = _perm(cells_all, pool_all, brk_rate, lambda x: x in ("bos", "choch"))
     print(
-        f"    CHoCH (reversal):    observed {obs_choch}/{tot_swing} = {obs_choch_rate:.0%}  "
-        f"null mean {null_choch.mean():.0%}  p={p_choch:.4f}  {'***' if p_choch < 0.05 else ''}"
+        f"    [~definitional] BREAKS structure: obs {obs_break}/{tot_swing}={brk_rate:.0%}"
+        f"  null {nm_brk:.0%}  p={p_brk:.4f}   (a fib origin launches a move by construction)"
     )
+
+    # (2) CONDITIONAL on breaking — the real continuation-vs-reversal selection question.
+    brk_origins = [(tf, kind) for tf, kind, x in swing_origins if x in ("bos", "choch")]
+    if obs_break == 0:
+        print("    no breaking swing-origins — conditional test empty\n")
+        return
+    obs_bos_cond = obs_bos / obs_break
+    p_cond, nm_cond = _perm(brk_origins, pool_brk, obs_bos_cond, lambda x: x == "bos")
+    cc = "***" if (p_cond is not None and p_cond < 0.05) else ""
+    pc_str = f"{p_cond:.4f}" if p_cond is not None else "n/a (empty breaking pool)"
     print(
-        f"    BOS   (continuation):observed {obs_bos}/{tot_swing} = {obs_bos_rate:.0%}  "
-        f"null mean {null_bos.mean():.0%}  p={p_bos:.4f}  {'***' if p_bos < 0.05 else ''}"
+        f"    [SELECTION] BOS|broke: obs {obs_bos}/{obs_break}={obs_bos_cond:.0%}"
+        f"  null {nm_cond if nm_cond is not None else float('nan'):.0%}  p={pc_str}  {cc}"
     )
     print()
 
