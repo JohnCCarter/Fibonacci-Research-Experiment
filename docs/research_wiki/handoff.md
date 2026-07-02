@@ -27,13 +27,15 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — CAPTURE contrastive windows toward ≥30 (#42 gate) — 2026-07-02
+## Next Step — MEASURE engine vs facit within the LOCKED acceptance band — 2026-07-02
 
-**Capture bottleneck fixed → now gather data.** Contrastive-annotation mode (`labeling/tool.py
---annotate-selection`, `0b1e9a1`; details in Recent Changes) records accepted/rejected/ambiguous legs +
-tag + reason with exact prices. First window = HO-B (`…/1h/window_20260615.yaml`). **NEXT: capture more
-windows** toward the gate's ≥30, then test whether reasons/tags beat the magnitude baseline before lifting
-the ML gate. Machine-local memory `project_capture_friction_bottleneck.md`.
+**"Snarlikt räcker" is now baked into scoring** (`evaluation/acceptance.py`, `cef082d`): 3 tiers
+EXACT/SNARLIKT/NEAR/MISS, accept=NEAR, origin tight (bars+price 1/0.75, 2/1.5, 3/2.0%) / "0" price-only
+looser (2/4/6%) — LOCKED, no perfection-chase. **NEXT: a small harness** — run the origin proposer on each
+facit window, classify origin+"0" tiers, report hit-rate. In-band across the corpus → selection snarlikt-
+DONE, move on; origin often MISSES (HO-B is a real miss even at NEAR) → then the small targeted contrastive
+set is worth it. Capture tool `0b1e9a1` + batch plan `scratchpad/annotation_batch1.md` ready. Memory
+`project_capture_friction_bottleneck.md`.
 
 ---
 
@@ -59,17 +61,15 @@ cascade_1w_{working,snap}.py`; BOTTOM_LEFT=2020-21, furthest=downtrend=RIGHT). C
 legs, duration already inconsistent, grouping = "ingen aning" — kept as durable facit, redirected to
 contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
-**Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, `24a3bb5`):** `research/chamoun_structure_engine.py` (+9
-tests); origin = #1-prominent swing high @ ~3-day scale, DOWN-only. HO-B = origin-scale disagreement. Deferred: sustained-low "0", UP.
-
-**2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise unsupported (coverage 0.08 vs control 0.90); #31 fractal stays the candidate; rank-form `wick_frac` left open. [log.md](log.md) top.
-
 ## Recent Changes
 
-- **2026-07-02 CONTRASTIVE CAPTURE tool LANDED (#42, `0b1e9a1`).** `labeling/tool.py --annotate-selection`: draw
-  legs on cached candles, label 1/2/3 + `t` tag + `e` reason + `v` save → `selection_annotation` schema, exact prices
-  (no snap). New `labeling/selection_capture.py` (+9 tests, 706 pytest). First window HO-B; 1w cascade dated + CV
-  dead (`bf071a7`). **NEXT: ≥30 windows** (see Next Step).
+- **2026-07-02 ACCEPTANCE tolerance LOCKED (`cef082d`).** `evaluation/acceptance.py`: 3-tier graded match
+  (EXACT/SNARLIKT/NEAR/MISS), accept=NEAR, origin bars+price / "0" price-only looser — "snarlikt räcker" as one
+  locked source (+7 tests). Next = measure engine vs facit in-band (see Next Step).
+
+- **2026-07-02 CONTRASTIVE CAPTURE tool LANDED (#42, `0b1e9a1`).** `labeling/tool.py --annotate-selection` +
+  `labeling/selection_capture.py` (+9 tests): draw/label/tag/reason legs → schema, exact prices. First window HO-B;
+  1w cascade dated + CV probe dead (`bf071a7`).
 
 - **2026-07-01 Fib Selection Learner v0 LANDED (#42, `afb5a5f`) → [review](reviews/btc-fib-selection-learner-v0-20260701.md).**
   Contrastive schema + magnitude baseline + fail-closed ML/Optuna gate (deps + ≥30 human windows + locked holdout);
