@@ -27,7 +27,17 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — STRUCTURE-MEMBERSHIP thread CLOSED (all 4 features null on selection) — 2026-07-01
+## Next Step — CAPTURE contrastive windows toward ≥30 (#42 gate) — 2026-07-02
+
+**Capture bottleneck fixed → now gather data.** Contrastive-annotation mode (`labeling/tool.py
+--annotate-selection`, `0b1e9a1`; details in Recent Changes) records accepted/rejected/ambiguous legs +
+tag + reason with exact prices. First window = HO-B (`…/1h/window_20260615.yaml`). **NEXT: capture more
+windows** toward the gate's ≥30, then test whether reasons/tags beat the magnitude baseline before lifting
+the ML gate. Machine-local memory `project_capture_friction_bottleneck.md`.
+
+---
+
+**STRUCTURE-MEMBERSHIP thread CLOSED (all 4 features null on selection) — 2026-07-01**
 
 **2026-07-01: the structure-engine substrate question is answered — STOP the thread.** Four structure/
 detection features, each with a conservative null + adversarial verification, all NULL on *selection*:
@@ -44,42 +54,36 @@ His rule: leg = retracement extreme "1" → *next fresh* impulse endpoint "0", a
 admissible extreme is **weak-to-absent** (origin flat-null p≈0.45/0.59, NOT prominence; recency DEAD); continuation
 gap = **SCALE**. Six probes bound what selection is NOT → **NON-geometric**. Detail:
 [style doc](reference/chamoun-daily-fib-style.md).
-**NEXT — CASCADE probe PAUSED 2026-07-01 (his top signal, from free-text).** Facit too sparse to chain → he DREW a
-1w BTC cascade (TV screenshot in chat; prices in `scratchpad/cascade_1w_working.py`; two cascades, "furthest=downtrend",
-leg 58,943→108,100). **BLOCKER:** price-only snap scrambles chronology (BTC hit 16-30k twice) → need rough YEARS/cascade
-+ directions to window the snap. **Probe (when dated):** scale-consistency (mag/dur CV) vs independently-placed clean
-legs, chaining conditioned out. **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
+**CASCADE probe (2026-07-01→02) — DATED then CV probe DEAD.** 1w cascade drawn + dated (`scratchpad/
+cascade_1w_{working,snap}.py`; BOTTOM_LEFT=2020-21, furthest=downtrend=RIGHT). CV probe DEAD (advisor): 7
+legs, duration already inconsistent, grouping = "ingen aning" — kept as durable facit, redirected to
+contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
-**Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, `24a3bb5`):**
-[`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py) (+9
-tests). Origin ("1") = #1-prominent swing high @ ~3-day (72-bar) scale, DOWN-only; reached ("0") = lowest
-low. HO-B = origin-scale disagreement (engine=prominent parent, human=tighter last-push; generalized by the
-origin probe above). Deferred (each own GO): sustained-low "0", UP.
+**Prior (2026-06-30) — 1h v1 engine SHIPPED (frozen, `24a3bb5`):** `research/chamoun_structure_engine.py` (+9
+tests); origin = #1-prominent swing high @ ~3-day scale, DOWN-only. HO-B = origin-scale disagreement. Deferred: sustained-low "0", UP.
 
 **2026-06-29: #38 daily wick-pair → `wick_pair_no_better` (SIGNED OFF).** Strong-form ≥50%-wick premise unsupported (coverage 0.08 vs control 0.90); #31 fractal stays the candidate; rank-form `wick_frac` left open. [log.md](log.md) top.
 
 ## Recent Changes
 
-- **2026-07-01 Fib Selection Learner v0 LANDED (#42, `afb5a5f`) → [reviews/btc-fib-selection-learner-v0-20260701.md](reviews/btc-fib-selection-learner-v0-20260701.md).**
-  Contrastive annotation schema (accepted/rejected/ambiguous + reason/tags, human-vs-fixture) + magnitude baseline
-  (Top-1/3, split-by-window) + **fail-closed ML/Optuna gate** (deps + ≥30 human windows + locked holdout);
-  `research/selection_{annotation,baseline,ranker_ml}.py`, fixture, `[ml]` extra; 697 pytest/74% cov. **NEXT: capture
-  real contrastive windows** (paused cascade = case #1) → test reasons vs baseline before lifting gate. **Same day:
-  pivot-point selector DISPROVEN** (continuity-controlled strict null: 0.667% *farther* than nearby extremes, p=0.997).
+- **2026-07-02 CONTRASTIVE CAPTURE tool LANDED (#42, `0b1e9a1`).** `labeling/tool.py --annotate-selection`: draw
+  legs on cached candles, label 1/2/3 + `t` tag + `e` reason + `v` save → `selection_annotation` schema, exact prices
+  (no snap). New `labeling/selection_capture.py` (+9 tests, 706 pytest). First window HO-B; 1w cascade dated + CV
+  dead (`bf071a7`). **NEXT: ≥30 windows** (see Next Step).
 
-- **2026-07-01 Chamoun daily-fib STYLE distilled (docs-only) →
-  [reference/chamoun-daily-fib-style.md](reference/chamoun-daily-fib-style.md).** `/chamoun-fib-style-distiller`
-  over 76 daily facit + #38 prereg/postlock (Observed/Inferred/Unverified, source-tagged). **Reconcile flags (in doc):**
-  daily base count is **76** not 67 (grow-facit — Verification Snapshot stale); `20210907` degenerate leg=0;
-  U3 body/close intent carried. Cascade-input template included to unblock the paused CASCADE probe below.
+- **2026-07-01 Fib Selection Learner v0 LANDED (#42, `afb5a5f`) → [review](reviews/btc-fib-selection-learner-v0-20260701.md).**
+  Contrastive schema + magnitude baseline + fail-closed ML/Optuna gate (deps + ≥30 human windows + locked holdout);
+  `research/selection_{annotation,baseline,ranker_ml}.py`. Same day: pivot-point selector DISPROVEN (strict null, p=0.997).
 
-- **2026-06-30 STRUCTURE-ENGINE v1 — origin proposer landed as a module.**
-  [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py)
-  (+9 tests, `24a3bb5`); frozen v1, DOWN-only, re-finds his 4 dated-1h origins (#1-prominence @ ~3-day scale); sustained-low/up/volume tie-break deferred. [log.md](log.md) top.
+- **2026-07-01 Chamoun daily-fib STYLE distilled (docs-only) → [style doc](reference/chamoun-daily-fib-style.md).**
+  `/chamoun-fib-style-distiller` over 76 daily facit (Observed/Inferred/Unverified). Reconcile flag: daily base = **76**
+  not 67 (Verification Snapshot stale); `20210907` degenerate leg=0.
 
-- **2026-06-30 GROW-FACIT (screenshot transcription → facit).** Daily 2025–26 gap filled (5 fibs) +
-  4h **+6** (365 → **371**) via human-reviewed [`--review-candidate`](../../src/fibengine/labeling/tool.py)
-  (`created_by=human`); 4h C dropped, E nudged. Frozen cache. Full detail [log.md](log.md) top.
+- **2026-06-30 STRUCTURE-ENGINE v1 — origin proposer landed** (`research/chamoun_structure_engine.py`, +9 tests,
+  `24a3bb5`): frozen, DOWN-only, re-finds his 4 dated-1h origins (#1-prominence @ ~3-day scale). [log.md](log.md) top.
+
+- **2026-06-30 GROW-FACIT (screenshot → facit).** Daily 2025–26 gap +5 fibs; 4h **+6** (365→**371**) via
+  human-reviewed `--review-candidate` (`created_by=human`). [log.md](log.md) top.
 
 - **2026-06-30 Checkpoint reminder hook wired** (`UserPromptSubmit`, auto-pings on capacity; hardened
   2026-07-01 with turn-count/thread-health ladder). [log.md](log.md) top.
@@ -116,13 +120,9 @@ origin probe above). Deferred (each own GO): sustained-low "0", UP.
   [Main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md).
 
 - **2026-06-22 Fib SELECTION-LEARNING W-gap study — BUILT + module split, RUN PENDING (home).** Commit 2 of side-quest #1, built to the [W-gap LOCK](reviews/btc-fib-selection-learning-w-gap-lock-20260622.md) (`4f47d8e`): `gap(k)=AP(retro-W)−AP(live-k)` on identical rows, embargo=W, L5 verdict. New `research/selection_learning_gap.py` (+5 tests); W-gap code split out to keep `selection_learning.py` under the §6 size cap (was 995 lines); flushed-stderr `_progress` logging in `build_candidates`+`build_retro_features` so a long run is never blind (result-neutral). **Run NOT executed** — inherent ~2-3h per-endpoint-detect cost on the ~20k-bar 4h frame (leakage-bearing truncation, no legal shortcut); to run at home (see Next tracks). No gap results, no verdict. Commit `884d4c0`, gates green (pytest 549, cov 75%).
-- **2026-06-17/06-18 changes — archived** (lean; all in [log.md](log.md) + Status below): SELECTION-LEARNING prereg + 4h slices; B-1 horizontal-structure **NULL/CLOSED**; external-pattern-scan on `main`.
-- **Earlier 2026-06-15/06-16 changes — archived** (kept lean for the 400-line bound): behaviour +
-  context studies **NULL/CLOSED** (`f4e96f1`); Fib→Genesis V2 Phase 2 + 2.5 nullability **PASS/CLOSED**
-  (`68dc006`); MTF confluence CP1–CP3 **CLOSED** (geometry, not edge); #32 tooling DONE + `20171228`
-  correction + chart-contract snapshots; 2026-06-08→06-12 source-fib milestones. **All preserved** in
-  the **PAUSED/CLOSED status sections below** + [log.md](log.md) /
-  [log part 1](log-archive-btc-postreset-part1.md); current counts in the Verification Snapshot.
+- **2026-06-15→18 changes — archived** (all in [log.md](log.md) / [part 1](log-archive-btc-postreset-part1.md)
+  + Status/Verification below): SELECTION-LEARNING prereg + 4h slices; B-1 horizontal-structure & behaviour/context
+  studies **NULL/CLOSED**; Fib→Genesis V2 Phase 2/2.5 **PASS/CLOSED**; MTF confluence CP1–CP3 **CLOSED**; #32 tooling DONE.
 
 ## Status — Fib SELECTION-LEARNING line (2026-06-18, slice committed `ea6c2ea`)
 
