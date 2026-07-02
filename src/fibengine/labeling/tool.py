@@ -76,6 +76,12 @@ from fibengine.labeling.same_candle_mtf_resolution import (
     mtf_resolution_enabled,
     resolution_timeframe_for,
 )
+from fibengine.labeling.selection_capture import (
+    build_window,
+    make_candidate,
+    save_window,
+    time_ordered,
+)
 from fibengine.labeling.store import (
     LegLabel,
     Point,
@@ -86,6 +92,16 @@ from fibengine.labeling.store import (
     set_labels_dir,
 )
 from fibengine.research.human_review_candles import draw_review_candles
+from fibengine.research.selection_annotation import OPTIONAL_TAGS, Anchor, Candidate
+
+SELECTION_ANNOTATIONS_DIR = "data/labels/selection_annotations"
+# Contrastive-mode label → colour (green accept / red reject / grey ambiguous).
+SELECTION_LABEL_COLORS = {
+    "accepted": "#6be675",
+    "rejected": "#ff6b6b",
+    "ambiguous": "#b0b6c4",
+}
+SELECTION_LABEL_KEYS = {"1": "accepted", "2": "rejected", "3": "ambiguous"}
 
 DEFAULT_FIB_LEVELS = [0.0, 0.382, 0.5, 0.618, 0.786, 1.0]
 LEG_FIB_COLORS = ["#6ea8ff", "#ffb86b", "#bd93f9", "#8be9fd", "#ff79c6"]
@@ -306,6 +322,17 @@ def _parse_args() -> argparse.Namespace:
             "--edit-fib-id. Refuses non-candidate files. Nothing saved unless you press 'w'."
         ),
     )
+    parser.add_argument(
+        "--annotate-selection",
+        dest="annotate_selection",
+        action="store_true",
+        help=(
+            "Contrastive selection-annotation mode (Issue #42): draw candidate legs on real "
+            "candles and label each 1=accepted / 2=rejected / 3=ambiguous, cycle a tag (t), "
+            "add a reason via terminal prompt (e), press 'v' to save the window to "
+            "data/labels/selection_annotations/ (created_by=human, exact prices — no snap)."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -492,6 +519,10 @@ class LabelWorkspace:
     # fib was transcribed from a screenshot then human-reviewed) instead of the default
     # manual_labeling_tool, and overwriting an existing facit needs a second 'w' to confirm.
     promote_source: str | None = None
+    # Contrastive selection-annotation mode (Issue #42): a separate candidate list, NOT the facit
+    # `legs` — rejected candidates are deliberately "bad" legs that would trip the swing warnings.
+    annotate_selection: bool = False
+    selection_candidates: list[dict] = field(default_factory=list)
     _htf_overlays: list | None = field(default=None, init=False, repr=False)
     _pending_overwrite: bool = field(default=False, init=False, repr=False)
 
@@ -599,6 +630,7 @@ class LabelWorkspace:
         self.picks.clear()
         self.history.clear()
         self.legs.clear()
+        self.selection_candidates.clear()
         self.active_leg_index = 0
         self.active_kind = "high"
         self.load_existing_label()
@@ -724,6 +756,105 @@ class LabelWorkspace:
             print("Set both high and low before push-leg (p or a).")
             return
         self._push_picks_as_new_leg()
+
+    # --- Contrastive selection-annotation mode (Issue #42) -----------------------------------
+    def commit_selection_candidate(self, label: str) -> bool:
+        """Store the current high/low picks as a labelled candidate (no swing-warning gate)."""
+        if not self._picks_complete():
+            print("Set both high and low before labelling a candidate.")
+            return False
+        self.selection_candidates.append(
+            {
+                "high": self.picks["high"],
+                "low": self.picks["low"],
+                "label": label,
+                "reason": "",
+                "tags": [],
+            }
+        )
+        self.picks.clear()
+        self.history.clear()
+        self.active_kind = "high"
+        print(
+            f"Candidate {len(self.selection_candidates)} = {label}. "
+            "Draw the next; 't' cycles a tag, 'e' adds a reason, 'v' saves the window."
+        )
+        return True
+
+    def cycle_selection_tag(self, delta: int = 1) -> None:
+        """Cycle a single structured tag on the most-recent candidate (None → tag → ... → None)."""
+        if not self.selection_candidates:
+            print("No candidate yet to tag (label one with 1/2/3 first).")
+            return
+        cand = self.selection_candidates[-1]
+        options = [None, *sorted(OPTIONAL_TAGS)]
+        current = cand["tags"][0] if cand["tags"] else None
+        idx = options.index(current) if current in options else 0
+        nxt = options[(idx + delta) % len(options)]
+        cand["tags"] = [nxt] if nxt else []
+        print(f"Candidate {len(self.selection_candidates)} tag = {nxt or '(none)'}")
+
+    def prompt_selection_reason(self) -> None:
+        """Ask for the most-recent candidate's reason in the TERMINAL (no GUI key-focus leakage)."""
+        if not self.selection_candidates:
+            print("No candidate yet — label one with 1/2/3 before adding a reason.")
+            return
+        n = len(self.selection_candidates)
+        try:
+            text = input(f"reason for candidate {n} (blank = keep): ")
+        except (EOFError, KeyboardInterrupt):
+            print("(reason unchanged)")
+            return
+        if text.strip():
+            self.selection_candidates[-1]["reason"] = text.strip()
+            print(f"Reason on candidate {n}: {text.strip()!r}")
+
+    def undo_selection_candidate(self) -> None:
+        if not self.selection_candidates:
+            print("No candidates to remove.")
+            return
+        removed = self.selection_candidates.pop()
+        print(f"Removed candidate ({removed['label']}). {len(self.selection_candidates)} left.")
+
+    def _candidate_to_schema(self, cand: dict, existing: list[Candidate]) -> Candidate:
+        hi_idx, hi_price = cand["high"]
+        lo_idx, lo_price = cand["low"]
+        origin, endpoint = time_ordered(
+            Anchor(self.df.index[hi_idx].isoformat(), hi_price),
+            Anchor(self.df.index[lo_idx].isoformat(), lo_price),
+        )
+        return make_candidate(
+            origin,
+            endpoint,
+            cand["label"],
+            existing=existing,
+            reason=cand["reason"],
+            tags=tuple(cand["tags"]),
+        )
+
+    def save_selection_window(self) -> None:
+        """Write all committed candidates as one AnnotationWindow (exact cache prices, no snap)."""
+        if not self.selection_candidates:
+            print("No candidates to save — label at least one with 1/2/3.")
+            return
+        schema: list[Candidate] = []
+        for cand in self.selection_candidates:
+            schema.append(self._candidate_to_schema(cand, schema))
+        window = build_window(
+            symbol=self.data.symbol,
+            timeframe=self.data.timeframe,
+            exchange=self.data.exchange,
+            window_start=self.df.index[0].isoformat(),
+            window_end=self.df.index[-1].isoformat(),
+            candidates=schema,
+            created_by="human",
+        )
+        path = save_window(window, SELECTION_ANNOTATIONS_DIR)
+        n_acc = len(window.accepted_ids)
+        print(
+            f"Saved {len(schema)} candidate(s) ({n_acc} accepted) → {path}. "
+            "Candidates kept in session; draw more or 'q' to quit."
+        )
 
     def cycle_leg(self, delta: int) -> None:
         if not self.legs:
@@ -974,6 +1105,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
         window_start=window_start,
         window_end=window_end,
         single_fib_mode=selected_fib is not None,
+        annotate_selection=getattr(cli, "annotate_selection", False),
     )
     if selected_fib is not None:
         _preload_fib_picks(workspace, selected_fib)
@@ -1181,6 +1313,24 @@ def run_label_tool(args: argparse.Namespace | None = None):
                 label_suffix=" *",
             )
 
+        if workspace.annotate_selection:
+            for ci, cand in enumerate(workspace.selection_candidates, start=1):
+                hi_idx, hi_price = cand["high"]
+                lo_idx, lo_price = cand["low"]
+                color = SELECTION_LABEL_COLORS.get(cand["label"], "#ffffff")
+                ax.plot([hi_idx, lo_idx], [hi_price, lo_price], color=color, lw=1.8, zorder=6)
+                ax.scatter([hi_idx, lo_idx], [hi_price, lo_price], color=color, s=55, zorder=7)
+                tag = cand["tags"][0] if cand["tags"] else ""
+                lbl = f"{ci}:{cand['label'][:3]}" + (f" {tag}" if tag else "")
+                ax.text(
+                    (hi_idx + lo_idx) / 2,
+                    (hi_price + lo_price) / 2,
+                    lbl,
+                    color=color,
+                    fontsize=8,
+                    zorder=8,
+                )
+
         step = max(1, len(df) // 10)
         ticks = list(range(0, len(df), step))
         ax.set_xticks(ticks)
@@ -1280,6 +1430,29 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
     def on_key(event):
         key = _normalize_key(event.key)
+        if workspace.annotate_selection:
+            if key in SELECTION_LABEL_KEYS:
+                workspace.commit_selection_candidate(SELECTION_LABEL_KEYS[key])
+                redraw()
+                return
+            if key == "t":
+                workspace.cycle_selection_tag(1)
+                redraw()
+                return
+            if key == "e":
+                workspace.prompt_selection_reason()
+                redraw()
+                return
+            if key == "x":
+                workspace.undo_selection_candidate()
+                redraw()
+                return
+            if key == "v":
+                workspace.save_selection_window()
+                return
+            if key in {"s", "w", "a", "p", "d"}:
+                print("Contrastive mode: facit keys disabled. Use 1/2/3, t, e, x, 'v' to save.")
+                return
         if key == "r":
             workspace.reset()
             mark_dirty(True)
@@ -1361,6 +1534,14 @@ def run_label_tool(args: argparse.Namespace | None = None):
     fig.canvas.mpl_connect("motion_notify_event", on_motion)
     fig.canvas.mpl_connect("button_release_event", on_release)
     fig.canvas.mpl_connect("key_press_event", on_key)
+
+    if workspace.annotate_selection:
+        print(
+            "Contrastive mode ON: draw a leg (h/l + click), then 1=accept 2=reject 3=ambiguous; "
+            "'t' cycles a tag on the last candidate; 'e' types a reason in THIS terminal; "
+            "'v' saves the window; 'x' removes the last candidate. Facit keys are disabled here."
+        )
+
     # A date-windowed view (review/edit single-fib, or --label-year) must fit Y to the
     # window, else the log axis autoscales to full history and squishes the band (unreadable).
     initial_view = (
