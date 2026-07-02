@@ -4,7 +4,7 @@ One row per research **line** (not per doc): is it open, in-progress, closed, pa
 deprecated. Source of truth for "where does X stand". Root-level snapshot:
 [/STATUS.md](../../../STATUS.md). Per-result detail lives in [reviews/](../reviews/); current focus in
 [handoff.md](../handoff.md); do-not-rerun nulls in [closed-questions.md](closed-questions.md).
-**Last swept: 2026-06-25.**
+**Last swept: 2026-07-02.**
 
 Status legend: 🔬 **active** (work in flight) · ⏳ **pending-input** (waiting on a human action) ·
 ✅ **complete** (delivered, nothing pending) · ⛔ **closed** (null/answered, do not re-run) ·
@@ -47,9 +47,16 @@ Status legend: 🔬 **active** (work in flight) · ⏳ **pending-input** (waitin
 
 ## Open GitHub issues
 
-| # | Title | State | Note |
-|---|-------|-------|------|
-| **#31** | Investigate fractal-based anchor detection against human source-fib labels | 🔬 **open — now relevant** | Upstream of the ranking model (does the detector even propose the human's A/B?). Connects directly to the MTF-nesting redirect. **User resumes with new fibs (next day).** |
+**None** — all research/tooling issues closed as of 2026-07-02.
+
+Recent closures (2026-07-02 sweep):
+
+| # | Title | Outcome |
+|---|-------|---------|
+| **#42** | ML/Optuna Fib Selection Learner | ✅ v0 landed (`afb5a5f`); lane continues in [handoff](../handoff.md), ML build gated behind a fresh prereg. |
+| **#39** | Fib Skill Pack (style distillation) | ✅ `chamoun-fib-style-distiller` delivered ([style doc](chamoun-daily-fib-style.md)); labeler/test-writer/implementer superseded by `labeling/tool.py` + facit pipeline + `selection_annotation.py`. |
+| **#38** | Rolling daily wick-pair A/B engine | ⛔ NULL `wick_pair_no_better` (coverage 0.08 vs 0.90); rank-form `wick_frac` left as an open tail. |
+| **#31** | Fractal-based anchor detection | ⛔ Answered by the selection campaign — detection recall 0.902 (Stage-1), "detection is not the bottleneck — selection is". |
 
 *(#37 **closed 2026-06-25** — verified verbatim duplicate of #35; the principle is a binding agent
 principle in [AGENTS.md](../../../AGENTS.md) (commit 27232cb).)*
