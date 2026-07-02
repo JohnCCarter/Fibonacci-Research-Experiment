@@ -12,35 +12,46 @@ CHAMOUN'S CLARIFICATIONS (gist, 2026-07-01):
   - "tva separata kaskader" (two separate cascades — group scale-consistency per cascade)
   - "dem langst bort ar nedgang" (the furthest cascade is a DOWNTREND); direction UNRESOLVED
 
-BLOCKER (why we paused): a PRICE-ONLY snap to the 1w cache scrambles the chronology. BTC passed the
-low levels (16-30k) MORE THAN ONCE (~2020-21 AND ~2022-23), so nearest-price matching places the
-early legs on wrong weeks (one leg even ran backward in time). Unique highs (125,710) snap fine;
-repeated levels do not. FIX on resume: rough YEAR per cascade + direction confirm, then window snap.
+DATING RESOLVED 2026-07-02: Chamoun dated BOTTOM_LEFT = 2020-21 ("nr 1"); directions read off the
+drawn prices (origin<endpoint=up, origin>endpoint=down), so "furthest=downtrend" = RIGHT (most
+recent). Windowed snap in cascade_1w_snap.py placed every leg forward-in-time (BL 2020-11..2021-01,
+MID 2024-01..2025-10, RIGHT 2025-10..2026-06). See DATED below.
 
-PLANNED PROBE (when the legs are correctly dated) — advisor-designed, do NOT build a circular one:
-  scale-consistency = coefficient-of-variation of leg MAGNITUDE (exact from prices) and DURATION
-  (weeks) across his cascade, vs independently-placed clean legs (generator) in the same span. The
-  null must CONDITION OUT definitional chaining (his legs chain because he drew them to — the
-  k_between trap on the sequence side): test whether his legs are TIGHTER / more scale-consistent
-  than chained-but-independent clean legs, not merely that they chain. Two cascades grouped apart.
-
-OPEN QUESTIONS FOR CHAMOUN (on resume):
-  1. Roughly which YEARS does each cascade cover? (readable off his chart; no exact dates needed)
-  2. Confirm: cascade 1 (furthest) = downtrend (1=high -> 0=low); cascade 2 = other direction?
+CV PROBE DEAD (advisor, 2026-07-02): the scale-consistency test cannot run — 7 legs total (2/3/2 per
+group), and duration is ALREADY inconsistent (MID 7w/44w/26w, ~6x spread) plus a within-MID snap
+inversion (leg 3 origin before leg 2 endpoint). Grouping into cascades = "ingen aning" (Chamoun has
+no introspection on it), so "cascade" is an imposed frame. Redirect: the drawn cascade's value is as
+contrastive annotation input (why each leg, why not neighbours), not a geometric statistic. Kept as
+durable facit only.
 """
 
 from __future__ import annotations
 
-# Leg price pairs as drawn (origin "1", endpoint "0"); DIRECTION/grouping PENDING Chamoun's confirm.
-# Recorded so the facit survives (chat/screenshot is not durable). NOT final until dated.
-BOTTOM_LEFT = [(16838, 19592), (24240, 30968)]  # two fib structures; "furthest=downtrend" (open)
-MID = [(38572, 73666), (58943, 108100), (74501, 125710)]  # 58,943 corrected
-RIGHT = [(116500, 80822), (97850, 60100)]  # recent down-cascade (1=high -> 0=low)
+# Leg price pairs as drawn (origin "1", endpoint "0"). DATED 2026-07-02 (see DATED below).
+BOTTOM_LEFT = [(16838, 19592), (24240, 30968)]  # up; 2020-11 .. 2021-01
+MID = [(38572, 73666), (58943, 108100), (74501, 125710)]  # up; 2024-01 .. 2025-10 (endpoint = ATH)
+RIGHT = [(116500, 80822), (97850, 60100)]  # down; 2025-10 .. 2026-06 (furthest = downtrend)
 
 ALL_LEGS = BOTTOM_LEFT + MID + RIGHT
 
+# (price_1, price_0, iso_week_1, iso_week_0) — snap output from cascade_1w_snap.py.
+DATED = {
+    "BOTTOM_LEFT_up": [
+        (16838, 19592, "2020-11-12", "2020-11-19"),
+        (24240, 30968, "2020-12-17", "2021-01-21"),
+    ],
+    "MID_up": [
+        (38572, 73666, "2024-01-18", "2024-03-07"),
+        (58943, 108100, "2024-08-15", "2025-06-19"),
+        (74501, 125710, "2025-04-03", "2025-10-02"),
+    ],
+    "RIGHT_down": [
+        (116500, 80822, "2025-10-09", "2026-04-30"),
+        (97850, 60100, "2026-01-08", "2026-06-04"),
+    ],
+}
+
 if __name__ == "__main__":
-    print("1w cascade working set (prices as drawn; dating BLOCKED pending years + directions):")
+    print("1w cascade working set (DATED 2026-07-02; CV probe dead — kept as facit):")
     for i, (o, e) in enumerate(ALL_LEGS, 1):
         print(f"  leg{i}: 1({o:>7,}) -> 0({e:>8,})  mag={abs(e - o) / min(o, e):.0%}")
-    print("\nResume: get rough years per cascade + confirm directions, then snap within windows.")
