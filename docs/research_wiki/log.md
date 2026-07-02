@@ -16,6 +16,27 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-02] decision | Structure-engine origin MEASURED out-of-sample → does NOT generalize
+
+Ran the frozen `chamoun_structure_engine` (DOWN-only, params frozen at 1h scale) against the full 4h-DOWN
+human facit corpus (201 legs, all out-of-sample — no 1h facit exists), scored on the LOCKED acceptance band
+(`evaluation/acceptance.py`). Harness `scratchpad/measure_4h_down.py` carries its own pre-registration
+(time-faithful 1h→4h rescale 72→18/480→120/min_bars→1, min_move unchanged; matching = nearest origin within
+±18 bars; lock-before-scoring).
+
+**Result:** origin **sits only 43 %** (86/201, 95 % CI ~36–50 %); leg accepted 30 % (61/201). Miss decomp:
+**75 wrong-swing** (price >2 %, bar-tolerance-invariant = 37 %) + 24 bar-units-only. Origin-sits ∈ [43 % locked,
+55 % bars-ignored] — CI tops at 50 %. On 1h calibration it re-found 4/4 → classic overfit; the single
+most-prominent-high rule is not Chamoun's selector on ~half the legs (HO-B pattern at scale).
+
+**Validity:** leakage-validity-reviewer verdict = *concerns, non-blocking* — no leakage (descriptive proposer,
+hindsight use is legitimate), no post-hoc tuning (commit timestamps: acceptance 13:40 → handoff "next=measure"
+13:46 → run 14:00), corpus is genuine `created_by: human`. Only caveat: acceptance bar-band not TF-rescaled
+(disclosed; the 75 wrong-swing are invariant to it).
+
+**Decision:** fork answered → the targeted contrastive set (#42) IS justified. Next = resume drawing toward
+≥30 windows. See [handoff Next Step](handoff.md).
+
 ## [2026-07-01] handoff | Cascade probe opened → PAUSED on a snapping blocker (1w facit dating)
 
 After the LANDING (below), asked Chamoun what his eye actually uses to pick among clean candidate legs.

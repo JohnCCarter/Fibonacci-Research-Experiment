@@ -22,7 +22,8 @@ High-level map of `src/fibengine`. This is navigation, not an API contract.
   (`selection_learning{,_gap,_stage1,_artifact,_artifact_mechanics,_enrich,_curve}.py` — can a
   model select legs like the human; see [research-line-status](research-line-status.md)), and the
   **`chamoun_structure_engine.py`** rule-based 1h down-structure proposer (frozen v1: origin = most
-  prominent swing high at ~3-day scale; descriptive, no edge).
+  prominent swing high at ~3-day scale; descriptive, no edge). **Measured OOS 2026-07-02:** origin sits only
+  ~43 % on 4h-DOWN facit (37 % genuine wrong-swing) → does NOT generalize; drove contrastive capture (#42).
 
 ## Decoupled Layer
 

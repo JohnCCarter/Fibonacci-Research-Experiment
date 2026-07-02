@@ -9,6 +9,12 @@ single most-prominent swing high at a ~3-day (72-bar) scale, in neutral (non-cir
 This engine encodes that rule and re-finds all four. Acceptance bar = recognizably-similar + right
 region, not tick-exact (Chamoun, 2026-06-30): the origin must land; the reached "0" is approximate.
 
+OUT-OF-SAMPLE (2026-07-02, `scratchpad/measure_4h_down.py`): measured against the 4h-DOWN human
+facit (201 legs, time-faithful 1h->4h rescale, LOCKED acceptance band) the origin sits only ~43%
+(95% CI ~36-50%; leg 30%), with 37% genuine wrong-swing (bar-tolerance-invariant). It re-finds its
+1h calibration origins but does NOT generalize: the single most-prominent-high rule is not Chamoun's
+selector on ~half the legs. This drove the contrastive-capture line (#42), not a re-tune of params.
+
 FROZEN v1 PARAMS (pre-registered 2026-06-30; do NOT tune against future facit — lock-before-test):
   local_scale = 72 bars (~3 days): origin must be the max-prominence high within +/-local_scale
   min_move    = 0.02 (2%): structure must fall >= min_move from origin to its reached low

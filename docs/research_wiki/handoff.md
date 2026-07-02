@@ -27,14 +27,17 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — MEASURE engine vs facit within the LOCKED acceptance band — 2026-07-02
+## Next Step — RESUME contrastive capture toward ≥30 (engine origin does NOT generalize) — 2026-07-02
 
-**"Snarlikt räcker" is now baked into scoring** (`evaluation/acceptance.py`, `cef082d`): 3 tiers
-EXACT/SNARLIKT/NEAR/MISS, accept=NEAR, origin tight (bars+price 1/0.75, 2/1.5, 3/2.0%) / "0" price-only
-looser (2/4/6%) — LOCKED, no perfection-chase. **NEXT: a small harness** — run the origin proposer on each
-facit window, classify origin+"0" tiers, report hit-rate. In-band across the corpus → selection snarlikt-
-DONE, move on; origin often MISSES (HO-B is a real miss even at NEAR) → then the small targeted contrastive
-set is worth it. Capture tool `0b1e9a1` + batch plan `scratchpad/annotation_batch1.md` ready. Memory
+**MEASURED** (`scratchpad/measure_4h_down.py`, out-of-sample on all 201 4h-DOWN human legs, LOCKED band):
+engine origin **sits only 43 %** (86/201, 95 % CI ~36–50 %); leg accepted 30 % (61/201). Miss decomp: **75
+wrong-swing** (price >2 %, bar-tolerance-invariant = 37 %) + 24 bar-units-only. Origin-sits ∈ **[43 % locked,
+55 % bars-ignored]**, CI tops at 50 % → does NOT sit broadly. On 1h calibration it re-found 4/4 → classic
+overfit; the single most-prominent-high rule is not Chamoun's selector on ~half the legs (HO-B pattern at
+scale). Validity-reviewed (concerns, non-blocking: acceptance bar-band not TF-rescaled = disclosed; no
+leakage, no post-hoc tuning, corpus is genuine human facit). **Fork answered → the targeted contrastive set
+(#42) IS justified. NEXT:** resume drawing toward ≥30 windows (`scratchpad/annotation_batch1.md`, tool
+`--annotate-selection`); at ~10 check reason/tag consistency before grinding to 30. Memory
 `project_capture_friction_bottleneck.md`.
 
 ---
@@ -63,13 +66,14 @@ contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/
 
 ## Recent Changes
 
-- **2026-07-02 ACCEPTANCE tolerance LOCKED (`cef082d`).** `evaluation/acceptance.py`: 3-tier graded match
-  (EXACT/SNARLIKT/NEAR/MISS), accept=NEAR, origin bars+price / "0" price-only looser — "snarlikt räcker" as one
-  locked source (+7 tests). Next = measure engine vs facit in-band (see Next Step).
+- **2026-07-02 MEASURED engine vs 4h-DOWN facit (out-of-sample, `scratchpad/measure_4h_down.py`).** Origin sits
+  **43 %** (86/201, CI ~36–50 %), leg 30 %; **75/201 genuine wrong-swing** (bar-invariant). 1h-overfit → NOT broad.
+  → contrastive capture (#42) justified (validity-reviewed, non-blocking). See Next Step.
 
-- **2026-07-02 CONTRASTIVE CAPTURE tool LANDED (#42, `0b1e9a1`).** `labeling/tool.py --annotate-selection` +
-  `labeling/selection_capture.py` (+9 tests): draw/label/tag/reason legs → schema, exact prices. First window HO-B;
-  1w cascade dated + CV probe dead (`bf071a7`).
+- **2026-07-02 ACCEPTANCE tolerance LOCKED (`cef082d`) + CONTRASTIVE CAPTURE tool (#42, `0b1e9a1`).**
+  `evaluation/acceptance.py`: 3-tier EXACT/SNARLIKT/NEAR/MISS, accept=NEAR, origin bars+price / "0" price-only looser
+  (+7 tests). `labeling/tool.py --annotate-selection` + `selection_capture.py` (+9 tests): draw/label/tag/reason →
+  schema, exact prices; first window HO-B; 1w cascade dated + CV probe dead (`bf071a7`).
 
 - **2026-07-01 Fib Selection Learner v0 LANDED (#42, `afb5a5f`) → [review](reviews/btc-fib-selection-learner-v0-20260701.md).**
   Contrastive schema + magnitude baseline + fail-closed ML/Optuna gate (deps + ≥30 human windows + locked holdout);
@@ -89,16 +93,12 @@ contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/
   2026-07-01 with turn-count/thread-health ladder). [log.md](log.md) top.
 
 - **2026-06-29 Leg-agreement RULER — built + SIGNED OFF (north-star step-1 measurement instrument).**
-  The free facit-checker the selection campaign lacked (#38 `agreement` floored: `compare_label`/
-  `select_swing` not localized to the facit leg). [Locked prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md)
+  The free facit-checker #38 lacked. [Prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md)
   + [postlock](reviews/btc-fib-leg-agreement-ruler-prereg-20260629-postlock.md); new
   [`evaluation/leg_agreement.py`](../../src/fibengine/evaluation/leg_agreement.py) (`mean(s_high,s_low)`,
-  `s=max(0,1−Δbar/W)`, absolute **W=2**, direction-gated; +21 tests). Knobs set by selector-independent
-  pre-lock calibration (spacing guard rejected W=5). **leakage-review caught a real overclaim** → hard-
-  null + bucket histogram → re-scoped: a **valid strict selection-scorer** with a narrow coverage-capped
-  range (ceiling mean ~0.79; sub-1.0 = detector-coverage artifacts, not near-misses; binary for
-  selection). Usable as **eval**, NOT a graded **training objective** → the learned-selector prereg must
-  confront the narrow range. Descriptive step-1, no edge/OOS. [log.md](log.md) top.
+  `s=max(0,1−Δbar/W)`, W=2, direction-gated; +21 tests). leakage-review caught an overclaim → re-scoped to a
+  **valid strict selection-scorer**, narrow coverage-capped range (ceiling ~0.79; sub-1.0 = coverage artifacts).
+  Usable as **eval**, NOT a graded training objective. [log.md](log.md) top.
 - **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (SIGNED OFF; fractal control 0.90
   via B-closure, postlock A5).** [Locked prereg](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md)
   (selector-only); new [`strategies/chamoun_daily_wick_pair.py`](../../src/fibengine/strategies/chamoun_daily_wick_pair.py)
