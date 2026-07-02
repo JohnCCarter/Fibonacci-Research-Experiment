@@ -840,20 +840,24 @@ class LabelWorkspace:
         schema: list[Candidate] = []
         for cand in self.selection_candidates:
             schema.append(self._candidate_to_schema(cand, schema))
+        # Window bounds come from the drawn legs (not the loaded chart), so you can open ONE chart,
+        # pan/zoom to each structure and save without restarting — bounds stay tight + correct.
+        times = [t for c in schema for t in (c.anchor_a.time, c.anchor_b.time)]
         window = build_window(
             symbol=self.data.symbol,
             timeframe=self.data.timeframe,
             exchange=self.data.exchange,
-            window_start=self.df.index[0].isoformat(),
-            window_end=self.df.index[-1].isoformat(),
+            window_start=min(times),
+            window_end=max(times),
             candidates=schema,
             created_by="human",
         )
         path = save_window(window, SELECTION_ANNOTATIONS_DIR)
         n_acc = len(window.accepted_ids)
+        self.selection_candidates.clear()  # auto-clear → next structure starts fresh, no restart
         print(
             f"Saved {len(schema)} candidate(s) ({n_acc} accepted) → {path}. "
-            "Candidates kept in session; draw more or 'q' to quit."
+            "Candidates cleared; pan/zoom to the next structure and draw."
         )
 
     def cycle_leg(self, delta: int) -> None:
@@ -1449,6 +1453,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
                 return
             if key == "v":
                 workspace.save_selection_window()
+                redraw()
                 return
             if key in {"s", "w", "a", "p", "d"}:
                 print("Contrastive mode: facit keys disabled. Use 1/2/3, t, e, x, 'v' to save.")
