@@ -1,0 +1,24 @@
+{
+  "corpus": "human_fib/bitfinex/BTC-USD",
+  "generated_at": "2026-07-20T19:30:30+00:00",
+  "generator": "fibengine.research.corpus_manifest --write",
+  "timeframes": {
+    "1M": {
+      "count": 13,
+      "sha256": "8281fc3649c30e03b5a04b4e48709e0c7264cf315dc82188dd02cc9d219f7ca3"
+    },
+    "1w": {
+      "count": 24,
+      "sha256": "5f560a5877c032c14c7f0c26f8eb16c3bd8e5cf319549c29bb9cb6b6dc997408"
+    },
+    "1d": {
+      "count": 76,
+      "sha256": "24ef74b08f7b4d955c00fcdada4b20350b0d948d8a055f94bd1dfef83e4085b1"
+    },
+    "4h": {
+      "count": 371,
+      "sha256": "394b0f45bac822a8e335bcea12a2f02f9953a2f05a506736967dbd29d5362a2d"
+    }
+  },
+  "total": 484
+}
