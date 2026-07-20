@@ -21,10 +21,12 @@ Disambiguation & the ``n_within_near`` flag: when a price repeats on several can
 is *guessed* by heuristic — the swing origin takes the earliest occurrence, the recent extreme
 the first occurrence after the origin. Each match reports ``n_within_near`` (candles within
 ``NEAR_TOL``); **``n_within_near > 1`` means the bar was disambiguated by heuristic — verify it**.
-Validated against the 71 daily facit fibs (price+time known): 95.8% both-anchor time match,
-96.6% on repeated-price anchors; the few misses all carry ``n_within_near > 1``. The proper fix
-for those is the vision step's rough x-position (deferred), which price+direction alone cannot
-supply.
+Accuracy scope (audit 2026-07-20): this measures **time recovery given correct facit prices**
+— not vision, not selection. The historical 2026-06 measurement (~96% both-anchor time match
+on the then-current daily corpus) is snapshot-bound; the living number is recomputed against
+the manifest-locked corpus by ``tests/labeling/test_fib_transcribe_regression.py``. The proper
+fix for heuristic misses is the vision step's rough x-position (deferred), which
+price+direction alone cannot supply.
 
 Run (CLI, no network — needs cached candles):
     uv run python -m fibengine.labeling.fib_transcribe \\
