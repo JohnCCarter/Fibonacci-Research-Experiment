@@ -6,8 +6,9 @@ count. Result: signed-off results are snapshot-bound, and a re-run silently meas
 different corpus. This module makes the corpus explicit and verifiable:
 
 - ``build_manifest()`` — count + a deterministic sha256 fingerprint per timeframe over the
-  base ``fib_*.json`` set (filename + file bytes; ``*_events.json`` sidecars excluded, same
-  glob discipline as ``selection_learning.load_human_legs``).
+  base ``fib_*.json`` set (filename + CRLF-normalized file bytes, so the fingerprint is
+  checkout-invariant across autocrlf; ``*_events.json`` sidecars excluded, same glob
+  discipline as ``selection_learning.load_human_legs``).
 - ``verify_manifest()`` — fail-closed comparison of the on-disk corpus against a committed
   manifest; any count or fingerprint drift is reported per timeframe.
 
@@ -47,12 +48,18 @@ def _base_fib_paths(root: Path, timeframe: str) -> list[Path]:
 
 
 def _fingerprint(paths: list[Path]) -> str:
-    """Deterministic sha256 over (basename, bytes) of every file, in sorted order."""
+    """Deterministic sha256 over (basename, bytes) of every file, in sorted order.
+
+    CRLF is normalized to LF before hashing: with ``core.autocrlf=true`` (Windows default
+    here) a pristine checkout materializes the facit JSON with CRLF while the committed
+    manifest was generated from an LF checkout — without normalization the fail-closed
+    verifier reports drift on every TF on a clean tree (found 2026-07-20 on the Windows
+    labeling machine)."""
     h = hashlib.sha256()
     for p in paths:
         h.update(p.name.encode("utf-8"))
         h.update(b"\x00")
-        h.update(p.read_bytes())
+        h.update(p.read_bytes().replace(b"\r\n", b"\n"))
         h.update(b"\x00")
     return h.hexdigest()
 

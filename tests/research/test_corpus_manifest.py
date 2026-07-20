@@ -80,6 +80,22 @@ def test_verify_detects_in_place_edit(tmp_path: Path) -> None:
     assert mismatches == ["1d: sha256 drift (files added/removed/edited vs manifest)"]
 
 
+def test_fingerprint_is_line_ending_invariant(tmp_path: Path) -> None:
+    """CRLF checkout (Windows autocrlf) must fingerprint identically to an LF checkout."""
+    root = tmp_path / "corpus"
+    _make_corpus(root, dict.fromkeys(TIMEFRAMES, 1))
+    for tf in TIMEFRAMES:
+        _base_fib_paths(root, tf)[0].write_bytes(
+            b'{\n  "fib_id": "' + tf.encode() + b'",\n  "created_by": "human"\n}\n'
+        )
+    mpath = tmp_path / "MANIFEST.json"
+    mpath.write_text(json.dumps(build_manifest(root)), encoding="utf-8")
+    for tf in TIMEFRAMES:
+        p = _base_fib_paths(root, tf)[0]
+        p.write_bytes(p.read_bytes().replace(b"\n", b"\r\n"))
+    assert verify_manifest(root, mpath) == []
+
+
 def test_committed_manifest_matches_repo_corpus() -> None:
     """The committed manifest must always match the committed facit (guards silent drift)."""
     assert verify_manifest() == []
