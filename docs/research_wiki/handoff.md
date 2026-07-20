@@ -27,7 +27,20 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — RESUME contrastive capture toward ≥30 (engine origin does NOT generalize) — 2026-07-02
+## Next Step — cascade probe RAN → `sequential_origin_signal` (sign-off) + contrastive capture — 2026-07-20
+
+**CASCADE probe RUN 2026-07-20 → `sequential_origin_signal` on 4h (advisory, pending owner
+sign-off).** H1a (predecessor `anchor_b` as next origin) hits **0.256** vs permutation-null
+**0.005**, p < 0.0005, gap CI [0.205, 0.298], N=363 pairs; signal is ~all EXACT chains (76/93),
+both directions, 1d+1w context cells agree, 1M nothing. **~1 in 4 origins = previous endpoint →
+a real component of selection, NOT the selector** (74% are not chained).
+[Results](reviews/btc-fib-cascade-conditioning-probe-results-20260720.md) — executed to the
+locked prereg incl. §9 pre-run amendments (leakage review fixed N2 look-ahead; H1a/N1 clean).
+**Owner:** sign off results; classify the 7 degenerate fibs; then contrastive capture below.
+
+---
+
+**Previous Next Step (still active after sign-off): RESUME contrastive capture toward ≥30 — 2026-07-02**
 
 **MEASURED** (`scratchpad/measure_4h_down.py`, out-of-sample on all 201 4h-DOWN human legs, LOCKED band):
 engine origin **sits only 43 %** (86/201, 95 % CI ~36–50 %); leg accepted 30 % (61/201). Miss decomp: **75
@@ -65,6 +78,15 @@ legs, duration already inconsistent, grouping = "ingen aning" — kept as durabl
 contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
 ## Recent Changes
+
+- **2026-07-20 CASCADE probe RUN → `sequential_origin_signal` (advisory) + validity fixes.**
+  Pre-run leakage review: H1a/N1 clean; N2 look-ahead fixed + 4 more findings → prereg §9
+  amendments (`2c04328`). CRLF-portable manifest fingerprint (`aeccffa` — verifier false-DRIFTed
+  on Windows checkout, would have blocked the probe). Candle cache fetched (full facit coverage,
+  4h 21 269 bars 2016→2026). Probe executed verbatim: **4h H1a 0.256 vs null 0.005, p<0.0005,
+  93 hits of which 76 EXACT** — [results](reviews/btc-fib-cascade-conditioning-probe-results-20260720.md),
+  pending owner sign-off. Transcription regression test now RUNS (cache present) and passes
+  (≥0.90 floor). Gates green.
 
 - **2026-07-20 SYSTEMATIC AUDIT (read-only; report off-repo) + P0 remediation.** Corpus manifest +
   verifier (`research/corpus_manifest.py`); transcription claim re-scoped + living regression test;

@@ -16,6 +16,25 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-20] review | Cascade probe RUN → `sequential_origin_signal` (advisory) after pre-run validity fixes
+
+Continuation of the audit session below, on the Windows labeling machine. (1) **CRLF bug found &
+fixed** (`aeccffa`): the committed manifest was LF-generated; `core.autocrlf=true` checkout made
+the fail-closed verifier false-DRIFT on all four TFs — gates red, probe blocked. Fingerprint now
+CRLF-normalizes (committed hashes unchanged, corpus untouched). (2) **leakage-validity-reviewer on
+the probe commit:** H1a/N1 (verdict-bearing) causally clean; blocking finding = N2 ran
+`detect_pivots` untruncated (centered window → up to 3 post-origin bars could certify/rank a
+pivot). Fixed pre-run + 4 more (H1b direction disclosure, `context_only` enforcement, third
+exclusion counted, first/last_ts recorded) → prereg **§9 amendments** (`2c04328`), no post-run
+edit. (3) **Candle cache fetched** (expansion config, full facit coverage; 4h 21 269 bars
+2016-11→2026-07). (4) **Probe executed verbatim** (~25 min; O(n) `bar_of_timestamp` dominates):
+**4h `sequential_origin_signal`** — H1a 0.256 vs null 0.005, p<0.0005 (0/2000), CI [0.205,0.298],
+363 pairs, 76/93 hits EXACT; 1d+1w context agree, 1M nothing; direction split clean.
+[Results](reviews/btc-fib-cascade-conditioning-probe-results-20260720.md) — **advisory pending
+owner sign-off**. (5) Transcription regression test now runs (cache present): **passes ≥0.90
+floor**. Gates green (ruff/format/bounds/wiki-lint; pytest 732 passed, 1 unrelated hypothesis
+timing-flake in `core` passes in isolation).
+
 ## [2026-07-20] review | Systematic full-repo audit (read-only) + P0 remediation + cascade-probe prereg
 
 Owner-commissioned deep audit (code + full 484-file facit parse + experiment ledger + independent

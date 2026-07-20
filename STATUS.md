@@ -48,9 +48,9 @@ detection is not the bottleneck — selection is; see
 
 ## Immediate next action
 
-1. **Run the cascade-conditioning probe** (prereg 2026-07-20, needs candle cache) — does the previous
-   fib predict the next origin? Outcome steers both the contrastive-window design and any cascade
-   representation. [Prereg](docs/research_wiki/reviews/btc-fib-cascade-conditioning-probe-prereg-20260720.md).
+1. **Owner: sign off the cascade-probe results** — RAN 2026-07-20 → **`sequential_origin_signal`**
+   on 4h (H1a 0.256 vs null 0.005, p<0.0005; ~all EXACT chains; advisory until signed).
+   [Results](docs/research_wiki/reviews/btc-fib-cascade-conditioning-probe-results-20260720.md).
 2. **User:** resume contrastive capture toward ≥30 windows (`scratchpad/annotation_batch1.md`) —
    prioritize 4h/1d windows early so track B overlaps the powered facit corpus.
 3. **User:** classify the 7 degenerate same-candle fibs (handoff Open Questions, audit 2026-07-20).
