@@ -1,0 +1,71 @@
+{
+  "_candidate": true,
+  "_transcription": {
+    "confidence": "exact",
+    "matches": [
+      {
+        "role": "high",
+        "price": 111360.0,
+        "recovered_time": "2025-11-02T12:00:00+00:00",
+        "matched_extreme": 111360.0,
+        "rel_delta": 0.0,
+        "confidence": "exact",
+        "n_within_near": 20
+      },
+      {
+        "role": "low",
+        "price": 99129.0,
+        "recovered_time": "2025-11-05T00:00:00+00:00",
+        "matched_extreme": 99129.0,
+        "rel_delta": 0.0,
+        "confidence": "exact",
+        "n_within_near": 2
+      }
+    ]
+  },
+  "fib_id": "fib_BTC-USD_4h_20251102T120000",
+  "symbol": "BTC/USD",
+  "timeframe": "4h",
+  "exchange": "bitfinex",
+  "created_by": "vision_poc",
+  "source": "screenshot_vision_extraction",
+  "scale_mode": "log",
+  "levels_profile": "tradingview_log_chamoun",
+  "human_highlights": [],
+  "anchor_a": {
+    "time": "2025-11-02T12:00:00+00:00",
+    "price": 111360.0
+  },
+  "anchor_b": {
+    "time": "2025-11-05T00:00:00+00:00",
+    "price": 99129.0
+  },
+  "direction": "down",
+  "created_at": "2026-06-30T12:24:06.154890+00:00",
+  "levels": [
+    {
+      "ratio": 0.0,
+      "price": 99129.0
+    },
+    {
+      "ratio": 0.382,
+      "price": 103634.08349813
+    },
+    {
+      "ratio": 0.5,
+      "price": 105066.6714044
+    },
+    {
+      "ratio": 0.618,
+      "price": 106519.06271936
+    },
+    {
+      "ratio": 0.786,
+      "price": 108621.58204089
+    },
+    {
+      "ratio": 1.0,
+      "price": 111360.0
+    }
+  ]
+}

@@ -19,6 +19,8 @@ disagree, the source wins — see [source-authority.md](reference/source-authori
   evidence and wiki disagree.
 - [Log](log.md) — append-only trail of ingests, decisions, reviews, questions.
 - [Current handoff](handoff.md) — current working context and next action.
+- [Owner preferences](owner-preferences.md) — who the owner is + how he wants to be worked with
+  (git-synced; refreshed by [`/owner-interview`](../../.claude/commands/owner-interview.md)).
 - [Glossary](glossary.md) — compact definitions and links.
 
 ## Schema And Concepts
@@ -27,6 +29,8 @@ disagree, the source wins — see [source-authority.md](reference/source-authori
 - [Module map](reference/module-map.md) — `src/fibengine` packages and roles.
 - [Data conventions](reference/data-conventions.md) — label, human-fib, and
   experiment path shapes.
+- [Chamoun daily-fib style](reference/chamoun-daily-fib-style.md) — distilled daily fib-drawing
+  rules (Observed / Inferred / Unverified) + cascade-input template.
 - [CLI commands](reference/cli-commands.md) — common commands for fetch,
   experiment, review, tests, and build.
 - [Guardrails](concepts/guardrails.md) — research-only invariants and promotion
@@ -88,6 +92,8 @@ Accumulated external methodology so agents read instead of re-derive (see
 - [**Research-line status**](reference/research-line-status.md) — status of every line + which
   reviews are current vs closed/parked/superseded (start here).
 - [Reviews index](reviews/README.md) — active BTC/USD review pages + the pre-reset superseded set.
+- [Fib Selection Learner v0](reviews/btc-fib-selection-learner-v0-20260701.md) — Issue #42 v0
+  scaffolding (contrastive annotation schema + baseline + gated ML); selection-learning, not edge.
 - The selection-learning arc (2026-06-17→), behaviour/horizontal nulls, MTF confluence, and
   Genesis-V2 prereg docs all live under [reviews/](reviews/) — classified in the status registry.
 

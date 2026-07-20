@@ -43,7 +43,9 @@ Hover: crosshair price (mouse Y) + bar OHLC readout. See docs/labeling/LABELING_
 from __future__ import annotations
 
 import argparse
+import json
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -63,7 +65,9 @@ from fibengine.labeling.htf_fib_overlay import (
 from fibengine.labeling.human_fib import (
     HumanFibAnnotation,
     anchors_from_picks,
+    annotation_path,
     find_annotation,
+    load_annotation,
     make_annotation,
     save_annotation,
 )
@@ -71,6 +75,12 @@ from fibengine.labeling.same_candle_mtf_resolution import (
     attempt_same_candle_mtf_resolution,
     mtf_resolution_enabled,
     resolution_timeframe_for,
+)
+from fibengine.labeling.selection_capture import (
+    build_window,
+    make_candidate,
+    save_window,
+    time_ordered,
 )
 from fibengine.labeling.store import (
     LegLabel,
@@ -82,6 +92,16 @@ from fibengine.labeling.store import (
     set_labels_dir,
 )
 from fibengine.research.human_review_candles import draw_review_candles
+from fibengine.research.selection_annotation import OPTIONAL_TAGS, Anchor, Candidate
+
+SELECTION_ANNOTATIONS_DIR = "data/labels/selection_annotations"
+# Contrastive-mode label → colour (green accept / red reject / grey ambiguous).
+SELECTION_LABEL_COLORS = {
+    "accepted": "#6be675",
+    "rejected": "#ff6b6b",
+    "ambiguous": "#b0b6c4",
+}
+SELECTION_LABEL_KEYS = {"1": "accepted", "2": "rejected", "3": "ambiguous"}
 
 DEFAULT_FIB_LEVELS = [0.0, 0.382, 0.5, 0.618, 0.786, 1.0]
 LEG_FIB_COLORS = ["#6ea8ff", "#ffb86b", "#bd93f9", "#8be9fd", "#ff79c6"]
@@ -290,6 +310,29 @@ def _parse_args() -> argparse.Namespace:
             "Read-only on load — nothing is saved unless you press 'w'."
         ),
     )
+    parser.add_argument(
+        "--review-candidate",
+        dest="review_candidate",
+        default=None,
+        help=(
+            "Promote a screenshot-transcription candidate JSON: preload its anchors for "
+            "visual review against the chart; press 'w' to save to human_fib as facit "
+            "(created_by=human, source=manual_screenshot_transcription_reviewed). The "
+            "candidate's market + scale are read from the file. Mutually exclusive with "
+            "--edit-fib-id. Refuses non-candidate files. Nothing saved unless you press 'w'."
+        ),
+    )
+    parser.add_argument(
+        "--annotate-selection",
+        dest="annotate_selection",
+        action="store_true",
+        help=(
+            "Contrastive selection-annotation mode (Issue #42): draw candidate legs on real "
+            "candles and label each 1=accepted / 2=rejected / 3=ambiguous, cycle a tag (t), "
+            "add a reason via terminal prompt (e), press 'v' to save the window to "
+            "data/labels/selection_annotations/ (created_by=human, exact prices — no snap)."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -306,6 +349,56 @@ def _window_from_anchors(
     lo, hi = min(ta, tb), max(ta, tb)
     pad = max(hi - lo, pd.Timedelta(days=min_pad_days))
     return lo - pad, hi + pad
+
+
+def _load_candidate_for_review(path: Path) -> tuple[HumanFibAnnotation, dict]:
+    """Load a transcription candidate for review-and-promote (read-only).
+
+    Returns the facit-shaped annotation plus its ``_transcription`` audit block so the
+    caller can surface guessed/near anchors for scrutiny. Fail-closed: refuses anything
+    that is not a candidate, so this mode can never silently re-save existing facit.
+    """
+    if not path.exists():
+        raise SystemExit(f"--review-candidate: file not found: {path}")
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise SystemExit(f"--review-candidate: cannot read {path}: {exc}") from exc
+    if not raw.get("_candidate"):
+        raise SystemExit(
+            f"--review-candidate: {path} is not a candidate (missing _candidate flag). "
+            "Use --edit-fib-id to edit saved facit."
+        )
+    ann = load_annotation(path)  # tolerates the extra _candidate / _transcription keys
+    return ann, raw.get("_transcription", {})
+
+
+def _print_review_candidate_banner(ann: HumanFibAnnotation, audit: dict) -> None:
+    """Tell the reviewer what to scrutinise before promoting (press 'w').
+
+    The transcription recovers the *bar* heuristically when an anchor price repeats on
+    several candles (``n_within_near > 1``) or only matches *near* a candle extreme — those
+    are exactly the bars a human must confirm before the candidate becomes facit.
+    """
+    conf = audit.get("confidence", "?")
+    print(
+        f"Review-candidate mode: {ann.fib_id} ({ann.direction}) — anchors preloaded "
+        f"(transcription confidence: {conf}).\n"
+        "  Verify against the screenshot, nudge a bar if wrong, then 'w' to PROMOTE to "
+        "human_fib (facit; source=manual_screenshot_transcription_reviewed).\n"
+        "  Nothing is saved unless you press 'w'."
+    )
+    for m in audit.get("matches", []):
+        if m.get("n_within_near", 1) > 1:
+            print(
+                f"  ! {m.get('role')} {m.get('price')}: price repeats on "
+                f"{m.get('n_within_near')} bars — BAR WAS GUESSED, verify x-position."
+            )
+        elif m.get("confidence") != "exact":
+            print(
+                f"  ! {m.get('role')} {m.get('price')}: {m.get('confidence')} match "
+                f"(delta={m.get('rel_delta')}) — verify the price/bar."
+            )
 
 
 def _view_time_range(df: pd.DataFrame, x0: float, x1: float) -> tuple[pd.Timestamp, pd.Timestamp]:
@@ -330,6 +423,19 @@ def _focus_view_for_parent(df: pd.DataFrame, ann: HumanFibAnnotation) -> tuple:
     prices = [float(ann.anchor_a.price), float(ann.anchor_b.price)]
     pmin, pmax = min(prices), max(prices)
     return ((lo_i - xpad, hi_i + xpad), (pmin * 0.85, pmax * 1.15))
+
+
+def _window_fit_view(df: pd.DataFrame, *, pad: float = 0.03) -> tuple:
+    """Initial ``(xlim, ylim)`` framing the (already windowed) candles.
+
+    Without this a date-windowed view autoscales the log price axis to the *full* price
+    history, squishing a narrow recent band against the top (unreadable for review). Fit
+    Y to the window's low/high with a small multiplicative pad (log-friendly). Pure helper.
+    """
+    n = len(df)
+    lo = float(df["low"].min())
+    hi = float(df["high"].max())
+    return ((-0.5, n - 0.5), (lo / (1 + pad), hi * (1 + pad)))
 
 
 def _preload_fib_picks(workspace: LabelWorkspace, ann: HumanFibAnnotation) -> None:
@@ -409,7 +515,16 @@ class LabelWorkspace:
     # session_fib_ids persists across TF switches so a 1M draw stays visible on 1w/1d.
     session_fib_ids: set[str] = field(default_factory=set)
     show_frozen_overlays: bool = False
+    # Review-candidate promote mode: when set, 'w' saves with this source (provenance: the
+    # fib was transcribed from a screenshot then human-reviewed) instead of the default
+    # manual_labeling_tool, and overwriting an existing facit needs a second 'w' to confirm.
+    promote_source: str | None = None
+    # Contrastive selection-annotation mode (Issue #42): a separate candidate list, NOT the facit
+    # `legs` — rejected candidates are deliberately "bad" legs that would trip the swing warnings.
+    annotate_selection: bool = False
+    selection_candidates: list[dict] = field(default_factory=list)
     _htf_overlays: list | None = field(default=None, init=False, repr=False)
+    _pending_overwrite: bool = field(default=False, init=False, repr=False)
 
     def __post_init__(self):
         self.df = self._load_chart_candles()
@@ -515,6 +630,7 @@ class LabelWorkspace:
         self.picks.clear()
         self.history.clear()
         self.legs.clear()
+        self.selection_candidates.clear()
         self.active_leg_index = 0
         self.active_kind = "high"
         self.load_existing_label()
@@ -640,6 +756,109 @@ class LabelWorkspace:
             print("Set both high and low before push-leg (p or a).")
             return
         self._push_picks_as_new_leg()
+
+    # --- Contrastive selection-annotation mode (Issue #42) -----------------------------------
+    def commit_selection_candidate(self, label: str) -> bool:
+        """Store the current high/low picks as a labelled candidate (no swing-warning gate)."""
+        if not self._picks_complete():
+            print("Set both high and low before labelling a candidate.")
+            return False
+        self.selection_candidates.append(
+            {
+                "high": self.picks["high"],
+                "low": self.picks["low"],
+                "label": label,
+                "reason": "",
+                "tags": [],
+            }
+        )
+        self.picks.clear()
+        self.history.clear()
+        self.active_kind = "high"
+        print(
+            f"Candidate {len(self.selection_candidates)} = {label}. "
+            "Draw the next; 't' cycles a tag, 'e' adds a reason, 'v' saves the window."
+        )
+        return True
+
+    def cycle_selection_tag(self, delta: int = 1) -> None:
+        """Cycle a single structured tag on the most-recent candidate (None → tag → ... → None)."""
+        if not self.selection_candidates:
+            print("No candidate yet to tag (label one with 1/2/3 first).")
+            return
+        cand = self.selection_candidates[-1]
+        options = [None, *sorted(OPTIONAL_TAGS)]
+        current = cand["tags"][0] if cand["tags"] else None
+        idx = options.index(current) if current in options else 0
+        nxt = options[(idx + delta) % len(options)]
+        cand["tags"] = [nxt] if nxt else []
+        print(f"Candidate {len(self.selection_candidates)} tag = {nxt or '(none)'}")
+
+    def prompt_selection_reason(self) -> None:
+        """Ask for the most-recent candidate's reason in the TERMINAL (no GUI key-focus leakage)."""
+        if not self.selection_candidates:
+            print("No candidate yet — label one with 1/2/3 before adding a reason.")
+            return
+        n = len(self.selection_candidates)
+        try:
+            text = input(f"reason for candidate {n} (blank = keep): ")
+        except (EOFError, KeyboardInterrupt):
+            print("(reason unchanged)")
+            return
+        if text.strip():
+            self.selection_candidates[-1]["reason"] = text.strip()
+            print(f"Reason on candidate {n}: {text.strip()!r}")
+
+    def undo_selection_candidate(self) -> None:
+        if not self.selection_candidates:
+            print("No candidates to remove.")
+            return
+        removed = self.selection_candidates.pop()
+        print(f"Removed candidate ({removed['label']}). {len(self.selection_candidates)} left.")
+
+    def _candidate_to_schema(self, cand: dict, existing: list[Candidate]) -> Candidate:
+        hi_idx, hi_price = cand["high"]
+        lo_idx, lo_price = cand["low"]
+        origin, endpoint = time_ordered(
+            Anchor(self.df.index[hi_idx].isoformat(), hi_price),
+            Anchor(self.df.index[lo_idx].isoformat(), lo_price),
+        )
+        return make_candidate(
+            origin,
+            endpoint,
+            cand["label"],
+            existing=existing,
+            reason=cand["reason"],
+            tags=tuple(cand["tags"]),
+        )
+
+    def save_selection_window(self) -> None:
+        """Write all committed candidates as one AnnotationWindow (exact cache prices, no snap)."""
+        if not self.selection_candidates:
+            print("No candidates to save — label at least one with 1/2/3.")
+            return
+        schema: list[Candidate] = []
+        for cand in self.selection_candidates:
+            schema.append(self._candidate_to_schema(cand, schema))
+        # Window bounds come from the drawn legs (not the loaded chart), so you can open ONE chart,
+        # pan/zoom to each structure and save without restarting — bounds stay tight + correct.
+        times = [t for c in schema for t in (c.anchor_a.time, c.anchor_b.time)]
+        window = build_window(
+            symbol=self.data.symbol,
+            timeframe=self.data.timeframe,
+            exchange=self.data.exchange,
+            window_start=min(times),
+            window_end=max(times),
+            candidates=schema,
+            created_by="human",
+        )
+        path = save_window(window, SELECTION_ANNOTATIONS_DIR)
+        n_acc = len(window.accepted_ids)
+        self.selection_candidates.clear()  # auto-clear → next structure starts fresh, no restart
+        print(
+            f"Saved {len(schema)} candidate(s) ({n_acc} accepted) → {path}. "
+            "Candidates cleared; pan/zoom to the next structure and draw."
+        )
 
     def cycle_leg(self, delta: int) -> None:
         if not self.legs:
@@ -776,6 +995,20 @@ class LabelWorkspace:
             scale_mode=self.settings.fib.scale_mode,
             levels_profile=self.settings.fib.levels_profile,
         )
+        if self.promote_source:
+            # Promoting a reviewed transcription: the selection (prices) is human, so
+            # created_by stays "human"; record the real method in source instead of plain
+            # manual labeling so the guessed-bar provenance is not erased (validity).
+            annotation.source = self.promote_source
+            target = annotation_path(annotation)
+            if target.exists() and not self._pending_overwrite:
+                self._pending_overwrite = True
+                print(
+                    f"WARNING: facit already exists at {target}.\n"
+                    "  Press 'w' again to overwrite it, or move on to leave it untouched."
+                )
+                return
+            self._pending_overwrite = False
         path = save_annotation(annotation)
         # Track as a session fib so it shows as an HTF overlay on lower TFs (nesting).
         self.session_fib_ids.add(annotation.fib_id)
@@ -816,6 +1049,7 @@ def run_label_tool(args: argparse.Namespace | None = None):
         label_year=None,
         buffer_months=3,
         edit_fib_id=None,
+        review_candidate=None,
     )
     settings = _apply_cli_overrides(load_settings(cli.config or None), cli)
     window_start, window_end = _resolve_window(cli)
@@ -832,6 +1066,30 @@ def run_label_tool(args: argparse.Namespace | None = None):
             )
         except (FileNotFoundError, ValueError) as exc:
             raise SystemExit(f"--edit-fib-id: {exc}") from exc
+        if window_start is None and window_end is None:
+            window_start, window_end = _window_from_anchors(selected_fib)
+
+    review_candidate = getattr(cli, "review_candidate", None)
+    review_audit: dict = {}
+    if review_candidate:
+        if edit_fib_id:
+            raise SystemExit("--edit-fib-id and --review-candidate are mutually exclusive")
+        selected_fib, review_audit = _load_candidate_for_review(Path(review_candidate))
+        # Use the candidate's own market + geometry so promotion is correct regardless of
+        # which --config was passed (the candidate carries scale_mode / levels_profile).
+        settings.data = settings.data.model_copy(
+            update={
+                "exchange": selected_fib.exchange,
+                "symbol": selected_fib.symbol,
+                "timeframe": selected_fib.timeframe,
+            }
+        )
+        settings.fib = settings.fib.model_copy(
+            update={
+                "scale_mode": selected_fib.scale_mode,
+                "levels_profile": selected_fib.levels_profile,
+            }
+        )
         if window_start is None and window_end is None:
             window_start, window_end = _window_from_anchors(selected_fib)
     args = args or argparse.Namespace(symbols=None, timeframes=None)
@@ -851,13 +1109,18 @@ def run_label_tool(args: argparse.Namespace | None = None):
         window_start=window_start,
         window_end=window_end,
         single_fib_mode=selected_fib is not None,
+        annotate_selection=getattr(cli, "annotate_selection", False),
     )
     if selected_fib is not None:
         _preload_fib_picks(workspace, selected_fib)
-        print(
-            f"Single-fib edit mode: {selected_fib.fib_id} ({selected_fib.direction}) "
-            "— HTF overlays hidden, anchors preloaded. Nothing saved unless you press 'w'."
-        )
+        if review_candidate:
+            workspace.promote_source = "manual_screenshot_transcription_reviewed"
+            _print_review_candidate_banner(selected_fib, review_audit)
+        else:
+            print(
+                f"Single-fib edit mode: {selected_fib.fib_id} ({selected_fib.direction}) "
+                "— HTF overlays hidden, anchors preloaded. Nothing saved unless you press 'w'."
+            )
     else:
         workspace.load_existing_label()
 
@@ -1054,6 +1317,24 @@ def run_label_tool(args: argparse.Namespace | None = None):
                 label_suffix=" *",
             )
 
+        if workspace.annotate_selection:
+            for ci, cand in enumerate(workspace.selection_candidates, start=1):
+                hi_idx, hi_price = cand["high"]
+                lo_idx, lo_price = cand["low"]
+                color = SELECTION_LABEL_COLORS.get(cand["label"], "#ffffff")
+                ax.plot([hi_idx, lo_idx], [hi_price, lo_price], color=color, lw=1.8, zorder=6)
+                ax.scatter([hi_idx, lo_idx], [hi_price, lo_price], color=color, s=55, zorder=7)
+                tag = cand["tags"][0] if cand["tags"] else ""
+                lbl = f"{ci}:{cand['label'][:3]}" + (f" {tag}" if tag else "")
+                ax.text(
+                    (hi_idx + lo_idx) / 2,
+                    (hi_price + lo_price) / 2,
+                    lbl,
+                    color=color,
+                    fontsize=8,
+                    zorder=8,
+                )
+
         step = max(1, len(df) // 10)
         ticks = list(range(0, len(df), step))
         ax.set_xticks(ticks)
@@ -1153,6 +1434,30 @@ def run_label_tool(args: argparse.Namespace | None = None):
 
     def on_key(event):
         key = _normalize_key(event.key)
+        if workspace.annotate_selection:
+            if key in SELECTION_LABEL_KEYS:
+                workspace.commit_selection_candidate(SELECTION_LABEL_KEYS[key])
+                redraw()
+                return
+            if key == "t":
+                workspace.cycle_selection_tag(1)
+                redraw()
+                return
+            if key == "e":
+                workspace.prompt_selection_reason()
+                redraw()
+                return
+            if key == "x":
+                workspace.undo_selection_candidate()
+                redraw()
+                return
+            if key == "v":
+                workspace.save_selection_window()
+                redraw()
+                return
+            if key in {"s", "w", "a", "p", "d"}:
+                print("Contrastive mode: facit keys disabled. Use 1/2/3, t, e, x, 'v' to save.")
+                return
         if key == "r":
             workspace.reset()
             mark_dirty(True)
@@ -1234,7 +1539,22 @@ def run_label_tool(args: argparse.Namespace | None = None):
     fig.canvas.mpl_connect("motion_notify_event", on_motion)
     fig.canvas.mpl_connect("button_release_event", on_release)
     fig.canvas.mpl_connect("key_press_event", on_key)
-    redraw()
+
+    if workspace.annotate_selection:
+        print(
+            "Contrastive mode ON: draw a leg (h/l + click), then 1=accept 2=reject 3=ambiguous; "
+            "'t' cycles a tag on the last candidate; 'e' types a reason in THIS terminal; "
+            "'v' saves the window; 'x' removes the last candidate. Facit keys are disabled here."
+        )
+
+    # A date-windowed view (review/edit single-fib, or --label-year) must fit Y to the
+    # window, else the log axis autoscales to full history and squishes the band (unreadable).
+    initial_view = (
+        _window_fit_view(workspace.df)
+        if (window_start is not None or window_end is not None) and len(workspace.df)
+        else None
+    )
+    redraw(set_view=initial_view)
     plt.show()
 
 

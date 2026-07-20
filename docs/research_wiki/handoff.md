@@ -22,53 +22,121 @@ append-only trail lives in [log.md](log.md).
 | 1 | **1M** | **Complete** — 9× source fibs, 1D + 4H reaction review approved (2026-06-11) |
 | 2 | **1W** | **Complete** — 21× source fibs verified; combined map + per-fib 4H zoom (2026-06-11) |
 | 3 | **1D** | **Complete** — 67× source fibs + 4H reaction-review (2026-06-12); 1816 events, 90-day window |
-| 4 | **4H** | **Complete** — 365 active source fibs (366 drawn; 1 superseded 20250506 dedup) |
-| 5 | 1H | Deferred — 1h cache not fetched yet |
+| 4 | **4H** | **Complete** — 371 active source fibs (365 + 6 grow-facit 2024–2026; 1 superseded 20250506 dedup) |
+| 5 | 1H | Structure-engine substrate (1h cache fetched bounded-recent 2024–2026); source-labeling deferred |
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — open (nesting tested → within-TF reframe; per-leg-feature line stays closed)
+## Next Step — cascade probe RAN → `sequential_origin_signal` (sign-off) + contrastive capture — 2026-07-20
 
-**2026-06-26 settled the nesting question** (full detail: [log.md](log.md) top entry). The human nests
-**within-TF** — successive impulse legs on one timeframe — **not cross-TF** (no parent→child swing).
-Two pre-registered, leakage-disciplined **nulls**: cross-TF prediction 1w→1d `no_parent_context_signal`
-(directional, N=9; cohort v2 leakage-disqualified, frozen corpus used; method re-locked before run when
-a feasibility count showed the first method null-by-construction); the within-TF axis as a feature
-`impulse_leg` → **clean POWERED null** (4h, AP-lift CI [−0.032,+0.027] straddles 0, p=0.34) → the
-per-leg-feature line **stays closed** (`exclusivity` + `impulse_leg`, both null). The +0.119 weight is
-in-sample only (OOS-refuted) — **not** evidence. Reachability diag: HTF (1M 1.00 … 4h 0.85, no epoch
-gaps) is **intrinsically data-starved**, not detector-broken — no feature/detector fix powers 1M/1w.
+**CASCADE probe RUN 2026-07-20 → `sequential_origin_signal` on 4h (advisory, pending owner
+sign-off).** H1a (predecessor `anchor_b` as next origin) hits **0.256** vs permutation-null
+**0.005**, p < 0.0005, gap CI [0.205, 0.298], N=363 pairs; signal is ~all EXACT chains (76/93),
+both directions, 1d+1w context cells agree, 1M nothing. **~1 in 4 origins = previous endpoint →
+a real component of selection, NOT the selector** (74% are not chained).
+[Results](reviews/btc-fib-cascade-conditioning-probe-results-20260720.md) — executed to the
+locked prereg incl. §9 pre-run amendments (leakage review fixed N2 look-ahead; H1a/N1 clean).
+**Owner:** sign off results; classify the 7 degenerate fibs; then contrastive capture below.
 
-**No active model track.** Open question for the user: where next, given per-leg features exhausted,
-data saturated / HTF starved, signal living in the modest 4h `cleanliness` lead. Candidate: north-star
-**step 2 (descriptive level-reads)** rather than more selection features. Cohort v2 (`ed98dc4`) stays
-drawn but **unused** (prediction-disqualified); `RESOLUTION_TIMEFRAME` 1M→1w no longer on the path.
+---
 
-**2026-06-29: #38 daily wick-pair anchor accuracy → `wick_pair_no_better` (SIGNED OFF 2026-06-29).**
-The **strong-form** rejection-wick premise (anchors sit on ≥50%-wick candles) is **not supported** at
-`wick_frac=0.5` a priori: coverage 0.08 vs control 0.90, despite the selector picking a pair in 44/71
-cases (dominant-wick pivots sit at *different* bars than the human's anchors). **#31's fractal line
-stays the candidate.** The **rank-form** question (does wick geometry help *rank* candidates?) is
-**left open** — `agreement` was uninformative (floor for both arms) — for a *separately-registered*
-`wick_frac` sweep (not a rescue). Does **not** reopen the closed per-leg-feature line. [log.md](log.md) top.
+**Previous Next Step (still active after sign-off): RESUME contrastive capture toward ≥30 — 2026-07-02**
+
+**MEASURED** (`scratchpad/measure_4h_down.py`, out-of-sample on all 201 4h-DOWN human legs, LOCKED band):
+engine origin **sits only 43 %** (86/201, 95 % CI ~36–50 %); leg accepted 30 % (61/201). Miss decomp: **75
+wrong-swing** (price >2 %, bar-tolerance-invariant = 37 %) + 24 bar-units-only. Origin-sits ∈ **[43 % locked,
+55 % bars-ignored]**, CI tops at 50 % → does NOT sit broadly. On 1h calibration it re-found 4/4 → classic
+overfit; the single most-prominent-high rule is not Chamoun's selector on ~half the legs (HO-B pattern at
+scale). Validity-reviewed (concerns, non-blocking: acceptance bar-band not TF-rescaled = disclosed; no
+leakage, no post-hoc tuning, corpus is genuine human facit). **Fork answered → the targeted contrastive set
+(#42) IS justified. NEXT:** resume drawing toward ≥30 windows (`scratchpad/annotation_batch1.md`, tool
+`--annotate-selection`); at ~10 check reason/tag consistency before grinding to 30. Memory
+`project_capture_friction_bottleneck.md`.
+
+---
+
+**STRUCTURE-MEMBERSHIP thread CLOSED (all 4 features null on selection) — 2026-07-01**
+
+**2026-07-01: the structure-engine substrate question is answered — STOP the thread.** Four structure/
+detection features, each with a conservative null + adversarial verification, all NULL on *selection*:
+**Directional-Change** (saturation → pooled W+D p=0.099), **BOS/CHoCH** (definitional break-rate → BOS|broke
+p=0.16), **structure_alignment on the powered COMMITTED corpus** (trend-termination TAUTOLOGY → collapses vs a
+two-sided-plausible null, 4h 0.400 vs 0.398 p=0.55, anchor_b too), **prominence** stays the Stage-1/2 survivor.
+**Detection & structure-membership are NOT the bottleneck — SELECTION is** (echoes `no_pivot_signal_above_prominence`).
+Machine-local memory `project_structure_engine_topdown.md`.
+
+**DECOMPOSITION thread (2026-07-01) — Chamoun's rule split generate → select; BOTH halves DONE, LANDED.**
+His rule: leg = retracement extreme "1" → *next fresh* impulse endpoint "0", a *clean directed impulse*. Probes
+(scratchpad `impulse_leg_generator_coverage.py`/`endpoint_rank_probe.py`/`origin_rank_probe.py`): admissibility
+(fresh/clean, k_between=0) holds on **BOTH** anchors but is **definitional**; the **positive** rule for WHICH
+admissible extreme is **weak-to-absent** (origin flat-null p≈0.45/0.59, NOT prominence; recency DEAD); continuation
+gap = **SCALE**. Six probes bound what selection is NOT → **NON-geometric**. Detail:
+[style doc](reference/chamoun-daily-fib-style.md).
+**CASCADE probe (2026-07-01→02) — DATED then CV probe DEAD.** 1w cascade drawn + dated (`scratchpad/
+cascade_1w_{working,snap}.py`; BOTTOM_LEFT=2020-21, furthest=downtrend=RIGHT). CV probe DEAD (advisor): 7
+legs, duration already inconsistent, grouping = "ingen aning" — kept as durable facit, redirected to
+contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
 ## Recent Changes
 
-- **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (SIGNED OFF 2026-06-29; fractal
-  control 0.90 confirmed via B-closure, postlock A5).** Pre-reg
-  [locked 2026-06-29](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md) (selector-only,
-  addendum A1). New [`strategies/chamoun_daily_wick_pair.py`](../../src/fibengine/strategies/chamoun_daily_wick_pair.py)
-  + run harness [`research/chamoun_wick_pair_accuracy.py`](../../src/fibengine/research/chamoun_wick_pair_accuracy.py)
-  (+`pivot_recall` producer-injection, +4 tests). Result (N=71): coverage 0.08 vs control 0.90 →
-  **`wick_pair_no_better`**; #31 stays the candidate. Gates green (623 pytest, 74% cov, ruff, bounds).
-  [log.md](log.md) top.
+- **2026-07-20 CASCADE probe RUN → `sequential_origin_signal` (advisory) + validity fixes.**
+  Pre-run leakage review: H1a/N1 clean; N2 look-ahead fixed + 4 more findings → prereg §9
+  amendments (`2c04328`). CRLF-portable manifest fingerprint (`aeccffa` — verifier false-DRIFTed
+  on Windows checkout, would have blocked the probe). Candle cache fetched (full facit coverage,
+  4h 21 269 bars 2016→2026). Probe executed verbatim: **4h H1a 0.256 vs null 0.005, p<0.0005,
+  93 hits of which 76 EXACT** — [results](reviews/btc-fib-cascade-conditioning-probe-results-20260720.md),
+  pending owner sign-off. Transcription regression test now RUNS (cache present) and passes
+  (≥0.90 floor). Gates green.
+
+- **2026-07-20 SYSTEMATIC AUDIT (read-only; report off-repo) + P0 remediation.** Corpus manifest +
+  verifier (`research/corpus_manifest.py`); transcription claim re-scoped + living regression test;
+  stale counts fixed; degenerate-fib + 1w ±1 owner questions logged. **NEW
+  [cascade-conditioning prereg](reviews/btc-fib-cascade-conditioning-probe-prereg-20260720.md)
+  (run pending candle cache)** — does the previous fib predict the next origin? Motivated by facit
+  chain geometry (4h: 85/371 exact `b_{i-1}==a_i` links) + untested U1. Detail: [log.md](log.md) top.
+
+- **2026-07-02 MEASURED engine vs 4h-DOWN facit (out-of-sample, `scratchpad/measure_4h_down.py`).** Origin sits
+  **43 %** (86/201, CI ~36–50 %), leg 30 %; **75/201 genuine wrong-swing** (bar-invariant). 1h-overfit → NOT broad.
+  → contrastive capture (#42) justified (validity-reviewed, non-blocking). See Next Step.
+
+- **2026-07-02 ACCEPTANCE tolerance LOCKED (`cef082d`) + CONTRASTIVE CAPTURE tool (#42, `0b1e9a1`).**
+  `evaluation/acceptance.py`: 3-tier EXACT/SNARLIKT/NEAR/MISS, accept=NEAR, origin bars+price / "0" price-only looser
+  (+7 tests). `labeling/tool.py --annotate-selection` + `selection_capture.py` (+9 tests): draw/label/tag/reason →
+  schema, exact prices; first window HO-B; 1w cascade dated + CV probe dead (`bf071a7`).
+
+- **2026-07-01 Fib Selection Learner v0 LANDED (#42, `afb5a5f`) → [review](reviews/btc-fib-selection-learner-v0-20260701.md).**
+  Contrastive schema + magnitude baseline + fail-closed ML/Optuna gate (deps + ≥30 human windows + locked holdout);
+  `research/selection_{annotation,baseline,ranker_ml}.py`. Same day: pivot-point selector DISPROVEN (strict null, p=0.997).
+
+- **2026-07-01 Chamoun daily-fib STYLE distilled (docs-only) → [style doc](reference/chamoun-daily-fib-style.md).**
+  `/chamoun-fib-style-distiller` over 76 daily facit (Observed/Inferred/Unverified). Reconcile flag: daily base = **76**
+  not 67 (Verification Snapshot stale); `20210907` degenerate leg=0.
+
+- **2026-06-30 STRUCTURE-ENGINE v1 — origin proposer landed** (`research/chamoun_structure_engine.py`, +9 tests,
+  `24a3bb5`): frozen, DOWN-only, re-finds his 4 dated-1h origins (#1-prominence @ ~3-day scale). [log.md](log.md) top.
+
+- **2026-06-30 GROW-FACIT (screenshot → facit).** Daily 2025–26 gap +5 fibs; 4h **+6** (365→**371**) via
+  human-reviewed `--review-candidate` (`created_by=human`). [log.md](log.md) top.
+
+- **2026-06-30 Checkpoint reminder hook wired** (`UserPromptSubmit`, auto-pings on capacity; hardened
+  2026-07-01 with turn-count/thread-health ladder). [log.md](log.md) top.
+
+- **2026-06-29 Leg-agreement RULER — built + SIGNED OFF (north-star step-1 measurement instrument).**
+  The free facit-checker #38 lacked. [Prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md)
+  + [postlock](reviews/btc-fib-leg-agreement-ruler-prereg-20260629-postlock.md); new
+  [`evaluation/leg_agreement.py`](../../src/fibengine/evaluation/leg_agreement.py) (`mean(s_high,s_low)`,
+  `s=max(0,1−Δbar/W)`, W=2, direction-gated; +21 tests). leakage-review caught an overclaim → re-scoped to a
+  **valid strict selection-scorer**, narrow coverage-capped range (ceiling ~0.79; sub-1.0 = coverage artifacts).
+  Usable as **eval**, NOT a graded training objective. [log.md](log.md) top.
+- **2026-06-29 #38 daily wick-pair anchor accuracy — clean NULL (SIGNED OFF; fractal control 0.90
+  via B-closure, postlock A5).** [Locked prereg](reviews/btc-fib-daily-wick-pair-anchor-prereg-20260629.md)
+  (selector-only); new [`strategies/chamoun_daily_wick_pair.py`](../../src/fibengine/strategies/chamoun_daily_wick_pair.py)
+  + harness `research/chamoun_wick_pair_accuracy.py` (+4 tests). N=71: coverage 0.08 vs 0.90 →
+  **`wick_pair_no_better`**; #31 stays the candidate. Gates green. [log.md](log.md) top.
 - **2026-06-26 Nesting REFRAME + two nulls.** Within-TF (not cross-TF) impulse-leg decomposition (facit);
   cross-TF 1w→1d [`no_parent_context_signal`](reviews/btc-fib-nesting-prediction-prereg-1w1d-20260626.md) (N=9) +
   [`impulse_leg`](reviews/btc-fib-impulse-leg-feature-prereg-20260626.md) 4h **clean POWERED null** (CI [−0.032,+0.027]); per-leg line closed; HTF data-starved. [log.md](log.md).
-- **2026-06-26 Top-down nesting — tool support (anchor markers + session overlay + `c` focus,
-  `f79d7d2`/`3f3dc05`, +7 tests) + cohort v2 drawn (`ed98dc4`, 12 fibs, schema 12/12); v1 deleted
-  (`879b754`, wrong candles). fib_id collision: 2017-bull 1w replaced frozen `1w_20170316`.** Now
-  **unused** (prediction-disqualified — see reframe entry above). Detail: [log.md](log.md).
+- **2026-06-26 Top-down nesting tool support** (anchor markers, session overlay, `c` focus; cohort v2 drawn, v1 deleted) — now **unused** (prediction-disqualified). [log.md](log.md).
 - **2026-06-25 Fib SELECTION-LEARNING model-ENRICHMENT — RUN → `enriched_worse_check` (4h k=3); line
   CLOSED.** Blind Commit-2 of the [enrichment LOCK](reviews/btc-fib-selection-learning-enrichment-lock-20260624.md)
   (`c80acb0`). Parity: AP-baseline = Stage-2 headline 0.0567, n_test_pos=65, excl=0 (no look-ahead).
@@ -81,16 +149,9 @@ stays the candidate.** The **rank-form** question (does wick geometry help *rank
   [Main-quest reset](reviews/btc-fib-selection-learning-main-quest-reset-20260624.md).
 
 - **2026-06-22 Fib SELECTION-LEARNING W-gap study — BUILT + module split, RUN PENDING (home).** Commit 2 of side-quest #1, built to the [W-gap LOCK](reviews/btc-fib-selection-learning-w-gap-lock-20260622.md) (`4f47d8e`): `gap(k)=AP(retro-W)−AP(live-k)` on identical rows, embargo=W, L5 verdict. New `research/selection_learning_gap.py` (+5 tests); W-gap code split out to keep `selection_learning.py` under the §6 size cap (was 995 lines); flushed-stderr `_progress` logging in `build_candidates`+`build_retro_features` so a long run is never blind (result-neutral). **Run NOT executed** — inherent ~2-3h per-endpoint-detect cost on the ~20k-bar 4h frame (leakage-bearing truncation, no legal shortcut); to run at home (see Next tracks). No gap results, no verdict. Commit `884d4c0`, gates green (pytest 549, cov 75%).
-- **2026-06-18 Fib SELECTION-LEARNING 4h slices (`ea6c2ea`) — Stage-2 headline + prominence-family `survives_prominence_family` + k-sweep `k_stable_live_selection_signal` + §12 addendum.** Modest single-feature `cleanliness` lead; 4h-only powered; low AP (0.057–0.066 vs 0.83 ceiling); not a reproduction; 1M/1w/1d underpowered. Full detail: Status section below + [results](reviews/btc-fib-selection-learning-results-20260618.md).
-- **2026-06-17 NEW LINE pre-registered — Fib SELECTION-LEARNING (docs-only, gated).** Different question from the closed behaviour/B-1 nulls: *can a model reproduce how the human selects swings/ranges* (labels as facit, **no edge/backtest/Genesis**). Stage 2 leg/range gestalt (5 components) = target, Stage 1 per-pivot = diagnostic; live-equivalent vs **bounded** retrospective viewport → causal-availability gap; binding feature-provenance rule; one primary cell + coverage ceiling. Two-step gate. [Prereg](reviews/btc-fib-selection-learning-prereg-20260617.md).
-- **2026-06-17 B-1 horizontal-structure study — BUILT + RUN → NULL (closed).** SENARE-1 e-value (conditional 2×2 safe test) + 3-subject harness (swing/round/prior-extreme vs matched random-walk null), all pins locked pre-run. `any_robust=False` on all 12 cells; only swing edges the null (e=1.70 — not even marginal; e-Holm needed E≈240 → low power). Generic structure not special vs a random walk; §10 sanity-check not run. Commits `474f320`→`44e63fa`. [Results](reviews/btc-horizontal-structure-event-study-results-20260617.md).
-- **2026-06-17 External-pattern-scan absorption — landed on `main`** (PR #33→main; #34 sec cryptography→49.0.0). Standing [prereg addendum](reviews/horizontal-structure-prereg-addendum-20260617.md) (RW control / anytime-valid re-looks / purged-CV embargo) + code (synthetic RW baseline, `--by-uncertainty` worklist, fail-closed swing-label validation). No facit/signal/auto-fib touch.
-- **Earlier 2026-06-15/06-16 changes — archived** (kept lean for the 400-line bound): behaviour +
-  context studies **NULL/CLOSED** (`f4e96f1`); Fib→Genesis V2 Phase 2 + 2.5 nullability **PASS/CLOSED**
-  (`68dc006`); MTF confluence CP1–CP3 **CLOSED** (geometry, not edge); #32 tooling DONE + `20171228`
-  correction + chart-contract snapshots; 2026-06-08→06-12 source-fib milestones. **All preserved** in
-  the **PAUSED/CLOSED status sections below** + [log.md](log.md) /
-  [log part 1](log-archive-btc-postreset-part1.md); current counts in the Verification Snapshot.
+- **2026-06-15→18 changes — archived** (all in [log.md](log.md) / [part 1](log-archive-btc-postreset-part1.md)
+  + Status/Verification below): SELECTION-LEARNING prereg + 4h slices; B-1 horizontal-structure & behaviour/context
+  studies **NULL/CLOSED**; Fib→Genesis V2 Phase 2/2.5 **PASS/CLOSED**; MTF confluence CP1–CP3 **CLOSED**; #32 tooling DONE.
 
 ## Status — Fib SELECTION-LEARNING line (2026-06-18, slice committed `ea6c2ea`)
 
@@ -163,28 +224,16 @@ legs/ranges* (labels = facit; **no edge/behaviour/backtest/PnL/Genesis/auto-fib 
   behaviour/Genesis/1H/ETH. [Results](reviews/btc-fib-selection-learning-artifact-results-20260624.md);
   summary + `cells/*.json` gitignored/regenerable. Re-run (deterministic, frozen data, no `--refresh`):
   `PYTHONUNBUFFERED=1 uv run --no-sync python -u -m fibengine.research.selection_learning_artifact --artifact`.
-- **2026-06-24 Fib SELECTION-LEARNING artifact-MECHANICS — BUILT + RUN (descriptive-only, NO verdict).**
-  Commit 2 of the [mechanics PLAN](reviews/btc-fib-selection-learning-artifact-mechanics-plan-20260624.md)
-  (`70174df`), executed verbatim. New sibling `research/selection_learning_artifact_mechanics.py`
-  (+`--artifact-mechanics` CLI, 3 descriptive fields on `ArtifactRow`, +8 tests). Findings (descriptive,
-  no claim): **(M1)** the 4H "reached less clean" gap is a **span/duration confound** — Spearman(clean,
-  span)=**−0.69**, reached longer (median 5 vs 3 bars), and the −0.056 gap **vanishes when conditioning
-  on span** (short-span +0.003, long-span −0.017): composition effect, not detector cleanliness-
-  preference. **(M3)** 4H snapping deflates because pivots sit **outside** human anchors → span extends
-  (33% extend vs 1.6% shrink); the **1D flip** is a TF-dependent geometry (1D shrinks 10% **and** the
-  span-delta↔clean Spearman flips −0.19→+0.18) — *why* the local relationship reverses stays an **open
-  investigate-target**. **No verdict, no lock change; artifact-probe reading unchanged; crux OPEN.**
-  Population guard: M1 ≠ Stage-2 lead (different population). No matched-null/new universe/Genesis/1H/
-  ETH/refresh. [Mechanics note](reviews/btc-fib-selection-learning-artifact-mechanics-20260624.md);
-  mechanics_summary.json gitignored/regenerable.
-- **2026-06-24 Fib SELECTION-LEARNING snapping FLIP mechanics — BUILT + RUN (descriptive, no verdict).**
-  Narrow follow-up: *why does snapping↔cleanliness flip sign 4H↔1D*. Extended the mechanics module
-  (+net/path decomposition, 2 more `ArtifactRow` fields, +2 tests). On the moved-snap domain it is a
-  **net-vs-path channel reversal** consistent with **candle granularity**: 4H grows **path** > net
-  (rel_path 0.231 > rel_net 0.181, 63% path-dominated → clean down); 1D grows **net** > path (0.063 >
-  0.025, 60% net-dominated → clean up). Explains the **measurement geometry**, kept apart from any
-  selection-claim; **no verdict, no lock change, crux OPEN**. No matched-null/universe/Genesis/1H/ETH/
-  refresh. [Flip note](reviews/btc-fib-selection-learning-artifact-mechanics-flip-20260624.md).
+- **2026-06-24 Fib SELECTION-LEARNING artifact-MECHANICS + snapping-FLIP — BUILT + RUN (descriptive,
+  NO verdict; full detail in [log.md](log.md)).** Two sibling runs (`70174df`) on
+  `research/selection_learning_artifact_mechanics.py` (+`--artifact-mechanics`, +10 tests): **(M1)** the
+  4H "reached less clean" gap is a **span/duration confound** (Spearman −0.69; gap vanishes conditioning
+  on span). **(M3)** snapping deflates because pivots sit outside human anchors → span extends; the **1D
+  flip** is TF-dependent geometry, a **net-vs-path channel reversal** consistent with candle granularity
+  (4H path-dominated → clean down; 1D net-dominated → clean up). **No verdict, no lock change; crux OPEN.**
+  No matched-null/universe/Genesis/1H/ETH/refresh.
+  [Mechanics](reviews/btc-fib-selection-learning-artifact-mechanics-20260624.md) ·
+  [Flip](reviews/btc-fib-selection-learning-artifact-mechanics-flip-20260624.md).
 
 **Next work requires a separate explicit GO. No W/gap, no Stage 1, no new sensitivity, and no Genesis
 may be started automatically.** Parked (test-only, separate GO): lock the facit-discipline refusal
@@ -192,13 +241,17 @@ branches in `selection_learning.py:118-142` (currently uncovered — see audit).
 
 ## Verification Snapshot
 
-- `data/labels/human_fib/bitfinex/BTC-USD/1M/` — **9** base `fib_*.json` (log scale).
-- `data/labels/human_fib/bitfinex/BTC-USD/1w/` — **21** base `fib_*.json` (log scale).
-- `data/labels/human_fib/bitfinex/BTC-USD/1d/` — **67** base `fib_*.json` (log scale);
-  source-facit complete, verified 2026-06-11.
-- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **365** active base `fib_*.json` (log scale;
-  366 drawn 2026-06-12, 1 superseded via 20250506 dedup 2026-06-15). Coverage 2017-01-05 →
-  2026-06-05.
+Counts re-verified 2026-07-20 and locked in
+[`data/labels/human_fib/MANIFEST.json`](../../data/labels/human_fib/MANIFEST.json)
+(`corpus_manifest --verify`). **Total 484 base `fib_*.json`** (all log scale):
+
+- **1M = 13** (9 @06-09 reset + 4 @06-26 nesting cohort v2) · **1w = 24** (20 @06-11 + 4 nesting;
+  older docs say 21 — ±1 in Open Questions) · **1d = 76** (67 @06-11 + 4 nesting + 5 grow-facit
+  06-30) · **4h = 371** (365 + 6 grow-facit 06-30; 20250506 dedup superseded-by-deletion).
+- **Snapshot discipline (audit 2026-07-20):** selection results signed off before 2026-06-26 are
+  bound to the pre-growth corpus (`FROZEN_FACIT_COUNT` 9/21/67/365); the W-gap preflight now FAILS
+  on all TFs by design and other harnesses have none. Never compare a fresh re-run against those
+  numbers; new preregs must pin a manifest snapshot.
 - `experiments/review/weekly_source_fib_map/` and `…/weekly_source_fib_zoom/` —
   generated charts (gitignored; regenerate via the two new CLIs).
 - `data/raw/bitfinex/BTC-USD/1M/limit_500.csv` — 115 bars (2016-12 .. 2026-06),
@@ -210,6 +263,10 @@ branches in `selection_learning.py:118-142` (currently uncovered — see audit).
 ## Open Questions
 
 - Minimum monthly fib count before 1W mapping?
+- 1w base batch: 20 files on disk vs 21 in older docs — labeling miss, typo, or deletion? (audit)
+- 7 degenerate same-candle fibs (`a.time == b.time`): 1d `20210907` (known) + 4h `20170209T12,
+  20170310T20, 20171107T12, 20200316T12, 20200802T04, 20230223T08` (unflagged). Intentional or
+  misclicks? **Owner call** — unreachable by pivot-pair candidates, silently deflate ceilings.
 
 ## Status — BTC/Fib behaviour/backtest line PAUSED / CLOSED (2026-06-16, reviewed PASS)
 
@@ -272,106 +329,11 @@ policy**. No Phase 3.
 
 ## Startup on another machine
 
-Use this checklist when resuming from a home computer or any machine that does
-not have the current working tree.
-
-### Before leaving the current machine
-
-- All code, tests, wiki, and data changes committed and pushed (`git status` clean).
-- Gitignored review artifacts (`experiments/review/`) copied as a ZIP if wanted
-  (optional — see restore step below).
-- No required local-only state remains: committed facit (`fib_*.json`,
-  `review_windows.yaml`) and wiki docs are the source of truth.
-
-### On the new machine
-
-```bash
-git pull
-uv sync --extra dev
-uv run pytest -q
-uv run python scripts/check_repo_bounds.py
-```
-
-### BTC/USD candle-cache setup
-
-`data/raw/` is gitignored — fetch it fresh:
-
-**Bash:**
-```bash
-uv run --no-sync python -m fibengine.data.fetch \
-  --symbols BTC/USD \
-  --timeframes "1M,1w,1d,4h" \
-  --refresh \
-  --config config/settings.expansion.yaml
-```
-
-**PowerShell:**
-```powershell
-uv run --no-sync python -m fibengine.data.fetch `
-  --symbols BTC/USD `
-  --timeframes "1M,1w,1d,4h" `
-  --refresh `
-  --config config/settings.expansion.yaml
-```
-
-### Labeling preflight
-
-Confirms cache is complete for all active TFs before opening the labeling tool:
-
-**Bash:**
-```bash
-uv run --no-sync python -m fibengine.labeling.preflight \
-  --symbol BTC/USD \
-  --timeframes "1M,1w,1d,4h,1h" \
-  --config config/settings.expansion.yaml
-```
-
-**PowerShell:**
-```powershell
-uv run --no-sync python -m fibengine.labeling.preflight `
-  --symbol BTC/USD `
-  --timeframes "1M,1w,1d,4h,1h" `
-  --config config/settings.expansion.yaml
-```
-
-Expected: 1M/1w/1d/4h pass; 1h FAIL (cache not fetched yet — deferred).
-
-### Optional: restore local review artifacts
-
-`experiments/review/` is gitignored (regenerable charts/CSVs). The completed 1M packages can
-be restored locally from `btc-1m-reaction-review-artifacts-20260611.zip` (`unzip … -d .`) if
-wanted — **optional**; committed `fib_*.json` + `review_windows.yaml` are the source of truth.
-
-### Windows / Symantec SEP note
-
-Use `uv run --no-sync` after the initial `uv sync` and set `PYTHONDONTWRITEBYTECODE=1`
-(user-scope) to cut SEP scan surface. Full SONAR / Auto-Protect discipline + the env-var
-commands: [CLAUDE.md](../../CLAUDE.md) Gotchas.
-
-### Resume point
-
-- **BTC/USD 1M phase is complete.** 9 source fibs, 1D + 4H reaction review
-  approved 2026-06-11. Do not resume unless an explicit bug or gap is found.
-- **BTC/USD 1W source-fib phase is complete.** 21 source fibs verified;
-  visual confirmation via `weekly_source_fib_map` (combined 1W/1D/4H) and
-  `weekly_source_fib_zoom` (per-fib 4H). Combined 4H is too compressed — use
-  the per-fib zoom for 4H. Do not resume unless a bug or gap is found.
-- **BTC/USD 1D phase is complete.** 67 source fibs (2017-01-05 → 2024-12-20) and
-  4H reaction-review (2026-06-12). 1816 4H interactions, 90-day windows.
-  Summary: `docs/research_wiki/reviews/btc-1d-reaction-review-cycle-20260612.md`.
-  Do not resume unless a bug or gap is found.
-- **BTC/USD 4H source-fib phase is complete.** 366 source fibs (2017-01-05 → 2026-06-05),
-  up=169 / down=197, 366/366 schema PASS (2026-06-12). Do not resume unless a bug or gap
-  is found. 4H is the current lowest active timeframe (1H paused).
-- **4H visual confirmation Tier 1 + Tier 2 sample-pass complete** (2026-06-15). Tier 1:
-  `research/fourh_source_fib_map.py`, 11 annual groups, 366/366 drawn. Tier 2:
-  `research/fourh_source_fib_zoom.py`, 103+37 fibs rendered; first manual sample-pass (8
-  fibs) shows no suspicious labels. Two watchlist items: `20171228` (short-span) and
-  body/close vs wick convention (undocumented). Do not start with 1H. Do not start with
-  reaction-review. Review:
-  [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
-- Do not auto-fib. Do not infer anchors. Keep the four flows distinct: 1M source /
-  1M→1W projection / true 1W source / true 1D source fibs.
+Full checklist (git pull / uv sync / candle-cache fetch / labeling preflight / SEP notes /
+per-TF resume points) moved to
+[reference/startup-checklist.md](reference/startup-checklist.md) (repo-bounds §2B, 2026-07-20).
+Standing rules: do not auto-fib, do not infer anchors, keep the four flows distinct
+(1M source / 1M→1W projection / true 1W source / true 1D source fibs).
 
 ## Links
 

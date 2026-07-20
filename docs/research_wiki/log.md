@@ -16,6 +16,360 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-20] review | Cascade probe RUN → `sequential_origin_signal` (advisory) after pre-run validity fixes
+
+Continuation of the audit session below, on the Windows labeling machine. (1) **CRLF bug found &
+fixed** (`aeccffa`): the committed manifest was LF-generated; `core.autocrlf=true` checkout made
+the fail-closed verifier false-DRIFT on all four TFs — gates red, probe blocked. Fingerprint now
+CRLF-normalizes (committed hashes unchanged, corpus untouched). (2) **leakage-validity-reviewer on
+the probe commit:** H1a/N1 (verdict-bearing) causally clean; blocking finding = N2 ran
+`detect_pivots` untruncated (centered window → up to 3 post-origin bars could certify/rank a
+pivot). Fixed pre-run + 4 more (H1b direction disclosure, `context_only` enforcement, third
+exclusion counted, first/last_ts recorded) → prereg **§9 amendments** (`2c04328`), no post-run
+edit. (3) **Candle cache fetched** (expansion config, full facit coverage; 4h 21 269 bars
+2016-11→2026-07). (4) **Probe executed verbatim** (~25 min; O(n) `bar_of_timestamp` dominates):
+**4h `sequential_origin_signal`** — H1a 0.256 vs null 0.005, p<0.0005 (0/2000), CI [0.205,0.298],
+363 pairs, 76/93 hits EXACT; 1d+1w context agree, 1M nothing; direction split clean.
+[Results](reviews/btc-fib-cascade-conditioning-probe-results-20260720.md) — **advisory pending
+owner sign-off**. (5) Transcription regression test now runs (cache present): **passes ≥0.90
+floor**. Gates green (ruff/format/bounds/wiki-lint; pytest 732 passed, 1 unrelated hypothesis
+timing-flake in `core` passes in isolation).
+
+## [2026-07-20] review | Systematic full-repo audit (read-only) + P0 remediation + cascade-probe prereg
+
+Owner-commissioned deep audit (code + full 484-file facit parse + experiment ledger + independent
+discovery mandate; report delivered off-repo by choice). Gates at audit time: ruff/format/bounds
+green, **713 pytest passed, cov 74.48%**. Verdict on the four-problem chain: transcription solved
+(as price→time recovery, NOT vision), candidate generation largely solved (recall 0.902, ceiling
+0.83 known), **selection UNSOLVED — the chain breaks there**, PnL correctly closed-null. Key new
+observation: facit geometry already carries sequential structure nobody consumes (4h: **85/371
+exact chain-links** `b_{i-1}==a_i`, 23 shared endpoints, 81/371 contained legs) → the untested U1
+cascade self-report is partially testable on existing facit. Findings actioned (P0): corpus
+MANIFEST + fail-closed verifier (`research/corpus_manifest.py`; corpus = **13/24/76/371 = 484**,
+older docs were stale); transcription claim re-scoped + living regression test; stale counts/#31
+fixed in STATUS/handoff; degenerate-fib (7 same-candle) + 1w ±1 logged as owner questions. NEW
+[cascade-conditioning prereg](reviews/btc-fib-cascade-conditioning-probe-prereg-20260720.md)
+(pending run — audit container had no Bitfinex egress). Snapshot discipline made explicit: pre-
+2026-06-26 selection results are snapshot-bound, not re-runnable against the grown corpus. Owner
+pre-authorized autonomous execution. NOT done (needs owner): degenerate-fib classification,
+contrastive capture, negative-audit of track-A implicit negatives.
+
+## [2026-07-02] decision | Structure-engine origin MEASURED out-of-sample → does NOT generalize
+
+Ran the frozen `chamoun_structure_engine` (DOWN-only, params frozen at 1h scale) against the full 4h-DOWN
+human facit corpus (201 legs, all out-of-sample — no 1h facit exists), scored on the LOCKED acceptance band
+(`evaluation/acceptance.py`). Harness `scratchpad/measure_4h_down.py` carries its own pre-registration
+(time-faithful 1h→4h rescale 72→18/480→120/min_bars→1, min_move unchanged; matching = nearest origin within
+±18 bars; lock-before-scoring).
+
+**Result:** origin **sits only 43 %** (86/201, 95 % CI ~36–50 %); leg accepted 30 % (61/201). Miss decomp:
+**75 wrong-swing** (price >2 %, bar-tolerance-invariant = 37 %) + 24 bar-units-only. Origin-sits ∈ [43 % locked,
+55 % bars-ignored] — CI tops at 50 %. On 1h calibration it re-found 4/4 → classic overfit; the single
+most-prominent-high rule is not Chamoun's selector on ~half the legs (HO-B pattern at scale).
+
+**Validity:** leakage-validity-reviewer verdict = *concerns, non-blocking* — no leakage (descriptive proposer,
+hindsight use is legitimate), no post-hoc tuning (commit timestamps: acceptance 13:40 → handoff "next=measure"
+13:46 → run 14:00), corpus is genuine `created_by: human`. Only caveat: acceptance bar-band not TF-rescaled
+(disclosed; the 75 wrong-swing are invariant to it).
+
+**Decision:** fork answered → the targeted contrastive set (#42) IS justified. Next = resume drawing toward
+≥30 windows. See [handoff Next Step](handoff.md).
+
+## [2026-07-01] handoff | Cascade probe opened → PAUSED on a snapping blocker (1w facit dating)
+
+After the LANDING (below), asked Chamoun what his eye actually uses to pick among clean candidate legs.
+His free-text answer was 100% **trend-sequential cascade** ("nästa rena impuls i sekvensen … eget ben i
+trenden, inte chop inne i ett större ben"); he also ticked volume/volatility + visual gestalt. Advisor:
+lead with cascade, NOT volume — volume-among-candidates is the same per-leg anchor-conditioned family that
+returned null six times (feature #7); cascade is the one structurally-new (multi-leg) family and the way
+into the unconditioned bottleneck. Power check: committed facit is too sparse to chain (1d 9 links/76,
+longest run 2), so cascade is **not powered on the committed corpus**.
+
+**Chamoun drew a fresh 1w BTC cascade on TradingView** (screenshot in chat, not on disk). Prices +
+his clarifications saved to `scratchpad/cascade_1w_working.py` (two fib structures bottom-left {16,838/
+19,592} & {24,240/30,968}; leg corrected 58,943→108,100; **two separate cascades**; "dem längst bort är
+nedgång"). **BLOCKER (why paused):** a price-only snap to the 1w cache scrambles the chronology — BTC hit
+the low levels (16-30k) more than once (~2020-21 AND ~2022-23), so nearest-price matching mis-dates the
+early legs (one ran backward in time); unique highs (125,710) snap fine. **Resume needs:** rough YEARS per
+cascade + direction confirm, then window the snap. **Probe (advisor-designed, when dated):** scale-
+consistency (CV of leg magnitude + duration) of his chain vs independently-placed clean legs, chaining
+conditioned out (the k_between trap on the sequence side). Descriptive, no edge.
+
+## [2026-07-01] decision | Rule decomposed generate→select; BOTH halves done → LANDED (no selector beats prominence)
+
+**Origin half — the CRUX** (`origin_rank_probe.py`, advisor-guarded, mirror of the endpoint probe).
+Given his "0", rank his "1" among backward-running-max fine highs (the swing highs the fall retraced
+from) by **most-extreme** (prominence-like) vs **last-push** (nearest to "0"); guards pre-registered
+(neutral orderings, pooled continuation for power, fresh-conditioned Poisson-binomial null, admissibility
+reported not signal). **Pre-verify looked like a first positive:** last-push beat null (1d-continuation
+63% vs 38%, **p=0.002**; pooled-continuation p=0.005; 1w-major p=0.011) and most-extreme was rejected —
+the opposite of the endpoint (depth), matching HO-B (n=1). **Verification collapsed the exciting half
+(trap #5):** last-push-rank-1 ⟺ **k_between=0** (no fresh high between "1" and "0") ⟺ a **clean monotonic
+impulse = his cleanliness rule**, so P(last-push) ≡ P(k_between=0)=59% *by identity* — recency is
+admissibility, NOT a distinct selector. The **only non-circular residual: his continuation origin is
+NON-maximal** (not the towering prior peak) — most-extreme below null at every horizon (H×0.5/1/2),
+strengthening with H, but only **marginally significant** (lower-tail p≈0.04 at H×1/H×2); major-swing
+origin ~ null. This residual = the already-known scale/continuation finding, not a new mechanism.
+
+**LANDING (precise — advisor-tightened).** His stated *admissibility* rules hold on **both** anchors (his
+"0" is a fresh break, his "1" sits on a clean/fresh impulse) — real but definitional. The **positive** rule
+for WHICH admissible extreme he picks is **weak-to-absent:** endpoint depth is a modest lift (47% vs 36%),
+**origin is flat-null** (major-swing: neither height nor recency, p≈0.45/0.59) — so the honest landing is NOT
+"it's prominence" (prominence is null on the origin side too). Six probes (DC, BOS/CHoCH, structure_alignment,
+generator, endpoint, origin) **bound what his selection is NOT** (not DC/BOS/CHoCH/structure/most-extreme/
+first-fresh) and confirm his admissibility on both anchors. **Geometric, anchor-conditioned selection is
+characterized; the positive selector stays OPEN** — the question shrank to a sharp one: given the clean/fresh-
+admissible extremes, which one, by what (likely NON-geometric) signal? Untested territory = round numbers, HTF
+context, volume, time-since-swing, and the unconditioned "which leg from nothing" (likely out of reach at this
+n). Not a sixth-feature failure — a bounded descriptive map with a sharper open question. Descriptive, no edge.
+Scratchpad `origin_rank_probe.py`, `endpoint_rank_probe.py`, `impulse_leg_generator_coverage.py`. Gates green.
+
+## [2026-07-01] decision | Rule decomposed generate→select; endpoint-half done → ORIGIN is the crux
+
+**Reframe (advisor-led):** split Chamoun's rule (retracement extreme "1" → next fresh impulse endpoint
+"0") into a candidate **generator** and a **selector**, and probe the **endpoint-given-origin** half
+first — the one branch that is structurally neither prominence nor cleanliness.
+
+**(1) Generator** (`impulse_leg_generator_coverage.py`): his anchors, **including continuation-mode
+origins**, are **fine-scale (fractal_n=1) local extrema at 96-100%** → the continuation gap is a
+**SCALE issue** (finer than the major-pivot detector), not un-findable. Coverage 83-89% at
+magnitude-only, but precision poor (10-44 candidates/fib); cleanliness a weak generative filter.
+
+**(2) Endpoint RANK probe** (`endpoint_rank_probe.py`): given his origin, his "0" is a **fresh break
+100%** (1w 20/20, 1d 68/68) — but that is **his rule verbatim** (definitional), only a precision lever
+(cuts endpoints ~8-12 → ~4 losing none). The honest **fresh-conditioned** test (null = random fresh
+break, Poisson-binomial exact baseline `1/n_fresh`): **depth-among-fresh survives** (1d 47% vs 36%,
+z=+2.08, **p=0.019**; 1w 50% vs 34%, p=0.024) — but depth = magnitude = **prominence, the known
+survivor**, so real-but-not-novel. **Recency / "first-fresh" is DEAD** (1d 32% vs 36%, p=0.79 — his
+"0" is NOT literally the *next* fresh extreme). Continuation behaves like major-swing on the endpoint
+half (depth underpowered, n=20, p=0.35, but same kind). **Conclusion: endpoint-given-origin is NOT the
+bottleneck — ORIGIN selection is**, and the continuation hole lives there. That is the untouched crux.
+**Next:** an origin-selection probe (which fine extremum does he pick as "1" among plausible origins?).
+Descriptive, no edge. Method note: fresh-conditioning is trap #4 of the session's definitional-leak
+lesson (condition the null on the near-definitional property). Gates green (ruff, bounds).
+
+## [2026-07-01] decision | Structure-engine → top-down M/W/D (1h parked); DC multi-scale NULL
+
+**Pivot (Chamoun):** 1h too noisy → move the structure-engine to top-down **Monthly → Weekly → Daily**
+(locked flow), validated against committed facit. Chamoun drew **20 new M/W/D fibs** (4M/7W/9D, 10 down/
+10 up), transcribed to a scratchpad working set (`newfacit_topdown.py`) — **not promoted** to committed
+`fib_*.json`. Single-scale prominence captures his new origins only 1M 1/4, 1w 5/7, 1d 6/9 (rest are
+continuation-mode, mid-structure).
+
+**Absorb → test → NULL.** Web-verified two external patterns (reimplement in-repo, no dep): **Directional
+Change** multi-scale swings ([arxiv 2406.07354](https://arxiv.org/html/2406.07354v1)) + **SMC BOS/CHoCH**
+([smc.py](https://github.com/joshyattridge/smart-money-concepts/blob/master/smartmoneyconcepts/smc.py)).
+DC multi-scale *looked* like 18/20 coverage but that was **saturation** vs a weak all-bars null; a
+permutation test (B=20k, seed 20260701) vs a **fair null (random same-kind detected pivots)** gives
+pooled W+D **p=0.099**, per-TF p=0.17–0.50 → **DC-scale does NOT survive**. DC-θ swings ≈ our existing
+detected pivots. **Lesson (echoes Stage-1): detection is not the bottleneck, SELECTION is.** Untested
+lever = **BOS/CHoCH structure-context** as a *selection* signal (next). No edge/PnL; nothing committed;
+scratchpad only. TZ note locked: screenshots = Europe/Stockholm (DST), cache = UTC → snap by price.
+
+## [2026-07-01] direction | Chamoun's rule as a GENERATOR — continuation gap is a SCALE issue
+
+Chamoun articulated his selection rule in his own words: leg = retracement/swing extreme (1) → next
+fresh impulse endpoint (0), and the leg must be a **clean directed impulse, not chop**. That is
+`cleanliness` (net/path) verbatim — and `cleanliness` is Stage-2's dominant weight (0.9), the one leg
+feature that survived. Every failed test this session was **per-pivot** (structure); his criterion is
+**per-leg** (impulse quality), which a single pivot cannot even express (Stage-1 excluded leg features).
+Advisor reframed it from a ranking test (redundant: Stage-2 weak + the 2026-06-24 artifact-mechanics
+span-confound) to a **generator/coverage** question (`impulse_leg_generator_coverage.py`). Result on
+committed M/W/D: his anchors — origin AND endpoint, **including the continuation-mode origins** every
+pivot test was blind to — are **fine-scale (fractal_n=1) local extrema at 96-100%**. So the continuation
+gap is a **SCALE issue** (finer than the major-pivot detector), not un-findable. Coverage high at
+magnitude-only (83-89%) but **precision poor** (10-44 candidates/fib) and **cleanliness only a weak
+generative filter** (raising C drops coverage nearly as fast as candidates; his legs span a wide
+close-to-close cleanliness range). **Containment achievable; selection/precision remains the hard part.**
+Descriptive, no edge, nothing promoted. Next = a *selective* proposer.
+
+## [2026-07-01] decision | STRUCTURE-MEMBERSHIP thread CLOSED — structure_alignment also NULL (committed corpus)
+
+Ran the new tools on the powered COMMITTED facit corpus (Chamoun's ask), not the 20 transcriptions.
+Used the repo's own `structure_alignment` (BOS/CHoCH is its coarse form) vs committed M/W/D origins
+(anchor_a), prominence-matched permutation (`structure_alignment_committed_test.py`). **First read looked
+like a real surprise:** his anchors sit at LOWER structure_alignment than prom-matched pivots (pooled
+0.40 vs 0.47; 4h n=300 p<1e-4), and it survived a **tight prominence caliper** (≤0.25 ATR, p=0.012), the
+0.5-fallback guard, a one-sided plausible-origin null, AND held on anchor_b — seeming to contradict
+Stage-1. **Adversarial verification killed it:** the a+b symmetry was the tell (anchor_b, which he does
+not select for structure, is *even more* low-align → it is the pure turning-point property). The
+discriminating check — a **two-sided-plausible null** (backward AND forward move ≥ his median = other
+DRAWABLE reversal extremes) — **collapses the gap** (4h 0.400 vs 0.398, p=0.55; anchor_b collapses too).
+So low-alignment was the **trend-termination TAUTOLOGY** (every fib anchor bounds a real move → lower-align
+than random locally-prominent pivots that include continuation highs), NOT a selection preference. Fully
+consistent with Stage-1 (its AP-lift asks the among-candidates question directly). **Thread CLOSED:** four
+features (DC, BOS/CHoCH, structure_alignment, + prominence-as-survivor) all say detection/structure-
+membership is not the bottleneck — **selection among plausible candidates is**, still uncracked.
+Continuation-mode / non-pivot origins remain unaddressed; 1w the consistent null cell. No edge; scratchpad only.
+
+## [2026-07-01] decision | BOS/CHoCH structure-context → NULL on the selection question
+
+Ran the untested lever (`bos_choch_selection_test.py`). Reimplemented SMC swings + BOS/CHoCH in-repo
+(no dep). **Design A** (advisor, avoids the DC artifact): null drawn from **SMC swings** (not
+`detect_pivots`), scoped to the swing-origin subset, **CHoCH (reversal) vs BOS (continuation) split**,
+swing_length **LOCKED=3** (= repo `pivots.lookback`) + **=5** echo; origin mapped to the leg-launching
+extreme (down-origin = the swing high that launches the fall), not the break bar.
+**First pass looked positive** (BOS 75% (9/12) vs 33% null, p=0.003) — but a second advisor pass caught it
+as a **~definitional break-rate artifact**: each swing carries one of {none,bos,choch}, so this mostly
+measured that his origins **break structure** (83% vs 45% null, p=0.008), which a fib origin does **by
+construction**. **The non-tautological question needs the null conditioned on breaking swings.**
+Conditional: **BOS|broke 90% (9/10) vs 71% null, p=0.16** (Daily 86% p=0.27, Weekly p=0.49; n=5 pooled
+75% p=0.55) → **no continuation-vs-reversal selection preference survives.** BOS/CHoCH adds no selection
+signal beyond the definitional break-rate. Lesson (3rd time — DC, Stage-1): structure-membership is not
+the bottleneck, **SELECTION among swings is**. Descriptive, no verdict; continuation-mode (non-swing)
+origins still unaddressed; no edge/PnL; nothing committed to facit.
+
+## [2026-06-30] decision | Chamoun structure engine v1 — origin proposer landed as a module
+
+Pivot executed (set 2026-06-30): **stop testing edges; build an engine that represents Chamoun's drawing
+structure first.** Chamoun supplied dated 1h TradingView screenshots — 7 structures with date axes after
+an initial undated batch. Gated anchor identity against the recurrence ambiguity (each anchor price
+recurs 11–54× over 60–800 days; the dates resolved the instance) — **origins pinned to the exact candle**,
+"0" approximate. Non-circular test (neutral ±-bar windows, not his framing): each of his **4 clean DOWN
+origins is the #1 most-prominent swing high at a ~3-day (72-bar) scale**; they drop to #2–#4 at ±144 bars
+(he passes the higher highs that sit farther away — confirms his own "bägge" answer and pins the scale).
+
+Promoted to [`research/chamoun_structure_engine.py`](../../src/fibengine/research/chamoun_structure_engine.py)
+(+9 tests) — `propose_structures(df, pivots, StructureConfig)`; **frozen v1** params (local_scale=72,
+min_move=2%, max_horizon=480, min_bars=3), DOWN-only, descriptive proposer. Re-finds all 4 calibration
+origins; proposed 115 down-structures over 2024–2026. Chamoun eyeballed a sample → "inte perfekta, men
+inte dåliga … snarlikt och träffa rätt är en bra vinst": **acceptance bar = recognizably-similar + right
+region**, not tick-exact. Gates green (679 pytest, 74% cov, ruff/format/bounds/wiki). Commit `24a3bb5`.
+
+**Deferred next layers (each its own GO):** "0" sustained-low rule (his Q2 — current a0 takes the lowest
+low, so it sits on early spikes), UP-structures, volume/clarity tie-break for near-tie higher wicks.
+**Owed:** validate the frozen engine on a few FRESH / held-out structures before trusting beyond n=4.
+No edge/PnL. Details: `scratchpad/chamoun_1h_batch2.txt`.
+
+## [2026-06-30] decision | GROW-FACIT 4h — +6 source fibs via screenshot transcription (1 dropped, 1 nudged)
+
+North-star grow-facit on **4h** (the only powered cell), per the 2026-06-30 direction set in
+[handoff.md](handoff.md). Chamoun supplied 8 cropped 4h TradingView screenshots, then 5 full-view
+re-shots when price-only `n_within_near` snapping proved ambiguous on the cropped set. Flow: read anchor
+prices off the on-chart labels (obscured top anchors reconstructed via log-interpolation from the
+visible levels, then snapped to the candle extreme) →
+[`fib_transcribe`](../../src/fibengine/labeling/fib_transcribe.py) candidates in
+`data/labels/candidates/bitfinex/BTC-USD/4h/` → human review+promote via
+[`--review-candidate`](../../src/fibengine/labeling/tool.py) `w`.
+
+**Result: 4h facit 365 → 371 (+6).** Promoted ids `20240223T120000` (50,227→73,666), `20240501T160000`
+(56,711→65,628), `20251006T160000` (103,332→126,110, all-time-high top, `n_within_near=1`),
+`20251102T120000` (99,129→111,360), `20260114T200000` (60,060→97,850), `20260202T160000`
+(60,100→79,408). All `created_by=human`, `source=manual_screenshot_transcription_reviewed`.
+
+**Two review-step saves (why the human gate matters):** (1) candidate **C** (~108,100/66,880, 2024-11→12,
+`n_within_near=38`) was **dropped** — too ambiguous to confirm against the drawing; its candidate removed
+so the set matches facit. (2) candidate **E** snapped the low to 2024-05-01 **12:00**; Chamoun **nudged**
+it to **16:00** at review (the near=23 heuristic bar was one candle off). The full-view re-shots also
+corrected a transcription error the cropped guess made (a swing first placed in 2026 is really **Feb–Mar
+2024**), and replaced a reconstructed ~122,670 top with the true all-time-high **126,110**.
+
+**Discipline:** frozen 4h cache (no `data.fetch --refresh`; every anchor is a historical extreme
+2024-05→2026-02, none in the live ~63k tail). Transcription is an ingestion aid, **never** auto-fib —
+the human supplies both prices and confirms every bar; the tool refuses `human_fib/` writes. 6
+pre-review candidates kept as audit trail (E's is the pre-nudge 12:00 version). Gates green
+(ruff/format/bounds/wiki-lint; pytest skipped — no `*.py` changed). Screenshots stayed in-chat (not
+committed); provenance rests on each candidate's `_transcription` audit block.
+
+## [2026-06-30] decision | checkpoint reminder hook wired — early ~25% ping (UserPromptSubmit)
+
+Resolves the `ACTION for another agent` below (thread-health drift / invocation gap, same date). Built
+[`pre-compact-checkpoint.sh`](../../.claude/hooks/pre-compact-checkpoint.sh) + a `UserPromptSubmit` hook
+in [`settings.json`](../../.claude/settings.json) (`db439c1`): reads the transcript's latest usage
+(`input + cache_read + cache_creation` = real tokens sent — the `/context` figure) and auto-injects one
+reminder when context crosses **~25% of a 1M window (250k, tunable `CONTEXT_THRESHOLD`)** — the owner's
+chosen sweet spot, *in time* before drift/compaction lose detail. Fires **once per session**; a reminder
+only (never invokes the skill). **The late `PreCompact` event was rejected** — it fires only at
+compaction, too late for the sweet spot. Live-fired in-session at ~35%. Pure bash + perl, `exit 0`
+(SONAR-safe). Skill "When to act" + "Future option" updated to match.
+
+## [2026-06-30] maintenance | thread-health drift observed + checkpoint-invocation gap (ACTION for another agent)
+
+**Observed (this session, live):** the conversation drifted across ~7 topic switches (owner interview →
+script adaptation → pre-compact skill → grow-facit → transcription → review loop → token accounting →
+skill refinement) while the context window sat at only ~26% (`/context`: 263k/1M). That is a textbook
+**early thread-health** case — *lost-in-the-middle*, *recency bias*, *context rot* — which is **invisible
+in `/context`** and arrives **well before** the capacity bands.
+
+**The gap (why this matters):** the [`pre-compact-checkpoint`](../../.claude/skills/pre-compact-checkpoint/SKILL.md)
+skill's only triggers today are (1) **model discretion** (the agent invokes it when its description
+matches) and (2) the manual `/pre-compact-checkpoint` command. (1) **failed here** — the agent expected
+to notice the drift *is* the drifting agent (self-defeating); there is **no automatic trigger**. A
+`PreCompact` hook does **not** fix this: it fires only at compaction (the late ~90% *capacity* case),
+and hooks are shell commands that can only **inject a reminder**, never *invoke* a model skill.
+
+**ACTION (for another agent — pure tooling, no research-code/conclusion change):** add hook-driven
+reminders in [`.claude/settings.json`](../../.claude/settings.json) (versioned, travels via git):
+1. **Early trigger (the observed case):** a `UserPromptSubmit` (or `PostToolUse`) hook that, after **N
+   user turns or M tool-calls**, injects a reminder to consider `/pre-compact-checkpoint`. Caveat:
+   turn/tool count is a **proxy**, not a thread-health *measurement* — present it as a reliable nudge,
+   not a metric.
+2. **Late trigger (capacity):** a `PreCompact` hook that injects a reminder to run the checkpoint (six
+   sections → [handoff.md](handoff.md)) before compaction summarises.
+
+**Constraints/acceptance:** hooks only *remind*, never invoke a skill — say so in the nudge text;
+thread-health is qualitative — never claim it is auto-measured; keep nudges non-spammy (cooldown / once
+per threshold; verify no spurious firing); flip the skill's "Future option" note from *deferred* to
+*done* with the chosen design once wired.
+
+## [2026-06-30] decision | labeling tool: `--review-candidate` promote mode (transcription → facit)
+
+Built the missing candidate→facit promote path so screenshot-transcribed daily fibs can become
+human-reviewed facit. New `--review-candidate <path>` mode in
+[`labeling/tool.py`](../../src/fibengine/labeling/tool.py) reuses the `--edit-fib-id` single-fib
+machinery: loads a candidate's anchors (read-only), shows a scrutiny banner flagging the guessed
+bars (`n_within_near>1`) / `near` matches, and on `w` saves to `human_fib` as facit. **Provenance is
+preserved, not erased** (leakage-validity review): selection is human → `created_by="human"`, but
+`source="manual_screenshot_transcription_reviewed"` records the method (still contains `"manual"` so
+the source-fib-map guards accept it; avoids the `candidate`/`auto`/`inferred` forbidden tokens). The
+candidate JSON (with `_transcription` audit incl. `n_within_near`) travels via git. Overwrite of an
+existing facit needs a second `w` (confirm guard). Fail-closed: refuses non-candidate files. +7 tests
+([`test_review_candidate_mode.py`](../../tests/labeling/test_review_candidate_mode.py)). Gates green
+(669 pytest, 74% cov). Drives north-star **grow-facit**: daily facit had **no** 2025–26 fibs; the two
+2026-06-29 chamoun screenshots fill that gap (5 candidates transcribed, all anchor-prices exact).
+
+## [2026-06-30] maintenance | new `pre-compact-checkpoint` skill (adapted to this repo)
+
+Added skill [`.claude/skills/pre-compact-checkpoint/SKILL.md`](../../.claude/skills/pre-compact-checkpoint/SKILL.md)
+— captures the verified frontier (Observed/Inferred/Unverified + repo state + user constraints + next
+smallest safe step) before context compaction. Adapted from a shared script: paths point to this
+repo's [handoff.md](handoff.md) / [log.md](log.md) / [owner-preferences.md](owner-preferences.md),
+honesty ladder tied to AGENTS.md *Facts vs assumptions*, and a SONAR-economy note (reuse the last
+green `/run-gates`; don't re-run gates per checkpoint). Distinct from `/prepare-home-computer`
+(cross-machine) — this is in-session, pre-compaction.
+
+## [2026-06-30] maintenance | owner interview — preferences captured + `/owner-interview` command
+
+Ran a button-driven owner interview (no research-code/conclusion change). Two coupled additions:
+**(1)** new versioned command [`/owner-interview`](../../.claude/commands/owner-interview.md) — the
+shared interview script adapted to this repo (`[[…]]` → markdown links, persist target = git-synced
+wiki, wiki-lint orphan-awareness, guardrail that working-style never overrides
+[AGENTS.md](../../AGENTS.md)/validity). **(2)** new synced page
+[owner-preferences.md](owner-preferences.md), linked from [index.md](index.md).
+
+Changes vs prior run: tech-pull broadened (+ Architecture/AI); success sharpened to **live
+Trader-agent only**; "frontend" redefined as the **labeling tool** (his real fib-drawing surface),
+not a separate app; *teach-me-as-we-go* added; **all four** frictions checked (bottleneck · too much
+text · things-break · unclear-what-changed) → run autonomously but always leave a short readable trail
+of what changed + that gates are green. Forks: recommendation-first + `AskUserQuestion`, **no
+shortcuts** (simple path only if significantly more value).
+
+## [2026-06-29] decision | LOCK leg-agreement ruler prereg (north-star step 1 measurement)
+
+Locked the **measurement instrument** for "does X improve human-like leg selection vs facit" — the
+free facit-checker the selection campaign lacked (in #38 `agreement` floored for both arms;
+`compare_label`/`select_swing` not localized to the facit leg). **Ruler only**; the learned selector
+is a separate later prereg. Knobs fixed by selector-independent **pre-lock calibration** (not guessed):
+`leg_agreement = mean(s_high, s_low)`, `s = max(0, 1 − Δbar/W)`, absolute **W=2**, direction-gated.
+Calibration (`scratchpad/calibrate_leg_agreement_ruler.py`, seed 20260629; 365 4h facit legs, 7215
+fractal pivots): inter-pivot spacing median **2.0 bars** → W must stay below it; **W=5 rejected**
+despite higher AUC (neighbour-matching leniency); at the spacing-safe W=2 only `mean` clears
+**AUC(ceiling vs null) ≥ 0.90** (0.968). Gate rests on [synthetic sanity] + [ceiling-vs-null AUC];
+reference selector = descriptive colour only (resolves the ruler-broken-vs-selector-bad confound).
+Build of `evaluation/leg_agreement.py` authorized under the lock — descriptive, step-1, no edge/OOS.
+[Prereg](reviews/btc-fib-leg-agreement-ruler-prereg-20260629.md) /
+[postlock](reviews/btc-fib-leg-agreement-ruler-prereg-20260629-postlock.md).
+
 ## [2026-06-29] maintenance | `.claude/` portability + locked-prereg guard + command source flip
 
 Tooling/process work (no research-code or conclusion change). Three coupled changes:

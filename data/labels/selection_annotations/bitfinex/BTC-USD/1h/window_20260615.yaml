@@ -1,0 +1,32 @@
+symbol: BTC/USD
+timeframe: 1h
+exchange: bitfinex
+window_start: '2026-06-15T00:00:00+00:00'
+window_end: '2026-06-30T14:00:00+00:00'
+regime_label: ''
+structure_label: ''
+created_by: human
+candidates:
+- id: c1
+  anchor_a:
+    time: '2026-06-25T12:00:00+00:00'
+    price: 61773.0
+  anchor_b:
+    time: '2026-06-25T13:00:00+00:00'
+    price: 58136.0
+  direction: down
+  label: accepted
+  reason: min last-push origin
+  tags: []
+- id: c2
+  anchor_a:
+    time: '2026-06-24T11:00:00+00:00'
+    price: 63229.0
+  anchor_b:
+    time: '2026-06-25T13:00:00+00:00'
+    price: 58136.0
+  direction: down
+  label: rejected
+  reason: prominent parent-topp, fel skala
+  tags:
+  - wrong_scale
