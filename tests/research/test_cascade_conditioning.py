@@ -129,3 +129,71 @@ def test_run_probe_refuses_on_corpus_drift(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr(cc, "verify_manifest", lambda: ["4h: count 999 != manifest 371"])
     with pytest.raises(SystemExit, match="corpus drift"):
         cc.run_probe()
+
+
+def test_prominence_candidate_sees_no_post_origin_bars(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Amendment A1: N2 pivot detection must run on the frame truncated at cur.anchor_a's bar."""
+    from fibengine.research import cascade_conditioning as cc
+
+    df = _df()
+    prev = _leg("prev", 0, 20, df)
+    cur = _leg("cur", 30, 40, df, "down")
+    pair = build_pairs([prev, cur])[0][0]
+    seen: dict[str, int] = {}
+
+    def fake_detect(frame: pd.DataFrame, cfg) -> list:
+        seen["n_bars"] = len(frame)
+        return []
+
+    monkeypatch.setattr(cc, "detect_pivots", fake_detect)
+    assert cc.prominence_candidate(df, pair, None) is None
+    assert seen["n_bars"] == 31  # bars 0..30 inclusive; nothing after cur.anchor_a
+
+
+class _StubData:
+    def model_copy(self, update=None):
+        return self
+
+
+def _run_cell_stubbed(
+    monkeypatch: pytest.MonkeyPatch, timeframe: str, df: pd.DataFrame, legs: list[Leg]
+) -> dict:
+    from types import SimpleNamespace
+
+    from fibengine.research import cascade_conditioning as cc
+
+    monkeypatch.setattr(cc, "load_candles", lambda cfg, fetch_if_missing=False: df)
+    monkeypatch.setattr(cc, "load_legs", lambda tf: legs)
+    monkeypatch.setattr(cc, "detect_pivots", lambda frame, cfg: [])
+    monkeypatch.setattr(cc, "N_PERM", 10)
+    monkeypatch.setattr(cc, "N_BOOT", 10)
+    settings = SimpleNamespace(data=_StubData(), pivots=None)
+    return cc.run_cell(timeframe, settings)
+
+
+def test_run_cell_context_cell_never_bears_verdict(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Amendment A3: even a powered (>=50 pairs) context cell must emit context_only."""
+    df = _df(n=400)
+    legs = [_leg(f"f{i:03d}", i * 6, i * 6 + 4, df) for i in range(60)]
+    cell = _run_cell_stubbed(monkeypatch, "1d", df, legs)
+    assert cell["role"] == "context"
+    assert cell["n_pairs"] >= 50
+    assert cell["verdict"] == "context_only"
+    assert "h1a_hit_rate" in cell  # still reported, just verdict-less
+    primary = _run_cell_stubbed(monkeypatch, "4h", df, legs)
+    assert primary["role"] == "primary"
+    assert primary["verdict"] in {"sequential_origin_signal", "no_sequential_signal"}
+
+
+def test_run_cell_counts_outside_window_exclusion(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Amendment A4: cur anchors beyond the loaded candle frame are excluded and counted."""
+    big = _df(n=100)
+    small = big.iloc[:60]
+    prev = _leg("prev", 0, 20, big)
+    cur_in = _leg("cur_in", 30, 40, big, "down")
+    cur_out = _leg("cur_out", 70, 80, big)  # beyond the 60-bar loaded frame
+    cell = _run_cell_stubbed(monkeypatch, "1M", small, [prev, cur_in, cur_out])
+    assert cell["exclusions"]["cur_outside_candle_window"] == 1
+    assert cell["n_pairs"] == 1
+    assert cell["first_ts"] == small.index[0].isoformat()
+    assert cell["last_ts"] == small.index[-1].isoformat()

@@ -95,3 +95,40 @@ corpus* — it does NOT mean selection is solved.
 stdout; per-cell JSON to `experiments/review/cascade_conditioning/` — gitignored/regenerable).
 Results doc: `btc-fib-cascade-conditioning-probe-results-<date>.md`, marked **advisory pending
 owner sign-off**.
+
+## 9. Pre-run amendments (2026-07-20, leakage-validity review — **no run has occurred**)
+
+The committed harness was reviewed by the `leakage-validity-reviewer` before any execution.
+Review verdict: **H1a/N1 (the only verdict-bearing path) causally clean**; the findings below
+were fixed *before the first run*, so §7's no-post-run-edit rule is not violated. §1–§8 are
+otherwise unchanged.
+
+- **A1 (blocking, fixed):** N2's pivot lookup ran `detect_pivots` on the full candle frame; the
+  detector's *centered* prominence window (baseline `lookback=3`) meant a pivot near
+  `cur.anchor_a` could be admitted/ranked using up to 3 bars **after** the origin — look-ahead,
+  worst exactly in tight chains. Fixed: the frame is truncated at `cur.anchor_a`'s bar before
+  detection (`df.iloc[:hi_bar+1]`), matching the sibling truncate-then-detect convention
+  (`selection_learning*.py`). N2 stays descriptive-only.
+- **A2 (disclosure completed):** H1b conditions not only on `cur`'s origin **time** (disclosed in
+  §5) but also on `cur`'s eventual **direction** (high-for-down / low-for-up), which is unknowable
+  at the origin. H1b is non-causal calibration context, never verdict-bearing, and must not be
+  cited as a fair causal comparison to H1a.
+- **A3 (enforcement):** §3's "context cells never verdict-bearing" is now enforced in code: the
+  1d/1w/1M cells emit the status marker `context_only` (NOT a §6 verdict) regardless of pair
+  count; the §6 verdict family applies to the 4h primary cell alone.
+- **A4 (enforcement):** §4.3's third exclusion — `cur` anchors outside the loaded candle window —
+  is now counted and reported (`cur_outside_candle_window`) instead of silently scoring as MISS
+  (which inflated `n_pairs` against §4's included-pairs definition). The results doc must report
+  this count per cell and confirm candle coverage vs the facit span (4h facit starts 2017-01).
+- **A5 (bookkeeping):** per-cell `(bars, first_ts, last_ts)` are recorded in `summary.json`
+  per §3.
+- **A6 (infrastructure, sibling commit):** `corpus_manifest._fingerprint` now normalizes CRLF→LF
+  before hashing. The committed MANIFEST was generated from an LF checkout; on a pristine Windows
+  checkout (`core.autocrlf=true`) the fail-closed verifier false-positived on every TF, which
+  would have blocked this probe on the labeling machine. LF-content hashes are unchanged; the
+  facit corpus is untouched.
+
+Residual, disclosed, not fixed (review "concerns, low"): §2's motivation circularity (same-corpus
+descriptive counts motivated the prereg) — mitigated by H1a being parameter-free, the acceptance
+band being locked independently (2026-07-02), and 4h chosen for power, not effect size (1w had
+the highest raw link-rate and was *not* made primary). For the sign-off reviewer's attention.

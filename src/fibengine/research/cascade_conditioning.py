@@ -12,6 +12,8 @@ secondary/descriptive only and never bear the verdict.
 **Selection-learning probe only — no edge/behaviour/PnL/Genesis claim, no model, no cascade data
 model, no facit mutation, no auto-fib.** Verdict is advisory pending owner sign-off.
 
+Pre-run amendments A1-A5 (leakage-validity review 2026-07-20, before any run): see prereg §9.
+
 Run (deterministic; needs cached candles, never fetches):
     uv run python -m fibengine.research.cascade_conditioning --probe
 """
@@ -41,6 +43,7 @@ N_PERM = 2000
 N_BOOT = 2000
 MIN_PAIRS_POWERED = 50
 TIMEFRAMES = ("4h", "1d", "1w", "1M")  # 4h primary first
+PRIMARY_TF = "4h"  # prereg §3: only the 4h cell may bear a §6 verdict (amendment A3)
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RESULTS_DIR = REPO_ROOT / "experiments" / "review" / "cascade_conditioning"
 
@@ -173,7 +176,9 @@ def permutation_null(
 
 def fresh_extreme_candidate(df: pd.DataFrame, pair: Pair) -> tuple[pd.Timestamp, float] | None:
     """SECONDARY H1b: most extreme same-side extreme strictly between prev.anchor_b and
-    cur.anchor_a (exclusive of cur.anchor_a's own bar). Disclosed conditioning (prereg §5)."""
+    cur.anchor_a (exclusive of cur.anchor_a's own bar). Conditions on cur's origin time AND
+    eventual direction — both future info at the origin; non-causal calibration context only,
+    never verdict-bearing (prereg §5 + amendment A2)."""
     lo_bar, _ = bar_of_timestamp(df, pair.prev.b_ts.isoformat())
     hi_bar, _ = bar_of_timestamp(df, pair.cur.a_ts.isoformat())
     window = df.iloc[lo_bar + 1 : hi_bar]  # excludes cur.anchor_a's bar
@@ -187,10 +192,15 @@ def fresh_extreme_candidate(df: pd.DataFrame, pair: Pair) -> tuple[pd.Timestamp,
 def prominence_candidate(
     df: pd.DataFrame, pair: Pair, pivot_cfg
 ) -> tuple[pd.Timestamp, float] | None:
-    """SECONDARY CONTROL N2: most ATR-prominent pivot in the same inter-leg window."""
+    """SECONDARY CONTROL N2: most ATR-prominent pivot in the same inter-leg window. Detection
+    runs on the frame truncated at cur.anchor_a's bar so no post-origin bar can certify or rank
+    a pivot (centered prominence window would otherwise look ahead — amendment A1, matching the
+    ``selection_learning*`` truncate-then-detect convention)."""
     lo_bar, _ = bar_of_timestamp(df, pair.prev.b_ts.isoformat())
     hi_bar, _ = bar_of_timestamp(df, pair.cur.a_ts.isoformat())
-    pivots = [q for q in detect_pivots(df, pivot_cfg) if lo_bar < q.index < hi_bar]
+    pivots = [
+        q for q in detect_pivots(df.iloc[: hi_bar + 1], pivot_cfg) if lo_bar < q.index < hi_bar
+    ]
     if not pivots:
         return None
     best = max(pivots, key=lambda q: q.prominence)
@@ -216,15 +226,31 @@ def run_cell(timeframe: str, settings) -> dict:
     )
     legs = load_legs(timeframe)
     pairs, excl = build_pairs(legs)
+    # prereg §4.3 third exclusion (amendment A4): cur anchors outside the loaded candle window
+    # are excluded and counted, not silently scored as MISS (which would inflate n_pairs).
+    excl["cur_outside_candle_window"] = 0
+    in_window: list[Pair] = []
+    for p in pairs:
+        _, a_in = bar_of_timestamp(df, p.cur.a_ts.isoformat())
+        _, b_in = bar_of_timestamp(df, p.cur.b_ts.isoformat())
+        if a_in and b_in:
+            in_window.append(p)
+        else:
+            excl["cur_outside_candle_window"] += 1
+    pairs = in_window
+    role = "primary" if timeframe == PRIMARY_TF else "context"
     cell: dict = {
         "timeframe": timeframe,
+        "role": role,
         "n_legs": len(legs),
         "n_pairs": len(pairs),
         "exclusions": excl,
         "bars": len(df),
+        "first_ts": df.index[0].isoformat(),
+        "last_ts": df.index[-1].isoformat(),
     }
     if not pairs:
-        cell["verdict"] = "inconclusive_underpowered"
+        cell["verdict"] = "context_only" if role == "context" else "inconclusive_underpowered"
         return cell
     tiers = h1a_hits(df, pairs)
     flags = [t >= ACCEPT_AT for t in tiers]
@@ -257,7 +283,11 @@ def run_cell(timeframe: str, settings) -> dict:
         if c is not None
         for ts, price in [c]
     ) / len(pairs)
-    if len(pairs) < MIN_PAIRS_POWERED:
+    # prereg §3 + amendment A3: context cells are reported but never bear a §6 verdict,
+    # regardless of pair count — "context_only" is a status marker, not a verdict.
+    if role == "context":
+        cell["verdict"] = "context_only"
+    elif len(pairs) < MIN_PAIRS_POWERED:
         cell["verdict"] = "inconclusive_underpowered"
     elif p_one_sided < 0.05 and ci_lo > 0:
         cell["verdict"] = "sequential_origin_signal"
