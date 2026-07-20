@@ -4,7 +4,7 @@ One row per research **line** (not per doc): is it open, in-progress, closed, pa
 deprecated. Source of truth for "where does X stand". Root-level snapshot:
 [/STATUS.md](../../../STATUS.md). Per-result detail lives in [reviews/](../reviews/); current focus in
 [handoff.md](../handoff.md); do-not-rerun nulls in [closed-questions.md](closed-questions.md).
-**Last swept: 2026-07-02.**
+**Last swept: 2026-07-20 (systematic audit).**
 
 Status legend: 🔬 **active** (work in flight) · ⏳ **pending-input** (waiting on a human action) ·
 ✅ **complete** (delivered, nothing pending) · ⛔ **closed** (null/answered, do not re-run) ·
@@ -17,13 +17,14 @@ Status legend: 🔬 **active** (work in flight) · ⏳ **pending-input** (waitin
 |------|--------|-----------------|----------|
 | **Selection-learning** (can a model select legs like the human; facit = source-fibs) | 🔬 **active** | Main line. Stage-2 = modest single-feature (`cleanliness`) lead, AP 0.057 vs 0.83 ceiling, **not a reproduction**. Controls all done; enrichment **closed**; learning-curve **saturated** (feature side is the lever, not 4h data). Now redirected to **top-down MTF nesting**. | [north-star](../north-star.md), [prereg](../reviews/btc-fib-selection-learning-prereg-20260617.md), [Stage-2 results](../reviews/btc-fib-selection-learning-results-20260618.md), [learning-curve results](../reviews/btc-fib-selection-learning-learning-curve-results-20260625.md) |
 | **Top-down "sniper" MTF nesting** (model the same swing decomposed 1M→1W→1D) | ⏳ **pending-input** | Premise check: current facit does **NOT** nest (TFs are different eras). Needs **new deliberately-nested labels on one era** → **user will redraw later**. Prerequisite: extend `RESOLUTION_TIMEFRAME` (1M→1w) in `same_candle_mtf_resolution.py`. | [handoff Next Step](../handoff.md), [log 2026-06-25](../log.md) |
+| **Cascade-conditioning probe** (does the previous fib predict the next origin? Sequential/U1 hypothesis on existing facit — no new labels) | 🔬 **active** | Prereg written 2026-07-20 (owner pre-authorized); harness `research/cascade_conditioning.py` + tests landed; **run pending candle cache** (audit container had no Bitfinex egress). H1a/H1b vs two pre-declared nulls on the manifest-locked 484 corpus; verdict family pre-declared, advisory until owner sign-off. | [prereg](../reviews/btc-fib-cascade-conditioning-probe-prereg-20260720.md) |
 | **Structure-engine origin** (rule-based proposer vs facit; does the origin "sit"?) | ⏳ **pending-input** | MEASURED out-of-sample (2026-07-02): frozen 1h engine on 4h-DOWN facit (201 legs, LOCKED acceptance band) → origin sits **43 %** (CI ~36–50 %), leg 30 %; **37 % genuine wrong-swing** (bar-invariant). Overfit to 1h → does NOT generalize. Single most-prominent-high rule ≠ Chamoun's selector on ~half the legs (HO-B at scale). → **contrastive capture (#42) toward ≥30 windows** (user draws). | [handoff Next Step](../handoff.md), [log 2026-07-02](../log.md) |
 
 ## Complete
 
 | Line | Status | Outcome | Key docs |
 |------|--------|---------|----------|
-| **BTC source-fib labeling** (1M→1W→1D→4H top-down) | ✅ **complete** | 9 / 21 / 67 / 365 human source fibs; reaction-review approved. **1H deferred** (cache not fetched). | [protocol](../../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md), [1M review](../reviews/btc-1m-reaction-review-cycle-20260611.md), [1D review](../reviews/btc-1d-reaction-review-cycle-20260612.md) |
+| **BTC source-fib labeling** (1M→1W→1D→4H top-down) | ✅ **complete** | Base batches 9 / 20 / 67 / 365; current corpus **13 / 24 / 76 / 371 = 484** after the 06-26 nesting cohort (+4/TF) and 06-30 grow-facit (+5 1d, +6 4h) — locked in [`MANIFEST.json`](../../../data/labels/human_fib/MANIFEST.json) (audit 2026-07-20). **1H deferred** (cache not fetched). | [protocol](../../BTC_FIRST_TOP_DOWN_FIB_PROTOCOL.md), [1M review](../reviews/btc-1m-reaction-review-cycle-20260611.md), [1D review](../reviews/btc-1d-reaction-review-cycle-20260612.md) |
 | **Corpus integrity / dedup / corrections** | ✅ **complete** | Corpus declared clean (counts, conventions, caveats); 20171228 correction + 20250506 dedup (4H 366→365). | [corpus integrity](../reviews/btc-source-fib-corpus-integrity-20260615.md) |
 | **Selection-learning controls** (w-gap, stage-1, artifact + mechanics) | ✅ **complete** | `no_causal_gap` (W-gap); stage-1 per-pivot diagnostic; artifact-probe → detector-inflation **not supported** (investigate, not a finding). Crux stays open but cheaply unresolvable. | [w-gap results](../reviews/btc-fib-selection-learning-w-gap-results-20260623.md), [stage-1 results](../reviews/btc-fib-selection-learning-stage1-results-20260624.md), [artifact results](../reviews/btc-fib-selection-learning-artifact-results-20260624.md) |
 | **Tooling / ecosystem** (#25, #30, #32) | ✅ **complete** | Ecosystem scan + review-ledger + overlap detector + HTML gallery direction. Issues closed. | [tooling scan](../reviews/fib-tooling-ecosystem-scan-20260615.md) |

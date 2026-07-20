@@ -1,6 +1,6 @@
 # STATUS — fibengine research
 
-At-a-glance snapshot. **Last swept: 2026-06-25.** Full per-line detail + doc pointers:
+At-a-glance snapshot. **Last swept: 2026-07-20.** Full per-line detail + doc pointers:
 [docs/research_wiki/reference/research-line-status.md](docs/research_wiki/reference/research-line-status.md).
 Current working context: [handoff.md](docs/research_wiki/handoff.md). Why the project exists:
 [north-star.md](docs/research_wiki/north-star.md).
@@ -40,15 +40,21 @@ the lever is a richer notion of what makes a leg "yours"**. Current bet: **top-d
 
 ## Open issues
 
-| # | Title | Note |
-|---|-------|------|
-| **#31** | Investigate fractal-based anchor detection vs human source-fib labels | 🔬 open — now relevant (upstream of the ranking model: does the detector even propose the human's A/B?). |
+None — all research/tooling issues closed as of 2026-07-02 (**#31** answered: detection recall 0.902,
+detection is not the bottleneck — selection is; see
+[research-line-status](docs/research_wiki/reference/research-line-status.md)).
 
 *(#37 closed 2026-06-25 as a verbatim duplicate of #35 — the principle is in AGENTS.md.)*
 
 ## Immediate next action
 
-1. **User:** redraw a small set of **deliberately-nested** fibs on one era (1M→1W→1D) — *tomorrow*.
-2. **Prerequisite (code):** extend `RESOLUTION_TIMEFRAME` in
-   [`same_candle_mtf_resolution.py`](src/fibengine/labeling/same_candle_mtf_resolution.py) to cover
-   1M→1w (monthly anchors currently stay coarse). Continues **#31**.
+1. **Run the cascade-conditioning probe** (prereg 2026-07-20, needs candle cache) — does the previous
+   fib predict the next origin? Outcome steers both the contrastive-window design and any cascade
+   representation. [Prereg](docs/research_wiki/reviews/btc-fib-cascade-conditioning-probe-prereg-20260720.md).
+2. **User:** resume contrastive capture toward ≥30 windows (`scratchpad/annotation_batch1.md`) —
+   prioritize 4h/1d windows early so track B overlaps the powered facit corpus.
+3. **User:** classify the 7 degenerate same-candle fibs (handoff Open Questions, audit 2026-07-20).
+
+Facit corpus: **484** base fibs (1M=13, 1w=24, 1d=76, 4h=371), locked in
+[`data/labels/human_fib/MANIFEST.json`](data/labels/human_fib/MANIFEST.json)
+(`corpus_manifest --verify`).

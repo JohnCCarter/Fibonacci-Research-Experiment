@@ -16,6 +16,25 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-20] review | Systematic full-repo audit (read-only) + P0 remediation + cascade-probe prereg
+
+Owner-commissioned deep audit (code + full 484-file facit parse + experiment ledger + independent
+discovery mandate; report delivered off-repo by choice). Gates at audit time: ruff/format/bounds
+green, **713 pytest passed, cov 74.48%**. Verdict on the four-problem chain: transcription solved
+(as price→time recovery, NOT vision), candidate generation largely solved (recall 0.902, ceiling
+0.83 known), **selection UNSOLVED — the chain breaks there**, PnL correctly closed-null. Key new
+observation: facit geometry already carries sequential structure nobody consumes (4h: **85/371
+exact chain-links** `b_{i-1}==a_i`, 23 shared endpoints, 81/371 contained legs) → the untested U1
+cascade self-report is partially testable on existing facit. Findings actioned (P0): corpus
+MANIFEST + fail-closed verifier (`research/corpus_manifest.py`; corpus = **13/24/76/371 = 484**,
+older docs were stale); transcription claim re-scoped + living regression test; stale counts/#31
+fixed in STATUS/handoff; degenerate-fib (7 same-candle) + 1w ±1 logged as owner questions. NEW
+[cascade-conditioning prereg](reviews/btc-fib-cascade-conditioning-probe-prereg-20260720.md)
+(pending run — audit container had no Bitfinex egress). Snapshot discipline made explicit: pre-
+2026-06-26 selection results are snapshot-bound, not re-runnable against the grown corpus. Owner
+pre-authorized autonomous execution. NOT done (needs owner): degenerate-fib classification,
+contrastive capture, negative-audit of track-A implicit negatives.
+
 ## [2026-07-02] decision | Structure-engine origin MEASURED out-of-sample → does NOT generalize
 
 Ran the frozen `chamoun_structure_engine` (DOWN-only, params frozen at 1h scale) against the full 4h-DOWN

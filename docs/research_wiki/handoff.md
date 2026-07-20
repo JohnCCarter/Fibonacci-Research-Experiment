@@ -66,6 +66,13 @@ contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/
 
 ## Recent Changes
 
+- **2026-07-20 SYSTEMATIC AUDIT (read-only; report off-repo) + P0 remediation.** Corpus manifest +
+  verifier (`research/corpus_manifest.py`); transcription claim re-scoped + living regression test;
+  stale counts fixed; degenerate-fib + 1w ±1 owner questions logged. **NEW
+  [cascade-conditioning prereg](reviews/btc-fib-cascade-conditioning-probe-prereg-20260720.md)
+  (run pending candle cache)** — does the previous fib predict the next origin? Motivated by facit
+  chain geometry (4h: 85/371 exact `b_{i-1}==a_i` links) + untested U1. Detail: [log.md](log.md) top.
+
 - **2026-07-02 MEASURED engine vs 4h-DOWN facit (out-of-sample, `scratchpad/measure_4h_down.py`).** Origin sits
   **43 %** (86/201, CI ~36–50 %), leg 30 %; **75/201 genuine wrong-swing** (bar-invariant). 1h-overfit → NOT broad.
   → contrastive capture (#42) justified (validity-reviewed, non-blocking). See Next Step.
@@ -212,12 +219,17 @@ branches in `selection_learning.py:118-142` (currently uncovered — see audit).
 
 ## Verification Snapshot
 
-- `data/labels/human_fib/bitfinex/BTC-USD/1M/` — **9** base `fib_*.json` (log scale).
-- `data/labels/human_fib/bitfinex/BTC-USD/1w/` — **21** base `fib_*.json` (log scale).
-- `data/labels/human_fib/bitfinex/BTC-USD/1d/` — **67** base `fib_*.json` (log scale);
-  source-facit complete, verified 2026-06-11.
-- `data/labels/human_fib/bitfinex/BTC-USD/4h/` — **371** active base `fib_*.json` (log scale; 365 + 6
-  grow-facit 2026-06-30; 1 superseded 20250506 dedup). Coverage 2017-01-05 → 2026-06-05.
+Counts re-verified 2026-07-20 and locked in
+[`data/labels/human_fib/MANIFEST.json`](../../data/labels/human_fib/MANIFEST.json)
+(`corpus_manifest --verify`). **Total 484 base `fib_*.json`** (all log scale):
+
+- **1M = 13** (9 @06-09 reset + 4 @06-26 nesting cohort v2) · **1w = 24** (20 @06-11 + 4 nesting;
+  older docs say 21 — ±1 in Open Questions) · **1d = 76** (67 @06-11 + 4 nesting + 5 grow-facit
+  06-30) · **4h = 371** (365 + 6 grow-facit 06-30; 20250506 dedup superseded-by-deletion).
+- **Snapshot discipline (audit 2026-07-20):** selection results signed off before 2026-06-26 are
+  bound to the pre-growth corpus (`FROZEN_FACIT_COUNT` 9/21/67/365); the W-gap preflight now FAILS
+  on all TFs by design and other harnesses have none. Never compare a fresh re-run against those
+  numbers; new preregs must pin a manifest snapshot.
 - `experiments/review/weekly_source_fib_map/` and `…/weekly_source_fib_zoom/` —
   generated charts (gitignored; regenerate via the two new CLIs).
 - `data/raw/bitfinex/BTC-USD/1M/limit_500.csv` — 115 bars (2016-12 .. 2026-06),
@@ -229,6 +241,10 @@ branches in `selection_learning.py:118-142` (currently uncovered — see audit).
 ## Open Questions
 
 - Minimum monthly fib count before 1W mapping?
+- 1w base batch: 20 files on disk vs 21 in older docs — labeling miss, typo, or deletion? (audit)
+- 7 degenerate same-candle fibs (`a.time == b.time`): 1d `20210907` (known) + 4h `20170209T12,
+  20170310T20, 20171107T12, 20200316T12, 20200802T04, 20230223T08` (unflagged). Intentional or
+  misclicks? **Owner call** — unreachable by pivot-pair candidates, silently deflate ceilings.
 
 ## Status — BTC/Fib behaviour/backtest line PAUSED / CLOSED (2026-06-16, reviewed PASS)
 
@@ -291,106 +307,11 @@ policy**. No Phase 3.
 
 ## Startup on another machine
 
-Use this checklist when resuming from a home computer or any machine that does
-not have the current working tree.
-
-### Before leaving the current machine
-
-- All code, tests, wiki, and data changes committed and pushed (`git status` clean).
-- Gitignored review artifacts (`experiments/review/`) copied as a ZIP if wanted
-  (optional — see restore step below).
-- No required local-only state remains: committed facit (`fib_*.json`,
-  `review_windows.yaml`) and wiki docs are the source of truth.
-
-### On the new machine
-
-```bash
-git pull
-uv sync --extra dev
-uv run pytest -q
-uv run python scripts/check_repo_bounds.py
-```
-
-### BTC/USD candle-cache setup
-
-`data/raw/` is gitignored — fetch it fresh:
-
-**Bash:**
-```bash
-uv run --no-sync python -m fibengine.data.fetch \
-  --symbols BTC/USD \
-  --timeframes "1M,1w,1d,4h" \
-  --refresh \
-  --config config/settings.expansion.yaml
-```
-
-**PowerShell:**
-```powershell
-uv run --no-sync python -m fibengine.data.fetch `
-  --symbols BTC/USD `
-  --timeframes "1M,1w,1d,4h" `
-  --refresh `
-  --config config/settings.expansion.yaml
-```
-
-### Labeling preflight
-
-Confirms cache is complete for all active TFs before opening the labeling tool:
-
-**Bash:**
-```bash
-uv run --no-sync python -m fibengine.labeling.preflight \
-  --symbol BTC/USD \
-  --timeframes "1M,1w,1d,4h,1h" \
-  --config config/settings.expansion.yaml
-```
-
-**PowerShell:**
-```powershell
-uv run --no-sync python -m fibengine.labeling.preflight `
-  --symbol BTC/USD `
-  --timeframes "1M,1w,1d,4h,1h" `
-  --config config/settings.expansion.yaml
-```
-
-Expected: 1M/1w/1d/4h pass; 1h FAIL (cache not fetched yet — deferred).
-
-### Optional: restore local review artifacts
-
-`experiments/review/` is gitignored (regenerable charts/CSVs). The completed 1M packages can
-be restored locally from `btc-1m-reaction-review-artifacts-20260611.zip` (`unzip … -d .`) if
-wanted — **optional**; committed `fib_*.json` + `review_windows.yaml` are the source of truth.
-
-### Windows / Symantec SEP note
-
-Use `uv run --no-sync` after the initial `uv sync` and set `PYTHONDONTWRITEBYTECODE=1`
-(user-scope) to cut SEP scan surface. Full SONAR / Auto-Protect discipline + the env-var
-commands: [CLAUDE.md](../../CLAUDE.md) Gotchas.
-
-### Resume point
-
-- **BTC/USD 1M phase is complete.** 9 source fibs, 1D + 4H reaction review
-  approved 2026-06-11. Do not resume unless an explicit bug or gap is found.
-- **BTC/USD 1W source-fib phase is complete.** 21 source fibs verified;
-  visual confirmation via `weekly_source_fib_map` (combined 1W/1D/4H) and
-  `weekly_source_fib_zoom` (per-fib 4H). Combined 4H is too compressed — use
-  the per-fib zoom for 4H. Do not resume unless a bug or gap is found.
-- **BTC/USD 1D phase is complete.** 67 source fibs (2017-01-05 → 2024-12-20) and
-  4H reaction-review (2026-06-12). 1816 4H interactions, 90-day windows.
-  Summary: `docs/research_wiki/reviews/btc-1d-reaction-review-cycle-20260612.md`.
-  Do not resume unless a bug or gap is found.
-- **BTC/USD 4H source-fib phase is complete.** 366 source fibs (2017-01-05 → 2026-06-05),
-  up=169 / down=197, 366/366 schema PASS (2026-06-12). Do not resume unless a bug or gap
-  is found. 4H is the current lowest active timeframe (1H paused).
-- **4H visual confirmation Tier 1 + Tier 2 sample-pass complete** (2026-06-15). Tier 1:
-  `research/fourh_source_fib_map.py`, 11 annual groups, 366/366 drawn. Tier 2:
-  `research/fourh_source_fib_zoom.py`, 103+37 fibs rendered; first manual sample-pass (8
-  fibs) shows no suspicious labels. Two watchlist items: `20171228` (short-span) and
-  body/close vs wick convention (undocumented). Do not start with 1H. Do not start with
-  reaction-review. Review:
-  [`reviews/btc-4h-tier2-sample-review-20260615.md`](reviews/btc-4h-tier2-sample-review-20260615.md).
-- Do not auto-fib. Do not infer anchors. Keep the four flows distinct: 1M source /
-  1M→1W projection / true 1W source / true 1D source fibs.
+Full checklist (git pull / uv sync / candle-cache fetch / labeling preflight / SEP notes /
+per-TF resume points) moved to
+[reference/startup-checklist.md](reference/startup-checklist.md) (repo-bounds §2B, 2026-07-20).
+Standing rules: do not auto-fib, do not infer anchors, keep the four flows distinct
+(1M source / 1M→1W projection / true 1W source / true 1D source fibs).
 
 ## Links
 
