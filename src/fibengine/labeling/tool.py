@@ -524,7 +524,7 @@ class LabelWorkspace:
     annotate_selection: bool = False
     selection_candidates: list[dict] = field(default_factory=list)
     _htf_overlays: list | None = field(default=None, init=False, repr=False)
-    _pending_overwrite: bool = field(default=False, init=False, repr=False)
+    _pending_overwrite: str = field(default="", init=False, repr=False)
 
     def __post_init__(self):
         self.df = self._load_chart_candles()
@@ -1000,16 +1000,27 @@ class LabelWorkspace:
             # created_by stays "human"; record the real method in source instead of plain
             # manual labeling so the guessed-bar provenance is not erased (validity).
             annotation.source = self.promote_source
-            target = annotation_path(annotation)
-            if target.exists() and not self._pending_overwrite:
-                self._pending_overwrite = True
+        # Overwrite guard for EVERY save path (not just promotion): the filename is the
+        # origin timestamp only, so a new leg sharing an origin candle silently destroys
+        # the existing facit (1w 20170316 was lost this way on 2026-06-26). The pending
+        # confirmation is scoped to the target path so a warning on one fib can never
+        # authorize overwriting another.
+        target = annotation_path(annotation)
+        if target.exists():
+            existing = load_annotation(target)
+            anchors_differ = (
+                existing.anchor_a != annotation.anchor_a or existing.anchor_b != annotation.anchor_b
+            )
+            if anchors_differ and self._pending_overwrite != str(target):
+                self._pending_overwrite = str(target)
                 print(
-                    f"WARNING: facit already exists at {target}.\n"
+                    f"WARNING: facit already exists at {target} with DIFFERENT anchors\n"
+                    f"  (existing: a={existing.anchor_a} b={existing.anchor_b}).\n"
                     "  Press 'w' again to overwrite it, or move on to leave it untouched."
                 )
                 return
-            self._pending_overwrite = False
-        path = save_annotation(annotation)
+        self._pending_overwrite = ""
+        path = save_annotation(annotation, allow_overwrite=True)
         # Track as a session fib so it shows as an HTF overlay on lower TFs (nesting).
         self.session_fib_ids.add(annotation.fib_id)
         print(f"Saved human fib annotation ({annotation.direction}) -> {path}")

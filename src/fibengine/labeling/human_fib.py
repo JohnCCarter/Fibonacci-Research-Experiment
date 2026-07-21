@@ -282,8 +282,33 @@ def annotation_path(annotation: HumanFibAnnotation) -> Path:
     )
 
 
-def save_annotation(annotation: HumanFibAnnotation, path: Path | None = None) -> Path:
+class AnnotationOverwriteError(RuntimeError):
+    """Refused to overwrite an existing facit file whose anchors differ.
+
+    The fib filename is the origin timestamp only, so two different human legs sharing an
+    origin candle collide on the same path — a silent save destroys committed facit (this
+    happened to the 1w 20170316 base fib on 2026-06-26). Fail closed by default; overwriting
+    facit must be an explicit decision (``allow_overwrite=True``)."""
+
+
+def save_annotation(
+    annotation: HumanFibAnnotation, path: Path | None = None, *, allow_overwrite: bool = False
+) -> Path:
     path = path or annotation_path(annotation)
+    if path.exists() and not allow_overwrite:
+        existing = json.loads(path.read_text(encoding="utf-8"))
+        new = annotation.to_dict()
+        differs = (
+            existing.get("anchor_a") != new["anchor_a"]
+            or existing.get("anchor_b") != new["anchor_b"]
+        )
+        if differs:
+            raise AnnotationOverwriteError(
+                f"facit already exists at {path} with different anchors "
+                f"(existing anchor_b={existing.get('anchor_b')}, new anchor_b={new['anchor_b']}). "
+                "Overwriting destroys committed facit; pass allow_overwrite=True only after a "
+                "deliberate human decision (labeling tool: press 'w' twice)."
+            )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(annotation.to_dict(), indent=2), encoding="utf-8")
     return path

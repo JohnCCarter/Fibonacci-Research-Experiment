@@ -140,11 +140,16 @@ def test_overwrite_needs_second_confirm(monkeypatch, tmp_path):
         ws = _workspace_with_picks(monkeypatch, tmp_path)
         ws.promote_source = PROMOTE_SOURCE
         ws.save_human_fib_annotation()  # first write
-        assert ws._pending_overwrite is False
-        ws.save_human_fib_annotation()  # target exists -> guard arms, no write
-        assert ws._pending_overwrite is True
+        assert ws._pending_overwrite == ""
+        # identical anchors -> idempotent re-save, no guard friction
+        ws.save_human_fib_annotation()
+        assert ws._pending_overwrite == ""
+        # DIFFERENT anchors on the same origin candle -> guard arms, no write
+        ws.picks = {"high": (0, 126110.0), "low": (1, 99000.0)}
+        ws.save_human_fib_annotation()
+        assert ws._pending_overwrite != ""
         ws.save_human_fib_annotation()  # confirmed -> overwrites, resets
-        assert ws._pending_overwrite is False
+        assert ws._pending_overwrite == ""
     finally:
         store.set_labels_dir(None)
 
