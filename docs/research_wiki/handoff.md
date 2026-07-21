@@ -27,16 +27,33 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
-## Next Step — cascade probe RAN → `sequential_origin_signal` (sign-off) + contrastive capture — 2026-07-20
+## Next Step — degenerate-fib fix (home GUI) + contrastive capture — 2026-07-21
 
-**CASCADE probe RUN 2026-07-20 → `sequential_origin_signal` on 4h (advisory, pending owner
-sign-off).** H1a (predecessor `anchor_b` as next origin) hits **0.256** vs permutation-null
-**0.005**, p < 0.0005, gap CI [0.205, 0.298], N=363 pairs; signal is ~all EXACT chains (76/93),
-both directions, 1d+1w context cells agree, 1M nothing. **~1 in 4 origins = previous endpoint →
-a real component of selection, NOT the selector** (74% are not chained).
-[Results](reviews/btc-fib-cascade-conditioning-probe-results-20260720.md) — executed to the
-locked prereg incl. §9 pre-run amendments (leakage review fixed N2 look-ahead; H1a/N1 clean).
-**Owner:** sign off results; classify the 7 degenerate fibs; then contrastive capture below.
+**CASCADE probe SIGNED OFF 2026-07-21** (`sequential_origin_signal` on 4h: H1a **0.256** vs
+permutation-null **0.005**, p < 0.0005, gap CI [0.205, 0.298], N=363; ~all EXACT chains 76/93,
+both directions, 1d+1w agree, 1M nothing. **~1 in 4 origins = previous endpoint → a component of
+selection, NOT the selector**, 74% unchained).
+[Results](reviews/btc-fib-cascade-conditioning-probe-results-20260720.md) — line **complete**;
+next cascade work (P3 data model etc.) stays gated behind a separate GO.
+
+**Degenerate fibs classified 2026-07-21: MISCLICKS — fix on the home machine (GUI).** Owner call:
+the 7 same-candle fibs (`a.time == b.time`, all direction=down, spans 3–26 %) are **not**
+intentional single-candle legs. Worklist — redraw with correct anchors or delete, per fib, in
+`labeling.tool`:
+
+| TF | Fib | a → b (same candle) |
+|----|-----|---------------------|
+| 1d | `20210907T000000` | 52888 → 43220 |
+| 4h | `20170209T120000` | 1064.5 → 936.34 |
+| 4h | `20170310T200000` | 1293 → 958.5 |
+| 4h | `20171107T120000` | 7220 → 6948 |
+| 4h | `20200316T120000` | 5193.7 → 4563.8 |
+| 4h | `20200802T040000` | 12097 → 10548 |
+| 4h | `20230223T080000` | 24493 → 23659 |
+
+After fixing: re-run `corpus_manifest` to relock `MANIFEST.json` (the fail-closed verifier will
+otherwise DRIFT), regenerate events for touched fibs, and note the new counts here. Agents must
+**not** redraw/delete these themselves (facit discipline: no inferred anchors).
 
 ---
 
@@ -78,6 +95,11 @@ legs, duration already inconsistent, grouping = "ingen aning" — kept as durabl
 contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/D facit NOT promoted; **TZ:** Europe/Stockholm.
 
 ## Recent Changes
+
+- **2026-07-21 OWNER SIGN-OFF: cascade results signed + degenerate fibs classified (docs-only).**
+  Cascade `sequential_origin_signal` advisory→**signed** (no objections; modest framing binding).
+  The 7 same-candle fibs = **misclicks** → fix worklist (home GUI) in Next Step; Open Question
+  closed. No code, no facit touched. [log.md](log.md) top.
 
 - **2026-07-20 MAINTENANCE: Pillow 12.3.0 (all 13 Dependabot alerts cleared, owner-confirmed) +
   hypothesis-flake `deadline=None` + branch housekeeping** (audit branch merged→main & deleted;
@@ -268,9 +290,8 @@ Counts re-verified 2026-07-20 and locked in
 
 - Minimum monthly fib count before 1W mapping?
 - 1w base batch: 20 files on disk vs 21 in older docs — labeling miss, typo, or deletion? (audit)
-- 7 degenerate same-candle fibs (`a.time == b.time`): 1d `20210907` (known) + 4h `20170209T12,
-  20170310T20, 20171107T12, 20200316T12, 20200802T04, 20230223T08` (unflagged). Intentional or
-  misclicks? **Owner call** — unreachable by pivot-pair candidates, silently deflate ceilings.
+- ~~7 degenerate same-candle fibs — intentional or misclicks?~~ **ANSWERED 2026-07-21: misclicks**
+  — fix worklist in Next Step (home GUI); corpus counts will change when fixed.
 
 ## Status — BTC/Fib behaviour/backtest line PAUSED / CLOSED (2026-06-16, reviewed PASS)
 

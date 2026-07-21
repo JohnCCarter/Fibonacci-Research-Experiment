@@ -16,6 +16,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-21] decision | Cascade results SIGNED OFF + 7 degenerate fibs = MISCLICKS (owner)
+
+Cloud session (docs-only). (1) **Cascade-conditioning probe advisory→SIGNED** — owner accepted
+`sequential_origin_signal` as-is (4h H1a 0.256 vs null 0.005; component-not-selector framing stays
+binding). Line moved to ✅ complete in research-line-status; P3 data model still gated. (2) **The 7
+same-candle fibs are MISCLICKS, not intentional** (owner call, closing the audit Open Question).
+Evidence prepared for the decision: all 7 share `a.time == b.time` with distinct prices (spans
+3–26 %), all `direction=down`, dates = known violent flash moves (COVID 2020-03-16, El Salvador
+2021-09-07, …); Bitfinex candle verification not possible in the cloud container (egress 403) —
+anchor≈high/low stays Unverified. **Fix deferred to the home machine GUI** (agents must not
+redraw facit): worklist table in [handoff Next Step](handoff.md); after fixing, relock
+`MANIFEST.json` + regenerate events. Until then the 7 stay excluded-as-degenerate in harnesses.
+(3) Wiki sync: results doc checkboxes, handoff (Next Step + Open Questions + Recent Changes),
+research-line-status (cascade row → Complete; corpus row pending-fix note), STATUS.
+
 ## [2026-07-20] maintenance | Pillow 12.3.0 (13 Dependabot alerts cleared) + branch housekeeping + doc sync
 
 Same session, after the cascade run. (1) **Dependabot: all 13 alerts (10 high, 3 moderate) were

@@ -2,7 +2,7 @@
 
 **Date run:** 2026-07-20 (labeling machine, Bitfinex egress OK) · **Prereg (locked, incl. pre-run
 amendments §9):** [prereg](btc-fib-cascade-conditioning-probe-prereg-20260720.md) · **Status:**
-**advisory — pending owner sign-off** (prereg §8). Executed verbatim: seed 20260720, n_perm=2000,
+**SIGNED OFF by owner 2026-07-21** (prereg §8). Executed verbatim: seed 20260720, n_perm=2000,
 n_boot=2000, LOCKED acceptance origin band (`ACCEPT_AT=NEAR`), fail-closed corpus-manifest check
 passed (484 base fibs, 13/24/76/371 — CRLF-normalized fingerprint, sibling commit).
 
@@ -65,6 +65,11 @@ perf fix, **not** applied mid-prereg).
 
 ## Owner sign-off
 
-- [ ] Verdict accepted as advisory→signed (or objections noted)
-- [ ] Degenerate-fib classification (7 same-candle, handoff Open Questions) — unchanged ask
-- [ ] Next: resume contrastive capture (#42) with the cascade result as context
+- [x] **Signed 2026-07-21** — verdict accepted advisory→signed, no objections; modest framing
+      above stays binding when citing this ("component, not the selector").
+- [x] **Degenerate-fib classification (2026-07-21): misclicks, not intentional.** All 7
+      same-candle fibs are to be corrected/redrawn (or deleted) in the labeling GUI on the home
+      machine — worklist in [handoff Next Step](../handoff.md). Until fixed they remain excluded
+      as degenerate (as this probe already did); the fix does **not** retroactively touch this
+      result (6 excluded `cur` on 4h regardless of classification).
+- [x] Next: resume contrastive capture (#42) with the cascade result as context
