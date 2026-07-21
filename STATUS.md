@@ -19,7 +19,12 @@ Controls are done, enrichment closed, the learning-curve is saturated → **more
 the lever is a richer notion of what makes a leg "yours"**. The context-free axis is exhausted;
 **first positive on the sequential axis (2026-07-20, signed off 2026-07-21): the previous fib's
 endpoint predicts the next origin** (`sequential_origin_signal`, 4h: 0.256 vs 0.005 null — a
-component, not the selector). Current bet: **contrastive capture (#42) + sequential conditioning**.
+component, not the selector). Sequential follow-ups (2026-07-21): chaining is **not serially
+clustered** (`no_chain_clustering`, confound-guarded) → per-leg feature, no regime model; and the
+**implicit-negative audit** showed 75 % of 4h negatives are coverage-weak ("never reviewed" ≠
+"rejected") — the low absolute AP is partly a passive-corpus artifact, which **raises** the
+priority of contrastive capture. Current bet: **contrastive capture (#42, now with a
+desert-targeted batch 2) + the per-leg sequential feature (prereg'd, run pending review)**.
 
 ## Line status
 
@@ -50,16 +55,18 @@ detection is not the bottleneck — selection is; see
 
 ## Immediate next action
 
-1. **User (home GUI):** fix the 7 degenerate same-candle fibs — classified **misclicks**
-   2026-07-21; redraw/delete per the worklist in
-   [handoff Next Step](docs/research_wiki/handoff.md), then relock `MANIFEST.json`
-   (`corpus_manifest`).
-2. **User:** resume contrastive capture toward ≥30 windows (`scratchpad/annotation_batch1.md`) —
-   prioritize 4h/1d windows early so track B overlaps the powered facit corpus.
+1. **Owner: sign off two advisory results from the 2026-07-21 autonomous session** —
+   [chain-clustering `no_chain_clustering`](docs/research_wiki/reviews/btc-fib-chain-clustering-probe-results-20260721.md)
+   and (when run) the sequential-feature study
+   ([prereg](docs/research_wiki/reviews/btc-fib-sequential-feature-prereg-20260721.md)).
+2. **Owner (home GUI):** fix the 7 degenerate misclick fibs (worklist in
+   [handoff](docs/research_wiki/handoff.md)) + decide the 1w `20170316` overwrite question
+   (restore the lost base leg or keep the nesting redraw), then relock `MANIFEST.json`.
+3. **User:** resume contrastive capture toward ≥30 windows — batch 1
+   (`scratchpad/annotation_batch1.md`) + NEW desert-targeted batch 2
+   (`scratchpad/annotation_batch2_deserts.md`, from the negative-audit).
 
-*(Cascade-probe results signed off 2026-07-21 —
-[results](docs/research_wiki/reviews/btc-fib-cascade-conditioning-probe-results-20260720.md);
-P3 cascade data model stays gated behind a separate GO.)*
+*(Cascade-probe signed 2026-07-21; P3 cascade data model stays gated behind a separate GO.)*
 
 Facit corpus: **484** base fibs (1M=13, 1w=24, 1d=76, 4h=371), locked in
 [`data/labels/human_fib/MANIFEST.json`](data/labels/human_fib/MANIFEST.json)

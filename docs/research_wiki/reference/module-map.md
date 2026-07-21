@@ -26,7 +26,11 @@ High-level map of `src/fibengine`. This is navigation, not an API contract.
   ~43 % on 4h-DOWN facit (37 % genuine wrong-swing) → does NOT generalize; drove contrastive capture (#42).
   Since the 2026-07-20 audit also: **`corpus_manifest.py`** (fail-closed facit drift verifier,
   CRLF-invariant fingerprint; `MANIFEST.json` = 484 base fibs) and **`cascade_conditioning.py`**
-  (sequential-origin probe, prereg 2026-07-20; RAN → `sequential_origin_signal` on 4h, advisory).
+  (sequential-origin probe, prereg 2026-07-20; RAN → `sequential_origin_signal` on 4h, SIGNED
+  2026-07-21). Sequential-axis follow-ups (2026-07-21): **`chain_clustering.py`** (serial-clustering
+  probe; RAN → `no_chain_clustering` under the hub-guarded gate, advisory) and
+  **`selection_sequential.py`** (teacher-forced `chained_origin` feature vs the Stage-2 base model,
+  prereg'd). Audit harness `scratchpad/negative_audit_track_a.py` (implicit-negative coverage audit).
 
 ## Decoupled Layer
 
