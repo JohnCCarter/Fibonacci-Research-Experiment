@@ -16,6 +16,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-21] review | Sequential-feature study (`chained_origin`) — prereg LOCKED after two-pass review; run launched
+
+Same autonomous session. The per-leg follow-through the chain-clustering probe licensed:
+does a **teacher-forced** binary `chained_origin` (candidate origin reaches the LOCKED band vs
+the latest completed human leg's endpoint) add OOS AP at k=3 over the identical Stage-2 base
+model? [Prereg](reviews/btc-fib-sequential-feature-prereg-20260721.md) — §2 teacher-forcing
+disclosure BINDING (reproduction claim only, never live-availability/edge).
+**leakage-validity-reviewer, two passes → §9 amendments pre-run:** A1 self-leg leakage killed
+(label-blind predecessor rule `b_pos ≤ start_pos AND b_pos < anchor_b_pos − ε`); A2 test-window
+teacher-forcing disclosure locked; **A3 the 7 owner-classified misclick fibs excluded from the
+study entirely** (labels + predecessor pool; study-level, no facit mutation); A4–A7 (prom_max
+comment, multiplicity disclosure — third sequential-axis test on this snapshot, inference-None
+honesty, tie-break). New `research/selection_sequential.py` (+7 tests), commit `16d4264`.
+Run launched (background); results entry follows.
+
 ## [2026-07-21] review | Chain-clustering probe RUN → `no_chain_clustering` (advisory) — the pre-run review changed the verdict
 
 Autonomous session (owner blanket GO, away). Sequential-axis follow-up on the signed cascade
