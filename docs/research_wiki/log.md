@@ -16,6 +16,18 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-21] maintenance | Memoized `bar_of_timestamp` (deferred cascade perf fix, post-sign-off)
+
+Same cloud session, after the sign-off below (owner GO). The result-neutral perf fix the cascade
+results doc deferred mid-prereg: `evaluation/bars.py` now memoizes per **index-object identity**
+(exact — the result depends only on `(df.index, ts)`; pandas indexes are immutable; sliced frames
+get their own entry; weakref self-eviction on GC; parse moved behind the cache). Hot path 1148 µs
+→ 0.60 µs/call (~2000×): the probe's 1.5 M lookups drop ~25 min → ~1 s, leaving N2
+`detect_pivots` dominant. +5 tests (`tests/evaluation/test_bars.py`) incl. cached==fresh
+equivalence, slice isolation, GC eviction. Full gates green pre-reorder (737 passed, cov 74.58%);
+targeted re-verify post-reorder (31 passed). Numbers in the signed results are untouched (original
+run). Beneficiaries: cascade re-runs + `metrics`/`pivot_recall` callers.
+
 ## [2026-07-21] decision | Cascade results SIGNED OFF + 7 degenerate fibs = MISCLICKS (owner)
 
 Cloud session (docs-only). (1) **Cascade-conditioning probe advisory→SIGNED** — owner accepted

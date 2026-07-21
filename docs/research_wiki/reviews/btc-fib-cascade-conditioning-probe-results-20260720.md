@@ -59,9 +59,11 @@ as an inter-leg-window candidate.
 
 Deterministic, frozen data (no `--refresh`):
 `uv run --no-sync python -m fibengine.research.cascade_conditioning --probe --config config/settings.expansion.yaml`
-→ `experiments/review/cascade_conditioning/summary.json` (gitignored/regenerable). Runtime ~25 min
-(the O(n) `bar_of_timestamp` lookup dominates; a memoized lookup is a candidate result-neutral
-perf fix, **not** applied mid-prereg).
+→ `experiments/review/cascade_conditioning/summary.json` (gitignored/regenerable). Original run
+~25 min (O(n) `bar_of_timestamp` dominated). **Post-sign-off 2026-07-21:** the deferred
+result-neutral memoization landed in `evaluation/bars.py` (exact per-index cache, ~2000× on the
+hot path; bar-lookup cost ~25 min → ~1 s) — a re-run should now be minutes, dominated by N2's
+`detect_pivots`. Not applied mid-prereg; the signed numbers above are from the original run.
 
 ## Owner sign-off
 
