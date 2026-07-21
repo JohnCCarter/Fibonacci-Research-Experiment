@@ -29,14 +29,14 @@ append-only trail lives in [log.md](log.md).
 
 ## Checkpoint 2026-07-21 (350k save-point, autonomous session)
 
-**Observed:** cascade SIGNED · chain-clustering RUN → `no_chain_clustering` (hub-guarded;
-advisory) · negative-audit → 75 % coverage-weak 4h negatives · overwrite-guard shipped · 1w
-20-vs-21 = silent collision overwrite · 7 misclicks candle-verified · **sequential-feature
-study (`chained_origin`) prereg LOCKED (§9 A1–A7, two-pass review) RUNNING in background.**
-**Inferred:** low AP partly coverage artifact; sequential = per-leg feature (no regime).
-**Unverified:** sequential-study outcome; `1w_20170316` intent (owner); p_sf 0.061 borderline.
-**Repo:** `3fac7b2` clean/synced; full gates 750 passed pre-harness, targeted 7/7 green since.
-**Constraints:** blanket GO; never draw facit; advisory. **Next:** run → results → sync → push.
+**Observed:** cascade SIGNED · chain-clustering → `no_chain_clustering` · sequential-feature →
+`no_sequential_feature_signal` (AP 0.071→0.053; 17.6 % vs 3.8 % — signal exists, doesn't
+convert) · negative-audit → 75 % coverage-weak negatives · overwrite-guard shipped ·
+1w 20-vs-21 = collision overwrite · 7 misclicks candle-verified. **Sequential axis bounded
+(3 locked results): chaining = byproduct of the zigzag rhythm, not a missing driver.**
+**Unverified:** 2 sign-offs pending; `1w_20170316` intent; p_sf 0.061 borderline (new prereg).
+**Constraints:** blanket GO; never draw facit; advisory. **Next lever: contrastive capture
+(#42, batch 1 + desert batch 2)** — the passive-corpus axes are exhausted.
 
 ## Next Step — degenerate-fib fix (home GUI) + contrastive capture — 2026-07-21
 

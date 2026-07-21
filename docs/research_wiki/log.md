@@ -16,6 +16,21 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-21] review | Sequential-feature study RUN → `no_sequential_feature_signal` — the sequential axis is now bounded
+
+Run completed (~35 min, verbatim to the locked prereg incl. §9 A1–A7). **4h primary:
+`no_sequential_feature_signal`** — AP 0.0710 → 0.0532 with `chained_origin` added, lift −0.018,
+CI [−0.082, +0.045], p=0.70 (68 test positives, 2 099 clusters). Honest tension: the univariate
+signal EXISTS (chained-rate 17.6 % test-pos vs 3.8 % test-neg, weight +0.11, AUC up) but does
+NOT convert to early-precision — the geometric base features already carry the information.
+1d context: 0/11 test positives chain; feature actively hurts. Bookkeeping: 6+1 degenerate
+misclicks excluded (§9 A3); A1 self-leg guard bit only 274/87 324 candidates.
+**Axis bounded by three locked results:** chains exist (signed cascade 0.256) → not clustered
+(`no_chain_clustering`) → no incremental feature value (this). Reading: chaining is a
+**byproduct of the zigzag drawing rhythm, not a missing driver** — the selection lever stays
+contrastive capture (#42 + desert batch 2). Any chase = new prereg.
+[Results](reviews/btc-fib-sequential-feature-results-20260721.md) — advisory pending sign-off.
+
 ## [2026-07-21] review | Sequential-feature study (`chained_origin`) — prereg LOCKED after two-pass review; run launched
 
 Same autonomous session. The per-leg follow-through the chain-clustering probe licensed:

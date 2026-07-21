@@ -17,14 +17,15 @@ Step 1 is **not in goal**: the model ranks human legs above chance (AUC ~0.91) b
 reproduce the selection (AP 0.057 vs 0.83 ceiling) — a modest single-feature (`cleanliness`) lead.
 Controls are done, enrichment closed, the learning-curve is saturated → **more 4h data is low-leverage;
 the lever is a richer notion of what makes a leg "yours"**. The context-free axis is exhausted;
-**first positive on the sequential axis (2026-07-20, signed off 2026-07-21): the previous fib's
-endpoint predicts the next origin** (`sequential_origin_signal`, 4h: 0.256 vs 0.005 null — a
-component, not the selector). Sequential follow-ups (2026-07-21): chaining is **not serially
-clustered** (`no_chain_clustering`, confound-guarded) → per-leg feature, no regime model; and the
-**implicit-negative audit** showed 75 % of 4h negatives are coverage-weak ("never reviewed" ≠
-"rejected") — the low absolute AP is partly a passive-corpus artifact, which **raises** the
-priority of contrastive capture. Current bet: **contrastive capture (#42, now with a
-desert-targeted batch 2) + the per-leg sequential feature (prereg'd, run pending review)**.
+**the sequential axis is now BOUNDED by three locked results (2026-07-20/21):** origins chain far
+above chance (`sequential_origin_signal`, 0.256 vs 0.005, signed) → chaining is **not serially
+clustered** (`no_chain_clustering`, confound-guarded) → chaining adds **no incremental ranking
+signal** over the geometric features (`no_sequential_feature_signal`, teacher-forced; univariate
+signal exists, 17.6 % vs 3.8 %, but doesn't convert). Reading: chaining is a **byproduct of the
+zigzag drawing rhythm, not a missing driver**. The **implicit-negative audit** showed 75 % of 4h
+negatives are coverage-weak ("never reviewed" ≠ "rejected") — low absolute AP partly a
+passive-corpus artifact. Current bet: **contrastive capture (#42, batch 1 + desert-targeted
+batch 2)** — richer supervision, not more feature engineering on the passive corpus.
 
 ## Line status
 
@@ -57,8 +58,7 @@ detection is not the bottleneck — selection is; see
 
 1. **Owner: sign off two advisory results from the 2026-07-21 autonomous session** —
    [chain-clustering `no_chain_clustering`](docs/research_wiki/reviews/btc-fib-chain-clustering-probe-results-20260721.md)
-   and (when run) the sequential-feature study
-   ([prereg](docs/research_wiki/reviews/btc-fib-sequential-feature-prereg-20260721.md)).
+   and [sequential-feature `no_sequential_feature_signal`](docs/research_wiki/reviews/btc-fib-sequential-feature-results-20260721.md).
 2. **Owner (home GUI):** fix the 7 degenerate misclick fibs (worklist in
    [handoff](docs/research_wiki/handoff.md)) + decide the 1w `20170316` overwrite question
    (restore the lost base leg or keep the nesting redraw), then relock `MANIFEST.json`.
