@@ -56,15 +56,14 @@ detection is not the bottleneck — selection is; see
 
 ## Immediate next action
 
-1. **Owner: sign off two advisory results from the 2026-07-21 autonomous session** —
-   [chain-clustering `no_chain_clustering`](docs/research_wiki/reviews/btc-fib-chain-clustering-probe-results-20260721.md)
-   and [sequential-feature `no_sequential_feature_signal`](docs/research_wiki/reviews/btc-fib-sequential-feature-results-20260721.md).
-2. **Owner (home GUI):** fix the 7 degenerate misclick fibs (worklist in
-   [handoff](docs/research_wiki/handoff.md)) + decide the 1w `20170316` overwrite question
-   (restore the lost base leg or keep the nesting redraw), then relock `MANIFEST.json`.
-3. **User:** resume contrastive capture toward ≥30 windows — batch 1
+1. **Owner (home GUI):** fix the 7 degenerate misclick fibs (worklist in
+   [handoff](docs/research_wiki/handoff.md)), then relock `MANIFEST.json`.
+2. **User:** resume contrastive capture toward ≥30 windows — batch 1
    (`scratchpad/annotation_batch1.md`) + NEW desert-targeted batch 2
    (`scratchpad/annotation_batch2_deserts.md`, from the negative-audit).
+
+*(2026-07-21 evening: chain-clustering + sequential-feature both SIGNED; sequential axis
+bounded; `1w_20170316` resolved = keep nesting version, base leg recoverable via git.)*
 
 *(Cascade-probe signed 2026-07-21; P3 cascade data model stays gated behind a separate GO.)*
 

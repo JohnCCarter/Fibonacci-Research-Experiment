@@ -2,8 +2,8 @@
 
 **Date run:** 2026-07-21 (autonomous session, owner blanket GO) · **Prereg (locked incl. §9
 A1–A7 after two-pass leakage review):**
-[prereg](btc-fib-sequential-feature-prereg-20260721.md) · **Status:** **advisory — pending
-owner sign-off.** Executed verbatim: seed 20260721, B=2000, LOCKED band, fail-closed manifest
+[prereg](btc-fib-sequential-feature-prereg-20260721.md) · **Status:** **SIGNED OFF by owner
+2026-07-21** (mobile session). Executed verbatim: seed 20260721, B=2000, LOCKED band, fail-closed manifest
 check (484), frozen 2026-07-21 cache (4h 21 273 bars). Runtime ~35 min. **Multiplicity
 disclosure (§9 A5): third sequential-axis test on the same 484-fib snapshot** (after the signed
 cascade probe and the chain-clustering null). **Teacher-forcing frame (§2/§9 A2) binds every
@@ -65,5 +65,7 @@ no facit touched; no auto-fib; 1H/ETH untouched.
 
 ## Owner sign-off
 
-- [ ] Verdict accepted as advisory→signed (or objections noted)
-- [ ] Sequential axis considered bounded (3 results) — next lever = contrastive capture
+- [x] **Signed 2026-07-21** — verdict accepted advisory→signed, no objections; teacher-forcing
+      frame (§2/§9 A2) stays binding on every citation.
+- [x] Sequential axis considered **bounded** (3 signed results) — next lever = contrastive
+      capture (#42, batch 1 + desert batch 2).

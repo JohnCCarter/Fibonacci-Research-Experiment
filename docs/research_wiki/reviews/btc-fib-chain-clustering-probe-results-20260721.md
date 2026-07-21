@@ -2,7 +2,7 @@
 
 **Date run:** 2026-07-21 (cloud session, autonomous, owner blanket GO) · **Prereg (locked incl.
 §9 pre-run amendments):** [prereg](btc-fib-chain-clustering-probe-prereg-20260721.md) ·
-**Status:** **advisory — pending owner sign-off.** Executed verbatim: seed 20260721,
+**Status:** **SIGNED OFF by owner 2026-07-21** (mobile session). Executed verbatim: seed 20260721,
 n_perm/n_boot = 2000, LOCKED acceptance band, fail-closed manifest check passed (484), fresh
 2026-07-21 cache (4h 21 273 bars; signed cascade numbers reproduce exactly on it). Runtime ~2 s
 (memoized bar lookup).
@@ -66,5 +66,7 @@ config/settings.expansion.yaml` → `experiments/review/chain_clustering/summary
 
 ## Owner sign-off
 
-- [ ] Verdict accepted as advisory→signed (or objections noted)
-- [ ] Next: sequential-conditioning selection feature (separate prereg, per-leg form)
+- [x] **Signed 2026-07-21** — verdict accepted advisory→signed, no objections; the
+      "not demonstrated at current power" framing above stays binding.
+- [x] Next: sequential-conditioning selection feature — ran same day →
+      [`no_sequential_feature_signal`](btc-fib-sequential-feature-results-20260721.md)

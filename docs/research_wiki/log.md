@@ -16,6 +16,17 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-21] decision | Both sequential-axis results SIGNED + 1w overwrite resolved (keep nesting)
+
+Owner signed off from mobile: **chain-clustering (`no_chain_clustering`) and sequential-feature
+(`no_sequential_feature_signal`) advisory→SIGNED**, no objections — the sequential axis is now
+**bounded by three signed results** and both lines move to ⛔ closed-null (do not re-run; any
+chase = new prereg). **`1w_20170316` resolved** (decision delegated to agent, choice: **keep
+nesting version**): latest deliberate human drawing wins, every signed result is computed on
+this exact snapshot (manifest 484 untouched), and the original base leg (985.55→2444.9) stays
+permanently recoverable via `git show d1d98b3`. No corpus change, no relock. Remaining owner
+work: 7 misclick fixes (home GUI) + contrastive capture batches 1–2.
+
 ## [2026-07-21] review | Sequential-feature study RUN → `no_sequential_feature_signal` — the sequential axis is now bounded
 
 Run completed (~35 min, verbatim to the locked prereg incl. §9 A1–A7). **4h primary:

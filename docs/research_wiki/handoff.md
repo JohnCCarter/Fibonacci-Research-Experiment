@@ -34,9 +34,10 @@ append-only trail lives in [log.md](log.md).
 convert) · negative-audit → 75 % coverage-weak negatives · overwrite-guard shipped ·
 1w 20-vs-21 = collision overwrite · 7 misclicks candle-verified. **Sequential axis bounded
 (3 locked results): chaining = byproduct of the zigzag rhythm, not a missing driver.**
-**Unverified:** 2 sign-offs pending; `1w_20170316` intent; p_sf 0.061 borderline (new prereg).
-**Constraints:** blanket GO; never draw facit; advisory. **Next lever: contrastive capture
-(#42, batch 1 + desert batch 2)** — the passive-corpus axes are exhausted.
+**Signed 2026-07-21 (mobile):** chain-clustering + sequential-feature both advisory→SIGNED;
+`1w_20170316` resolved = keep nesting (owner-delegated). Remaining unverified: p_sf 0.061
+borderline (new prereg if chased). **Next lever: contrastive capture (#42, batch 1 + desert
+batch 2)** — the passive-corpus axes are exhausted.
 
 ## Next Step — degenerate-fib fix (home GUI) + contrastive capture — 2026-07-21
 
@@ -314,13 +315,12 @@ Counts re-verified 2026-07-20 and locked in
 ## Open Questions
 
 - Minimum monthly fib count before 1W mapping?
-- ~~1w base batch: 20 vs 21?~~ **SOLVED 2026-07-21: silent filename-collision overwrite** — the
-  06-11 base batch had 21 files; nesting-cohort v2 (06-26) overwrote `1w_20170316` (leg changed
-  985.55→2444.9 to 985.55→17293). **NEW owner call:** was the nesting redraw an intentional
-  replacement, or should the original base leg be restored?
-  Recovery: `git show d1d98b3:data/labels/human_fib/bitfinex/BTC-USD/1w/fib_BTC-USD_1w_20170316T000000.json`
-  (needs a new filename convention — same origin week collides; the tool now refuses silent
-  overwrites, [log 2026-07-21](log.md)).
+- ~~1w base batch: 20 vs 21?~~ **SOLVED + RESOLVED 2026-07-21:** silent filename-collision
+  overwrite of `1w_20170316` by nesting-cohort v2. **Decision (owner-delegated, agent chose):
+  KEEP the nesting version** — latest deliberate human drawing wins; all signed 2026-07-21
+  results are computed on this snapshot; the base leg (985.55→2444.9) stays recoverable forever
+  via `git show d1d98b3:…/fib_BTC-USD_1w_20170316T000000.json`. The tool now refuses silent
+  overwrites ([log 2026-07-21](log.md)). No corpus change, no manifest relock needed.
 - ~~7 degenerate same-candle fibs — intentional or misclicks?~~ **ANSWERED 2026-07-21: misclicks**
   — fix worklist in Next Step (home GUI); corpus counts will change when fixed. (Candle-verified
   2026-07-21: all 7 anchors == exact candle high/low — wick-to-wick single-candle drags.)
