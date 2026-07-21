@@ -27,6 +27,17 @@ append-only trail lives in [log.md](log.md).
 
 **ETH/USD:** blocked until BTC protocol approved.
 
+## Checkpoint 2026-07-21 (350k save-point, autonomous session)
+
+**Observed:** cascade SIGNED · chain-clustering RUN → `no_chain_clustering` (hub-guarded;
+advisory) · negative-audit → 75 % coverage-weak 4h negatives · overwrite-guard shipped · 1w
+20-vs-21 = silent collision overwrite · 7 misclicks candle-verified · **sequential-feature
+study (`chained_origin`) prereg LOCKED (§9 A1–A7, two-pass review) RUNNING in background.**
+**Inferred:** low AP partly coverage artifact; sequential = per-leg feature (no regime).
+**Unverified:** sequential-study outcome; `1w_20170316` intent (owner); p_sf 0.061 borderline.
+**Repo:** `3fac7b2` clean/synced; full gates 750 passed pre-harness, targeted 7/7 green since.
+**Constraints:** blanket GO; never draw facit; advisory. **Next:** run → results → sync → push.
+
 ## Next Step — degenerate-fib fix (home GUI) + contrastive capture — 2026-07-21
 
 **CASCADE probe SIGNED OFF 2026-07-21** (`sequential_origin_signal` on 4h: H1a **0.256** vs
