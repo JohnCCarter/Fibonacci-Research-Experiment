@@ -79,6 +79,10 @@ contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/
 
 ## Recent Changes
 
+- **2026-07-20 MAINTENANCE: Pillow 12.3.0 (all 13 Dependabot alerts cleared, owner-confirmed) +
+  hypothesis-flake `deadline=None` + branch housekeeping** (audit branch merged→main & deleted;
+  `feature/research-fib` recreated fresh from main — work continues there). [log.md](log.md) top.
+
 - **2026-07-20 CASCADE probe RUN → `sequential_origin_signal` (advisory) + validity fixes.**
   Pre-run leakage review: H1a/N1 clean; N2 look-ahead fixed + 4 more findings → prereg §9
   amendments (`2c04328`). CRLF-portable manifest fingerprint (`aeccffa` — verifier false-DRIFTed

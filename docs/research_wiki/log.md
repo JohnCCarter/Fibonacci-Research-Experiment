@@ -16,6 +16,22 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-20] maintenance | Pillow 12.3.0 (13 Dependabot alerts cleared) + branch housekeeping + doc sync
+
+Same session, after the cascade run. (1) **Dependabot: all 13 alerts (10 high, 3 moderate) were
+Pillow < 12.3.0** (heap-OOB, decompression-bomb bypasses, DoS, TGA heap leak, command injection) →
+targeted `uv lock --upgrade-package pillow` 12.2.0→12.3.0 (`e0fe518`); full gates green (733
+passed); owner confirmed alerts cleared. (2) **Hypothesis flake fixed** (`5741c99`):
+`test_synthetic_ohlcv_high_ge_low` hit the default 200 ms deadline under full-suite load twice
+(passes in isolation, no genuine counterexample) → `deadline=None` on the file's three property
+tests. (3) **Branch housekeeping:** audit branch merged → main (`2f6ec71`) and deleted;
+`feature/research-fib` recreated fresh from main (fast-forward — old tip was fully merged since
+`0068d2c`); pillow/flake merged → main (`131e6ac`). (4) **Doc sync (this commit):** STATUS "where
+we are" re-anchored (context-free axis exhausted → sequential axis + contrastive capture);
+research-line-status cascade row → RAN/pending sign-off; module-map + `corpus_manifest.py` /
+`cascade_conditioning.py`. Next session: owner sign-off (cascade results + 7 degenerate fibs),
+then contrastive capture.
+
 ## [2026-07-20] review | Cascade probe RUN → `sequential_origin_signal` (advisory) after pre-run validity fixes
 
 Continuation of the audit session below, on the Windows labeling machine. (1) **CRLF bug found &

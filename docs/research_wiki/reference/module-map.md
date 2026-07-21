@@ -24,6 +24,9 @@ High-level map of `src/fibengine`. This is navigation, not an API contract.
   **`chamoun_structure_engine.py`** rule-based 1h down-structure proposer (frozen v1: origin = most
   prominent swing high at ~3-day scale; descriptive, no edge). **Measured OOS 2026-07-02:** origin sits only
   ~43 % on 4h-DOWN facit (37 % genuine wrong-swing) → does NOT generalize; drove contrastive capture (#42).
+  Since the 2026-07-20 audit also: **`corpus_manifest.py`** (fail-closed facit drift verifier,
+  CRLF-invariant fingerprint; `MANIFEST.json` = 484 base fibs) and **`cascade_conditioning.py`**
+  (sequential-origin probe, prereg 2026-07-20; RAN → `sequential_origin_signal` on 4h, advisory).
 
 ## Decoupled Layer
 

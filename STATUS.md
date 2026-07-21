@@ -16,8 +16,10 @@ Teach the machine to **select Fib legs (A→B) like the human** (facit = manual 
 Step 1 is **not in goal**: the model ranks human legs above chance (AUC ~0.91) but does **not**
 reproduce the selection (AP 0.057 vs 0.83 ceiling) — a modest single-feature (`cleanliness`) lead.
 Controls are done, enrichment closed, the learning-curve is saturated → **more 4h data is low-leverage;
-the lever is a richer notion of what makes a leg "yours"**. Current bet: **top-down MTF nesting**
-(model the same swing decomposed 1M→1W→1D), which needs **new deliberately-nested labels**.
+the lever is a richer notion of what makes a leg "yours"**. The context-free axis is exhausted;
+**first positive on the sequential axis (2026-07-20): the previous fib's endpoint predicts the next
+origin** (`sequential_origin_signal`, 4h: 0.256 vs 0.005 null — a component, not the selector;
+advisory pending sign-off). Current bet: **contrastive capture (#42) + sequential conditioning**.
 
 ## Line status
 
