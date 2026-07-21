@@ -96,6 +96,20 @@ contrastive-annotation input (→ motivated the capture tool). **Open:** 20 M/W/
 
 ## Recent Changes
 
+- **2026-07-21 AUTONOMOUS SESSION (owner blanket GO): chain-clustering probe RUN →
+  `no_chain_clustering` (advisory) + implicit-negative audit + overwrite-guard + 1w mystery
+  solved.** (1) Sequential axis: chaining is NOT serially clustered under the confound-guarded
+  gate (full-array p=0.022 alone would have over-claimed; hub-guard p_sf=0.061 → null; reviewer's
+  pre-run A1 was decisive) → per-leg sequential feature suffices, no regime model.
+  [Results](reviews/btc-fib-chain-clustering-probe-results-20260721.md) pending sign-off.
+  (2) Track-A negative audit: **75 % of 4h implicit negatives are coverage-weak** ("never
+  reviewed", not "rejected"; near-miss only 0.5 %) — low absolute AP partly a coverage artifact;
+  contrastive capture (#42) priority RAISED.
+  [Audit](reviews/btc-fib-track-a-implicit-negative-audit-20260721.md). (3) Facit data-loss bug
+  fixed (overwrite-guard, all save paths); 1w 20-vs-21 = silent collision overwrite (see Open
+  Questions). (4) Full candle cache re-fetched in cloud; signed cascade reproduces exactly
+  (39 s). [log.md](log.md) top.
+
 - **2026-07-21 OWNER SIGN-OFF: cascade results signed + degenerate fibs classified (docs-only).**
   Cascade `sequential_origin_signal` advisory→**signed** (no objections; modest framing binding).
   The 7 same-candle fibs = **misclicks** → fix worklist (home GUI) in Next Step; Open Question
@@ -289,9 +303,16 @@ Counts re-verified 2026-07-20 and locked in
 ## Open Questions
 
 - Minimum monthly fib count before 1W mapping?
-- 1w base batch: 20 files on disk vs 21 in older docs — labeling miss, typo, or deletion? (audit)
+- ~~1w base batch: 20 vs 21?~~ **SOLVED 2026-07-21: silent filename-collision overwrite** — the
+  06-11 base batch had 21 files; nesting-cohort v2 (06-26) overwrote `1w_20170316` (leg changed
+  985.55→2444.9 to 985.55→17293). **NEW owner call:** was the nesting redraw an intentional
+  replacement, or should the original base leg be restored?
+  Recovery: `git show d1d98b3:data/labels/human_fib/bitfinex/BTC-USD/1w/fib_BTC-USD_1w_20170316T000000.json`
+  (needs a new filename convention — same origin week collides; the tool now refuses silent
+  overwrites, [log 2026-07-21](log.md)).
 - ~~7 degenerate same-candle fibs — intentional or misclicks?~~ **ANSWERED 2026-07-21: misclicks**
-  — fix worklist in Next Step (home GUI); corpus counts will change when fixed.
+  — fix worklist in Next Step (home GUI); corpus counts will change when fixed. (Candle-verified
+  2026-07-21: all 7 anchors == exact candle high/low — wick-to-wick single-candle drags.)
 
 ## Status — BTC/Fib behaviour/backtest line PAUSED / CLOSED (2026-06-16, reviewed PASS)
 

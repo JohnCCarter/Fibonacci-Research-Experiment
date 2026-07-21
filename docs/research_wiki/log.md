@@ -16,6 +16,60 @@ Types: `ingest`, `decision`, `review`, `question`, `maintenance`.
 > Pre-reset (2026-06-10 and earlier): [part 3](log-archive-pre-btc-reset-part3.md) →
 > [part 2](log-archive-pre-btc-reset-part2.md) → [part 1](log-archive-pre-btc-reset-part1.md)
 
+## [2026-07-21] review | Chain-clustering probe RUN → `no_chain_clustering` (advisory) — the pre-run review changed the verdict
+
+Autonomous session (owner blanket GO, away). Sequential-axis follow-up on the signed cascade
+result: is chaining a *mode* (serial clustering) or a per-leg coin flip?
+[Prereg](reviews/btc-fib-chain-clustering-probe-prereg-20260721.md) locked (H2a adjacency vs
+marginal-preserving permutation null, seed 20260721), new `research/chain_clustering.py`
+(+10 tests), reusing the signed probe's pair construction/hit scoring verbatim.
+**leakage-validity-reviewer pre-run: 2 BLOCKING** → §9 amendments before any run: **A1
+hub-coupling guard** (42/362 4h adjacent slots share the same `prev` anchor → verdict now
+requires BOTH full-array AND single-file-restricted adjacency to reject) + **A2** exclusion
+accounting (`cur_outside_candle_window` counted, mirrors signed A4) + A3 integration tests.
+**RUN: 4h `no_chain_clustering`** — full-array p=0.022 *would have passed alone*, single-file
+p=0.061 fails the guarded gate; Markov-gap CI [−0.002, +0.220] includes 0. The guard was
+decisive — an unreviewed run would have over-claimed. Descriptives: chained pairs are 93/93
+direction-REVERSAL (mechanically expected: zigzag), median gap 0 bars (immediate), max run 6.
+**Modeling consequence (locked pre-run):** per-leg sequential feature suffices; no state-aware
+regime justified. [Results](reviews/btc-fib-chain-clustering-probe-results-20260721.md) —
+advisory pending owner sign-off.
+
+## [2026-07-21] review | Track-A implicit-negative audit → 75 % of 4h negatives are coverage-weak
+
+The open audit item (2026-07-20, "needs owner" — GO given). Descriptive audit, method frozen
+pre-compute in [`scratchpad/negative_audit_track_a.py`](../../scratchpad/negative_audit_track_a.py);
+**no verdict, no AP recompute.** 4h: 87 528 proxy candidates, 404 proxy-positive; **near-miss
+(1×–2× ε) contamination only 0.54 %** — the tolerance band is NOT the problem — but **75.3 % of
+negatives are coverage-weak** (nearest facit endpoint > median facit gap of 13 bars; median
+negative sits ~8 days from any facit anchor; top desert 2018-02→11 = 1 652 bars with zero
+endpoints; 2017 alone holds 31 % of all 4h facit). Reading: the Stage-2 AP denominator is
+dominated by "never reviewed", not "rejected" — the low absolute AP (0.057 vs 0.83) is partly a
+passive-corpus coverage artifact; internal comparisons stay valid; **do not re-run Stage-2 with
+filtered negatives without a fresh prereg**. Raises the priority of contrastive capture (#42),
+which produces exactly the explicit negatives the implicit set lacks.
+[Audit](reviews/btc-fib-track-a-implicit-negative-audit-20260721.md).
+
+## [2026-07-21] maintenance | Overwrite-guard (facit data-loss bug) + 1w ±1 SOLVED + cloud egress plumbing
+
+Same session. (1) **1w 20-vs-21 mystery SOLVED (audit Open Question):** git forensics — the
+06-11 base batch had **21** files (older docs were right); on 06-26 nesting-cohort v2 drew a 1w
+fib with the same origin week and the tool **silently overwrote** `fib_BTC-USD_1w_20170316`
+(leg changed 985.55→2444.9 to 985.55→17293; `created_at` re-stamped → counts read "20+4").
+Original leg recoverable from `d1d98b3`; restore = owner call (the nesting redraw may have been
+intentional replacement). (2) **Overwrite-guard shipped:** `save_annotation` now fails closed on
+anchor-differing overwrite (`AnnotationOverwriteError`, `allow_overwrite` opt-in); the tool's
+double-'w' confirm now covers EVERY save path (was: promote-flow only), is scoped to the target
+path (stale-flag bug fixed), and idempotent same-anchor re-saves stay frictionless (+2 tests in
+`test_human_fib_overwrite_guard.py`, promote-mode test updated to the new contract).
+(3) **Cloud plumbing:** Bitfinex egress works through the agent proxy once ccxt's
+`trust_env=False` is bypassed (session `verify` + `proxies` forced — container-local wrapper,
+no repo code changed); full 1M/1w/1d/4h cache fetched (4h 21 273 bars). (4) The 7 degenerate
+fibs verified against candles: all anchors == exact candle high/low (wick-to-wick single-candle
+drags — consistent with the owner's misclick classification). (5) Signed cascade probe
+**reproduces exactly** on the fresh cache in 39 s (was ~25 min; memoized `bar_of_timestamp`
+proven result-neutral on real data).
+
 ## [2026-07-21] maintenance | Memoized `bar_of_timestamp` (deferred cascade perf fix, post-sign-off)
 
 Same cloud session, after the sign-off below (owner GO). The result-neutral perf fix the cascade
