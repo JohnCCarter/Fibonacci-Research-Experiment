@@ -34,10 +34,10 @@ append-only trail lives in [log.md](log.md).
 convert) · negative-audit → 75 % coverage-weak negatives · overwrite-guard shipped ·
 1w 20-vs-21 = collision overwrite · 7 misclicks candle-verified. **Sequential axis bounded
 (3 locked results): chaining = byproduct of the zigzag rhythm, not a missing driver.**
-**Signed 2026-07-21 (mobile):** chain-clustering + sequential-feature both advisory→SIGNED;
-`1w_20170316` resolved = keep nesting (owner-delegated). Remaining unverified: p_sf 0.061
-borderline (new prereg if chased). **Next lever: contrastive capture (#42, batch 1 + desert
-batch 2)** — the passive-corpus axes are exhausted.
+**Signed 2026-07-21 (mobile):** both results SIGNED; `1w_20170316` = keep nesting. **D1 dialog:**
+5 macro candidates approved; owner teaching = sub-impulses are drawable legs too → prenotes +
+open questions in [`scratchpad/desert_d1_capture_prenotes.md`](../../scratchpad/desert_d1_capture_prenotes.md).
+**Next lever: contrastive capture (#42, batch 1 + desert batch 2).**
 
 ## Next Step — degenerate-fib fix (home GUI) + contrastive capture — 2026-07-21
 
