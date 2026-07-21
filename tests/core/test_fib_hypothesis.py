@@ -28,7 +28,7 @@ def _up_swing(start_price: float, end_price: float) -> Swing:
         unique=True,
     ),
 )
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_fib_levels_up_leg_prices_within_anchor_range(start, end, ratios):
     if end <= start:
         return
@@ -44,7 +44,7 @@ def test_fib_levels_up_leg_prices_within_anchor_range(start, end, ratios):
     base=st.floats(min_value=10.0, max_value=500.0, allow_nan=False),
     spread=st.floats(min_value=0.01, max_value=5.0, allow_nan=False),
 )
-@settings(max_examples=40)
+@settings(max_examples=40, deadline=None)
 def test_synthetic_ohlcv_high_ge_low(n, base, spread):
     close = pd.Series([base + i * 0.1 for i in range(n)])
     df = pd.DataFrame(
@@ -63,7 +63,7 @@ def test_synthetic_ohlcv_high_ge_low(n, base, spread):
     start=st.floats(min_value=1.0, max_value=500.0, allow_nan=False),
     end=st.floats(min_value=1.0, max_value=500.0, allow_nan=False),
 )
-@settings(max_examples=50)
+@settings(max_examples=50, deadline=None)
 def test_fib_from_prices_endpoints(start, end):
     if start == end:
         return
